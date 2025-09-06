@@ -8,7 +8,7 @@ type ViewMode = 'day' | 'week' | 'month';
 
 // Couleurs par statut pour le Gantt  
 const statusColors = {
-  todo: 'muted',
+  todo: 'muted-foreground',
   doing: 'tech-blue',
   blocked: 'tech-red', 
   done: 'success'
@@ -113,15 +113,102 @@ const GanttChart = () => {
   }, [ganttTasks]);
 
   const handleMouseMove = useCallback((e: MouseEvent) => {
-    if (!dragStart) return;
-    // Pour l'aperçu visuel, on peut manipuler directement les tâches Gantt
-  }, [dragStart]);
+    if (!dragStart || !chartRef.current) return;
+    
+    const deltaX = e.clientX - dragStart.x;
+    const daysDelta = Math.round(deltaX / (config.unitWidth / config.unitDuration));
+    const timeDelta = daysDelta * 24 * 60 * 60 * 1000;
+    
+    if (draggedTask) {
+      // Déplacement de la tâche entière
+      const originalTask = tasks.find(t => t.id === draggedTask);
+      if (originalTask) {
+        const newStartDate = new Date(dragStart.originalStartDate.getTime() + timeDelta);
+        const newEndDate = new Date(dragStart.originalEndDate.getTime() + timeDelta);
+        
+        // Mise à jour visuelle immédiate via le DOM pour un feedback fluide
+        const taskElement = document.querySelector(`[data-task-id="${draggedTask}"]`);
+        if (taskElement) {
+          const left = getUnitPosition(newStartDate);
+          (taskElement as HTMLElement).style.left = `${left}px`;
+        }
+      }
+    } else if (resizeTask) {
+      // Redimensionnement de la tâche
+      const originalTask = tasks.find(t => t.id === resizeTask.taskId);
+      if (originalTask) {
+        let newStartDate = dragStart.originalStartDate;
+        let newEndDate = dragStart.originalEndDate;
+        
+        if (resizeTask.side === 'left') {
+          newStartDate = new Date(dragStart.originalStartDate.getTime() + timeDelta);
+          // Assurer que la date de début n'est pas après la date de fin
+          if (newStartDate >= newEndDate) {
+            newStartDate = new Date(newEndDate.getTime() - 24 * 60 * 60 * 1000);
+          }
+        } else {
+          newEndDate = new Date(dragStart.originalEndDate.getTime() + timeDelta);
+          // Assurer que la date de fin n'est pas avant la date de début
+          if (newEndDate <= newStartDate) {
+            newEndDate = new Date(newStartDate.getTime() + 24 * 60 * 60 * 1000);
+          }
+        }
+        
+        // Mise à jour visuelle immédiate
+        const taskElement = document.querySelector(`[data-task-id="${resizeTask.taskId}"]`);
+        if (taskElement) {
+          const left = getUnitPosition(newStartDate);
+          const width = getTaskWidth({ startDate: newStartDate, endDate: newEndDate });
+          (taskElement as HTMLElement).style.left = `${left}px`;
+          (taskElement as HTMLElement).style.width = `${width}px`;
+        }
+      }
+    }
+  }, [dragStart, draggedTask, resizeTask, config, tasks, getUnitPosition, getTaskWidth]);
 
   const handleMouseUp = useCallback(async () => {
     if (!dragStart) return;
     
     try {
-      // Pour cette version simplifiée, on ne fait rien au mouseUp
+      const deltaX = document.querySelector('.gantt-chart')?.scrollLeft || 0;
+      const daysDelta = Math.round((dragStart.x + deltaX) / (config.unitWidth / config.unitDuration));
+      const timeDelta = daysDelta * 24 * 60 * 60 * 1000;
+      
+      if (draggedTask) {
+        const originalTask = tasks.find(t => t.id === draggedTask);
+        if (originalTask && updateTaskDates) {
+          const newStartDate = new Date(dragStart.originalStartDate.getTime() + timeDelta);
+          const newEndDate = new Date(dragStart.originalEndDate.getTime() + timeDelta);
+          
+          await updateTaskDates(draggedTask, 
+            newStartDate.toISOString().split('T')[0], 
+            newEndDate.toISOString().split('T')[0]
+          );
+        }
+      } else if (resizeTask) {
+        const originalTask = tasks.find(t => t.id === resizeTask.taskId);
+        if (originalTask && updateTaskDates) {
+          let newStartDate = dragStart.originalStartDate;
+          let newEndDate = dragStart.originalEndDate;
+          
+          if (resizeTask.side === 'left') {
+            newStartDate = new Date(dragStart.originalStartDate.getTime() + timeDelta);
+            if (newStartDate >= newEndDate) {
+              newStartDate = new Date(newEndDate.getTime() - 24 * 60 * 60 * 1000);
+            }
+          } else {
+            newEndDate = new Date(dragStart.originalEndDate.getTime() + timeDelta);
+            if (newEndDate <= newStartDate) {
+              newEndDate = new Date(newStartDate.getTime() + 24 * 60 * 60 * 1000);
+            }
+          }
+          
+          await updateTaskDates(resizeTask.taskId,
+            newStartDate.toISOString().split('T')[0],
+            newEndDate.toISOString().split('T')[0]
+          );
+        }
+      }
     } catch (error) {
       console.error('Error updating task:', error);
     } finally {
@@ -129,7 +216,7 @@ const GanttChart = () => {
       setResizeTask(null);
       setDragStart(null);
     }
-  }, [dragStart]);
+  }, [dragStart, draggedTask, resizeTask, config, tasks, updateTaskDates]);
 
   React.useEffect(() => {
     if (draggedTask || resizeTask) {
@@ -199,6 +286,7 @@ const GanttChart = () => {
     return (
       <div
         key={task.id}
+        data-task-id={task.id}
         className="absolute"
         style={{
           top: index * rowHeight + 10,
@@ -213,14 +301,16 @@ const GanttChart = () => {
           } transition-all duration-200`}
           style={{
             backgroundColor: `hsl(var(--${task.color}))`,
-            borderColor: `hsl(var(--${task.color}))`
+            borderColor: `hsl(var(--${task.color}))`,
+            opacity: 0.8
           }}
         >
           <div
-            className="h-full rounded-lg opacity-30"
+            className="h-full rounded-lg"
             style={{
               width: `${task.progress}%`,
-              backgroundColor: `hsl(var(--${task.color}))`
+              backgroundColor: `hsl(var(--${task.color}))`,
+              opacity: 0.5
             }}
           />
           
@@ -253,7 +343,7 @@ const GanttChart = () => {
             onMouseDown={(e) => taskMouseDownHandler(e, task.id, 'drag')}
             title="Déplacer la tâche"
           >
-            <span className="text-sm font-medium text-white truncate pointer-events-none">
+            <span className="text-sm font-medium text-foreground truncate pointer-events-none mix-blend-difference">
               {task.name}
             </span>
           </div>
@@ -321,7 +411,7 @@ const GanttChart = () => {
           </div>
 
           <div className="flex-1 overflow-x-auto">
-            <div ref={chartRef} className="relative bg-background">
+            <div ref={chartRef} className="gantt-chart relative bg-background">
               <div 
                 className="flex border-b border-border bg-muted/30" 
                 style={{ height: config.headerHeight }}

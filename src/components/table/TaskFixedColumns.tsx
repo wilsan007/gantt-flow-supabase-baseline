@@ -88,11 +88,11 @@ export const TaskFixedColumns = ({
                 </div>
               </TableCell>
               <TableCell>
-                <AssigneeSelect
-                  currentAssignee={task.assignee}
-                  taskId={task.id}
-                  onUpdateAssignee={onUpdateAssignee}
-                />
+                  <AssigneeSelect
+                    assignee={task.assignee}
+                    taskId={task.id}
+                    onChange={(assignee) => onUpdateAssignee(task.id, assignee)}
+                  />
               </TableCell>
               <TableCell>
                 <div className="flex items-center gap-2">

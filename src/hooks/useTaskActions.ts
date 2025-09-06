@@ -123,6 +123,8 @@ export const useTaskActions = () => {
 
   const addActionColumn = async (actionTitle: string) => {
     try {
+      if (!actionTitle.trim()) return;
+      
       const { data: allTasks, error: tasksError } = await supabase
         .from('tasks')
         .select('id');
@@ -153,7 +155,7 @@ export const useTaskActions = () => {
     }
   };
 
-  const createSubtask = async (parentTaskId: string, title: string) => {
+  const createSubTask = async (parentTaskId: string, title?: string) => {
     try {
       const { data: parentTask, error: parentError } = await supabase
         .from('tasks')
@@ -163,25 +165,28 @@ export const useTaskActions = () => {
 
       if (parentError) throw parentError;
 
-      const newLevel = parentTask.task_level + 1;
-      const displayOrder = await supabase.rpc('generate_display_order', {
+      const newLevel = (parentTask.task_level || 0) + 1;
+      
+      const { data: displayOrderResult, error: displayOrderError } = await supabase.rpc('generate_display_order', {
         p_parent_id: parentTaskId,
         p_task_level: newLevel
       });
 
+      if (displayOrderError) throw displayOrderError;
+
       const { data: newSubtask, error: subtaskError } = await supabase
         .from('tasks')
         .insert([{
-          title,
+          title: title || `Sous-tâche de ${parentTask.title}`,
           assignee: parentTask.assignee,
           start_date: parentTask.start_date,
           due_date: parentTask.due_date,
           priority: parentTask.priority,
           status: 'todo',
-          effort_estimate_h: 0,
+          effort_estimate_h: 1,
           parent_id: parentTaskId,
           task_level: newLevel,
-          display_order: displayOrder.data
+          display_order: displayOrderResult || `${parentTask.display_order}.1`
         }])
         .select()
         .single();
@@ -242,7 +247,7 @@ export const useTaskActions = () => {
     deleteTask,
     toggleAction,
     addActionColumn,
-    createSubtask,
+    createSubTask,
     updateTaskAssignee,
     updateTaskDates,
     updateTaskStatus

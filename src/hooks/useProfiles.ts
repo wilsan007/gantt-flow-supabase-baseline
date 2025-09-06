@@ -5,7 +5,6 @@ export interface Profile {
   id: string;
   full_name: string;
   avatar_url?: string;
-  role?: string;
 }
 
 export const useProfiles = () => {
@@ -13,12 +12,16 @@ export const useProfiles = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  useEffect(() => {
+    fetchProfiles();
+  }, []);
+
   const fetchProfiles = async () => {
     try {
       setLoading(true);
       const { data, error } = await supabase
         .from('profiles')
-        .select('id, full_name, avatar_url, role')
+        .select('id, full_name, avatar_url')
         .order('full_name');
 
       if (error) throw error;
@@ -30,10 +33,6 @@ export const useProfiles = () => {
       setLoading(false);
     }
   };
-
-  useEffect(() => {
-    fetchProfiles();
-  }, []);
 
   return {
     profiles,

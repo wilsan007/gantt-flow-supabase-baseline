@@ -17,7 +17,7 @@ const DynamicTable = () => {
     deleteTask, 
     toggleAction, 
     addActionColumn,
-    createSubtask,
+    createSubTask,
     updateTaskAssignee,
     refetch
   } = useTasks();
@@ -51,7 +51,7 @@ const DynamicTable = () => {
 
   const handleCreateSubtask = async (parentId: string, title: string) => {
     try {
-      await createSubtask(parentId, title);
+      await createSubTask(parentId, title);
       await refetch();
     } catch (error) {
       console.error('Error creating subtask:', error);

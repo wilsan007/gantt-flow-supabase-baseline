@@ -79,12 +79,12 @@ const GanttChart = () => {
         onViewModeChange={setViewMode} 
       />
       <CardContent className="p-0">
-        <div className="flex">
+        <div className="flex h-[600px] overflow-hidden">
           <GanttTaskList 
             tasks={ganttTasks} 
             rowHeight={rowHeight} 
           />
-          <div ref={chartRef}>
+          <div ref={chartRef} className="flex-1 min-w-0">
             <GanttTimeline
               tasks={ganttTasks}
               config={config}

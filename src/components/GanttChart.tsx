@@ -1,5 +1,7 @@
 import React, { useState, useRef, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Calendar, CalendarDays, Clock } from 'lucide-react';
 
 interface Task {
   id: string;
@@ -10,7 +12,10 @@ interface Task {
   color: string;
 }
 
+type ViewMode = 'day' | 'week' | 'month';
+
 const GanttChart = () => {
+  const [viewMode, setViewMode] = useState<ViewMode>('week');
   const [tasks, setTasks] = useState<Task[]>([
     {
       id: '1',
@@ -52,29 +57,65 @@ const GanttChart = () => {
 
   const chartRef = useRef<HTMLDivElement>(null);
 
-  // Configuration
-  const dayWidth = 40;
-  const rowHeight = 60;
-  const headerHeight = 80;
-  
-  // Calcul des dates
-  const startDate = new Date(2024, 0, 1);
-  const endDate = new Date(2024, 2, 31);
-  const totalDays = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
+  // Configuration dynamique selon la vue
+  const getViewConfig = () => {
+    switch (viewMode) {
+      case 'day':
+        return { 
+          unitWidth: 40, 
+          headerHeight: 80,
+          getUnit: (date: Date) => date.getDate().toString(),
+          getSubUnit: (date: Date) => date.toLocaleDateString('fr-FR', { month: 'short' }),
+          unitDuration: 1 // 1 jour
+        };
+      case 'week':
+        return { 
+          unitWidth: 120, 
+          headerHeight: 80,
+          getUnit: (date: Date) => `S${Math.ceil(date.getDate() / 7)}`,
+          getSubUnit: (date: Date) => date.toLocaleDateString('fr-FR', { month: 'short', year: '2-digit' }),
+          unitDuration: 7 // 7 jours
+        };
+      case 'month':
+        return { 
+          unitWidth: 200, 
+          headerHeight: 80,
+          getUnit: (date: Date) => date.toLocaleDateString('fr-FR', { month: 'short' }),
+          getSubUnit: (date: Date) => date.getFullYear().toString(),
+          unitDuration: 30 // ~30 jours
+        };
+      default:
+        return { unitWidth: 40, headerHeight: 80, getUnit: () => '', getSubUnit: () => '', unitDuration: 1 };
+    }
+  };
 
-  const getDayPosition = (date: Date) => {
+  const config = getViewConfig();
+  const rowHeight = 60;
+  
+  // Calcul des dates selon la vue
+  const startDate = new Date(2024, 0, 1);
+  const endDate = new Date(2024, 11, 31); // Toute l'année pour avoir plus de données
+  
+  const getTotalUnits = () => {
+    const totalDays = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
+    return Math.ceil(totalDays / config.unitDuration);
+  };
+
+  const getUnitPosition = (date: Date) => {
     const days = Math.ceil((date.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
-    return days * dayWidth;
+    const units = days / config.unitDuration;
+    return units * config.unitWidth;
   };
 
   const getDateFromPosition = (x: number) => {
-    const days = Math.floor(x / dayWidth);
+    const units = Math.floor(x / config.unitWidth);
+    const days = units * config.unitDuration;
     return new Date(startDate.getTime() + days * 24 * 60 * 60 * 1000);
   };
 
   const getTaskWidth = (task: Task) => {
     const duration = Math.ceil((task.endDate.getTime() - task.startDate.getTime()) / (1000 * 60 * 60 * 24));
-    return duration * dayWidth;
+    return (duration / config.unitDuration) * config.unitWidth;
   };
 
   const handleMouseDown = useCallback((e: React.MouseEvent, taskId: string, action: 'drag' | 'resize-left' | 'resize-right') => {
@@ -99,14 +140,15 @@ const GanttChart = () => {
     if (!dragStart) return;
 
     const deltaX = e.clientX - dragStart.x;
-    const deltaDays = Math.round(deltaX / dayWidth);
+    const deltaDays = Math.round(deltaX / config.unitWidth);
 
     if (draggedTask) {
       // Déplacement de la tâche
       setTasks(prev => prev.map(task => {
         if (task.id === draggedTask) {
           const duration = task.endDate.getTime() - task.startDate.getTime();
-          const newStartDate = new Date(dragStart.originalStartDate.getTime() + deltaDays * 24 * 60 * 60 * 1000);
+          const deltaTime = deltaDays * config.unitDuration * 24 * 60 * 60 * 1000;
+          const newStartDate = new Date(dragStart.originalStartDate.getTime() + deltaTime);
           const newEndDate = new Date(newStartDate.getTime() + duration);
           return { ...task, startDate: newStartDate, endDate: newEndDate };
         }
@@ -116,13 +158,14 @@ const GanttChart = () => {
       // Redimensionnement de la tâche
       setTasks(prev => prev.map(task => {
         if (task.id === resizeTask.taskId) {
+          const deltaTime = deltaDays * config.unitDuration * 24 * 60 * 60 * 1000;
           if (resizeTask.side === 'left') {
-            const newStartDate = new Date(dragStart.originalStartDate.getTime() + deltaDays * 24 * 60 * 60 * 1000);
+            const newStartDate = new Date(dragStart.originalStartDate.getTime() + deltaTime);
             if (newStartDate < task.endDate) {
               return { ...task, startDate: newStartDate };
             }
           } else {
-            const newEndDate = new Date(dragStart.originalEndDate.getTime() + deltaDays * 24 * 60 * 60 * 1000);
+            const newEndDate = new Date(dragStart.originalEndDate.getTime() + deltaTime);
             if (newEndDate > task.startDate) {
               return { ...task, endDate: newEndDate };
             }
@@ -131,7 +174,7 @@ const GanttChart = () => {
         return task;
       }));
     }
-  }, [dragStart, draggedTask, resizeTask, dayWidth]);
+  }, [dragStart, draggedTask, resizeTask, config.unitWidth]);
 
   const handleMouseUp = useCallback(() => {
     setDraggedTask(null);
@@ -151,29 +194,31 @@ const GanttChart = () => {
   }, [draggedTask, resizeTask, handleMouseMove, handleMouseUp]);
 
   const renderTimelineHeader = () => {
-    const days = [];
-    for (let i = 0; i < totalDays; i++) {
-      const date = new Date(startDate.getTime() + i * 24 * 60 * 60 * 1000);
-      days.push(
+    const units = [];
+    const totalUnits = getTotalUnits();
+    
+    for (let i = 0; i < totalUnits; i++) {
+      const date = new Date(startDate.getTime() + i * config.unitDuration * 24 * 60 * 60 * 1000);
+      units.push(
         <div
           key={i}
           className="flex h-full items-center justify-center border-r border-gantt-grid text-xs text-muted-foreground"
-          style={{ minWidth: dayWidth }}
+          style={{ minWidth: config.unitWidth }}
         >
           <div className="text-center">
-            <div className="font-medium">{date.getDate()}</div>
+            <div className="font-medium">{config.getUnit(date)}</div>
             <div className="text-xs opacity-60">
-              {date.toLocaleDateString('fr-FR', { month: 'short' })}
+              {config.getSubUnit(date)}
             </div>
           </div>
         </div>
       );
     }
-    return days;
+    return units;
   };
 
   const renderTaskBar = (task: Task, index: number) => {
-    const left = getDayPosition(task.startDate);
+    const left = getUnitPosition(task.startDate);
     const width = getTaskWidth(task);
     const isDragging = draggedTask === task.id;
     const isResizing = resizeTask?.taskId === task.id;
@@ -237,7 +282,38 @@ const GanttChart = () => {
   return (
     <Card className="w-full bg-card border-border">
       <CardHeader className="pb-4">
-        <CardTitle className="text-foreground">Diagramme de Gantt Interactif</CardTitle>
+        <div className="flex items-center justify-between">
+          <CardTitle className="text-foreground">Diagramme de Gantt Interactif</CardTitle>
+          <div className="flex gap-2">
+            <Button
+              variant={viewMode === 'day' ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setViewMode('day')}
+              className="gap-1"
+            >
+              <Clock className="h-4 w-4" />
+              Jour
+            </Button>
+            <Button
+              variant={viewMode === 'week' ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setViewMode('week')}
+              className="gap-1"
+            >
+              <CalendarDays className="h-4 w-4" />
+              Semaine
+            </Button>
+            <Button
+              variant={viewMode === 'month' ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setViewMode('month')}
+              className="gap-1"
+            >
+              <Calendar className="h-4 w-4" />
+              Mois
+            </Button>
+          </div>
+        </div>
       </CardHeader>
       <CardContent className="p-0">
         <div className="flex">
@@ -266,7 +342,7 @@ const GanttChart = () => {
           <div className="flex-1 overflow-x-auto">
             <div ref={chartRef} className="relative bg-background">
               {/* En-tête de la timeline */}
-              <div className="flex border-b border-gantt-grid bg-gantt-header" style={{ height: headerHeight }}>
+              <div className="flex border-b border-gantt-grid bg-gantt-header" style={{ height: config.headerHeight }}>
                 {renderTimelineHeader()}
               </div>
 
@@ -282,11 +358,11 @@ const GanttChart = () => {
                 ))}
 
                 {/* Lignes verticales */}
-                {Array.from({ length: totalDays }).map((_, index) => (
+                {Array.from({ length: getTotalUnits() }).map((_, index) => (
                   <div
                     key={index}
                     className="absolute h-full border-r border-gantt-grid"
-                    style={{ left: (index + 1) * dayWidth }}
+                    style={{ left: (index + 1) * config.unitWidth }}
                   />
                 ))}
 

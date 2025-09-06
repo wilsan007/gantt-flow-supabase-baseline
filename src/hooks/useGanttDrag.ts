@@ -44,7 +44,7 @@ export const useGanttDrag = (
     
     const deltaX = e.clientX - dragStart.x;
     const pixelsPerDay = config.unitWidth / config.unitDuration;
-    const daysDelta = deltaX / pixelsPerDay;
+    const daysDelta = Math.round(deltaX / pixelsPerDay);
     const timeDelta = daysDelta * 24 * 60 * 60 * 1000;
     
     if (draggedTask) {
@@ -62,20 +62,22 @@ export const useGanttDrag = (
       
       if (resizeTask.side === 'left') {
         newStartDate = new Date(dragStart.originalStartDate.getTime() + timeDelta);
-        if (newStartDate >= newEndDate) {
-          newStartDate = new Date(newEndDate.getTime() - 24 * 60 * 60 * 1000);
+        // Minimum 1 day duration
+        if (newStartDate >= dragStart.originalEndDate) {
+          newStartDate = new Date(dragStart.originalEndDate.getTime() - 24 * 60 * 60 * 1000);
         }
       } else {
         newEndDate = new Date(dragStart.originalEndDate.getTime() + timeDelta);
-        if (newEndDate <= newStartDate) {
-          newEndDate = new Date(newStartDate.getTime() + 24 * 60 * 60 * 1000);
+        // Minimum 1 day duration
+        if (newEndDate <= dragStart.originalStartDate) {
+          newEndDate = new Date(dragStart.originalStartDate.getTime() + 24 * 60 * 60 * 1000);
         }
       }
       
       const taskElement = document.querySelector(`[data-task-id="${resizeTask.taskId}"]`) as HTMLElement;
       if (taskElement) {
         const left = (newStartDate.getTime() - new Date(2024, 0, 1).getTime()) / (1000 * 60 * 60 * 24) / config.unitDuration * config.unitWidth;
-        const duration = Math.ceil((newEndDate.getTime() - newStartDate.getTime()) / (1000 * 60 * 60 * 24));
+        const duration = Math.max(1, Math.ceil((newEndDate.getTime() - newStartDate.getTime()) / (1000 * 60 * 60 * 24)));
         const width = (duration / config.unitDuration) * config.unitWidth;
         taskElement.style.left = `${left}px`;
         taskElement.style.width = `${width}px`;
@@ -89,7 +91,7 @@ export const useGanttDrag = (
     try {
       const deltaX = e.clientX - dragStart.x;
       const pixelsPerDay = config.unitWidth / config.unitDuration;
-      const daysDelta = deltaX / pixelsPerDay;
+      const daysDelta = Math.round(deltaX / pixelsPerDay);
       const timeDelta = daysDelta * 24 * 60 * 60 * 1000;
       
       if (draggedTask) {
@@ -106,13 +108,15 @@ export const useGanttDrag = (
         
         if (resizeTask.side === 'left') {
           newStartDate = new Date(dragStart.originalStartDate.getTime() + timeDelta);
-          if (newStartDate >= newEndDate) {
-            newStartDate = new Date(newEndDate.getTime() - 24 * 60 * 60 * 1000);
+          // Minimum 1 day duration
+          if (newStartDate >= dragStart.originalEndDate) {
+            newStartDate = new Date(dragStart.originalEndDate.getTime() - 24 * 60 * 60 * 1000);
           }
         } else {
           newEndDate = new Date(dragStart.originalEndDate.getTime() + timeDelta);
-          if (newEndDate <= newStartDate) {
-            newEndDate = new Date(newStartDate.getTime() + 24 * 60 * 60 * 1000);
+          // Minimum 1 day duration
+          if (newEndDate <= dragStart.originalStartDate) {
+            newEndDate = new Date(dragStart.originalStartDate.getTime() + 24 * 60 * 60 * 1000);
           }
         }
         
@@ -123,6 +127,8 @@ export const useGanttDrag = (
       }
     } catch (error) {
       console.error('Error updating task:', error);
+      // Reset visual state on error
+      window.location.reload();
     } finally {
       setDraggedTask(null);
       setResizeTask(null);

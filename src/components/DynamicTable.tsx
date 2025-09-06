@@ -39,7 +39,13 @@ const DynamicTable = () => {
   };
 
   const handleToggleAction = async (taskId: string, actionId: string) => {
-    await toggleAction(taskId, actionId);
+    try {
+      console.log('handleToggleAction called:', { taskId, actionId });
+      await toggleAction(taskId, actionId);
+      await refetch(); // Rafraîchir les données après la modification
+    } catch (error) {
+      console.error('Error in handleToggleAction:', error);
+    }
   };
 
   const handleDuplicateTask = (taskId: string) => {

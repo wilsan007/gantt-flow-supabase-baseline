@@ -8,7 +8,6 @@ import {
   TableHeader, 
   TableRow 
 } from '@/components/ui/table';
-
 import { Progress } from '@/components/ui/progress';
 import { Calendar, Clock, Plus, Trash2 } from 'lucide-react';
 import { Task } from '@/hooks/useTasks';

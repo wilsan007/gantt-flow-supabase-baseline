@@ -14,6 +14,7 @@ export interface TaskAction {
   due_date?: string;
   notes?: string;
   position: number;
+  weight_percentage: number;
 }
 
 export interface Task {
@@ -151,6 +152,7 @@ export const useTasks = () => {
           due_date: action.due_date,
           notes: action.notes,
           position: action.position,
+          weight_percentage: action.weight_percentage || 0,
         }));
 
         const { error: insertActionsError } = await supabase
@@ -230,10 +232,12 @@ export const useTasks = () => {
                 : action
             ) || [];
             
-            // Recalcule le pourcentage global immédiatement
-            const completedActions = updatedActions.filter(action => action.is_done).length;
-            const totalActions = updatedActions.length;
-            const newProgress = totalActions > 0 ? Math.round((completedActions / totalActions) * 100) : 0;
+            // Recalcule le pourcentage global en utilisant les poids
+            const totalWeight = updatedActions.reduce((sum, action) => sum + (action.weight_percentage || 0), 0);
+            const completedWeight = updatedActions
+              .filter(action => action.is_done)
+              .reduce((sum, action) => sum + (action.weight_percentage || 0), 0);
+            const newProgress = totalWeight > 0 ? Math.round(completedWeight) : 0;
             
             return {
               ...task,
@@ -272,19 +276,27 @@ export const useTasks = () => {
 
   const addActionColumn = async (actionTitle: string) => {
     try {
-      // Add this action to all existing tasks
-      const actionInserts = tasks.map((task) => ({
-        task_id: task.id,
-        title: actionTitle,
-        is_done: false,
-        position: (task.task_actions?.length || 0) + 1,
-      }));
+      // Add this action to all existing tasks with equal weight distribution
+      for (const task of tasks) {
+        const { error } = await supabase
+          .from('task_actions')
+          .insert({
+            task_id: task.id,
+            title: actionTitle,
+            is_done: false,
+            position: (task.task_actions?.length || 0) + 1,
+            weight_percentage: 0, // Will be updated by distribute_equal_weights
+          });
 
-      const { error } = await supabase
-        .from('task_actions')
-        .insert(actionInserts);
+        if (error) throw error;
 
-      if (error) throw error;
+        // Call the distribution function to ensure weights sum to 100%
+        const { error: distributeError } = await supabase.rpc('distribute_equal_weights', {
+          p_task_id: task.id
+        });
+
+        if (distributeError) throw distributeError;
+      }
 
       toast({
         title: "Success",

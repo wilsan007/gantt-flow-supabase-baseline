@@ -258,18 +258,9 @@ const DynamicTable = () => {
                     <TableRow key={task.id}>
                        {getUniqueActions().map((actionTitle, actionIndex) => {
                          const action = task.task_actions?.find(a => a.title === actionTitle);
-                         const taskActions = task.task_actions || [];
-                         const totalActions = taskActions.length;
                          
-                         // Calcul du poids de chaque action pour que la somme fasse 100%
-                         let actionWeight = 0;
-                         if (totalActions > 0 && action) {
-                           const baseWeight = Math.floor(100 / totalActions);
-                           const remainder = 100 - (baseWeight * totalActions);
-                           // Distribuer le reste aux premières actions de cette tâche spécifique
-                           const taskActionIndex = taskActions.findIndex(a => a.id === action.id);
-                           actionWeight = baseWeight + (taskActionIndex < remainder ? 1 : 0);
-                         }
+                         // Utiliser le poids défini dans la base de données
+                         const actionWeight = action?.weight_percentage || 0;
                          
                          // Affichage du pourcentage : le poids si coché, 0 sinon
                          const displayedPercentage = action?.is_done ? actionWeight : 0;

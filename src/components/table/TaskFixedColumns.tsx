@@ -104,7 +104,7 @@ export const TaskFixedColumns = ({
                   onSelectTask(task.id);
                 }}
               >
-                <TableCell className="font-medium">
+                <TableCell className={`font-medium ${isSubtask ? 'py-1 text-sm' : ''}`}>
                   <div 
                     className="flex items-center gap-2"
                     style={{ paddingLeft: `${(task.task_level || 0) * 20}px` }}
@@ -125,39 +125,39 @@ export const TaskFixedColumns = ({
                       )}
                     </Button>
                     <span 
-                      className={`${isSubtask ? 'text-muted-foreground italic text-sm' : ''}`}
+                      className={`${isSubtask ? 'text-muted-foreground italic text-xs' : ''}`}
                     >
-                      <span className="text-xs text-muted-foreground mr-2">
+                      <span className={`text-muted-foreground mr-2 ${isSubtask ? 'text-xs' : 'text-xs'}`}>
                         {task.display_order || '1'}
                       </span>
                       {task.title}
                     </span>
                   </div>
                 </TableCell>
-                <TableCell className={isSubtask ? 'py-1' : ''}>
+                <TableCell className={isSubtask ? 'py-1 text-xs' : ''}>
                   <AssigneeSelect
                     assignee={task.assignee}
                     taskId={task.id}
                     onChange={(assignee) => onUpdateAssignee(task.id, assignee)}
                   />
                 </TableCell>
-                <TableCell className={isSubtask ? 'py-1' : ''}>
+                <TableCell className={isSubtask ? 'py-1 text-xs' : ''}>
                   <div className="flex items-center gap-2">
                     <Calendar className={`${isSubtask ? 'h-3 w-3' : 'h-4 w-4'} text-muted-foreground`} />
-                    <span className={isSubtask ? 'text-sm' : ''}>
+                    <span className={isSubtask ? 'text-xs' : ''}>
                       {formatDate(task.start_date)}
                     </span>
                   </div>
                 </TableCell>
-                <TableCell className={isSubtask ? 'py-1' : ''}>
+                <TableCell className={isSubtask ? 'py-1 text-xs' : ''}>
                   <div className="flex items-center gap-2">
                     <Calendar className={`${isSubtask ? 'h-3 w-3' : 'h-4 w-4'} text-muted-foreground`} />
-                    <span className={isSubtask ? 'text-sm' : ''}>
+                    <span className={isSubtask ? 'text-xs' : ''}>
                       {formatDate(task.due_date)}
                     </span>
                   </div>
                 </TableCell>
-                <TableCell className={isSubtask ? 'py-1' : ''}>
+                <TableCell className={isSubtask ? 'py-1 text-xs' : ''}>
                   <Badge 
                     className={`${priorityColors[task.priority]} ${isSubtask ? 'text-xs px-1 py-0' : ''}`} 
                     variant="outline"
@@ -165,7 +165,7 @@ export const TaskFixedColumns = ({
                     {task.priority}
                   </Badge>
                 </TableCell>
-                <TableCell className={isSubtask ? 'py-1' : ''}>
+                <TableCell className={isSubtask ? 'py-1 text-xs' : ''}>
                   <Badge 
                     className={`${statusColors[task.status]} ${isSubtask ? 'text-xs px-1 py-0' : ''}`} 
                     variant="outline"
@@ -173,15 +173,15 @@ export const TaskFixedColumns = ({
                     {task.status}
                   </Badge>
                 </TableCell>
-                <TableCell className={isSubtask ? 'py-1' : ''}>
+                <TableCell className={isSubtask ? 'py-1 text-xs' : ''}>
                   <div className="flex items-center gap-2">
                     <Clock className={`${isSubtask ? 'h-3 w-3' : 'h-4 w-4'} text-muted-foreground`} />
-                    <span className={isSubtask ? 'text-sm' : ''}>
+                    <span className={isSubtask ? 'text-xs' : ''}>
                       {task.effort_estimate_h}h
                     </span>
                   </div>
                 </TableCell>
-                <TableCell className={isSubtask ? 'py-1' : ''}>
+                <TableCell className={isSubtask ? 'py-1 text-xs' : ''}>
                   <div className="flex items-center gap-2">
                     <Progress 
                       value={task.progress} 
@@ -192,7 +192,7 @@ export const TaskFixedColumns = ({
                     </span>
                   </div>
                 </TableCell>
-                <TableCell className={isSubtask ? 'py-1' : ''}>
+                <TableCell className={isSubtask ? 'py-1 text-xs' : ''}>
                   {!isSubtask && (
                     <TaskRowActions 
                       taskId={task.id}

@@ -51,7 +51,11 @@ export const TaskActionColumns = ({ tasks, onToggleAction }: TaskActionColumnsPr
                 <TableRow 
                   key={task.id}
                   className="border-b"
-                  style={{ height: isSubtask ? '51px' : '64px' }}
+                  style={{ 
+                    height: isSubtask ? '51px' : '64px',
+                    minHeight: isSubtask ? '51px' : '64px',
+                    maxHeight: isSubtask ? '51px' : '64px'
+                  }}
                 >
                 {uniqueActions.map((actionTitle) => {
                   const action = task.task_actions?.find(a => a.title === actionTitle);
@@ -59,7 +63,8 @@ export const TaskActionColumns = ({ tasks, onToggleAction }: TaskActionColumnsPr
                   return (
                     <TableCell 
                       key={actionTitle} 
-                      className={`text-center ${isSubtask ? 'py-1 text-xs' : ''}`}
+                      className={`text-center ${isSubtask ? 'py-0 text-xs' : 'py-0'}`}
+                      style={{ height: isSubtask ? '51px' : '64px' }}
                     >
                       {action ? (
                         <div className="flex flex-col items-center gap-1">

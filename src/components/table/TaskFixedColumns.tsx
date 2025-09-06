@@ -76,16 +76,16 @@ export const TaskFixedColumns = ({
       <div className="h-[600px] overflow-auto">
       <Table>
         <TableHeader className="sticky top-0 bg-background z-10">
-          <TableRow>
-            <TableHead className="min-w-[200px]">Tâche</TableHead>
-            <TableHead className="min-w-[150px]">Responsable</TableHead>
-            <TableHead className="min-w-[80px]">Début</TableHead>
-            <TableHead className="min-w-[80px]">Échéance</TableHead>
-            <TableHead className="min-w-[80px]">Priorité</TableHead>
-            <TableHead className="min-w-[80px]">Statut</TableHead>
-            <TableHead className="min-w-[80px]">Charge (h)</TableHead>
-            <TableHead className="min-w-[100px]">Progression</TableHead>
-            <TableHead className="w-[50px]">Actions</TableHead>
+          <TableRow className="h-12">
+            <TableHead className="min-w-[200px] h-12">Tâche</TableHead>
+            <TableHead className="min-w-[150px] h-12">Responsable</TableHead>
+            <TableHead className="min-w-[80px] h-12">Début</TableHead>
+            <TableHead className="min-w-[80px] h-12">Échéance</TableHead>
+            <TableHead className="min-w-[80px] h-12">Priorité</TableHead>
+            <TableHead className="min-w-[80px] h-12">Statut</TableHead>
+            <TableHead className="min-w-[80px] h-12">Charge (h)</TableHead>
+            <TableHead className="min-w-[100px] h-12">Progression</TableHead>
+            <TableHead className="w-[50px] h-12">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>

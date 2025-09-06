@@ -35,9 +35,9 @@ export const TaskActionColumns = ({ tasks, onToggleAction }: TaskActionColumnsPr
     <div className="h-[600px] overflow-auto">
       <Table>
         <TableHeader className="sticky top-0 bg-background z-10">
-          <TableRow>
+          <TableRow className="h-12">
             {uniqueActions.map((actionTitle) => (
-              <TableHead key={actionTitle} className="min-w-[120px] text-center">
+              <TableHead key={actionTitle} className="min-w-[120px] text-center h-12">
                 {actionTitle}
               </TableHead>
             ))}

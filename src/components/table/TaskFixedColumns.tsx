@@ -18,6 +18,8 @@ import { ActionSelectionDialog } from '../dialogs/ActionSelectionDialog';
 import { CreateSubtaskDialog } from '../dialogs/CreateSubtaskDialog';
 import { TaskDetailsDialog } from '../dialogs/TaskDetailsDialog';
 import { priorityColors, statusColors, formatDate } from '@/lib/taskHelpers';
+import { DocumentCellColumn } from './DocumentCellColumn';
+import { CommentCellColumn } from './CommentCellColumn';
 import { useState } from 'react';
 
 interface TaskFixedColumnsProps {
@@ -115,6 +117,8 @@ export const TaskFixedColumns = ({
             <TableHead className="min-w-[80px] h-12">Statut</TableHead>
             <TableHead className="min-w-[80px] h-12">Charge (h)</TableHead>
             <TableHead className="min-w-[100px] h-12">Progression</TableHead>
+            <TableHead className="min-w-[100px] h-12">Documents</TableHead>
+            <TableHead className="min-w-[100px] h-12">Commentaires</TableHead>
             <TableHead className="w-[50px] h-12">Actions</TableHead>
           </TableRow>
         </TableHeader>
@@ -229,6 +233,12 @@ export const TaskFixedColumns = ({
                       {task.progress}%
                     </span>
                   </div>
+                </TableCell>
+                <TableCell className={isSubtask ? 'py-0 text-xs' : 'py-0'} style={{ height: isSubtask ? '51px' : '64px' }}>
+                  <DocumentCellColumn task={task} isSubtask={isSubtask} />
+                </TableCell>
+                <TableCell className={isSubtask ? 'py-0 text-xs' : 'py-0'} style={{ height: isSubtask ? '51px' : '64px' }}>
+                  <CommentCellColumn task={task} isSubtask={isSubtask} />
                 </TableCell>
                 <TableCell className={isSubtask ? 'py-0 text-xs' : 'py-0'} style={{ height: isSubtask ? '51px' : '64px' }}>
                   {!isSubtask && (

@@ -16,6 +16,7 @@ import { TaskRowActions } from './TaskRowActions';
 import { AssigneeSelect } from './AssigneeSelect';
 import { ActionSelectionDialog } from '../dialogs/ActionSelectionDialog';
 import { CreateSubtaskDialog } from '../dialogs/CreateSubtaskDialog';
+import { TaskDetailsDialog } from '../dialogs/TaskDetailsDialog';
 import { priorityColors, statusColors, formatDate } from '@/lib/taskHelpers';
 import { useState } from 'react';
 
@@ -60,6 +61,8 @@ export const TaskFixedColumns = ({
   const [selectedParentTask, setSelectedParentTask] = useState<Task | null>(null);
   const [createSubtaskOpen, setCreateSubtaskOpen] = useState(false);
   const [selectedActionId, setSelectedActionId] = useState<string | undefined>();
+  const [taskDetailsOpen, setTaskDetailsOpen] = useState(false);
+  const [selectedTaskForDetails, setSelectedTaskForDetails] = useState<Task | null>(null);
 
   const handleCreateSubtask = (parentId: string) => {
     const parentTask = tasks.find(task => task.id === parentId);
@@ -91,6 +94,11 @@ export const TaskFixedColumns = ({
       setSelectedParentTask(null);
       setSelectedActionId(undefined);
     }
+  };
+
+  const handleRowDoubleClick = (task: Task) => {
+    setSelectedTaskForDetails(task);
+    setTaskDetailsOpen(true);
   };
 
   return (
@@ -128,6 +136,10 @@ export const TaskFixedColumns = ({
                 onClick={(e) => {
                   e.stopPropagation();
                   onSelectTask(task.id);
+                }}
+                onDoubleClick={(e) => {
+                  e.stopPropagation();
+                  handleRowDoubleClick(task);
                 }}
               >
                 <TableCell className={`font-medium ${isSubtask ? 'py-0 text-sm' : 'py-0'}`} style={{ height: isSubtask ? '51px' : '64px' }}>
@@ -251,5 +263,11 @@ export const TaskFixedColumns = ({
         linkedActionId={selectedActionId}
       />
     )}
+
+    <TaskDetailsDialog
+      open={taskDetailsOpen}
+      onOpenChange={setTaskDetailsOpen}
+      task={selectedTaskForDetails}
+    />
   </>);
 };

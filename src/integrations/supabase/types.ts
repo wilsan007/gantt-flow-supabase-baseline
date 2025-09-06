@@ -14,6 +14,36 @@ export type Database = {
   }
   public: {
     Tables: {
+      departments: {
+        Row: {
+          budget: number | null
+          created_at: string
+          description: string | null
+          id: string
+          manager_id: string | null
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          budget?: number | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          manager_id?: string | null
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          budget?: number | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          manager_id?: string | null
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -43,6 +73,59 @@ export type Database = {
           user_id?: string | null
         }
         Relationships: []
+      }
+      projects: {
+        Row: {
+          budget: number | null
+          created_at: string
+          department_id: string | null
+          description: string | null
+          end_date: string | null
+          id: string
+          manager_id: string | null
+          name: string
+          priority: string
+          start_date: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          budget?: number | null
+          created_at?: string
+          department_id?: string | null
+          description?: string | null
+          end_date?: string | null
+          id?: string
+          manager_id?: string | null
+          name: string
+          priority?: string
+          start_date?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          budget?: number | null
+          created_at?: string
+          department_id?: string | null
+          description?: string | null
+          end_date?: string | null
+          id?: string
+          manager_id?: string | null
+          name?: string
+          priority?: string
+          start_date?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "projects_department_id_fkey"
+            columns: ["department_id"]
+            isOneToOne: false
+            referencedRelation: "departments"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       task_actions: {
         Row: {
@@ -94,11 +177,136 @@ export type Database = {
           },
         ]
       }
+      task_comments: {
+        Row: {
+          author_id: string | null
+          comment_type: string | null
+          content: string
+          created_at: string
+          id: string
+          task_id: string
+          updated_at: string
+        }
+        Insert: {
+          author_id?: string | null
+          comment_type?: string | null
+          content: string
+          created_at?: string
+          id?: string
+          task_id: string
+          updated_at?: string
+        }
+        Update: {
+          author_id?: string | null
+          comment_type?: string | null
+          content?: string
+          created_at?: string
+          id?: string
+          task_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "task_comments_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      task_dependencies: {
+        Row: {
+          created_at: string
+          dependency_type: string
+          depends_on_task_id: string
+          id: string
+          task_id: string
+        }
+        Insert: {
+          created_at?: string
+          dependency_type?: string
+          depends_on_task_id: string
+          id?: string
+          task_id: string
+        }
+        Update: {
+          created_at?: string
+          dependency_type?: string
+          depends_on_task_id?: string
+          id?: string
+          task_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "task_dependencies_depends_on_task_id_fkey"
+            columns: ["depends_on_task_id"]
+            isOneToOne: false
+            referencedRelation: "tasks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "task_dependencies_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      task_risks: {
+        Row: {
+          created_at: string
+          id: string
+          impact: string
+          mitigation_plan: string | null
+          probability: string
+          risk_description: string
+          status: string
+          task_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          impact?: string
+          mitigation_plan?: string | null
+          probability?: string
+          risk_description: string
+          status?: string
+          task_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          impact?: string
+          mitigation_plan?: string | null
+          probability?: string
+          risk_description?: string
+          status?: string
+          task_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "task_risks_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       tasks: {
         Row: {
+          acceptance_criteria: string | null
           assignee: string
           assignee_id: string | null
+          budget: number | null
           created_at: string
+          department_id: string | null
+          description: string | null
           display_order: string | null
           due_date: string
           effort_estimate_h: number | null
@@ -116,9 +324,13 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          acceptance_criteria?: string | null
           assignee: string
           assignee_id?: string | null
+          budget?: number | null
           created_at?: string
+          department_id?: string | null
+          description?: string | null
           display_order?: string | null
           due_date: string
           effort_estimate_h?: number | null
@@ -136,9 +348,13 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          acceptance_criteria?: string | null
           assignee?: string
           assignee_id?: string | null
+          budget?: number | null
           created_at?: string
+          department_id?: string | null
+          description?: string | null
           display_order?: string | null
           due_date?: string
           effort_estimate_h?: number | null
@@ -161,6 +377,13 @@ export type Database = {
             columns: ["assignee_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tasks_department_id_fkey"
+            columns: ["department_id"]
+            isOneToOne: false
+            referencedRelation: "departments"
             referencedColumns: ["id"]
           },
           {

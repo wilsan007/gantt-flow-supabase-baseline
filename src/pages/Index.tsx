@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import GanttChart from "../components/GanttChart";
 import DynamicTable from "../components/DynamicTable";
+import KanbanBoard from "../components/KanbanBoard";
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState("gantt");
@@ -15,13 +16,18 @@ const Index = () => {
         </div>
         
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
+          <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="gantt">Diagramme de Gantt</TabsTrigger>
+            <TabsTrigger value="kanban">Kanban</TabsTrigger>
             <TabsTrigger value="table">Tableau Dynamique</TabsTrigger>
           </TabsList>
           
           <TabsContent value="gantt" className="mt-6">
             <GanttChart />
+          </TabsContent>
+          
+          <TabsContent value="kanban" className="mt-6">
+            <KanbanBoard />
           </TabsContent>
           
           <TabsContent value="table" className="mt-6">

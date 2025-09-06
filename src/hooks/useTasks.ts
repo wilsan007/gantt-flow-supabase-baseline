@@ -309,16 +309,46 @@ export const useTasks = () => {
     }
   };
 
+  // Update task status
+  const updateTaskStatus = async (taskId: string, status: Task['status']) => {
+    try {
+      const { error } = await supabase
+        .from('tasks')
+        .update({ status })
+        .eq('id', taskId);
+
+      if (error) throw error;
+
+      // Update local state
+      setTasks(prev => prev.map(task => 
+        task.id === taskId ? { ...task, status } : task
+      ));
+
+      toast({
+        title: "Statut mis à jour",
+        description: `Tâche déplacée vers ${status}`,
+      });
+    } catch (error: any) {
+      console.error('Error updating task status:', error);
+      toast({
+        variant: "destructive",
+        title: "Erreur",
+        description: "Impossible de mettre à jour le statut de la tâche",
+      });
+    }
+  };
+
   return {
     tasks,
     loading,
     error,
     addTask,
-    duplicateTask, 
+    duplicateTask,
     deleteTask,
     toggleAction,
     addActionColumn,
     updateTaskDates,
+    updateTaskStatus,
     refetch: fetchTasks,
   };
 };

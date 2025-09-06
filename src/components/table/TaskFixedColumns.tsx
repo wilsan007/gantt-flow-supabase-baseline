@@ -15,6 +15,7 @@ import { Task } from '@/hooks/useTasks';
 import { TaskRowActions } from './TaskRowActions';
 import { AssigneeSelect } from './AssigneeSelect';
 import { ActionSelectionDialog } from '../dialogs/ActionSelectionDialog';
+import { CreateSubtaskDialog } from '../dialogs/CreateSubtaskDialog';
 import { priorityColors, statusColors, formatDate } from '@/lib/taskHelpers';
 import { useState } from 'react';
 
@@ -22,7 +23,12 @@ interface TaskFixedColumnsProps {
   tasks: Task[];
   onDuplicate: (taskId: string) => void;
   onDelete: (taskId: string) => void;
-  onCreateSubtask: (parentId: string, linkedActionId?: string) => void;
+  onCreateSubtask: (parentId: string, linkedActionId?: string, customData?: {
+    title: string;
+    start_date: string;
+    due_date: string;
+    effort_estimate_h: number;
+  }) => void;
   onUpdateAssignee: (taskId: string, assignee: string) => void;
   selectedTaskId?: string;
   onSelectTask: (taskId: string) => void;
@@ -52,6 +58,8 @@ export const TaskFixedColumns = ({
 
   const [actionSelectionOpen, setActionSelectionOpen] = useState(false);
   const [selectedParentTask, setSelectedParentTask] = useState<Task | null>(null);
+  const [createSubtaskOpen, setCreateSubtaskOpen] = useState(false);
+  const [selectedActionId, setSelectedActionId] = useState<string | undefined>();
 
   const handleCreateSubtask = (parentId: string) => {
     const parentTask = tasks.find(task => task.id === parentId);
@@ -59,15 +67,29 @@ export const TaskFixedColumns = ({
       setSelectedParentTask(parentTask);
       setActionSelectionOpen(true);
     } else {
-      // Si pas d'actions, créer la sous-tâche sans liaison
-      onCreateSubtask(parentId);
+      // Si pas d'actions, ouvrir directement le dialog de création
+      setSelectedParentTask(parentTask || null);
+      setSelectedActionId(undefined);
+      setCreateSubtaskOpen(true);
     }
   };
 
   const handleActionSelection = (actionId: string) => {
+    setSelectedActionId(actionId);
+    setActionSelectionOpen(false);
+    setCreateSubtaskOpen(true);
+  };
+
+  const handleCreateSubtaskSubmit = (customData: {
+    title: string;
+    start_date: string;
+    due_date: string;
+    effort_estimate_h: number;
+  }) => {
     if (selectedParentTask) {
-      onCreateSubtask(selectedParentTask.id, actionId);
+      onCreateSubtask(selectedParentTask.id, selectedActionId, customData);
       setSelectedParentTask(null);
+      setSelectedActionId(undefined);
     }
   };
 
@@ -219,5 +241,15 @@ export const TaskFixedColumns = ({
       onSelectAction={handleActionSelection}
       taskTitle={selectedParentTask?.title || ''}
     />
+    
+    {selectedParentTask && (
+      <CreateSubtaskDialog
+        open={createSubtaskOpen}
+        onOpenChange={setCreateSubtaskOpen}
+        parentTask={selectedParentTask}
+        onCreateSubtask={handleCreateSubtaskSubmit}
+        linkedActionId={selectedActionId}
+      />
+    )}
   </>);
 };

@@ -159,7 +159,12 @@ export const useTaskActions = () => {
     }
   };
 
-  const createSubTask = async (parentTaskId: string, linkedActionId?: string, title?: string) => {
+  const createSubTask = async (parentTaskId: string, linkedActionId?: string, customData?: {
+    title: string;
+    start_date: string;
+    due_date: string;
+    effort_estimate_h: number;
+  }) => {
     try {
       const { data: parentTask, error: parentError } = await supabase
         .from('tasks')
@@ -181,13 +186,13 @@ export const useTaskActions = () => {
       const { data: newSubtask, error: subtaskError } = await supabase
         .from('tasks')
         .insert([{
-          title: title || `Sous-tâche de ${parentTask.title}`,
+          title: customData?.title || `Sous-tâche de ${parentTask.title}`,
           assignee: parentTask.assignee,
-          start_date: parentTask.start_date,
-          due_date: parentTask.due_date,
+          start_date: customData?.start_date || parentTask.start_date,
+          due_date: customData?.due_date || parentTask.due_date,
           priority: parentTask.priority,
           status: 'todo',
-          effort_estimate_h: 1,
+          effort_estimate_h: customData?.effort_estimate_h || 1,
           parent_id: parentTaskId,
           task_level: newLevel,
           display_order: displayOrderResult || `${parentTask.display_order}.1`,

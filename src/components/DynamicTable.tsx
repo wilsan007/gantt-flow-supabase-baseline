@@ -51,9 +51,14 @@ const DynamicTable = () => {
     await refetch();
   };
 
-  const handleCreateSubtask = async (parentId: string, linkedActionId?: string) => {
+  const handleCreateSubtask = async (parentId: string, linkedActionId?: string, customData?: {
+    title: string;
+    start_date: string;
+    due_date: string;
+    effort_estimate_h: number;
+  }) => {
     try {
-      await createSubTask(parentId, linkedActionId);
+      await createSubTask(parentId, linkedActionId, customData);
       await refetch();
     } catch (error) {
       console.error('Error creating subtask:', error);

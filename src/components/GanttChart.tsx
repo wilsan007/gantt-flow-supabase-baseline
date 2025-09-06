@@ -116,93 +116,90 @@ const GanttChart = () => {
     if (!dragStart || !chartRef.current) return;
     
     const deltaX = e.clientX - dragStart.x;
-    const daysDelta = Math.round(deltaX / (config.unitWidth / config.unitDuration));
+    // Calcul correct: pixels par jour
+    const pixelsPerDay = config.unitWidth / config.unitDuration;
+    const daysDelta = deltaX / pixelsPerDay;
     const timeDelta = daysDelta * 24 * 60 * 60 * 1000;
     
     if (draggedTask) {
       // Déplacement de la tâche entière
-      const originalTask = tasks.find(t => t.id === draggedTask);
-      if (originalTask) {
-        const newStartDate = new Date(dragStart.originalStartDate.getTime() + timeDelta);
-        const newEndDate = new Date(dragStart.originalEndDate.getTime() + timeDelta);
-        
-        // Mise à jour visuelle immédiate via le DOM pour un feedback fluide
-        const taskElement = document.querySelector(`[data-task-id="${draggedTask}"]`);
-        if (taskElement) {
-          const left = getUnitPosition(newStartDate);
-          (taskElement as HTMLElement).style.left = `${left}px`;
-        }
+      const newStartDate = new Date(dragStart.originalStartDate.getTime() + timeDelta);
+      const newEndDate = new Date(dragStart.originalEndDate.getTime() + timeDelta);
+      
+      // Mise à jour visuelle immédiate
+      const taskElement = document.querySelector(`[data-task-id="${draggedTask}"]`) as HTMLElement;
+      if (taskElement) {
+        const left = getUnitPosition(newStartDate);
+        taskElement.style.left = `${left}px`;
       }
     } else if (resizeTask) {
       // Redimensionnement de la tâche
-      const originalTask = tasks.find(t => t.id === resizeTask.taskId);
-      if (originalTask) {
-        let newStartDate = dragStart.originalStartDate;
-        let newEndDate = dragStart.originalEndDate;
-        
-        if (resizeTask.side === 'left') {
-          newStartDate = new Date(dragStart.originalStartDate.getTime() + timeDelta);
-          // Assurer que la date de début n'est pas après la date de fin
-          if (newStartDate >= newEndDate) {
-            newStartDate = new Date(newEndDate.getTime() - 24 * 60 * 60 * 1000);
-          }
-        } else {
-          newEndDate = new Date(dragStart.originalEndDate.getTime() + timeDelta);
-          // Assurer que la date de fin n'est pas avant la date de début
-          if (newEndDate <= newStartDate) {
-            newEndDate = new Date(newStartDate.getTime() + 24 * 60 * 60 * 1000);
-          }
+      let newStartDate = new Date(dragStart.originalStartDate);
+      let newEndDate = new Date(dragStart.originalEndDate);
+      
+      if (resizeTask.side === 'left') {
+        // Redimensionner depuis la gauche (modifier la date de début)
+        newStartDate = new Date(dragStart.originalStartDate.getTime() + timeDelta);
+        // Minimum 1 jour de durée
+        if (newStartDate >= newEndDate) {
+          newStartDate = new Date(newEndDate.getTime() - 24 * 60 * 60 * 1000);
         }
-        
-        // Mise à jour visuelle immédiate
-        const taskElement = document.querySelector(`[data-task-id="${resizeTask.taskId}"]`);
-        if (taskElement) {
-          const left = getUnitPosition(newStartDate);
-          const width = getTaskWidth({ startDate: newStartDate, endDate: newEndDate });
-          (taskElement as HTMLElement).style.left = `${left}px`;
-          (taskElement as HTMLElement).style.width = `${width}px`;
+      } else {
+        // Redimensionner depuis la droite (modifier la date de fin)  
+        newEndDate = new Date(dragStart.originalEndDate.getTime() + timeDelta);
+        // Minimum 1 jour de durée
+        if (newEndDate <= newStartDate) {
+          newEndDate = new Date(newStartDate.getTime() + 24 * 60 * 60 * 1000);
         }
       }
+      
+      // Mise à jour visuelle immédiate
+      const taskElement = document.querySelector(`[data-task-id="${resizeTask.taskId}"]`) as HTMLElement;
+      if (taskElement) {
+        const left = getUnitPosition(newStartDate);
+        const width = getTaskWidth({ startDate: newStartDate, endDate: newEndDate });
+        taskElement.style.left = `${left}px`;
+        taskElement.style.width = `${width}px`;
+      }
     }
-  }, [dragStart, draggedTask, resizeTask, config, tasks, getUnitPosition, getTaskWidth]);
+  }, [dragStart, draggedTask, resizeTask, config, getUnitPosition, getTaskWidth]);
 
-  const handleMouseUp = useCallback(async () => {
+  const handleMouseUp = useCallback(async (e: MouseEvent) => {
     if (!dragStart) return;
     
     try {
-      const deltaX = document.querySelector('.gantt-chart')?.scrollLeft || 0;
-      const daysDelta = Math.round((dragStart.x + deltaX) / (config.unitWidth / config.unitDuration));
+      const deltaX = e.clientX - dragStart.x;
+      const pixelsPerDay = config.unitWidth / config.unitDuration;
+      const daysDelta = deltaX / pixelsPerDay;
       const timeDelta = daysDelta * 24 * 60 * 60 * 1000;
       
       if (draggedTask) {
-        const originalTask = tasks.find(t => t.id === draggedTask);
-        if (originalTask && updateTaskDates) {
-          const newStartDate = new Date(dragStart.originalStartDate.getTime() + timeDelta);
-          const newEndDate = new Date(dragStart.originalEndDate.getTime() + timeDelta);
-          
+        const newStartDate = new Date(dragStart.originalStartDate.getTime() + timeDelta);
+        const newEndDate = new Date(dragStart.originalEndDate.getTime() + timeDelta);
+        
+        if (updateTaskDates) {
           await updateTaskDates(draggedTask, 
             newStartDate.toISOString().split('T')[0], 
             newEndDate.toISOString().split('T')[0]
           );
         }
       } else if (resizeTask) {
-        const originalTask = tasks.find(t => t.id === resizeTask.taskId);
-        if (originalTask && updateTaskDates) {
-          let newStartDate = dragStart.originalStartDate;
-          let newEndDate = dragStart.originalEndDate;
-          
-          if (resizeTask.side === 'left') {
-            newStartDate = new Date(dragStart.originalStartDate.getTime() + timeDelta);
-            if (newStartDate >= newEndDate) {
-              newStartDate = new Date(newEndDate.getTime() - 24 * 60 * 60 * 1000);
-            }
-          } else {
-            newEndDate = new Date(dragStart.originalEndDate.getTime() + timeDelta);
-            if (newEndDate <= newStartDate) {
-              newEndDate = new Date(newStartDate.getTime() + 24 * 60 * 60 * 1000);
-            }
+        let newStartDate = new Date(dragStart.originalStartDate);
+        let newEndDate = new Date(dragStart.originalEndDate);
+        
+        if (resizeTask.side === 'left') {
+          newStartDate = new Date(dragStart.originalStartDate.getTime() + timeDelta);
+          if (newStartDate >= newEndDate) {
+            newStartDate = new Date(newEndDate.getTime() - 24 * 60 * 60 * 1000);
           }
-          
+        } else {
+          newEndDate = new Date(dragStart.originalEndDate.getTime() + timeDelta);
+          if (newEndDate <= newStartDate) {
+            newEndDate = new Date(newStartDate.getTime() + 24 * 60 * 60 * 1000);
+          }
+        }
+        
+        if (updateTaskDates) {
           await updateTaskDates(resizeTask.taskId,
             newStartDate.toISOString().split('T')[0],
             newEndDate.toISOString().split('T')[0]
@@ -216,7 +213,7 @@ const GanttChart = () => {
       setResizeTask(null);
       setDragStart(null);
     }
-  }, [dragStart, draggedTask, resizeTask, config, tasks, updateTaskDates]);
+  }, [dragStart, draggedTask, resizeTask, config, updateTaskDates]);
 
   React.useEffect(() => {
     if (draggedTask || resizeTask) {

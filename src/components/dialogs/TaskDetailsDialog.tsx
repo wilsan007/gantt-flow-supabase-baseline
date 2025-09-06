@@ -23,10 +23,12 @@ import {
   Target,
   Euro,
   TrendingUp,
-  Link
+  Link,
+  History
 } from 'lucide-react';
 import { Task } from '@/hooks/useTasks';
 import { useTaskDetails } from '@/hooks/useTaskDetails';
+import { useTaskAuditLogs } from '@/hooks/useTaskAuditLogs';
 import { priorityColors, statusColors, formatDate } from '@/lib/taskHelpers';
 
 interface TaskDetailsDialogProps {
@@ -48,6 +50,8 @@ export const TaskDetailsDialog = ({ open, onOpenChange, task }: TaskDetailsDialo
     totalEffort,
     participants
   } = useTaskDetails(task?.id);
+
+  const { auditLogs, loading: auditLoading } = useTaskAuditLogs(task?.id);
 
   if (!task) return null;
 
@@ -369,6 +373,56 @@ export const TaskDetailsDialog = ({ open, onOpenChange, task }: TaskDetailsDialo
                 </CardContent>
               </Card>
             )}
+
+            {/* Historique des modifications */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <History className="h-5 w-5" />
+                  Historique des modifications
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {auditLoading ? (
+                  <p className="text-sm text-muted-foreground">Chargement de l'historique...</p>
+                ) : auditLogs.length === 0 ? (
+                  <p className="text-sm text-muted-foreground">Aucune modification enregistrée.</p>
+                ) : (
+                  <ScrollArea className="h-60">
+                    <div className="space-y-3">
+                      {auditLogs.map((log, index) => (
+                        <div key={log.id}>
+                          <div className="flex items-start gap-3">
+                            <div className="flex-shrink-0 w-2 h-2 rounded-full bg-primary mt-2" />
+                            <div className="flex-1 space-y-1">
+                              <p className="text-sm">{log.description}</p>
+                              <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                                {log.user_name && (
+                                  <span>par {log.user_name}</span>
+                                )}
+                                <span>•</span>
+                                <span>
+                                  {new Date(log.created_at).toLocaleDateString('fr-FR', {
+                                    day: '2-digit',
+                                    month: '2-digit',
+                                    year: 'numeric',
+                                    hour: '2-digit',
+                                    minute: '2-digit'
+                                  })}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                          {index < auditLogs.length - 1 && (
+                            <Separator className="ml-4 mt-3" />
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </ScrollArea>
+                )}
+              </CardContent>
+            </Card>
           </div>
         </ScrollArea>
       </DialogContent>

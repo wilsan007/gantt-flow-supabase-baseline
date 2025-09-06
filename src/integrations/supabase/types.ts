@@ -219,6 +219,54 @@ export type Database = {
           },
         ]
       }
+      task_audit_logs: {
+        Row: {
+          action_type: string
+          created_at: string
+          description: string
+          field_name: string | null
+          id: string
+          new_value: string | null
+          old_value: string | null
+          related_entity_id: string | null
+          related_entity_type: string | null
+          task_id: string
+          tenant_id: string | null
+          user_id: string | null
+          user_name: string | null
+        }
+        Insert: {
+          action_type: string
+          created_at?: string
+          description: string
+          field_name?: string | null
+          id?: string
+          new_value?: string | null
+          old_value?: string | null
+          related_entity_id?: string | null
+          related_entity_type?: string | null
+          task_id: string
+          tenant_id?: string | null
+          user_id?: string | null
+          user_name?: string | null
+        }
+        Update: {
+          action_type?: string
+          created_at?: string
+          description?: string
+          field_name?: string | null
+          id?: string
+          new_value?: string | null
+          old_value?: string | null
+          related_entity_id?: string | null
+          related_entity_type?: string | null
+          task_id?: string
+          tenant_id?: string | null
+          user_id?: string | null
+          user_name?: string | null
+        }
+        Relationships: []
+      }
       task_comments: {
         Row: {
           author_id: string | null

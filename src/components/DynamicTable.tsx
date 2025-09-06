@@ -263,7 +263,10 @@ const DynamicTable = () => {
                             {action ? (
                               <Checkbox
                                 checked={action.is_done}
-                                onCheckedChange={() => handleToggleAction(task.id, action.id)}
+                                onCheckedChange={(checked) => {
+                                  console.log('Checkbox clicked:', { taskId: task.id, actionId: action.id, newValue: checked });
+                                  handleToggleAction(task.id, action.id);
+                                }}
                               />
                             ) : (
                               <span className="text-muted-foreground">-</span>

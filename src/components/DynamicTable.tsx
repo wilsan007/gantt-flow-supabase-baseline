@@ -7,6 +7,8 @@ import { TaskFixedColumns } from './table/TaskFixedColumns';
 import { TaskActionColumns } from './table/TaskActionColumns';
 import { LoadingState } from './table/LoadingState';
 import { ErrorState } from './table/ErrorState';
+import { DocumentsColumn } from './table/DocumentsColumn';
+import { CommentsColumn } from './table/CommentsColumn';
 
 const DynamicTable = () => {
   const { 
@@ -99,7 +101,7 @@ const DynamicTable = () => {
         />
       <CardContent>
         <ResizablePanelGroup direction="horizontal" className="border rounded-lg">
-          <ResizablePanel defaultSize={60} minSize={40}>
+          <ResizablePanel defaultSize={45} minSize={35}>
             <TaskFixedColumns 
               tasks={tasks}
               onDuplicate={handleDuplicateTask}
@@ -113,11 +115,35 @@ const DynamicTable = () => {
 
           <ResizableHandle withHandle />
 
-          <ResizablePanel defaultSize={40} minSize={30}>
+          <ResizablePanel defaultSize={30} minSize={25}>
             <TaskActionColumns 
               tasks={tasks}
               onToggleAction={handleToggleAction}
             />
+          </ResizablePanel>
+
+          <ResizableHandle withHandle />
+
+          <ResizablePanel defaultSize={25} minSize={20}>
+            <div className="flex h-full">
+              <div className="flex-1">
+                {selectedTaskId && (
+                  <div className="h-full flex">
+                    <DocumentsColumn 
+                      task={tasks.find(t => t.id === selectedTaskId)!} 
+                    />
+                    <CommentsColumn 
+                      task={tasks.find(t => t.id === selectedTaskId)!} 
+                    />
+                  </div>
+                )}
+                {!selectedTaskId && (
+                  <div className="h-full flex items-center justify-center text-muted-foreground text-sm">
+                    Sélectionnez une tâche pour voir les documents et commentaires
+                  </div>
+                )}
+              </div>
+            </div>
           </ResizablePanel>
         </ResizablePanelGroup>
       </CardContent>

@@ -31,6 +31,7 @@ export interface Task {
   task_level: number;
   display_order: string;
   linked_action_id?: string;
+  project_id?: string;
 }
 
 export const useTasks = () => {

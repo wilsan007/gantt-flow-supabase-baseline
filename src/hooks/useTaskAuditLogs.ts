@@ -22,44 +22,41 @@ export const useTaskAuditLogs = (taskId?: string) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
+  const fetchAuditLogs = async () => {
     if (!taskId) {
       setAuditLogs([]);
       return;
     }
 
-    const fetchAuditLogs = async () => {
-      setLoading(true);
-      setError(null);
+    setLoading(true);
+    setError(null);
 
-      try {
-        const { data, error: auditError } = await supabase
-          .from('task_audit_logs')
-          .select('*')
-          .eq('task_id', taskId)
-          .order('created_at', { ascending: false });
+    try {
+      const { data, error } = await supabase
+        .from('task_audit_logs')
+        .select('*')
+        .eq('task_id', taskId)
+        .order('created_at', { ascending: false });
 
-        if (auditError) {
-          console.error('Error fetching audit logs:', auditError);
-          setError('Erreur lors du chargement de l\'historique');
-          return;
-        }
+      if (error) throw error;
 
-        setAuditLogs(data || []);
-      } catch (err) {
-        console.error('Error fetching audit logs:', err);
-        setError('Erreur lors du chargement de l\'historique');
-      } finally {
-        setLoading(false);
-      }
-    };
+      setAuditLogs(data || []);
+    } catch (err) {
+      console.error('Error fetching audit logs:', err);
+      setError(err instanceof Error ? err.message : 'Une erreur est survenue');
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchAuditLogs();
   }, [taskId]);
 
   return {
     auditLogs,
     loading,
-    error
+    error,
+    refetch: fetchAuditLogs
   };
 };

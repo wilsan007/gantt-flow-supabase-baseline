@@ -280,15 +280,40 @@ export const useTasks = () => {
     };
   }, []);
 
+  const updateTaskDates = async (taskId: string, startDate: string, dueDate: string) => {
+    try {
+      const { error } = await supabase
+        .from('tasks')
+        .update({ 
+          start_date: startDate, 
+          due_date: dueDate,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', taskId);
+
+      if (error) throw error;
+
+      await fetchTasks();
+    } catch (err) {
+      console.error('Error updating task dates:', err);
+      toast({
+        title: "Error",
+        description: "Failed to update task dates",
+        variant: "destructive",
+      });
+    }
+  };
+
   return {
     tasks,
     loading,
     error,
     addTask,
-    duplicateTask,
+    duplicateTask, 
     deleteTask,
     toggleAction,
     addActionColumn,
+    updateTaskDates,
     refetch: fetchTasks,
   };
 };

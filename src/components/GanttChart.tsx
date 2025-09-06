@@ -1,69 +1,51 @@
 import React, { useState, useRef, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Calendar, CalendarDays, Clock } from 'lucide-react';
-
-interface Task {
-  id: string;
-  name: string;
-  startDate: Date;
-  endDate: Date;
-  progress: number;
-  color: string;
-}
+import { Calendar, CalendarDays, Clock, Loader2 } from 'lucide-react';
+import { useTasks, Task } from '@/hooks/useTasks';
 
 type ViewMode = 'day' | 'week' | 'month';
 
+// Couleurs par priorité pour le Gantt
+const priorityColors = {
+  low: 'success',
+  medium: 'warning', 
+  high: 'destructive',
+  urgent: 'tech-red'
+};
+
+// Couleurs par statut pour le Gantt  
+const statusColors = {
+  todo: 'muted',
+  doing: 'tech-blue',
+  blocked: 'destructive', 
+  done: 'success'
+};
+
 const GanttChart = () => {
   const [viewMode, setViewMode] = useState<ViewMode>('week');
-  const [tasks, setTasks] = useState<Task[]>([
-    {
-      id: '1',
-      name: 'Design UI/UX',
-      startDate: new Date(2024, 0, 1),
-      endDate: new Date(2024, 0, 15),
-      progress: 80,
-      color: 'tech-blue'
-    },
-    {
-      id: '2',
-      name: 'Développement Frontend',
-      startDate: new Date(2024, 0, 10),
-      endDate: new Date(2024, 1, 5),
-      progress: 45,
-      color: 'tech-purple'
-    },
-    {
-      id: '3',
-      name: 'Backend API',
-      startDate: new Date(2024, 0, 20),
-      endDate: new Date(2024, 1, 10),
-      progress: 30,
-      color: 'tech-cyan'
-    },
-    {
-      id: '4',
-      name: 'Tests & Déploiement',
-      startDate: new Date(2024, 1, 5),
-      endDate: new Date(2024, 1, 20),
-      progress: 10,
-      color: 'warning'
-    },
-    {
-      id: '5',
-      name: 'Documentation',
-      startDate: new Date(2024, 1, 15),
-      endDate: new Date(2024, 2, 1),
-      progress: 0,
-      color: 'success'
-    }
-  ]);
-
+  const { tasks, loading, error, updateTaskDates } = useTasks();
+  
   const [draggedTask, setDraggedTask] = useState<string | null>(null);
   const [resizeTask, setResizeTask] = useState<{ taskId: string; side: 'left' | 'right' } | null>(null);
   const [dragStart, setDragStart] = useState<{ x: number; originalStartDate: Date; originalEndDate: Date } | null>(null);
 
   const chartRef = useRef<HTMLDivElement>(null);
+
+  // Fonction pour convertir une tâche DB en format Gantt
+  const getGanttTask = (task: Task) => ({
+    id: task.id,
+    name: task.title,
+    startDate: new Date(task.start_date),
+    endDate: new Date(task.due_date),
+    progress: task.progress,
+    color: statusColors[task.status], // Utilise la couleur basée sur le statut
+    assignee: task.assignee,
+    priority: task.priority,
+    status: task.status
+  });
+
+  const ganttTasks = tasks.map(getGanttTask);
 
   // Configuration dynamique selon la vue
   const getViewConfig = () => {
@@ -121,14 +103,39 @@ const GanttChart = () => {
     return new Date(startDate.getTime() + days * 24 * 60 * 60 * 1000);
   };
 
-  const getTaskWidth = (task: Task) => {
+  const getTaskWidth = (task: any) => {
     const duration = Math.ceil((task.endDate.getTime() - task.startDate.getTime()) / (1000 * 60 * 60 * 24));
     return (duration / config.unitDuration) * config.unitWidth;
   };
 
+  // Loading et error states
+  if (loading) {
+    return (
+      <Card className="w-full bg-card border-border">
+        <CardContent className="flex items-center justify-center p-8">
+          <Loader2 className="h-8 w-8 animate-spin" />
+          <span className="ml-2">Chargement du diagramme de Gantt...</span>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (error) {
+    return (
+      <Card className="w-full bg-card border-border">
+        <CardContent className="p-8">
+          <div className="text-center text-destructive">
+            <p>Erreur lors du chargement du diagramme</p>
+            <p className="text-sm text-muted-foreground mt-2">{error}</p>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
   const handleMouseDown = useCallback((e: React.MouseEvent, taskId: string, action: 'drag' | 'resize-left' | 'resize-right') => {
     e.preventDefault();
-    const task = tasks.find(t => t.id === taskId);
+    const task = ganttTasks.find(t => t.id === taskId);
     if (!task) return;
 
     setDragStart({
@@ -142,7 +149,7 @@ const GanttChart = () => {
     } else if (action === 'resize-left' || action === 'resize-right') {
       setResizeTask({ taskId, side: action === 'resize-left' ? 'left' : 'right' });
     }
-  }, [tasks]);
+  }, [ganttTasks]);
 
   const handleMouseMove = useCallback((e: MouseEvent) => {
     if (!dragStart) return;
@@ -150,45 +157,63 @@ const GanttChart = () => {
     const deltaX = e.clientX - dragStart.x;
     const deltaDays = Math.round(deltaX / config.unitWidth);
 
-    if (draggedTask) {
-      // Déplacement de la tâche
-      setTasks(prev => prev.map(task => {
-        if (task.id === draggedTask) {
+    // Pour l'aperçu visuel, on peut manipuler directement les tâches Gantt
+    // mais on ne sauvegarde qu'au mouseUp
+  }, [dragStart, config]);
+
+  const handleMouseUp = useCallback(async () => {
+    if (!dragStart) return;
+    
+    try {
+      const deltaX = document.body.getBoundingClientRect().width; // Récupère la position finale
+      const deltaDays = Math.round(deltaX / config.unitWidth);
+
+      if (draggedTask) {
+        // Calcul des nouvelles dates
+        const task = ganttTasks.find(t => t.id === draggedTask);
+        if (task) {
           const duration = task.endDate.getTime() - task.startDate.getTime();
           const deltaTime = deltaDays * config.unitDuration * 24 * 60 * 60 * 1000;
           const newStartDate = new Date(dragStart.originalStartDate.getTime() + deltaTime);
           const newEndDate = new Date(newStartDate.getTime() + duration);
-          return { ...task, startDate: newStartDate, endDate: newEndDate };
+          
+          await updateTaskDates(
+            draggedTask, 
+            newStartDate.toISOString().split('T')[0],
+            newEndDate.toISOString().split('T')[0]
+          );
         }
-        return task;
-      }));
-    } else if (resizeTask) {
-      // Redimensionnement de la tâche
-      setTasks(prev => prev.map(task => {
-        if (task.id === resizeTask.taskId) {
+      } else if (resizeTask) {
+        // Calcul du redimensionnement
+        const task = ganttTasks.find(t => t.id === resizeTask.taskId);
+        if (task) {
           const deltaTime = deltaDays * config.unitDuration * 24 * 60 * 60 * 1000;
+          let newStartDate = task.startDate;
+          let newEndDate = task.endDate;
+          
           if (resizeTask.side === 'left') {
-            const newStartDate = new Date(dragStart.originalStartDate.getTime() + deltaTime);
-            if (newStartDate < task.endDate) {
-              return { ...task, startDate: newStartDate };
-            }
+            newStartDate = new Date(dragStart.originalStartDate.getTime() + deltaTime);
+            if (newStartDate >= task.endDate) return; // Évite les durées négatives
           } else {
-            const newEndDate = new Date(dragStart.originalEndDate.getTime() + deltaTime);
-            if (newEndDate > task.startDate) {
-              return { ...task, endDate: newEndDate };
-            }
+            newEndDate = new Date(dragStart.originalEndDate.getTime() + deltaTime);
+            if (newEndDate <= task.startDate) return; // Évite les durées négatives
           }
+          
+          await updateTaskDates(
+            resizeTask.taskId,
+            newStartDate.toISOString().split('T')[0],
+            newEndDate.toISOString().split('T')[0]
+          );
         }
-        return task;
-      }));
+      }
+    } catch (error) {
+      console.error('Error updating task:', error);
+    } finally {
+      setDraggedTask(null);
+      setResizeTask(null);
+      setDragStart(null);
     }
-  }, [dragStart, draggedTask, resizeTask, config]);
-
-  const handleMouseUp = useCallback(() => {
-    setDraggedTask(null);
-    setResizeTask(null);
-    setDragStart(null);
-  }, []);
+  }, [dragStart, draggedTask, resizeTask, ganttTasks, config, updateTaskDates]);
 
   React.useEffect(() => {
     if (draggedTask || resizeTask) {
@@ -225,7 +250,7 @@ const GanttChart = () => {
     return units;
   };
 
-  const renderTaskBar = (task: Task, index: number) => {
+  const renderTaskBar = (task: any, index: number) => {
     const left = getUnitPosition(task.startDate);
     const width = getTaskWidth(task);
     const isDragging = draggedTask === task.id;
@@ -345,7 +370,7 @@ const GanttChart = () => {
             <div className="h-20 flex items-center px-4 border-b border-gantt-grid">
               <span className="font-medium text-foreground">Tâches</span>
             </div>
-            {tasks.map((task, index) => (
+            {ganttTasks.map((task, index) => (
               <div
                 key={task.id}
                 className="flex items-center px-4 border-b border-gantt-grid hover:bg-gantt-hover transition-colors"
@@ -354,7 +379,7 @@ const GanttChart = () => {
                 <div>
                   <div className="font-medium text-foreground">{task.name}</div>
                   <div className="text-sm text-muted-foreground">
-                    {task.progress}% complété
+                    {task.progress}% complété - {task.assignee}
                   </div>
                 </div>
               </div>
@@ -370,9 +395,9 @@ const GanttChart = () => {
               </div>
 
               {/* Grille de fond */}
-              <div className="relative" style={{ height: tasks.length * rowHeight }}>
+              <div className="relative" style={{ height: ganttTasks.length * rowHeight }}>
                 {/* Lignes horizontales */}
-                {tasks.map((_, index) => (
+                {ganttTasks.map((_, index) => (
                   <div
                     key={index}
                     className="absolute w-full border-b border-gantt-grid"
@@ -390,7 +415,7 @@ const GanttChart = () => {
                 ))}
 
                 {/* Barres de tâches */}
-                {tasks.map((task, index) => renderTaskBar(task, index))}
+                {ganttTasks.map((task, index) => renderTaskBar(task, index))}
               </div>
             </div>
           </div>

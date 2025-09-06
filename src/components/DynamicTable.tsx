@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -25,7 +25,8 @@ import {
   Calendar,
   User,
   Clock,
-  Target
+  Target,
+  Loader2
 } from 'lucide-react';
 import { 
   DropdownMenu,
@@ -33,28 +34,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { useTasks } from '@/hooks/useTasks';
 
-interface TaskAction {
-  id: string;
-  title: string;
-  isDone: boolean;
-  owner?: string;
-  dueDate?: Date;
-  notes?: string;
-}
-
-interface DynamicTask {
-  id: string;
-  title: string;
-  assignee: string;
-  startDate: Date;
-  dueDate: Date;
-  priority: 'low' | 'medium' | 'high' | 'urgent';
-  status: 'todo' | 'doing' | 'blocked' | 'done';
-  effortHours: number;
-  progress: number;
-  actions: TaskAction[];
-}
 
 const priorityColors = {
   low: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300',
@@ -71,126 +52,74 @@ const statusColors = {
 };
 
 const DynamicTable = () => {
-  const [tasks, setTasks] = useState<DynamicTask[]>([
-    {
-      id: '1',
-      title: 'Design UI/UX',
-      assignee: 'Marie Dupont',
-      startDate: new Date(2024, 0, 1),
-      dueDate: new Date(2024, 0, 15),
-      priority: 'high',
-      status: 'doing',
-      effortHours: 40,
-      progress: 60,
-      actions: [
-        { id: 'a1', title: 'Wireframes', isDone: true },
-        { id: 'a2', title: 'Maquettes', isDone: true },
-        { id: 'a3', title: 'Prototype', isDone: false },
-        { id: 'a4', title: 'Tests utilisateurs', isDone: false },
-        { id: 'a5', title: 'Validation finale', isDone: false }
-      ]
-    },
-    {
-      id: '2',
-      title: 'Développement Frontend',
-      assignee: 'Jean Martin',
-      startDate: new Date(2024, 0, 10),
-      dueDate: new Date(2024, 1, 5),
-      priority: 'medium',
-      status: 'todo',
-      effortHours: 80,
-      progress: 0,
-      actions: [
-        { id: 'b1', title: 'Setup projet', isDone: false },
-        { id: 'b2', title: 'Composants UI', isDone: false },
-        { id: 'b3', title: 'Pages principales', isDone: false },
-        { id: 'b4', title: 'Intégration API', isDone: false }
-      ]
-    }
-  ]);
-
-  const [actionColumns, setActionColumns] = useState<string[]>([
-    'Wireframes', 'Maquettes', 'Prototype', 'Tests utilisateurs', 'Validation finale', 'Setup projet', 'Composants UI', 'Pages principales', 'Intégration API'
-  ]);
-
+  const { 
+    tasks, 
+    loading, 
+    error, 
+    duplicateTask, 
+    deleteTask, 
+    toggleAction, 
+    addActionColumn 
+  } = useTasks();
+  
   const [newActionTitle, setNewActionTitle] = useState('');
 
-  const calculateProgress = (actions: TaskAction[]) => {
-    if (actions.length === 0) return 0;
-    const completedActions = actions.filter(action => action.isDone).length;
-    return Math.round((completedActions / actions.length) * 100);
-  };
-
-  const getTaskStatus = (task: DynamicTask) => {
-    const progress = calculateProgress(task.actions);
-    if (progress === 100) return 'done';
-    if (progress > 0) return 'doing';
-    return 'todo';
-  };
-
-  const toggleAction = (taskId: string, actionId: string) => {
-    setTasks(prevTasks => 
-      prevTasks.map(task => {
-        if (task.id === taskId) {
-          const updatedActions = task.actions.map(action =>
-            action.id === actionId ? { ...action, isDone: !action.isDone } : action
-          );
-          const newProgress = calculateProgress(updatedActions);
-          return {
-            ...task,
-            actions: updatedActions,
-            progress: newProgress,
-            status: getTaskStatus({ ...task, actions: updatedActions })
-          };
-        }
-        return task;
-      })
-    );
-  };
-
-  const addActionColumn = () => {
+  const handleAddActionColumn = async () => {
     if (newActionTitle.trim()) {
-      setActionColumns(prev => [...prev, newActionTitle.trim()]);
+      await addActionColumn(newActionTitle.trim());
       setNewActionTitle('');
     }
   };
 
-  const duplicateTask = (taskId: string) => {
-    const taskToDuplicate = tasks.find(task => task.id === taskId);
-    if (taskToDuplicate) {
-      const newTask: DynamicTask = {
-        ...taskToDuplicate,
-        id: `${taskToDuplicate.id}_copy_${Date.now()}`,
-        title: `${taskToDuplicate.title} (Copie)`,
-        actions: taskToDuplicate.actions.map(action => ({
-          ...action,
-          id: `${action.id}_copy_${Date.now()}`,
-          isDone: false
-        })),
-        progress: 0,
-        status: 'todo'
-      };
-      setTasks(prev => [...prev, newTask]);
-    }
+  const handleToggleAction = (taskId: string, actionId: string) => {
+    toggleAction(taskId, actionId);
   };
 
-  const deleteTask = (taskId: string) => {
-    setTasks(prev => prev.filter(task => task.id !== taskId));
+  const handleDuplicateTask = (taskId: string) => {
+    duplicateTask(taskId);
   };
 
-  const formatDate = (date: Date) => {
-    return date.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' });
+  const handleDeleteTask = (taskId: string) => {
+    deleteTask(taskId);
+  };
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' });
   };
 
   const getUniqueActions = () => {
     const allActions = new Set<string>();
     tasks.forEach(task => {
-      task.actions.forEach(action => {
+      task.task_actions?.forEach(action => {
         allActions.add(action.title);
       });
     });
     return Array.from(allActions);
   };
+
+  if (loading) {
+    return (
+      <Card className="w-full">
+        <CardContent className="flex items-center justify-center p-8">
+          <Loader2 className="h-8 w-8 animate-spin" />
+          <span className="ml-2">Chargement des tâches...</span>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (error) {
+    return (
+      <Card className="w-full">
+        <CardContent className="p-8">
+          <div className="text-center text-destructive">
+            <p>Erreur lors du chargement des tâches</p>
+            <p className="text-sm text-muted-foreground mt-2">{error}</p>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card className="w-full">
@@ -205,10 +134,10 @@ const DynamicTable = () => {
               placeholder="Nouvelle action..." 
               value={newActionTitle}
               onChange={(e) => setNewActionTitle(e.target.value)}
-              onKeyPress={(e) => e.key === 'Enter' && addActionColumn()}
+              onKeyPress={(e) => e.key === 'Enter' && handleAddActionColumn()}
               className="w-40"
             />
-            <Button onClick={addActionColumn} size="sm">
+            <Button onClick={handleAddActionColumn} size="sm">
               <Plus className="h-4 w-4" />
             </Button>
           </div>
@@ -244,13 +173,13 @@ const DynamicTable = () => {
                       <TableCell>
                         <div className="flex items-center gap-1">
                           <Calendar className="h-4 w-4" />
-                          {formatDate(task.startDate)}
+                          {formatDate(task.start_date)}
                         </div>
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-1">
                           <Calendar className="h-4 w-4" />
-                          {formatDate(task.dueDate)}
+                          {formatDate(task.due_date)}
                         </div>
                       </TableCell>
                       <TableCell>
@@ -266,7 +195,7 @@ const DynamicTable = () => {
                       <TableCell>
                         <div className="flex items-center gap-1">
                           <Clock className="h-4 w-4" />
-                          {task.effortHours}h
+                          {task.effort_estimate_h}h
                         </div>
                       </TableCell>
                       <TableCell>
@@ -288,12 +217,12 @@ const DynamicTable = () => {
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
-                            <DropdownMenuItem onClick={() => duplicateTask(task.id)}>
+                            <DropdownMenuItem onClick={() => handleDuplicateTask(task.id)}>
                               <Copy className="h-4 w-4 mr-2" />
                               Dupliquer
                             </DropdownMenuItem>
                             <DropdownMenuItem 
-                              onClick={() => deleteTask(task.id)}
+                              onClick={() => handleDeleteTask(task.id)}
                               className="text-destructive"
                             >
                               <Trash2 className="h-4 w-4 mr-2" />
@@ -328,13 +257,13 @@ const DynamicTable = () => {
                   {tasks.map((task) => (
                     <TableRow key={task.id}>
                       {getUniqueActions().map((actionTitle) => {
-                        const action = task.actions.find(a => a.title === actionTitle);
+                        const action = task.task_actions?.find(a => a.title === actionTitle);
                         return (
                           <TableCell key={actionTitle} className="text-center">
                             {action ? (
                               <Checkbox
-                                checked={action.isDone}
-                                onCheckedChange={() => toggleAction(task.id, action.id)}
+                                checked={action.is_done}
+                                onCheckedChange={() => handleToggleAction(task.id, action.id)}
                               />
                             ) : (
                               <span className="text-muted-foreground">-</span>

@@ -60,6 +60,7 @@ export const CommentCellColumn = ({ task, isSubtask }: CommentCellProps) => {
           task_id: task.id,
           content: newComment.trim(),
           comment_type: "general",
+          tenant_id: '00000000-0000-0000-0000-000000000001', // Default tenant for now
         });
 
       if (error) throw error;

@@ -258,19 +258,21 @@ const DynamicTable = () => {
                     <TableRow key={task.id}>
                        {getUniqueActions().map((actionTitle, actionIndex) => {
                          const action = task.task_actions?.find(a => a.title === actionTitle);
-                         const totalActions = task.task_actions?.length || 0;
+                         const taskActions = task.task_actions || [];
+                         const totalActions = taskActions.length;
                          
-                         // Calcul correct pour que la somme fasse toujours 100%
+                         // Calcul du poids de chaque action pour que la somme fasse 100%
                          let actionWeight = 0;
-                         if (totalActions > 0) {
+                         if (totalActions > 0 && action) {
                            const baseWeight = Math.floor(100 / totalActions);
                            const remainder = 100 - (baseWeight * totalActions);
                            // Distribuer le reste aux premières actions de cette tâche spécifique
-                           const taskActionIndex = task.task_actions?.findIndex(a => a.title === actionTitle) || 0;
+                           const taskActionIndex = taskActions.findIndex(a => a.id === action.id);
                            actionWeight = baseWeight + (taskActionIndex < remainder ? 1 : 0);
                          }
                          
-                         const actionProgress = action?.is_done ? actionWeight : 0;
+                         // Affichage du pourcentage : le poids si coché, 0 sinon
+                         const displayedPercentage = action?.is_done ? actionWeight : 0;
                          
                          return (
                            <TableCell key={actionTitle} className="text-center">
@@ -283,9 +285,9 @@ const DynamicTable = () => {
                                      handleToggleAction(task.id, action.id);
                                    }}
                                  />
-                                 <span className="text-xs text-muted-foreground">
-                                   {actionProgress}%
-                                 </span>
+                                  <span className="text-xs text-muted-foreground">
+                                    {displayedPercentage}%
+                                  </span>
                                </div>
                              ) : (
                                <span className="text-muted-foreground">-</span>

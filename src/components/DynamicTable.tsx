@@ -71,8 +71,8 @@ const DynamicTable = () => {
     }
   };
 
-  const handleToggleAction = (taskId: string, actionId: string) => {
-    toggleAction(taskId, actionId);
+  const handleToggleAction = async (taskId: string, actionId: string) => {
+    await toggleAction(taskId, actionId);
   };
 
   const handleDuplicateTask = (taskId: string) => {

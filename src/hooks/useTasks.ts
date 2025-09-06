@@ -203,6 +203,20 @@ export const useTasks = () => {
 
   const toggleAction = async (taskId: string, actionId: string) => {
     try {
+      // Mise à jour optimiste de l'état local pour une meilleure UX
+      setTasks(prev => prev.map(task => 
+        task.id === taskId 
+          ? {
+              ...task,
+              task_actions: task.task_actions?.map(action =>
+                action.id === actionId 
+                  ? { ...action, is_done: !action.is_done }
+                  : action
+              )
+            }
+          : task
+      ));
+
       // Get current action state
       const { data: action, error: fetchError } = await supabase
         .from('task_actions')
@@ -220,7 +234,7 @@ export const useTasks = () => {
 
       if (updateError) throw updateError;
 
-      // The trigger will automatically update task progress and status
+      // Refetch pour synchroniser avec la base de données et les triggers
       await fetchTasks();
     } catch (err) {
       console.error('Error toggling action:', err);
@@ -229,6 +243,8 @@ export const useTasks = () => {
         description: "Failed to update action",
         variant: "destructive",
       });
+      // Rollback sur erreur
+      await fetchTasks();
     }
   };
 

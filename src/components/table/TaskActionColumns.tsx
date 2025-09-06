@@ -59,7 +59,7 @@ export const TaskActionColumns = ({ tasks, onToggleAction }: TaskActionColumnsPr
                   return (
                     <TableCell 
                       key={actionTitle} 
-                      className={`text-center ${isSubtask ? 'py-1' : ''}`}
+                      className={`text-center ${isSubtask ? 'py-1 text-xs' : ''}`}
                     >
                       {action ? (
                         <div className="flex flex-col items-center gap-1">

@@ -38,12 +38,17 @@ export const useTasks = () => {
     try {
       setLoading(true);
       
-      // Fetch tasks with their actions
+      // Fetch tasks with their actions and profiles
       const { data: tasksData, error: tasksError } = await supabase
         .from('tasks')
         .select(`
           *,
-          task_actions (*)
+          task_actions (*),
+          profiles!tasks_assignee_id_fkey (
+            id,
+            full_name,
+            role
+          )
         `)
         .order('created_at', { ascending: true });
 
@@ -53,7 +58,7 @@ export const useTasks = () => {
       const transformedTasks: Task[] = (tasksData || []).map((task: any) => ({
         id: task.id,
         title: task.title,
-        assignee: task.assignee,
+        assignee: task.profiles?.full_name || task.assignee, // Use profile name if available
         start_date: task.start_date,
         due_date: task.due_date,
         priority: task.priority as 'low' | 'medium' | 'high' | 'urgent',

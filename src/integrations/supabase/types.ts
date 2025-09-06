@@ -14,6 +14,36 @@ export type Database = {
   }
   public: {
     Tables: {
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          full_name: string
+          id: string
+          role: string | null
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          full_name: string
+          id?: string
+          role?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          full_name?: string
+          id?: string
+          role?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       task_actions: {
         Row: {
           created_at: string
@@ -64,6 +94,7 @@ export type Database = {
       tasks: {
         Row: {
           assignee: string
+          assignee_id: string | null
           created_at: string
           due_date: string
           effort_estimate_h: number | null
@@ -80,6 +111,7 @@ export type Database = {
         }
         Insert: {
           assignee: string
+          assignee_id?: string | null
           created_at?: string
           due_date: string
           effort_estimate_h?: number | null
@@ -96,6 +128,7 @@ export type Database = {
         }
         Update: {
           assignee?: string
+          assignee_id?: string | null
           created_at?: string
           due_date?: string
           effort_estimate_h?: number | null
@@ -111,6 +144,13 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "tasks_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "tasks_parent_id_fkey"
             columns: ["parent_id"]

@@ -256,36 +256,29 @@ const DynamicTable = () => {
                 <TableBody>
                   {tasks.map((task) => (
                     <TableRow key={task.id}>
-                       {getUniqueActions().map((actionTitle, actionIndex) => {
-                         const action = task.task_actions?.find(a => a.title === actionTitle);
-                         
-                         // Utiliser le poids défini dans la base de données
-                         const actionWeight = action?.weight_percentage || 0;
-                         
-                         // Affichage du pourcentage : le poids si coché, 0 sinon
-                         const displayedPercentage = action?.is_done ? actionWeight : 0;
-                         
-                         return (
-                           <TableCell key={actionTitle} className="text-center">
-                             {action ? (
-                               <div className="flex flex-col items-center gap-1">
-                                 <Checkbox
-                                   checked={action.is_done}
-                                   onCheckedChange={() => {
-                                     console.log('Checkbox clicked:', { taskId: task.id, actionId: action.id, currentState: action.is_done });
-                                     handleToggleAction(task.id, action.id);
-                                   }}
-                                 />
-                                  <span className="text-xs text-muted-foreground">
-                                    {displayedPercentage}%
+                        {getUniqueActions().map((actionTitle, actionIndex) => {
+                          const action = task.task_actions?.find(a => a.title === actionTitle);
+                          
+                          return (
+                            <TableCell key={actionTitle} className="text-center">
+                              {action ? (
+                                <div className="flex flex-col items-center gap-1">
+                                  <Checkbox
+                                    checked={action.is_done}
+                                    onCheckedChange={() => {
+                                      handleToggleAction(task.id, action.id);
+                                    }}
+                                  />
+                                  <span className="text-xs text-muted-foreground font-medium">
+                                    {action.weight_percentage}%
                                   </span>
-                               </div>
-                             ) : (
-                               <span className="text-muted-foreground">-</span>
-                             )}
-                           </TableCell>
-                         );
-                       })}
+                                </div>
+                              ) : (
+                                <span className="text-muted-foreground">-</span>
+                              )}
+                            </TableCell>
+                          );
+                        })}
                     </TableRow>
                   ))}
                 </TableBody>

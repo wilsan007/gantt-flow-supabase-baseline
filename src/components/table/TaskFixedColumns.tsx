@@ -15,7 +15,7 @@ import { TaskRowActions } from './TaskRowActions';
 import { AssigneeSelect } from './AssigneeSelect';
 import { ActionSelectionDialog } from '../dialogs/ActionSelectionDialog';
 import { CreateSubtaskDialog } from '../dialogs/CreateSubtaskDialog';
-import { TaskDetailsDialog } from '../dialogs/EnhancedTaskDetailsDialog';
+import { TaskDetailsDialog } from '../dialogs/TaskDetailsDialog';
 import { priorityColors, statusColors, formatDate } from '@/lib/taskHelpers';
 import { DocumentCellColumn } from './DocumentCellColumn';
 import { CommentCellColumn } from './CommentCellColumn';

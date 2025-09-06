@@ -103,7 +103,7 @@ export const useTaskActions = () => {
     try {
       const { data: currentAction, error: fetchError } = await supabase
         .from('task_actions')
-        .select('is_done')
+        .select('is_done, tenant_id')
         .eq('id', actionId)
         .single();
 
@@ -111,8 +111,12 @@ export const useTaskActions = () => {
 
       const { error: updateError } = await supabase
         .from('task_actions')
-        .update({ is_done: !currentAction.is_done })
-        .eq('id', actionId);
+        .update({ 
+          is_done: !currentAction.is_done,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', actionId)
+        .eq('tenant_id', currentAction.tenant_id);
 
       if (updateError) throw updateError;
     } catch (error: any) {
@@ -136,11 +140,21 @@ export const useTaskActions = () => {
       if (tasksError) throw tasksError;
 
       if (allTasks && allTasks.length > 0) {
+        // Récupérer le tenant_id depuis la première tâche
+        const { data: tenantData, error: tenantError } = await supabase
+          .from('tasks')
+          .select('tenant_id')
+          .eq('id', allTasks[0].id)
+          .single();
+
+        if (tenantError) throw tenantError;
+
         const newActions = allTasks.map(task => ({
           task_id: task.id,
           title: actionTitle,
           weight_percentage: 0,
-          is_done: false
+          is_done: false,
+          tenant_id: tenantData.tenant_id
         }));
 
         const { error: actionsError } = await supabase

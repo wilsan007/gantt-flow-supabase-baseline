@@ -244,14 +244,13 @@ const GanttChart = () => {
       >
         {/* Barre de tâche principale */}
         <div
-          className={`relative h-full rounded-lg border cursor-move transition-all duration-200 group ${
-            isDragging || isResizing ? 'shadow-lg scale-105' : 'hover:shadow-md'
-          }`}
+          className={`relative h-full rounded-lg border group overflow-hidden ${
+            isDragging || isResizing ? 'shadow-lg scale-105 z-10' : 'hover:shadow-md'
+          } transition-all duration-200`}
           style={{
             backgroundColor: `hsl(var(--${task.color}))`,
             borderColor: `hsl(var(--${task.color}))`
           }}
-          onMouseDown={(e) => handleMouseDown(e, task.id, 'drag')}
         >
           {/* Barre de progression */}
           <div
@@ -264,29 +263,37 @@ const GanttChart = () => {
           
           {/* Poignée de redimensionnement gauche */}
           <div
-            className="absolute left-0 top-0 h-full w-3 cursor-ew-resize bg-white/20 opacity-0 group-hover:opacity-100 hover:!opacity-100 transition-opacity flex items-center justify-center"
+            className="absolute left-0 top-0 h-full w-4 cursor-ew-resize bg-white/10 opacity-0 group-hover:opacity-100 hover:!opacity-100 hover:bg-white/30 transition-all flex items-center justify-center border-r border-white/20"
             onMouseDown={(e) => {
               e.stopPropagation();
+              e.preventDefault();
               handleMouseDown(e, task.id, 'resize-left');
             }}
+            title="Redimensionner le début"
           >
-            <div className="w-1 h-6 bg-white rounded" />
+            <div className="w-0.5 h-8 bg-white rounded opacity-80" />
           </div>
           
           {/* Poignée de redimensionnement droite */}
           <div
-            className="absolute right-0 top-0 h-full w-3 cursor-ew-resize bg-white/20 opacity-0 group-hover:opacity-100 hover:!opacity-100 transition-opacity flex items-center justify-center"
+            className="absolute right-0 top-0 h-full w-4 cursor-ew-resize bg-white/10 opacity-0 group-hover:opacity-100 hover:!opacity-100 hover:bg-white/30 transition-all flex items-center justify-center border-l border-white/20"
             onMouseDown={(e) => {
               e.stopPropagation();
+              e.preventDefault();
               handleMouseDown(e, task.id, 'resize-right');
             }}
+            title="Redimensionner la fin"
           >
-            <div className="w-1 h-6 bg-white rounded" />
+            <div className="w-0.5 h-8 bg-white rounded opacity-80" />
           </div>
           
-          {/* Texte de la tâche */}
-          <div className="absolute inset-0 flex items-center px-4">
-            <span className="text-sm font-medium text-white truncate">
+          {/* Zone de déplacement centrale */}
+          <div 
+            className="absolute inset-x-4 inset-y-0 cursor-move flex items-center px-2"
+            onMouseDown={(e) => handleMouseDown(e, task.id, 'drag')}
+            title="Déplacer la tâche"
+          >
+            <span className="text-sm font-medium text-white truncate pointer-events-none">
               {task.name}
             </span>
           </div>

@@ -56,6 +56,7 @@ export type Database = {
           task_id: string
           title: string
           updated_at: string
+          weight_percentage: number
         }
         Insert: {
           created_at?: string
@@ -68,6 +69,7 @@ export type Database = {
           task_id: string
           title: string
           updated_at?: string
+          weight_percentage?: number
         }
         Update: {
           created_at?: string
@@ -80,6 +82,7 @@ export type Database = {
           task_id?: string
           title?: string
           updated_at?: string
+          weight_percentage?: number
         }
         Relationships: [
           {
@@ -172,6 +175,10 @@ export type Database = {
       compute_task_status: {
         Args: { p_task_id: string }
         Returns: string
+      }
+      distribute_equal_weights: {
+        Args: { p_task_id: string }
+        Returns: undefined
       }
     }
     Enums: {

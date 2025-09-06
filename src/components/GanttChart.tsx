@@ -43,7 +43,7 @@ const GanttChart = () => {
     taskMouseDownHandler,
     handleMouseMove,
     handleMouseUp
-  } = useGanttDrag(config, updateTaskDates);
+  } = useGanttDrag(config, startDate, updateTaskDates);
 
   const onTaskMouseDown = (
     e: React.MouseEvent, 

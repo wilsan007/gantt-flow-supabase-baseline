@@ -9,6 +9,7 @@ interface DragState {
 
 export const useGanttDrag = (
   config: ViewConfig,
+  timelineStartDate: Date,
   updateTaskDates?: (taskId: string, startDate: string, endDate: string) => Promise<void>
 ) => {
   const [draggedTask, setDraggedTask] = useState<string | null>(null);
@@ -53,7 +54,7 @@ export const useGanttDrag = (
       
       const taskElement = document.querySelector(`[data-task-id="${draggedTask}"]`) as HTMLElement;
       if (taskElement) {
-        const left = (newStartDate.getTime() - new Date(2024, 0, 1).getTime()) / (1000 * 60 * 60 * 24) / config.unitDuration * config.unitWidth;
+        const left = (newStartDate.getTime() - timelineStartDate.getTime()) / (1000 * 60 * 60 * 24) / config.unitDuration * config.unitWidth;
         taskElement.style.left = `${left}px`;
       }
     } else if (resizeTask) {
@@ -76,7 +77,7 @@ export const useGanttDrag = (
       
       const taskElement = document.querySelector(`[data-task-id="${resizeTask.taskId}"]`) as HTMLElement;
       if (taskElement) {
-        const left = (newStartDate.getTime() - new Date(2024, 0, 1).getTime()) / (1000 * 60 * 60 * 24) / config.unitDuration * config.unitWidth;
+        const left = (newStartDate.getTime() - timelineStartDate.getTime()) / (1000 * 60 * 60 * 24) / config.unitDuration * config.unitWidth;
         const duration = Math.max(1, Math.ceil((newEndDate.getTime() - newStartDate.getTime()) / (1000 * 60 * 60 * 24)));
         const width = (duration / config.unitDuration) * config.unitWidth;
         taskElement.style.left = `${left}px`;

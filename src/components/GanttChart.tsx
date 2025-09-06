@@ -6,14 +6,6 @@ import { useTasks, Task } from '@/hooks/useTasks';
 
 type ViewMode = 'day' | 'week' | 'month';
 
-// Couleurs par priorité pour le Gantt
-const priorityColors = {
-  low: 'success',
-  medium: 'warning', 
-  high: 'destructive',
-  urgent: 'tech-red'
-};
-
 // Couleurs par statut pour le Gantt  
 const statusColors = {
   todo: 'muted',
@@ -69,7 +61,7 @@ const GanttChart = () => {
   
   // Calcul des dates selon la vue
   const startDate = new Date(2024, 0, 1);
-  const endDate = new Date(2024, 11, 31); // Toute l'année pour avoir plus de données
+  const endDate = new Date(2024, 11, 31);
   
   const getTotalUnits = () => {
     const totalDays = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
@@ -82,12 +74,6 @@ const GanttChart = () => {
     return units * config.unitWidth;
   };
 
-  const getDateFromPosition = (x: number) => {
-    const units = Math.floor(x / config.unitWidth);
-    const days = units * config.unitDuration;
-    return new Date(startDate.getTime() + days * 24 * 60 * 60 * 1000);
-  };
-
   // Fonction pour convertir une tâche DB en format Gantt
   const getGanttTask = (task: Task) => ({
     id: task.id,
@@ -95,7 +81,7 @@ const GanttChart = () => {
     startDate: new Date(task.start_date),
     endDate: new Date(task.due_date),
     progress: task.progress,
-    color: statusColors[task.status], // Utilise la couleur basée sur le statut
+    color: statusColors[task.status],
     assignee: task.assignee,
     priority: task.priority,
     status: task.status
@@ -108,7 +94,7 @@ const GanttChart = () => {
     return (duration / config.unitDuration) * config.unitWidth;
   };
 
-  const handleMouseDown = useCallback((e: React.MouseEvent, taskId: string, action: 'drag' | 'resize-left' | 'resize-right') => {
+  const taskMouseDownHandler = useCallback((e: React.MouseEvent, taskId: string, action: 'drag' | 'resize-left' | 'resize-right') => {
     e.preventDefault();
     const task = ganttTasks.find(t => t.id === taskId);
     if (!task) return;
@@ -129,7 +115,6 @@ const GanttChart = () => {
   const handleMouseMove = useCallback((e: MouseEvent) => {
     if (!dragStart) return;
     // Pour l'aperçu visuel, on peut manipuler directement les tâches Gantt
-    // mais on ne sauvegarde qu'au mouseUp
   }, [dragStart]);
 
   const handleMouseUp = useCallback(async () => {
@@ -137,7 +122,6 @@ const GanttChart = () => {
     
     try {
       // Pour cette version simplifiée, on ne fait rien au mouseUp
-      // Les modifications de dates peuvent être ajoutées plus tard
     } catch (error) {
       console.error('Error updating task:', error);
     } finally {
@@ -145,7 +129,7 @@ const GanttChart = () => {
       setResizeTask(null);
       setDragStart(null);
     }
-  }, [dragStart, draggedTask, resizeTask, ganttTasks, config, updateTaskDates]);
+  }, [dragStart]);
 
   React.useEffect(() => {
     if (draggedTask || resizeTask) {
@@ -158,7 +142,6 @@ const GanttChart = () => {
     }
   }, [draggedTask, resizeTask, handleMouseMove, handleMouseUp]);
 
-  // Loading et error states
   if (loading) {
     return (
       <Card className="w-full bg-card border-border">
@@ -192,7 +175,7 @@ const GanttChart = () => {
       units.push(
         <div
           key={i}
-          className="flex h-full items-center justify-center border-r border-gantt-grid text-xs text-muted-foreground"
+          className="flex h-full items-center justify-center border-r border-border text-xs text-muted-foreground"
           style={{ minWidth: config.unitWidth }}
         >
           <div className="text-center">
@@ -224,7 +207,6 @@ const GanttChart = () => {
           height: rowHeight - 20
         }}
       >
-        {/* Barre de tâche principale */}
         <div
           className={`relative h-full rounded-lg border group overflow-hidden ${
             isDragging || isResizing ? 'shadow-lg scale-105 z-10' : 'hover:shadow-md'
@@ -234,7 +216,6 @@ const GanttChart = () => {
             borderColor: `hsl(var(--${task.color}))`
           }}
         >
-          {/* Barre de progression */}
           <div
             className="h-full rounded-lg opacity-30"
             style={{
@@ -243,36 +224,33 @@ const GanttChart = () => {
             }}
           />
           
-          {/* Poignée de redimensionnement gauche */}
           <div
             className="absolute left-0 top-0 h-full w-4 cursor-ew-resize bg-white/10 opacity-0 group-hover:opacity-100 hover:!opacity-100 hover:bg-white/30 transition-all flex items-center justify-center border-r border-white/20"
             onMouseDown={(e) => {
               e.stopPropagation();
               e.preventDefault();
-              handleMouseDown(e, task.id, 'resize-left');
+              taskMouseDownHandler(e, task.id, 'resize-left');
             }}
             title="Redimensionner le début"
           >
             <div className="w-0.5 h-8 bg-white rounded opacity-80" />
           </div>
           
-          {/* Poignée de redimensionnement droite */}
           <div
             className="absolute right-0 top-0 h-full w-4 cursor-ew-resize bg-white/10 opacity-0 group-hover:opacity-100 hover:!opacity-100 hover:bg-white/30 transition-all flex items-center justify-center border-l border-white/20"
             onMouseDown={(e) => {
               e.stopPropagation();
               e.preventDefault();
-              handleMouseDown(e, task.id, 'resize-right');
+              taskMouseDownHandler(e, task.id, 'resize-right');
             }}
             title="Redimensionner la fin"
           >
             <div className="w-0.5 h-8 bg-white rounded opacity-80" />
           </div>
           
-          {/* Zone de déplacement centrale */}
           <div 
             className="absolute inset-x-4 inset-y-0 cursor-move flex items-center px-2"
-            onMouseDown={(e) => handleMouseDown(e, task.id, 'drag')}
+            onMouseDown={(e) => taskMouseDownHandler(e, task.id, 'drag')}
             title="Déplacer la tâche"
           >
             <span className="text-sm font-medium text-white truncate pointer-events-none">
@@ -322,15 +300,14 @@ const GanttChart = () => {
       </CardHeader>
       <CardContent className="p-0">
         <div className="flex">
-          {/* Colonne des noms de tâches */}
-          <div className="w-64 bg-gantt-header border-r border-gantt-grid">
-            <div className="h-20 flex items-center px-4 border-b border-gantt-grid">
+          <div className="w-64 bg-muted/30 border-r border-border">
+            <div className="h-20 flex items-center px-4 border-b border-border">
               <span className="font-medium text-foreground">Tâches</span>
             </div>
             {ganttTasks.map((task, index) => (
               <div
                 key={task.id}
-                className="flex items-center px-4 border-b border-gantt-grid hover:bg-gantt-hover transition-colors"
+                className="flex items-center px-4 border-b border-border hover:bg-muted/50 transition-colors"
                 style={{ height: rowHeight }}
               >
                 <div>
@@ -343,38 +320,32 @@ const GanttChart = () => {
             ))}
           </div>
 
-          {/* Zone du diagramme */}
           <div className="flex-1 overflow-x-auto">
             <div ref={chartRef} className="relative bg-background">
-              {/* En-tête de la timeline */}
               <div 
-                className="flex border-b border-gantt-grid bg-gantt-header" 
+                className="flex border-b border-border bg-muted/30" 
                 style={{ height: config.headerHeight }}
               >
                 {renderTimelineHeader()}
               </div>
 
-              {/* Grille de fond */}
               <div className="relative" style={{ height: ganttTasks.length * rowHeight }}>
-                {/* Lignes horizontales */}
                 {ganttTasks.map((_, index) => (
                   <div
                     key={index}
-                    className="absolute w-full border-b border-gantt-grid"
+                    className="absolute w-full border-b border-border"
                     style={{ top: (index + 1) * rowHeight }}
                   />
                 ))}
 
-                {/* Lignes verticales */}
                 {Array.from({ length: getTotalUnits() }).map((_, index) => (
                   <div
                     key={index}
-                    className="absolute h-full border-r border-gantt-grid"
+                    className="absolute h-full border-r border-border"
                     style={{ left: (index + 1) * config.unitWidth }}
                   />
                 ))}
 
-                {/* Barres de tâches */}
                 {ganttTasks.map((task, index) => renderTaskBar(task, index))}
               </div>
             </div>

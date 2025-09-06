@@ -61,6 +61,7 @@ export default {
         "tech-blue": "hsl(var(--tech-blue))",
         "tech-purple": "hsl(var(--tech-purple))",  
         "tech-cyan": "hsl(var(--tech-cyan))",
+        "tech-red": "hsl(var(--tech-red))",
         success: "hsl(var(--success))",
         warning: "hsl(var(--warning))",
         danger: "hsl(var(--danger))",

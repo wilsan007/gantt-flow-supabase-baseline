@@ -10,7 +10,7 @@ type ViewMode = 'day' | 'week' | 'month';
 const statusColors = {
   todo: 'muted',
   doing: 'tech-blue',
-  blocked: 'destructive', 
+  blocked: 'tech-red', 
   done: 'success'
 };
 

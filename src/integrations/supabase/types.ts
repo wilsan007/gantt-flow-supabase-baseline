@@ -99,6 +99,7 @@ export type Database = {
           assignee: string
           assignee_id: string | null
           created_at: string
+          display_order: string | null
           due_date: string
           effort_estimate_h: number | null
           effort_spent_h: number | null
@@ -109,6 +110,7 @@ export type Database = {
           project_id: string | null
           start_date: string
           status: string
+          task_level: number | null
           title: string
           updated_at: string
         }
@@ -116,6 +118,7 @@ export type Database = {
           assignee: string
           assignee_id?: string | null
           created_at?: string
+          display_order?: string | null
           due_date: string
           effort_estimate_h?: number | null
           effort_spent_h?: number | null
@@ -126,6 +129,7 @@ export type Database = {
           project_id?: string | null
           start_date: string
           status?: string
+          task_level?: number | null
           title: string
           updated_at?: string
         }
@@ -133,6 +137,7 @@ export type Database = {
           assignee?: string
           assignee_id?: string | null
           created_at?: string
+          display_order?: string | null
           due_date?: string
           effort_estimate_h?: number | null
           effort_spent_h?: number | null
@@ -143,6 +148,7 @@ export type Database = {
           project_id?: string | null
           start_date?: string
           status?: string
+          task_level?: number | null
           title?: string
           updated_at?: string
         }
@@ -179,6 +185,10 @@ export type Database = {
       distribute_equal_weights: {
         Args: { p_task_id: string }
         Returns: undefined
+      }
+      generate_display_order: {
+        Args: { p_parent_id: string; p_task_level: number }
+        Returns: string
       }
     }
     Enums: {

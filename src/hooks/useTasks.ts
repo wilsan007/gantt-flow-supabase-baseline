@@ -202,9 +202,10 @@ export const useTasks = () => {
   };
 
   const toggleAction = async (taskId: string, actionId: string) => {
-    console.log('Toggling action:', { taskId, actionId });
+    console.log('🔄 Toggling action:', { taskId, actionId });
+    
     try {
-      // Get current action state first
+      // Get current state
       const { data: currentAction, error: fetchError } = await supabase
         .from('task_actions')
         .select('is_done')
@@ -212,54 +213,36 @@ export const useTasks = () => {
         .single();
 
       if (fetchError) {
-        console.error('Fetch error:', fetchError);
+        console.error('❌ Fetch error:', fetchError);
         throw fetchError;
       }
 
-      console.log('Current action state:', currentAction);
-
-      // Update optimistically in local state
       const newIsDone = !currentAction.is_done;
-      setTasks(prev => prev.map(task => 
-        task.id === taskId 
-          ? {
-              ...task,
-              task_actions: task.task_actions?.map(action =>
-                action.id === actionId 
-                  ? { ...action, is_done: newIsDone }
-                  : action
-              )
-            }
-          : task
-      ));
+      console.log('📝 Updating action from', currentAction.is_done, 'to', newIsDone);
 
-      // Update in database
+      // Update in database - the trigger will handle progress/status update automatically
       const { error: updateError } = await supabase
         .from('task_actions')
         .update({ is_done: newIsDone })
         .eq('id', actionId);
 
       if (updateError) {
-        console.error('Update error:', updateError);
+        console.error('❌ Update error:', updateError);
         throw updateError;
       }
 
-      console.log('Action updated successfully');
-
-      // Wait a bit for trigger to execute then refetch
-      setTimeout(async () => {
-        await fetchTasks();
-      }, 500);
+      console.log('✅ Action updated successfully, refetching data...');
+      
+      // Refetch to get the updated progress from trigger
+      await fetchTasks();
 
     } catch (err) {
-      console.error('Error toggling action:', err);
+      console.error('💥 Error toggling action:', err);
       toast({
         title: "Erreur",
         description: "Impossible de mettre à jour l'action",
         variant: "destructive",
       });
-      // Rollback on error
-      await fetchTasks();
     }
   };
 

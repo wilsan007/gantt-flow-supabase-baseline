@@ -45,7 +45,7 @@ export const useGanttDrag = (
     
     const deltaX = e.clientX - dragStart.x;
     const pixelsPerDay = config.unitWidth / config.unitDuration;
-    const daysDelta = Math.round(deltaX / pixelsPerDay);
+    const daysDelta = deltaX / pixelsPerDay;
     const timeDelta = daysDelta * 24 * 60 * 60 * 1000;
     
     if (draggedTask) {

@@ -174,7 +174,7 @@ const GanttChart = () => {
         return task;
       }));
     }
-  }, [dragStart, draggedTask, resizeTask, config.unitWidth]);
+  }, [dragStart, draggedTask, resizeTask, config]);
 
   const handleMouseUp = useCallback(() => {
     setDraggedTask(null);

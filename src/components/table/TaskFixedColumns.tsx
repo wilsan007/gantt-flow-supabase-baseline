@@ -98,7 +98,7 @@ export const TaskFixedColumns = ({
                 className={`border-b cursor-pointer transition-colors ${
                   selectedTaskId === task.id ? 'bg-primary/10 border-primary/30' : 'hover:bg-muted/50'
                 }`}
-                style={{ height: isSubtask ? '38px' : '64px' }}
+                style={{ height: isSubtask ? '51px' : '64px' }}
                 onClick={(e) => {
                   e.stopPropagation();
                   onSelectTask(task.id);

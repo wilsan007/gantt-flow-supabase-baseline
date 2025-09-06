@@ -30,6 +30,7 @@ export interface Task {
   parent_id?: string;
   task_level: number;
   display_order: string;
+  linked_action_id?: string;
 }
 
 export const useTasks = () => {

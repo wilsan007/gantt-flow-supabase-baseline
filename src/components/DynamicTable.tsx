@@ -23,12 +23,14 @@ const DynamicTable = () => {
   } = useTasks();
   
   const [newActionTitle, setNewActionTitle] = useState('');
+  const [selectedTaskId, setSelectedTaskId] = useState<string | undefined>();
 
   const handleAddActionColumn = async () => {
-    if (newActionTitle.trim()) {
+    if (newActionTitle.trim() && selectedTaskId) {
       try {
-        await addActionColumn(newActionTitle.trim());
+        await addActionColumn(newActionTitle.trim(), selectedTaskId);
         setNewActionTitle('');
+        setSelectedTaskId(undefined);
         await refetch(); // Rafraîchir les données après l'ajout
       } catch (error) {
         console.error('Error adding action column:', error);
@@ -49,9 +51,9 @@ const DynamicTable = () => {
     await refetch();
   };
 
-  const handleCreateSubtask = async (parentId: string, title: string) => {
+  const handleCreateSubtask = async (parentId: string, linkedActionId?: string) => {
     try {
-      await createSubTask(parentId, title);
+      await createSubTask(parentId, linkedActionId);
       await refetch();
     } catch (error) {
       console.error('Error creating subtask:', error);
@@ -67,6 +69,12 @@ const DynamicTable = () => {
     }
   };
 
+  const handleSelectTask = (taskId: string) => {
+    setSelectedTaskId(taskId === selectedTaskId ? undefined : taskId);
+  };
+
+  const isActionButtonEnabled = !!(selectedTaskId && newActionTitle.trim());
+
   if (loading) {
     return <LoadingState />;
   }
@@ -77,11 +85,13 @@ const DynamicTable = () => {
 
   return (
     <Card className="w-full">
-      <TaskTableHeader 
-        newActionTitle={newActionTitle}
-        setNewActionTitle={setNewActionTitle}
-        onAddActionColumn={handleAddActionColumn}
-      />
+        <TaskTableHeader 
+          newActionTitle={newActionTitle}
+          setNewActionTitle={setNewActionTitle}
+          onAddActionColumn={handleAddActionColumn}
+          selectedTaskId={selectedTaskId}
+          isActionButtonEnabled={isActionButtonEnabled}
+        />
       <CardContent>
         <ResizablePanelGroup direction="horizontal" className="border rounded-lg">
           <ResizablePanel defaultSize={60} minSize={40}>
@@ -91,6 +101,8 @@ const DynamicTable = () => {
               onDelete={handleDeleteTask}
               onCreateSubtask={handleCreateSubtask}
               onUpdateAssignee={handleUpdateAssignee}
+              selectedTaskId={selectedTaskId}
+              onSelectTask={handleSelectTask}
             />
           </ResizablePanel>
 

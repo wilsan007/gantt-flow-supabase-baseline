@@ -104,6 +104,7 @@ export type Database = {
           effort_estimate_h: number | null
           effort_spent_h: number | null
           id: string
+          linked_action_id: string | null
           parent_id: string | null
           priority: string
           progress: number | null
@@ -123,6 +124,7 @@ export type Database = {
           effort_estimate_h?: number | null
           effort_spent_h?: number | null
           id?: string
+          linked_action_id?: string | null
           parent_id?: string | null
           priority: string
           progress?: number | null
@@ -142,6 +144,7 @@ export type Database = {
           effort_estimate_h?: number | null
           effort_spent_h?: number | null
           id?: string
+          linked_action_id?: string | null
           parent_id?: string | null
           priority?: string
           progress?: number | null
@@ -158,6 +161,13 @@ export type Database = {
             columns: ["assignee_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tasks_linked_action_id_fkey"
+            columns: ["linked_action_id"]
+            isOneToOne: false
+            referencedRelation: "task_actions"
             referencedColumns: ["id"]
           },
           {

@@ -14,14 +14,18 @@ import { Calendar, Clock, Plus, Trash2 } from 'lucide-react';
 import { Task } from '@/hooks/useTasks';
 import { TaskRowActions } from './TaskRowActions';
 import { AssigneeSelect } from './AssigneeSelect';
+import { ActionSelectionDialog } from '../dialogs/ActionSelectionDialog';
 import { priorityColors, statusColors, formatDate } from '@/lib/taskHelpers';
+import { useState } from 'react';
 
 interface TaskFixedColumnsProps {
   tasks: Task[];
   onDuplicate: (taskId: string) => void;
   onDelete: (taskId: string) => void;
-  onCreateSubtask: (parentId: string, title: string) => void;
+  onCreateSubtask: (parentId: string, linkedActionId?: string) => void;
   onUpdateAssignee: (taskId: string, assignee: string) => void;
+  selectedTaskId?: string;
+  onSelectTask: (taskId: string) => void;
 }
 
 export const TaskFixedColumns = ({ 
@@ -29,7 +33,9 @@ export const TaskFixedColumns = ({
   onDuplicate, 
   onDelete, 
   onCreateSubtask, 
-  onUpdateAssignee 
+  onUpdateAssignee,
+  selectedTaskId,
+  onSelectTask
 }: TaskFixedColumnsProps) => {
   // Trier les tâches par display_order pour afficher les sous-tâches correctement
   const sortedTasks = [...tasks].sort((a, b) => {
@@ -44,14 +50,30 @@ export const TaskFixedColumns = ({
     return 0;
   });
 
+  const [actionSelectionOpen, setActionSelectionOpen] = useState(false);
+  const [selectedParentTask, setSelectedParentTask] = useState<Task | null>(null);
+
   const handleCreateSubtask = (parentId: string) => {
-    const parent = tasks.find(t => t.id === parentId);
-    const subtaskTitle = `Sous-tâche de ${parent?.title}`;
-    onCreateSubtask(parentId, subtaskTitle);
+    const parentTask = tasks.find(task => task.id === parentId);
+    if (parentTask && parentTask.task_actions && parentTask.task_actions.length > 0) {
+      setSelectedParentTask(parentTask);
+      setActionSelectionOpen(true);
+    } else {
+      // Si pas d'actions, créer la sous-tâche sans liaison
+      onCreateSubtask(parentId);
+    }
+  };
+
+  const handleActionSelection = (actionId: string) => {
+    if (selectedParentTask) {
+      onCreateSubtask(selectedParentTask.id, actionId);
+      setSelectedParentTask(null);
+    }
   };
 
   return (
-    <div className="h-[600px] overflow-auto">
+    <>
+      <div className="h-[600px] overflow-auto">
       <Table>
         <TableHeader className="sticky top-0 bg-background z-10">
           <TableRow>
@@ -73,8 +95,14 @@ export const TaskFixedColumns = ({
             return (
               <TableRow 
                 key={task.id} 
-                className={`border-b`}
+                className={`border-b cursor-pointer transition-colors ${
+                  selectedTaskId === task.id ? 'bg-primary/10 border-primary/30' : 'hover:bg-muted/50'
+                }`}
                 style={{ height: isSubtask ? '48px' : '64px' }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onSelectTask(task.id);
+                }}
               >
                 <TableCell className="font-medium">
                   <div 
@@ -84,7 +112,10 @@ export const TaskFixedColumns = ({
                     <Button
                       variant="ghost"
                       size="sm"
-                      onClick={() => isSubtask ? onDelete(task.id) : handleCreateSubtask(task.id)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        isSubtask ? onDelete(task.id) : handleCreateSubtask(task.id);
+                      }}
                       className="h-6 w-6 p-0 opacity-70 hover:opacity-100"
                     >
                       {isSubtask ? (
@@ -176,5 +207,13 @@ export const TaskFixedColumns = ({
         </TableBody>
       </Table>
     </div>
-  );
+    
+    <ActionSelectionDialog
+      open={actionSelectionOpen}
+      onOpenChange={setActionSelectionOpen}
+      actions={selectedParentTask?.task_actions || []}
+      onSelectAction={handleActionSelection}
+      taskTitle={selectedParentTask?.title || ''}
+    />
+  </>);
 };

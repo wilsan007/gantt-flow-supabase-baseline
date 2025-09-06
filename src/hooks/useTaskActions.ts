@@ -52,7 +52,7 @@ export const useTaskActions = () => {
 
       if (newTaskError) throw newTaskError;
 
-      if (originalTask.task_actions && originalTask.task_actions.length > 0) {
+      if (originalTask.task_actions && Array.isArray(originalTask.task_actions) && originalTask.task_actions.length > 0) {
         const newActions = originalTask.task_actions.map((action: any) => ({
           task_id: newTask.id,
           title: action.title,
@@ -121,13 +121,17 @@ export const useTaskActions = () => {
     }
   };
 
-  const addActionColumn = async (actionTitle: string) => {
+  const addActionColumn = async (actionTitle: string, selectedTaskId?: string) => {
     try {
       if (!actionTitle.trim()) return;
       
-      const { data: allTasks, error: tasksError } = await supabase
-        .from('tasks')
-        .select('id');
+      const tasksQuery = supabase.from('tasks').select('id');
+      
+      if (selectedTaskId) {
+        tasksQuery.eq('id', selectedTaskId);
+      }
+      
+      const { data: allTasks, error: tasksError } = await tasksQuery;
 
       if (tasksError) throw tasksError;
 
@@ -155,7 +159,7 @@ export const useTaskActions = () => {
     }
   };
 
-  const createSubTask = async (parentTaskId: string, title?: string) => {
+  const createSubTask = async (parentTaskId: string, linkedActionId?: string, title?: string) => {
     try {
       const { data: parentTask, error: parentError } = await supabase
         .from('tasks')
@@ -186,7 +190,8 @@ export const useTaskActions = () => {
           effort_estimate_h: 1,
           parent_id: parentTaskId,
           task_level: newLevel,
-          display_order: displayOrderResult || `${parentTask.display_order}.1`
+          display_order: displayOrderResult || `${parentTask.display_order}.1`,
+          linked_action_id: linkedActionId
         }])
         .select()
         .single();

@@ -51,13 +51,35 @@ const DynamicTable = () => {
       // Mise à jour optimiste : on met à jour l'interface immédiatement
       const updatedTasks = optimisticTasks.map(task => {
         if (task.id === taskId && task.task_actions) {
+          const updatedActions = task.task_actions.map(action => 
+            action.id === actionId 
+              ? { ...action, is_done: !action.is_done }
+              : action
+          );
+          
+          // Calculer la nouvelle progression
+          const totalWeight = updatedActions.reduce((sum, action) => sum + action.weight_percentage, 0);
+          const completedWeight = updatedActions
+            .filter(action => action.is_done)
+            .reduce((sum, action) => sum + action.weight_percentage, 0);
+          
+          const newProgress = totalWeight === 0 ? 0 : Math.round(completedWeight);
+          
+          // Calculer le nouveau statut
+          let newStatus = task.status;
+          if (newProgress === 100) {
+            newStatus = 'done';
+          } else if (newProgress > 0) {
+            newStatus = 'doing';
+          } else {
+            newStatus = 'todo';
+          }
+          
           return {
             ...task,
-            task_actions: task.task_actions.map(action => 
-              action.id === actionId 
-                ? { ...action, is_done: !action.is_done }
-                : action
-            )
+            task_actions: updatedActions,
+            progress: newProgress,
+            status: newStatus as any
           };
         }
         return task;

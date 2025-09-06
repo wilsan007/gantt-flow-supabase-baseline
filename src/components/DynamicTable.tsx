@@ -256,24 +256,33 @@ const DynamicTable = () => {
                 <TableBody>
                   {tasks.map((task) => (
                     <TableRow key={task.id}>
-                      {getUniqueActions().map((actionTitle) => {
-                        const action = task.task_actions?.find(a => a.title === actionTitle);
-                        return (
-                          <TableCell key={actionTitle} className="text-center">
-                            {action ? (
-                              <Checkbox
-                                checked={action.is_done}
-                                onCheckedChange={(checked) => {
-                                  console.log('Checkbox clicked:', { taskId: task.id, actionId: action.id, newValue: checked });
-                                  handleToggleAction(task.id, action.id);
-                                }}
-                              />
-                            ) : (
-                              <span className="text-muted-foreground">-</span>
-                            )}
-                          </TableCell>
-                        );
-                      })}
+                       {getUniqueActions().map((actionTitle) => {
+                         const action = task.task_actions?.find(a => a.title === actionTitle);
+                         const completedActions = task.task_actions?.filter(a => a.is_done).length || 0;
+                         const totalActions = task.task_actions?.length || 0;
+                         const actionProgress = totalActions > 0 ? Math.round((completedActions / totalActions) * 100) : 0;
+                         
+                         return (
+                           <TableCell key={actionTitle} className="text-center">
+                             {action ? (
+                               <div className="flex flex-col items-center gap-1">
+                                 <Checkbox
+                                   checked={action.is_done}
+                                   onCheckedChange={() => {
+                                     console.log('Checkbox clicked:', { taskId: task.id, actionId: action.id, currentState: action.is_done });
+                                     handleToggleAction(task.id, action.id);
+                                   }}
+                                 />
+                                 <span className="text-xs text-muted-foreground">
+                                   {actionProgress}%
+                                 </span>
+                               </div>
+                             ) : (
+                               <span className="text-muted-foreground">-</span>
+                             )}
+                           </TableCell>
+                         );
+                       })}
                     </TableRow>
                   ))}
                 </TableBody>

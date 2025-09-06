@@ -220,6 +220,22 @@ export const useTasks = () => {
       const newIsDone = !currentAction.is_done;
       console.log('📝 Updating action from', currentAction.is_done, 'to', newIsDone);
 
+      // Optimistic update for immediate UI feedback
+      setTasks(prevTasks => 
+        prevTasks.map(task => 
+          task.id === taskId 
+            ? {
+                ...task,
+                task_actions: task.task_actions?.map(action => 
+                  action.id === actionId 
+                    ? { ...action, is_done: newIsDone }
+                    : action
+                ) || []
+              }
+            : task
+        )
+      );
+
       // Update in database - the trigger will handle progress/status update automatically
       const { error: updateError } = await supabase
         .from('task_actions')
@@ -228,13 +244,12 @@ export const useTasks = () => {
 
       if (updateError) {
         console.error('❌ Update error:', updateError);
+        // Revert optimistic update on error
+        await fetchTasks();
         throw updateError;
       }
 
-      console.log('✅ Action updated successfully, refetching data...');
-      
-      // Refetch to get the updated progress from trigger
-      await fetchTasks();
+      console.log('✅ Action updated successfully');
 
     } catch (err) {
       console.error('💥 Error toggling action:', err);

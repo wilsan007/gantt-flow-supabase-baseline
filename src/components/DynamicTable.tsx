@@ -113,7 +113,11 @@ const DynamicTable = () => {
     effort_estimate_h: number;
   }) => {
     try {
-      await createSubTask(parentId, linkedActionId, customData);
+      console.log('Creating subtask with data:', { parentId, linkedActionId, customData });
+      const newSubtask = await createSubTask(parentId, linkedActionId, customData);
+      console.log('Subtask created successfully:', newSubtask);
+      
+      // Rafraîchir les données immédiatement après la création
       await refetch();
     } catch (error) {
       console.error('Error creating subtask:', error);

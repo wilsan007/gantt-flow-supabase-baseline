@@ -15,7 +15,7 @@ export const useTaskDatabase = () => {
       const { data: tasksData, error: tasksError } = await supabase
         .from('tasks')
         .select('*')
-        .order('created_at', { ascending: false });
+        .order('display_order', { ascending: true });
 
       if (tasksError) throw tasksError;
 
@@ -37,6 +37,9 @@ export const useTaskDatabase = () => {
           status: task.status as 'todo' | 'doing' | 'blocked' | 'done',
           effort_estimate_h: task.effort_estimate_h || 0,
           progress: task.progress || 0,
+          parent_id: task.parent_id,
+          task_level: task.task_level || 0,
+          display_order: task.display_order || '1',
           task_actions: actionsData ? actionsData
             .filter(action => action.task_id === task.id)
             .map(action => ({

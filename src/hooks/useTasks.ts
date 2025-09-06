@@ -27,6 +27,9 @@ export interface Task {
   effort_estimate_h: number;
   progress: number;
   task_actions?: TaskAction[];
+  parent_id?: string;
+  task_level: number;
+  display_order: string;
 }
 
 export const useTasks = () => {

@@ -153,6 +153,61 @@ export const useTaskActions = () => {
     }
   };
 
+  const createSubtask = async (parentTaskId: string, title: string) => {
+    try {
+      const { data: parentTask, error: parentError } = await supabase
+        .from('tasks')
+        .select('*')
+        .eq('id', parentTaskId)
+        .single();
+
+      if (parentError) throw parentError;
+
+      const newLevel = parentTask.task_level + 1;
+      const displayOrder = await supabase.rpc('generate_display_order', {
+        p_parent_id: parentTaskId,
+        p_task_level: newLevel
+      });
+
+      const { data: newSubtask, error: subtaskError } = await supabase
+        .from('tasks')
+        .insert([{
+          title,
+          assignee: parentTask.assignee,
+          start_date: parentTask.start_date,
+          due_date: parentTask.due_date,
+          priority: parentTask.priority,
+          status: 'todo',
+          effort_estimate_h: 0,
+          parent_id: parentTaskId,
+          task_level: newLevel,
+          display_order: displayOrder.data
+        }])
+        .select()
+        .single();
+
+      if (subtaskError) throw subtaskError;
+      return newSubtask;
+    } catch (error: any) {
+      console.error('Error creating subtask:', error);
+      throw error;
+    }
+  };
+
+  const updateTaskAssignee = async (taskId: string, assignee: string) => {
+    try {
+      const { error } = await supabase
+        .from('tasks')
+        .update({ assignee })
+        .eq('id', taskId);
+
+      if (error) throw error;
+    } catch (error: any) {
+      console.error('Error updating task assignee:', error);
+      throw error;
+    }
+  };
+
   const updateTaskDates = async (taskId: string, startDate: string, dueDate: string) => {
     try {
       const { error } = await supabase
@@ -187,6 +242,8 @@ export const useTaskActions = () => {
     deleteTask,
     toggleAction,
     addActionColumn,
+    createSubtask,
+    updateTaskAssignee,
     updateTaskDates,
     updateTaskStatus
   };

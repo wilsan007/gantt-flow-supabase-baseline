@@ -16,15 +16,23 @@ const DynamicTable = () => {
     duplicateTask, 
     deleteTask, 
     toggleAction, 
-    addActionColumn 
+    addActionColumn,
+    createSubtask,
+    updateTaskAssignee,
+    refetch
   } = useTasks();
   
   const [newActionTitle, setNewActionTitle] = useState('');
 
   const handleAddActionColumn = async () => {
     if (newActionTitle.trim()) {
-      await addActionColumn(newActionTitle.trim());
-      setNewActionTitle('');
+      try {
+        await addActionColumn(newActionTitle.trim());
+        setNewActionTitle('');
+        await refetch(); // Rafraîchir les données après l'ajout
+      } catch (error) {
+        console.error('Error adding action column:', error);
+      }
     }
   };
 
@@ -36,8 +44,27 @@ const DynamicTable = () => {
     duplicateTask(taskId);
   };
 
-  const handleDeleteTask = (taskId: string) => {
-    deleteTask(taskId);
+  const handleDeleteTask = async (taskId: string) => {
+    await deleteTask(taskId);
+    await refetch();
+  };
+
+  const handleCreateSubtask = async (parentId: string, title: string) => {
+    try {
+      await createSubtask(parentId, title);
+      await refetch();
+    } catch (error) {
+      console.error('Error creating subtask:', error);
+    }
+  };
+
+  const handleUpdateAssignee = async (taskId: string, assignee: string) => {
+    try {
+      await updateTaskAssignee(taskId, assignee);
+      await refetch();
+    } catch (error) {
+      console.error('Error updating assignee:', error);
+    }
   };
 
   if (loading) {
@@ -62,6 +89,8 @@ const DynamicTable = () => {
               tasks={tasks}
               onDuplicate={handleDuplicateTask}
               onDelete={handleDeleteTask}
+              onCreateSubtask={handleCreateSubtask}
+              onUpdateAssignee={handleUpdateAssignee}
             />
           </ResizablePanel>
 

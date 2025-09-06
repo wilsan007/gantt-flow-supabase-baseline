@@ -73,7 +73,7 @@ export const TaskFixedColumns = ({
             return (
               <TableRow 
                 key={task.id} 
-                className={`border-b ${isSubtask ? 'h-12' : 'h-16'}`}
+                className={`border-b`}
                 style={{ height: isSubtask ? '48px' : '64px' }}
               >
                 <TableCell className="font-medium">

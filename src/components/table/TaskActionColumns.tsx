@@ -34,12 +34,12 @@ export const TaskActionColumns = ({ tasks, onToggleAction }: TaskActionColumnsPr
           {tasks.map((task) => {
             const isSubtask = (task.task_level || 0) > 0;
             
-            return (
-              <TableRow 
-                key={task.id}
-                className={isSubtask ? 'h-12' : 'h-16'}
-                style={{ height: isSubtask ? '48px' : '64px' }}
-              >
+              return (
+                <TableRow 
+                  key={task.id}
+                  className=""
+                  style={{ height: isSubtask ? '48px' : '64px' }}
+                >
                 {uniqueActions.map((actionTitle) => {
                   const action = task.task_actions?.find(a => a.title === actionTitle);
                   

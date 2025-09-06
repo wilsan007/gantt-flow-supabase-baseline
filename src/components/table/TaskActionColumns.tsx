@@ -17,6 +17,19 @@ interface TaskActionColumnsProps {
 
 export const TaskActionColumns = ({ tasks, onToggleAction }: TaskActionColumnsProps) => {
   const uniqueActions = getUniqueActions(tasks);
+  
+  // Trier les tâches par display_order pour être aligné avec TaskFixedColumns
+  const sortedTasks = [...tasks].sort((a, b) => {
+    const orderA = a.display_order?.split('.').map(n => parseInt(n)) || [0];
+    const orderB = b.display_order?.split('.').map(n => parseInt(n)) || [0];
+    
+    for (let i = 0; i < Math.max(orderA.length, orderB.length); i++) {
+      const numA = orderA[i] || 0;
+      const numB = orderB[i] || 0;
+      if (numA !== numB) return numA - numB;
+    }
+    return 0;
+  });
 
   return (
     <div className="h-[600px] overflow-auto">
@@ -31,7 +44,7 @@ export const TaskActionColumns = ({ tasks, onToggleAction }: TaskActionColumnsPr
           </TableRow>
         </TableHeader>
         <TableBody>
-          {tasks.map((task) => {
+          {sortedTasks.map((task) => {
             const isSubtask = (task.task_level || 0) > 0;
             
               return (

@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@/components/ui/resizable';
-import { useTasks } from '@/hooks/useTasks';
+import { useTasks, Task } from '@/hooks/useTasks';
 import { TaskTableHeader } from './table/TaskTableHeader';
 import { TaskFixedColumns } from './table/TaskFixedColumns';
 import { TaskActionColumns } from './table/TaskActionColumns';
@@ -24,6 +24,12 @@ const DynamicTable = () => {
   
   const [newActionTitle, setNewActionTitle] = useState('');
   const [selectedTaskId, setSelectedTaskId] = useState<string | undefined>();
+  const [optimisticTasks, setOptimisticTasks] = useState<Task[]>([]);
+
+  // Synchroniser les tâches optimistes avec les vraies tâches
+  useEffect(() => {
+    setOptimisticTasks(tasks);
+  }, [tasks]);
 
   const handleAddActionColumn = async () => {
     if (newActionTitle.trim() && selectedTaskId) {
@@ -41,10 +47,31 @@ const DynamicTable = () => {
   const handleToggleAction = async (taskId: string, actionId: string) => {
     try {
       console.log('handleToggleAction called:', { taskId, actionId });
+      
+      // Mise à jour optimiste : on met à jour l'interface immédiatement
+      const updatedTasks = optimisticTasks.map(task => {
+        if (task.id === taskId && task.task_actions) {
+          return {
+            ...task,
+            task_actions: task.task_actions.map(action => 
+              action.id === actionId 
+                ? { ...action, is_done: !action.is_done }
+                : action
+            )
+          };
+        }
+        return task;
+      });
+      
+      setOptimisticTasks(updatedTasks);
+      
+      // Ensuite on fait la vraie mise à jour
       await toggleAction(taskId, actionId);
-      await refetch(); // Rafraîchir les données après la modification
+      // La subscription temps réel synchronisera automatiquement
     } catch (error) {
       console.error('Error in handleToggleAction:', error);
+      // En cas d'erreur, on refetch pour revenir à l'état correct
+      await refetch();
     }
   };
 
@@ -107,7 +134,7 @@ const DynamicTable = () => {
         <ResizablePanelGroup direction="horizontal" className="border rounded-lg">
           <ResizablePanel defaultSize={70} minSize={60}>
             <TaskFixedColumns 
-              tasks={tasks}
+              tasks={optimisticTasks}
               onDuplicate={handleDuplicateTask}
               onDelete={handleDeleteTask}
               onCreateSubtask={handleCreateSubtask}
@@ -121,7 +148,7 @@ const DynamicTable = () => {
 
           <ResizablePanel defaultSize={30} minSize={25}>
             <TaskActionColumns 
-              tasks={tasks}
+              tasks={optimisticTasks}
               onToggleAction={handleToggleAction}
             />
           </ResizablePanel>

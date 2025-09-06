@@ -258,9 +258,9 @@ const DynamicTable = () => {
                     <TableRow key={task.id}>
                        {getUniqueActions().map((actionTitle) => {
                          const action = task.task_actions?.find(a => a.title === actionTitle);
-                         const completedActions = task.task_actions?.filter(a => a.is_done).length || 0;
                          const totalActions = task.task_actions?.length || 0;
-                         const actionProgress = totalActions > 0 ? Math.round((completedActions / totalActions) * 100) : 0;
+                         const actionWeight = totalActions > 0 ? Math.round(100 / totalActions) : 0;
+                         const actionProgress = action?.is_done ? actionWeight : 0;
                          
                          return (
                            <TableCell key={actionTitle} className="text-center">

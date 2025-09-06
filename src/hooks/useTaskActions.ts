@@ -219,7 +219,8 @@ export const useTaskActions = () => {
           parent_id: parentTaskId,
           task_level: newLevel,
           display_order: displayOrderResult || `${parentTask.display_order}.1`,
-          linked_action_id: linkedActionId
+          linked_action_id: linkedActionId,
+          tenant_id: parentTask.tenant_id  // Ajout du tenant_id manquant
         }])
         .select()
         .single();

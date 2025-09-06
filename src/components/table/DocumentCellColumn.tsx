@@ -54,12 +54,17 @@ export const DocumentCellColumn = ({ task, isSubtask }: DocumentCellProps) => {
       const fileExt = file.name.split('.').pop();
       const fileName = `${task.id}/${Date.now()}.${fileExt}`;
 
+      console.log('Uploading file:', fileName);
       const { error: uploadError } = await supabase.storage
         .from("task-documents")
         .upload(fileName, file);
 
-      if (uploadError) throw uploadError;
+      if (uploadError) {
+        console.error('Storage upload error:', uploadError);
+        throw uploadError;
+      }
 
+      console.log('File uploaded successfully, inserting into database...');
       const { error: dbError } = await supabase
         .from("task_documents")
         .insert({
@@ -69,7 +74,7 @@ export const DocumentCellColumn = ({ task, isSubtask }: DocumentCellProps) => {
           file_path: fileName,
           file_size: file.size,
           mime_type: file.type,
-          tenant_id: '00000000-0000-0000-0000-000000000001', // Default tenant for now
+          // Le tenant_id sera automatiquement rempli par un trigger ou une politique RLS
         });
 
       if (dbError) throw dbError;

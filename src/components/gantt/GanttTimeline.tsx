@@ -49,16 +49,28 @@ export const GanttTimeline = ({
   };
 
   return (
-    <div className="flex-1 overflow-x-auto">
-      <div className="gantt-chart relative bg-background">
+    <div className="flex-1 overflow-x-auto overflow-y-hidden">
+      <div 
+        className="gantt-chart relative bg-background"
+        style={{ minWidth: totalUnits * config.unitWidth }}
+      >
         <div 
-          className="flex border-b border-border bg-muted/30" 
-          style={{ height: config.headerHeight }}
+          className="flex border-b border-border bg-muted/30 sticky top-0 z-10" 
+          style={{ 
+            height: config.headerHeight,
+            minWidth: totalUnits * config.unitWidth 
+          }}
         >
           {renderTimelineHeader()}
         </div>
 
-        <div className="relative" style={{ height: tasks.length * rowHeight }}>
+        <div 
+          className="relative" 
+          style={{ 
+            height: tasks.length * rowHeight,
+            minWidth: totalUnits * config.unitWidth 
+          }}
+        >
           {tasks.map((_, index) => (
             <div
               key={index}

@@ -189,43 +189,68 @@ export const useTaskActions = () => {
     effort_estimate_h: number;
   }) => {
     try {
+      console.log('Getting parent task data...');
       const { data: parentTask, error: parentError } = await supabase
         .from('tasks')
         .select('*')
         .eq('id', parentTaskId)
-        .single();
+        .maybeSingle();
 
-      if (parentError) throw parentError;
+      if (parentError) {
+        console.error('Error fetching parent task:', parentError);
+        throw parentError;
+      }
+      
+      if (!parentTask) {
+        throw new Error('Parent task not found');
+      }
+
+      console.log('Parent task found:', parentTask);
 
       const newLevel = (parentTask.task_level || 0) + 1;
       
+      console.log('Calling generate_display_order...');
       const { data: displayOrderResult, error: displayOrderError } = await supabase.rpc('generate_display_order', {
         p_parent_id: parentTaskId,
         p_task_level: newLevel
       });
 
-      if (displayOrderError) throw displayOrderError;
+      if (displayOrderError) {
+        console.error('Error generating display order:', displayOrderError);
+        throw displayOrderError;
+      }
+
+      console.log('Display order result:', displayOrderResult);
+
+      const subtaskData = {
+        title: customData?.title || `Sous-tâche de ${parentTask.title}`,
+        assignee: parentTask.assignee,
+        start_date: customData?.start_date || parentTask.start_date,
+        due_date: customData?.due_date || parentTask.due_date,
+        priority: parentTask.priority,
+        status: 'todo' as const,
+        effort_estimate_h: customData?.effort_estimate_h || 1,
+        parent_id: parentTaskId,
+        task_level: newLevel,
+        display_order: displayOrderResult || `${parentTask.display_order}.1`,
+        linked_action_id: linkedActionId,
+        tenant_id: parentTask.tenant_id
+      };
+
+      console.log('Inserting subtask with data:', subtaskData);
 
       const { data: newSubtask, error: subtaskError } = await supabase
         .from('tasks')
-        .insert([{
-          title: customData?.title || `Sous-tâche de ${parentTask.title}`,
-          assignee: parentTask.assignee,
-          start_date: customData?.start_date || parentTask.start_date,
-          due_date: customData?.due_date || parentTask.due_date,
-          priority: parentTask.priority,
-          status: 'todo',
-          effort_estimate_h: customData?.effort_estimate_h || 1,
-          parent_id: parentTaskId,
-          task_level: newLevel,
-          display_order: displayOrderResult || `${parentTask.display_order}.1`,
-          linked_action_id: linkedActionId,
-          tenant_id: parentTask.tenant_id  // Ajout du tenant_id manquant
-        }])
+        .insert([subtaskData])
         .select()
         .single();
 
-      if (subtaskError) throw subtaskError;
+      if (subtaskError) {
+        console.error('Error inserting subtask:', subtaskError);
+        throw subtaskError;
+      }
+
+      console.log('Subtask created successfully:', newSubtask);
       return newSubtask;
     } catch (error: any) {
       console.error('Error creating subtask:', error);

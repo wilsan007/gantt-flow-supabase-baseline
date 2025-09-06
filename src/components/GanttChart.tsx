@@ -47,6 +47,14 @@ const GanttChart = () => {
       startDate: new Date(2024, 1, 5),
       endDate: new Date(2024, 1, 20),
       progress: 10,
+      color: 'warning'
+    },
+    {
+      id: '5',
+      name: 'Documentation',
+      startDate: new Date(2024, 1, 15),
+      endDate: new Date(2024, 2, 1),
+      progress: 0,
       color: 'success'
     }
   ]);
@@ -236,7 +244,7 @@ const GanttChart = () => {
       >
         {/* Barre de tâche principale */}
         <div
-          className={`relative h-full rounded-lg border cursor-move transition-all duration-200 ${
+          className={`relative h-full rounded-lg border cursor-move transition-all duration-200 group ${
             isDragging || isResizing ? 'shadow-lg scale-105' : 'hover:shadow-md'
           }`}
           style={{
@@ -256,20 +264,28 @@ const GanttChart = () => {
           
           {/* Poignée de redimensionnement gauche */}
           <div
-            className="absolute left-0 top-0 h-full w-2 cursor-ew-resize opacity-0 hover:opacity-100 transition-opacity"
-            style={{ backgroundColor: `hsl(var(--${task.color}))` }}
-            onMouseDown={(e) => handleMouseDown(e, task.id, 'resize-left')}
-          />
+            className="absolute left-0 top-0 h-full w-3 cursor-ew-resize bg-white/20 opacity-0 group-hover:opacity-100 hover:!opacity-100 transition-opacity flex items-center justify-center"
+            onMouseDown={(e) => {
+              e.stopPropagation();
+              handleMouseDown(e, task.id, 'resize-left');
+            }}
+          >
+            <div className="w-1 h-6 bg-white rounded" />
+          </div>
           
           {/* Poignée de redimensionnement droite */}
           <div
-            className="absolute right-0 top-0 h-full w-2 cursor-ew-resize opacity-0 hover:opacity-100 transition-opacity"
-            style={{ backgroundColor: `hsl(var(--${task.color}))` }}
-            onMouseDown={(e) => handleMouseDown(e, task.id, 'resize-right')}
-          />
+            className="absolute right-0 top-0 h-full w-3 cursor-ew-resize bg-white/20 opacity-0 group-hover:opacity-100 hover:!opacity-100 transition-opacity flex items-center justify-center"
+            onMouseDown={(e) => {
+              e.stopPropagation();
+              handleMouseDown(e, task.id, 'resize-right');
+            }}
+          >
+            <div className="w-1 h-6 bg-white rounded" />
+          </div>
           
           {/* Texte de la tâche */}
-          <div className="absolute inset-0 flex items-center px-3">
+          <div className="absolute inset-0 flex items-center px-4">
             <span className="text-sm font-medium text-white truncate">
               {task.name}
             </span>

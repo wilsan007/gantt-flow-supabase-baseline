@@ -31,33 +31,45 @@ export const TaskActionColumns = ({ tasks, onToggleAction }: TaskActionColumnsPr
           </TableRow>
         </TableHeader>
         <TableBody>
-          {tasks.map((task) => (
-            <TableRow key={task.id}>
-              {uniqueActions.map((actionTitle) => {
-                const action = task.task_actions?.find(a => a.title === actionTitle);
-                
-                return (
-                  <TableCell key={actionTitle} className="text-center">
-                    {action ? (
-                      <div className="flex flex-col items-center gap-1">
-                        <Checkbox
-                          checked={action.is_done}
-                          onCheckedChange={() => {
-                            onToggleAction(task.id, action.id);
-                          }}
-                        />
-                        <span className="text-xs text-muted-foreground font-medium">
-                          {action.weight_percentage}%
-                        </span>
-                      </div>
-                    ) : (
-                      <span className="text-muted-foreground">-</span>
-                    )}
-                  </TableCell>
-                );
-              })}
-            </TableRow>
-          ))}
+          {tasks.map((task) => {
+            const isSubtask = (task.task_level || 0) > 0;
+            
+            return (
+              <TableRow 
+                key={task.id}
+                className={isSubtask ? 'h-12' : 'h-16'}
+                style={{ height: isSubtask ? '48px' : '64px' }}
+              >
+                {uniqueActions.map((actionTitle) => {
+                  const action = task.task_actions?.find(a => a.title === actionTitle);
+                  
+                  return (
+                    <TableCell 
+                      key={actionTitle} 
+                      className={`text-center ${isSubtask ? 'py-1' : ''}`}
+                    >
+                      {action ? (
+                        <div className="flex flex-col items-center gap-1">
+                          <Checkbox
+                            checked={action.is_done}
+                            onCheckedChange={() => {
+                              onToggleAction(task.id, action.id);
+                            }}
+                            className={isSubtask ? 'scale-75' : ''}
+                          />
+                          <span className={`text-muted-foreground font-medium ${isSubtask ? 'text-xs' : 'text-xs'}`}>
+                            {action.weight_percentage}%
+                          </span>
+                        </div>
+                      ) : (
+                        <span className="text-muted-foreground">-</span>
+                      )}
+                    </TableCell>
+                  );
+                })}
+              </TableRow>
+            );
+          })}
         </TableBody>
       </Table>
     </div>

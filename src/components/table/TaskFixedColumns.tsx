@@ -8,9 +8,9 @@ import {
   TableHeader, 
   TableRow 
 } from '@/components/ui/table';
-import { ScrollArea } from '@/components/ui/scroll-area';
+
 import { Progress } from '@/components/ui/progress';
-import { Calendar, Clock, Plus } from 'lucide-react';
+import { Calendar, Clock, Plus, Trash2 } from 'lucide-react';
 import { Task } from '@/hooks/useTasks';
 import { TaskRowActions } from './TaskRowActions';
 import { AssigneeSelect } from './AssigneeSelect';
@@ -51,7 +51,7 @@ export const TaskFixedColumns = ({
   };
 
   return (
-    <ScrollArea className="h-[600px]">
+    <div className="h-[600px] overflow-auto">
       <Table>
         <TableHeader className="sticky top-0 bg-background z-10">
           <TableRow>
@@ -67,78 +67,114 @@ export const TaskFixedColumns = ({
           </TableRow>
         </TableHeader>
         <TableBody>
-          {sortedTasks.map((task) => (
-            <TableRow key={task.id} className="border-b">
-              <TableCell className="font-medium">
-                <div className="flex items-center gap-2">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => handleCreateSubtask(task.id)}
-                    className="h-6 w-6 p-0"
+          {sortedTasks.map((task) => {
+            const isSubtask = (task.task_level || 0) > 0;
+            
+            return (
+              <TableRow 
+                key={task.id} 
+                className={`border-b ${isSubtask ? 'h-12' : 'h-16'}`}
+                style={{ height: isSubtask ? '48px' : '64px' }}
+              >
+                <TableCell className="font-medium">
+                  <div 
+                    className="flex items-center gap-2"
+                    style={{ paddingLeft: `${(task.task_level || 0) * 20}px` }}
                   >
-                    <Plus className="h-3 w-3" />
-                  </Button>
-                  <span 
-                    className={`${task.task_level > 0 ? 'text-muted-foreground' : ''}`}
-                    style={{ marginLeft: `${(task.task_level || 0) * 16}px` }}
-                  >
-                    {task.display_order || '1'}. {task.title}
-                  </span>
-                </div>
-              </TableCell>
-              <TableCell>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => isSubtask ? onDelete(task.id) : handleCreateSubtask(task.id)}
+                      className="h-6 w-6 p-0 opacity-70 hover:opacity-100"
+                    >
+                      {isSubtask ? (
+                        <Trash2 className="h-3 w-3 text-destructive" />
+                      ) : (
+                        <Plus className="h-3 w-3" />
+                      )}
+                    </Button>
+                    <span 
+                      className={`${isSubtask ? 'text-muted-foreground italic text-sm' : ''}`}
+                    >
+                      <span className="text-xs text-muted-foreground mr-2">
+                        {task.display_order || '1'}
+                      </span>
+                      {task.title}
+                    </span>
+                  </div>
+                </TableCell>
+                <TableCell className={isSubtask ? 'py-1' : ''}>
                   <AssigneeSelect
                     assignee={task.assignee}
                     taskId={task.id}
                     onChange={(assignee) => onUpdateAssignee(task.id, assignee)}
                   />
-              </TableCell>
-              <TableCell>
-                <div className="flex items-center gap-2">
-                  <Calendar className="h-4 w-4 text-muted-foreground" />
-                  {formatDate(task.start_date)}
-                </div>
-              </TableCell>
-              <TableCell>
-                <div className="flex items-center gap-2">
-                  <Calendar className="h-4 w-4 text-muted-foreground" />
-                  {formatDate(task.due_date)}
-                </div>
-              </TableCell>
-              <TableCell>
-                <Badge className={priorityColors[task.priority]} variant="outline">
-                  {task.priority}
-                </Badge>
-              </TableCell>
-              <TableCell>
-                <Badge className={statusColors[task.status]} variant="outline">
-                  {task.status}
-                </Badge>
-              </TableCell>
-              <TableCell>
-                <div className="flex items-center gap-2">
-                  <Clock className="h-4 w-4 text-muted-foreground" />
-                  {task.effort_estimate_h}h
-                </div>
-              </TableCell>
-              <TableCell>
-                <div className="flex items-center gap-2">
-                  <Progress value={task.progress} className="w-16" />
-                  <span className="text-sm font-medium">{task.progress}%</span>
-                </div>
-              </TableCell>
-              <TableCell>
-                <TaskRowActions 
-                  taskId={task.id}
-                  onDuplicate={onDuplicate}
-                  onDelete={onDelete}
-                />
-              </TableCell>
-            </TableRow>
-          ))}
+                </TableCell>
+                <TableCell className={isSubtask ? 'py-1' : ''}>
+                  <div className="flex items-center gap-2">
+                    <Calendar className={`${isSubtask ? 'h-3 w-3' : 'h-4 w-4'} text-muted-foreground`} />
+                    <span className={isSubtask ? 'text-sm' : ''}>
+                      {formatDate(task.start_date)}
+                    </span>
+                  </div>
+                </TableCell>
+                <TableCell className={isSubtask ? 'py-1' : ''}>
+                  <div className="flex items-center gap-2">
+                    <Calendar className={`${isSubtask ? 'h-3 w-3' : 'h-4 w-4'} text-muted-foreground`} />
+                    <span className={isSubtask ? 'text-sm' : ''}>
+                      {formatDate(task.due_date)}
+                    </span>
+                  </div>
+                </TableCell>
+                <TableCell className={isSubtask ? 'py-1' : ''}>
+                  <Badge 
+                    className={`${priorityColors[task.priority]} ${isSubtask ? 'text-xs px-1 py-0' : ''}`} 
+                    variant="outline"
+                  >
+                    {task.priority}
+                  </Badge>
+                </TableCell>
+                <TableCell className={isSubtask ? 'py-1' : ''}>
+                  <Badge 
+                    className={`${statusColors[task.status]} ${isSubtask ? 'text-xs px-1 py-0' : ''}`} 
+                    variant="outline"
+                  >
+                    {task.status}
+                  </Badge>
+                </TableCell>
+                <TableCell className={isSubtask ? 'py-1' : ''}>
+                  <div className="flex items-center gap-2">
+                    <Clock className={`${isSubtask ? 'h-3 w-3' : 'h-4 w-4'} text-muted-foreground`} />
+                    <span className={isSubtask ? 'text-sm' : ''}>
+                      {task.effort_estimate_h}h
+                    </span>
+                  </div>
+                </TableCell>
+                <TableCell className={isSubtask ? 'py-1' : ''}>
+                  <div className="flex items-center gap-2">
+                    <Progress 
+                      value={task.progress} 
+                      className={isSubtask ? 'w-12 h-1' : 'w-16'} 
+                    />
+                    <span className={`font-medium ${isSubtask ? 'text-xs' : 'text-sm'}`}>
+                      {task.progress}%
+                    </span>
+                  </div>
+                </TableCell>
+                <TableCell className={isSubtask ? 'py-1' : ''}>
+                  {!isSubtask && (
+                    <TaskRowActions 
+                      taskId={task.id}
+                      onDuplicate={onDuplicate}
+                      onDelete={onDelete}
+                    />
+                  )}
+                </TableCell>
+              </TableRow>
+            );
+          })}
         </TableBody>
       </Table>
-    </ScrollArea>
+    </div>
   );
 };

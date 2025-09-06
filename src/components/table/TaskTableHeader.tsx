@@ -28,7 +28,11 @@ export const TaskTableHeader = ({
           onKeyPress={(e) => e.key === 'Enter' && onAddActionColumn()}
           className="w-40"
         />
-        <Button onClick={onAddActionColumn} size="sm">
+        <Button 
+          onClick={onAddActionColumn} 
+          size="sm"
+          disabled={!newActionTitle.trim()}
+        >
           <Plus className="h-4 w-4" />
         </Button>
       </div>

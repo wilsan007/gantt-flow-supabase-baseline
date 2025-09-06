@@ -38,7 +38,7 @@ export const TaskActionColumns = ({ tasks, onToggleAction }: TaskActionColumnsPr
                 <TableRow 
                   key={task.id}
                   className=""
-                  style={{ height: isSubtask ? '48px' : '64px' }}
+                  style={{ height: isSubtask ? '38px' : '64px' }}
                 >
                 {uniqueActions.map((actionTitle) => {
                   const action = task.task_actions?.find(a => a.title === actionTitle);

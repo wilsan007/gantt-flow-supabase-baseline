@@ -79,6 +79,7 @@ export const DocumentsColumn = ({ task }: DocumentsColumnProps) => {
           file_path: fileName,
           file_size: file.size,
           mime_type: file.type,
+          // Le tenant_id sera automatiquement rempli par le trigger
         });
 
       if (dbError) throw dbError;

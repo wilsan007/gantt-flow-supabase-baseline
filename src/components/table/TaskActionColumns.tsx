@@ -71,6 +71,7 @@ export const TaskActionColumns = ({ tasks, onToggleAction }: TaskActionColumnsPr
                           <Checkbox
                             checked={action.is_done}
                             onCheckedChange={() => {
+                              console.log('Checkbox clicked - Task ID:', task.id, 'Action ID:', action.id);
                               onToggleAction(task.id, action.id);
                             }}
                             className={isSubtask ? 'scale-75' : ''}

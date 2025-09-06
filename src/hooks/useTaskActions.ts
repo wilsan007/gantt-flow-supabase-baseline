@@ -101,13 +101,19 @@ export const useTaskActions = () => {
 
   const toggleAction = async (taskId: string, actionId: string) => {
     try {
+      console.log('toggleAction called with:', { taskId, actionId });
+      
       const { data: currentAction, error: fetchError } = await supabase
         .from('task_actions')
         .select('is_done, tenant_id')
         .eq('id', actionId)
         .single();
 
-      if (fetchError) throw fetchError;
+      console.log('Current action data:', currentAction);
+      if (fetchError) {
+        console.error('Error fetching action:', fetchError);
+        throw fetchError;
+      }
 
       const { error: updateError } = await supabase
         .from('task_actions')
@@ -118,7 +124,10 @@ export const useTaskActions = () => {
         .eq('id', actionId)
         .eq('tenant_id', currentAction.tenant_id);
 
+      console.log('Update result - error:', updateError);
       if (updateError) throw updateError;
+      
+      console.log('Action toggled successfully');
     } catch (error: any) {
       console.error('Error toggling action:', error);
       throw error;

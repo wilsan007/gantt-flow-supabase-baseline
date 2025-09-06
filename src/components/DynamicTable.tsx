@@ -265,8 +265,9 @@ const DynamicTable = () => {
                          if (totalActions > 0) {
                            const baseWeight = Math.floor(100 / totalActions);
                            const remainder = 100 - (baseWeight * totalActions);
-                           // Distribuer le reste aux premières actions
-                           actionWeight = baseWeight + (actionIndex < remainder ? 1 : 0);
+                           // Distribuer le reste aux premières actions de cette tâche spécifique
+                           const taskActionIndex = task.task_actions?.findIndex(a => a.title === actionTitle) || 0;
+                           actionWeight = baseWeight + (taskActionIndex < remainder ? 1 : 0);
                          }
                          
                          const actionProgress = action?.is_done ? actionWeight : 0;

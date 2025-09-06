@@ -222,18 +222,27 @@ export const useTasks = () => {
 
       // Optimistic update for immediate UI feedback
       setTasks(prevTasks => 
-        prevTasks.map(task => 
-          task.id === taskId 
-            ? {
-                ...task,
-                task_actions: task.task_actions?.map(action => 
-                  action.id === actionId 
-                    ? { ...action, is_done: newIsDone }
-                    : action
-                ) || []
-              }
-            : task
-        )
+        prevTasks.map(task => {
+          if (task.id === taskId) {
+            const updatedActions = task.task_actions?.map(action => 
+              action.id === actionId 
+                ? { ...action, is_done: newIsDone }
+                : action
+            ) || [];
+            
+            // Recalcule le pourcentage global immédiatement
+            const completedActions = updatedActions.filter(action => action.is_done).length;
+            const totalActions = updatedActions.length;
+            const newProgress = totalActions > 0 ? Math.round((completedActions / totalActions) * 100) : 0;
+            
+            return {
+              ...task,
+              task_actions: updatedActions,
+              progress: newProgress
+            };
+          }
+          return task;
+        })
       );
 
       // Update in database - the trigger will handle progress/status update automatically

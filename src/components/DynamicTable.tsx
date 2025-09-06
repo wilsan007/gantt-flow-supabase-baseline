@@ -256,10 +256,19 @@ const DynamicTable = () => {
                 <TableBody>
                   {tasks.map((task) => (
                     <TableRow key={task.id}>
-                       {getUniqueActions().map((actionTitle) => {
+                       {getUniqueActions().map((actionTitle, actionIndex) => {
                          const action = task.task_actions?.find(a => a.title === actionTitle);
                          const totalActions = task.task_actions?.length || 0;
-                         const actionWeight = totalActions > 0 ? Math.round(100 / totalActions) : 0;
+                         
+                         // Calcul correct pour que la somme fasse toujours 100%
+                         let actionWeight = 0;
+                         if (totalActions > 0) {
+                           const baseWeight = Math.floor(100 / totalActions);
+                           const remainder = 100 - (baseWeight * totalActions);
+                           // Distribuer le reste aux premières actions
+                           actionWeight = baseWeight + (actionIndex < remainder ? 1 : 0);
+                         }
+                         
                          const actionProgress = action?.is_done ? actionWeight : 0;
                          
                          return (

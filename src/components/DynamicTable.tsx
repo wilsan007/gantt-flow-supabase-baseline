@@ -38,17 +38,17 @@ import { useTasks } from '@/hooks/useTasks';
 
 
 const priorityColors = {
-  low: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300',
-  medium: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300',
-  high: 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-300',
-  urgent: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'
+  low: 'bg-success/10 text-success border-success/20',
+  medium: 'bg-warning/10 text-warning border-warning/20',
+  high: 'bg-info/10 text-info border-info/20',
+  urgent: 'bg-danger/10 text-danger border-danger/20'
 };
 
 const statusColors = {
-  todo: 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300',
-  doing: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300',
-  blocked: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300',
-  done: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300'
+  todo: 'bg-muted text-muted-foreground border-border',
+  doing: 'bg-tech-blue/10 text-tech-blue border-tech-blue/20',
+  blocked: 'bg-danger/10 text-danger border-danger/20',
+  done: 'bg-success/10 text-success border-success/20'
 };
 
 const DynamicTable = () => {
@@ -183,12 +183,12 @@ const DynamicTable = () => {
                         </div>
                       </TableCell>
                       <TableCell>
-                        <Badge className={priorityColors[task.priority]} variant="secondary">
+                        <Badge className={priorityColors[task.priority]} variant="outline">
                           {task.priority}
                         </Badge>
                       </TableCell>
                       <TableCell>
-                        <Badge className={statusColors[task.status]} variant="secondary">
+                        <Badge className={statusColors[task.status]} variant="outline">
                           {task.status}
                         </Badge>
                       </TableCell>

@@ -14,13 +14,125 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      task_actions: {
+        Row: {
+          created_at: string
+          due_date: string | null
+          id: string
+          is_done: boolean | null
+          notes: string | null
+          owner_id: string | null
+          position: number | null
+          task_id: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          due_date?: string | null
+          id?: string
+          is_done?: boolean | null
+          notes?: string | null
+          owner_id?: string | null
+          position?: number | null
+          task_id: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          due_date?: string | null
+          id?: string
+          is_done?: boolean | null
+          notes?: string | null
+          owner_id?: string | null
+          position?: number | null
+          task_id?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "task_actions_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tasks: {
+        Row: {
+          assignee: string
+          created_at: string
+          due_date: string
+          effort_estimate_h: number | null
+          effort_spent_h: number | null
+          id: string
+          parent_id: string | null
+          priority: string
+          progress: number | null
+          project_id: string | null
+          start_date: string
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          assignee: string
+          created_at?: string
+          due_date: string
+          effort_estimate_h?: number | null
+          effort_spent_h?: number | null
+          id?: string
+          parent_id?: string | null
+          priority: string
+          progress?: number | null
+          project_id?: string | null
+          start_date: string
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          assignee?: string
+          created_at?: string
+          due_date?: string
+          effort_estimate_h?: number | null
+          effort_spent_h?: number | null
+          id?: string
+          parent_id?: string | null
+          priority?: string
+          progress?: number | null
+          project_id?: string | null
+          start_date?: string
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tasks_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      compute_task_progress: {
+        Args: { p_task_id: string }
+        Returns: number
+      }
+      compute_task_status: {
+        Args: { p_task_id: string }
+        Returns: string
+      }
     }
     Enums: {
       [_ in never]: never

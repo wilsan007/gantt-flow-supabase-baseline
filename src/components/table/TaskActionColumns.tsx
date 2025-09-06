@@ -50,7 +50,7 @@ export const TaskActionColumns = ({ tasks, onToggleAction }: TaskActionColumnsPr
               return (
                 <TableRow 
                   key={task.id}
-                  className=""
+                  className="border-b"
                   style={{ height: isSubtask ? '51px' : '64px' }}
                 >
                 {uniqueActions.map((actionTitle) => {

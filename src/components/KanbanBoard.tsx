@@ -30,9 +30,9 @@ const COLUMNS = [
 
 const PRIORITY_COLORS = {
   low: 'bg-muted text-muted-foreground',
-  medium: 'bg-warning text-warning-foreground',
-  high: 'bg-tech-orange text-tech-orange-foreground',
-  urgent: 'bg-destructive text-destructive-foreground',
+  medium: 'bg-warning/20 text-warning border-warning/30',
+  high: 'bg-tech-orange/20 text-tech-orange border-tech-orange/30',
+  urgent: 'bg-destructive/20 text-destructive border-destructive/30',
 };
 
 interface KanbanCardProps {
@@ -62,16 +62,16 @@ function KanbanCard({ task }: KanbanCardProps) {
       {...listeners}
       className={`cursor-grab active:cursor-grabbing ${isDragging ? 'opacity-50' : ''}`}
     >
-      <Card className="mb-3 hover:shadow-md transition-shadow">
+      <Card className="mb-3 hover:shadow-md transition-smooth glass hover-glow cursor-grab active:cursor-grabbing">
         <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-medium">{task.title}</CardTitle>
+          <CardTitle className="text-sm font-medium text-foreground">{task.title}</CardTitle>
           <div className="flex items-center justify-between">
-            <Badge className={`text-xs ${PRIORITY_COLORS[task.priority]}`}>
+            <Badge className={`text-xs border ${PRIORITY_COLORS[task.priority]}`}>
               {task.priority}
             </Badge>
-            <Avatar className="h-6 w-6">
+            <Avatar className="h-6 w-6 ring-2 ring-primary/30">
               <AvatarImage src="" alt={task.assignee} />
-              <AvatarFallback className="text-xs">
+              <AvatarFallback className="text-xs bg-primary/20 text-primary">
                 {task.assignee.slice(0, 2).toUpperCase()}
               </AvatarFallback>
             </Avatar>
@@ -86,12 +86,13 @@ function KanbanCard({ task }: KanbanCardProps) {
             <div className="space-y-1">
               <div className="flex justify-between text-xs">
                 <span>Progrès</span>
-                <span>{task.progress}%</span>
+                <span className="text-primary font-medium">{task.progress}%</span>
               </div>
               <Progress value={task.progress} className="h-2" />
             </div>
             {task.effort_estimate_h > 0 && (
-              <div className="text-xs text-muted-foreground">
+              <div className="text-xs text-muted-foreground flex items-center gap-1">
+                <span className="w-1 h-1 bg-accent rounded-full"></span>
                 Estimé: {task.effort_estimate_h}h
               </div>
             )}
@@ -110,11 +111,13 @@ interface KanbanColumnProps {
 function KanbanColumn({ column, tasks }: KanbanColumnProps) {
   return (
     <div className="flex-1 min-w-0">
-      <Card className="h-full">
-        <CardHeader className="pb-3">
-          <CardTitle className="text-lg flex items-center justify-between">
-            {column.title}
-            <Badge variant="secondary" className="ml-2">
+      <Card className="h-full glass glow-accent transition-smooth">
+        <CardHeader className="pb-3 bg-gradient-to-r from-primary/5 to-accent/5">
+          <CardTitle className="text-lg flex items-center justify-between text-foreground">
+            <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+              {column.title}
+            </span>
+            <Badge variant="secondary" className="ml-2 bg-primary/20 text-primary border-primary/30">
               {tasks.length}
             </Badge>
           </CardTitle>
@@ -177,7 +180,8 @@ export default function KanbanBoard() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary glow-primary"></div>
+        <span className="ml-3 text-foreground">Chargement...</span>
       </div>
     );
   }

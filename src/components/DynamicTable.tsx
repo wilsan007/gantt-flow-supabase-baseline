@@ -148,7 +148,7 @@ const DynamicTable = () => {
   }
 
   return (
-    <Card className="w-full">
+    <Card className="w-full modern-card glow-accent transition-smooth">
         <TaskTableHeader 
           newActionTitle={newActionTitle}
           setNewActionTitle={setNewActionTitle}
@@ -156,8 +156,8 @@ const DynamicTable = () => {
           selectedTaskId={selectedTaskId}
           isActionButtonEnabled={isActionButtonEnabled}
         />
-      <CardContent>
-        <ResizablePanelGroup direction="horizontal" className="border rounded-lg">
+      <CardContent className="bg-gantt-header/20 backdrop-blur-sm">
+        <ResizablePanelGroup direction="horizontal" className="border rounded-lg border-border/50 overflow-hidden">
           <ResizablePanel defaultSize={70} minSize={60}>
             <TaskFixedColumns 
               tasks={optimisticTasks}

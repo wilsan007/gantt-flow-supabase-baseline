@@ -73,18 +73,18 @@ const GanttChart = () => {
   }
 
   return (
-    <Card className="w-full bg-card border-border">
+    <Card className="w-full modern-card glow-primary transition-smooth">
       <GanttHeader 
         viewMode={viewMode} 
         onViewModeChange={setViewMode} 
       />
-      <CardContent className="p-0">
-        <div className="flex h-[600px] overflow-hidden">
+      <CardContent className="p-0 bg-gantt-header/50 backdrop-blur-sm">
+        <div className="flex h-[600px] overflow-hidden rounded-b-xl">
           <GanttTaskList 
             tasks={ganttTasks} 
             rowHeight={rowHeight} 
           />
-          <div ref={chartRef} className="flex-1 min-w-0">
+          <div ref={chartRef} className="flex-1 min-w-0 bg-gantt-task-bg/30">
             <GanttTimeline
               tasks={ganttTasks}
               config={config}

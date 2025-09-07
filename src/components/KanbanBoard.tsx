@@ -62,16 +62,16 @@ function KanbanCard({ task }: KanbanCardProps) {
       {...listeners}
       className={`cursor-grab active:cursor-grabbing ${isDragging ? 'opacity-50' : ''}`}
     >
-      <Card className="mb-3 hover:shadow-md transition-smooth glass hover-glow cursor-grab active:cursor-grabbing border-primary/20 bg-card/60 backdrop-blur-sm">
+      <Card className="mb-3 hover:shadow-md transition-smooth glass hover-glow cursor-grab active:cursor-grabbing border-primary/30 bg-card/40 backdrop-blur-sm">
         <CardHeader className="pb-2">
           <CardTitle className="text-sm font-medium text-foreground">{task.title}</CardTitle>
           <div className="flex items-center justify-between">
             <Badge className={`text-xs border font-medium ${PRIORITY_COLORS[task.priority]}`}>
               {task.priority}
             </Badge>
-            <Avatar className="h-6 w-6 ring-2 ring-primary/30">
+            <Avatar className="h-6 w-6 ring-2 ring-primary/40">
               <AvatarImage src="" alt={task.assignee} />
-              <AvatarFallback className="text-xs bg-primary/30 text-primary-foreground font-semibold">
+              <AvatarFallback className="text-xs bg-primary/40 text-primary-foreground font-semibold">
                 {task.assignee.slice(0, 2).toUpperCase()}
               </AvatarFallback>
             </Avatar>
@@ -111,18 +111,18 @@ interface KanbanColumnProps {
 function KanbanColumn({ column, tasks }: KanbanColumnProps) {
   return (
     <div className="flex-1 min-w-0">
-      <Card className="h-full glass glow-accent transition-smooth border-primary/20">
-        <CardHeader className="pb-3 bg-gradient-to-r from-primary/10 to-accent/10 backdrop-blur-sm border-b border-primary/20">
+      <Card className="h-full glass glow-accent transition-smooth border-primary/30">
+        <CardHeader className="pb-3 bg-gradient-to-r from-primary/15 to-accent/15 backdrop-blur-sm border-b border-primary/30">
           <CardTitle className="text-lg flex items-center justify-between text-foreground">
             <span className="bg-gradient-to-r from-tech-purple to-tech-cyan bg-clip-text text-transparent font-bold">
               {column.title}
             </span>
-            <Badge variant="secondary" className="ml-2 bg-primary/30 text-primary-foreground border-primary/40 font-semibold">
+            <Badge variant="secondary" className="ml-2 bg-primary/40 text-primary-foreground border-primary/50 font-semibold shadow-lg">
               {tasks.length}
             </Badge>
           </CardTitle>
         </CardHeader>
-        <CardContent className="max-h-[calc(100vh-300px)] overflow-y-auto bg-card/50 backdrop-blur-sm">
+        <CardContent className="max-h-[calc(100vh-300px)] overflow-y-auto bg-card/30 backdrop-blur-sm">
           <SortableContext items={tasks.map(t => t.id)} strategy={verticalListSortingStrategy}>
             {tasks.map((task) => (
               <KanbanCard key={task.id} task={task} />

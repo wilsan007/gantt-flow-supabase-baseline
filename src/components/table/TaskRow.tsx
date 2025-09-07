@@ -36,7 +36,7 @@ export const TaskRow = ({
   return (
     <TableRow 
       className={`border-b border-gantt-grid/30 cursor-pointer transition-colors ${
-        selectedTaskId === task.id ? 'bg-gantt-hover/20 border-gantt-hover/40' : 'hover:bg-gantt-task-bg/50'
+        selectedTaskId === task.id ? 'bg-primary/15 border-primary/40' : 'hover:bg-gantt-task-bg/50'
       }`}
       style={{ 
         height: isSubtask ? '51px' : '64px',

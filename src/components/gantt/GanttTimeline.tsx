@@ -51,11 +51,11 @@ export const GanttTimeline = ({
   return (
     <div className="flex-1 overflow-x-auto overflow-y-hidden">
       <div 
-        className="gantt-chart relative bg-gantt-task-bg/40 backdrop-blur-sm"
+        className="gantt-chart relative bg-gantt-task-bg/60 backdrop-blur-sm"
         style={{ minWidth: totalUnits * config.unitWidth }}
       >
         <div 
-          className="flex border-b border-gantt-grid bg-gantt-header/80 backdrop-blur-sm sticky top-0 z-10"
+          className="flex border-b border-gantt-grid bg-gantt-header backdrop-blur-sm sticky top-0 z-10"
           style={{ 
             height: config.headerHeight,
             minWidth: totalUnits * config.unitWidth 

@@ -38,7 +38,7 @@ export const TaskFixedColumns = ({
     <>
       <div className="h-[600px] overflow-auto">
         <Table>
-          <TableHeader className="sticky top-0 bg-gantt-header/90 backdrop-blur-sm z-10 border-b border-gantt-grid">
+          <TableHeader className="sticky top-0 bg-gantt-header backdrop-blur-sm z-10 border-b border-gantt-grid">
             <TableRow className="h-12 hover:bg-transparent">
               <TableHead className="min-w-[200px] h-12 text-foreground font-semibold">Tâche</TableHead>
               <TableHead className="min-w-[150px] h-12 text-foreground font-semibold">Responsable</TableHead>

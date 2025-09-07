@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { useTasks, Task } from '@/hooks/useTasks';
+import { useIsMobile } from '@/hooks/use-mobile';
 import { GanttHeader } from './gantt/GanttHeader';
 import { GanttTaskList } from './gantt/GanttTaskList';
 import { GanttTimeline } from './gantt/GanttTimeline';
 import { GanttLoadingState, GanttErrorState } from './gantt/GanttStates';
+import { MobileGanttChart } from './responsive/MobileGanttChart';
 import { useGanttDrag } from '@/hooks/useGanttDrag';
 import { 
   ViewMode, 
@@ -16,6 +18,7 @@ import {
 const GanttChart = () => {
   const [viewMode, setViewMode] = useState<ViewMode>('week');
   const { tasks, loading, error, updateTaskDates } = useTasks();
+  const isMobile = useIsMobile();
   
   const config = getViewConfig(viewMode);
   const rowHeight = 60;
@@ -72,6 +75,18 @@ const GanttChart = () => {
     return <GanttErrorState error={error} />;
   }
 
+  // Use mobile version on small screens
+  if (isMobile) {
+    return (
+      <MobileGanttChart 
+        tasks={tasks}
+        loading={loading}
+        error={error}
+        updateTaskDates={updateTaskDates}
+      />
+    );
+  }
+
   return (
     <Card className="w-full modern-card glow-primary transition-smooth">
       <GanttHeader 
@@ -79,7 +94,7 @@ const GanttChart = () => {
         onViewModeChange={setViewMode} 
       />
       <CardContent className="p-0 bg-gantt-header/50 backdrop-blur-sm">
-        <div className="flex h-[600px] overflow-hidden rounded-b-xl">
+        <div className="flex h-[600px] lg:h-[700px] overflow-hidden rounded-b-xl">
           <GanttTaskList 
             tasks={ganttTasks} 
             rowHeight={rowHeight} 

@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { useTasks } from '@/hooks/useTasks';
-import { useIsMobile } from '@/hooks/use-mobile';
-import { MobileKanbanBoard } from './responsive/MobileKanbanBoard';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Progress } from '@/components/ui/progress';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   DndContext,
   DragEndEvent,
@@ -37,11 +37,11 @@ const PRIORITY_COLORS = {
   urgent: 'bg-destructive/20 text-destructive border-destructive/30',
 };
 
-interface KanbanCardProps {
+interface MobileKanbanCardProps {
   task: Task;
 }
 
-function KanbanCard({ task }: KanbanCardProps) {
+function MobileKanbanCard({ task }: MobileKanbanCardProps) {
   const {
     attributes,
     listeners,
@@ -66,7 +66,9 @@ function KanbanCard({ task }: KanbanCardProps) {
     >
       <Card className="mb-3 hover:shadow-md transition-smooth glass hover-glow cursor-grab active:cursor-grabbing border-primary/30 bg-card/40 backdrop-blur-sm">
         <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-medium text-foreground">{task.title}</CardTitle>
+          <CardTitle className="text-sm font-medium text-foreground leading-tight">
+            {task.title}
+          </CardTitle>
           <div className="flex items-center justify-between">
             <Badge className={`text-xs border font-medium ${PRIORITY_COLORS[task.priority]}`}>
               {task.priority}
@@ -81,7 +83,7 @@ function KanbanCard({ task }: KanbanCardProps) {
         </CardHeader>
         <CardContent className="pt-0">
           <div className="space-y-2">
-            <div className="flex justify-between text-xs text-foreground/70">
+            <div className="grid grid-cols-1 gap-1 text-xs text-foreground/70">
               <span>Début: {new Date(task.start_date).toLocaleDateString('fr-FR')}</span>
               <span>Fin: {new Date(task.due_date).toLocaleDateString('fr-FR')}</span>
             </div>
@@ -105,41 +107,39 @@ function KanbanCard({ task }: KanbanCardProps) {
   );
 }
 
-interface KanbanColumnProps {
+interface MobileKanbanColumnProps {
   column: typeof COLUMNS[0];
   tasks: Task[];
 }
 
-function KanbanColumn({ column, tasks }: KanbanColumnProps) {
+function MobileKanbanColumn({ column, tasks }: MobileKanbanColumnProps) {
   return (
-    <div className="flex-1 min-w-0">
-      <Card className="h-full glass glow-accent transition-smooth border-primary/30">
-        <CardHeader className="pb-3 bg-gradient-to-r from-primary/15 to-accent/15 backdrop-blur-sm border-b border-primary/30">
-          <CardTitle className="text-lg flex items-center justify-between text-foreground">
-            <span className="bg-gradient-to-r from-tech-purple to-tech-cyan bg-clip-text text-transparent font-bold">
-              {column.title}
-            </span>
-            <Badge variant="secondary" className="ml-2 bg-primary/40 text-primary-foreground border-primary/50 font-semibold shadow-lg">
-              {tasks.length}
-            </Badge>
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="max-h-[calc(100vh-300px)] overflow-y-auto bg-card/30 backdrop-blur-sm">
+    <div className="h-full">
+      <div className="flex items-center justify-between mb-4 sticky top-0 bg-background/80 backdrop-blur-sm z-10 py-2">
+        <h2 className="text-lg font-semibold bg-gradient-to-r from-tech-purple to-tech-cyan bg-clip-text text-transparent">
+          {column.title}
+        </h2>
+        <Badge variant="secondary" className="bg-primary/40 text-primary-foreground border-primary/50 font-semibold">
+          {tasks.length}
+        </Badge>
+      </div>
+      
+      <ScrollArea className="h-[calc(100vh-200px)]">
+        <div className="pb-4">
           <SortableContext items={tasks.map(t => t.id)} strategy={verticalListSortingStrategy}>
             {tasks.map((task) => (
-              <KanbanCard key={task.id} task={task} />
+              <MobileKanbanCard key={task.id} task={task} />
             ))}
           </SortableContext>
-        </CardContent>
-      </Card>
+        </div>
+      </ScrollArea>
     </div>
   );
 }
 
-export default function KanbanBoard() {
+export function MobileKanbanBoard() {
   const { tasks, updateTaskStatus, loading } = useTasks();
   const [activeTask, setActiveTask] = useState<Task | null>(null);
-  const isMobile = useIsMobile();
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -189,11 +189,6 @@ export default function KanbanBoard() {
     );
   }
 
-  // Use mobile version on small screens
-  if (isMobile) {
-    return <MobileKanbanBoard />;
-  }
-
   const tasksByStatus = COLUMNS.map(column => ({
     ...column,
     tasks: tasks.filter(task => task.status === column.status)
@@ -205,18 +200,36 @@ export default function KanbanBoard() {
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
     >
-      <div className="h-full">
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 h-full">
-          {tasksByStatus.map((column) => (
-            <div key={column.id}>
-              <KanbanColumn column={column} tasks={column.tasks} />
-            </div>
-          ))}
-        </div>
-      </div>
+      <Card className="w-full modern-card glow-accent transition-smooth">
+        <CardContent className="p-0">
+          {/* Mobile: Tabs for different columns */}
+          <Tabs defaultValue="todo" className="w-full">
+            <TabsList className="grid w-full grid-cols-4 rounded-t-xl bg-gradient-to-r from-primary/10 via-accent/10 to-tech-purple/10 border-b">
+              {COLUMNS.map((column) => (
+                <TabsTrigger 
+                  key={column.id}
+                  value={column.id} 
+                  className="text-xs transition-smooth data-[state=active]:bg-primary/20 data-[state=active]:text-primary font-semibold"
+                >
+                  {column.title}
+                  <Badge variant="secondary" className="ml-1 text-xs bg-primary/30 text-primary-foreground">
+                    {tasksByStatus.find(c => c.id === column.id)?.tasks.length || 0}
+                  </Badge>
+                </TabsTrigger>
+              ))}
+            </TabsList>
+            
+            {tasksByStatus.map((column) => (
+              <TabsContent key={column.id} value={column.id} className="p-4 bg-card/30 backdrop-blur-sm">
+                <MobileKanbanColumn column={column} tasks={column.tasks} />
+              </TabsContent>
+            ))}
+          </Tabs>
+        </CardContent>
+      </Card>
       
       <DragOverlay>
-        {activeTask ? <KanbanCard task={activeTask} /> : null}
+        {activeTask ? <MobileKanbanCard task={activeTask} /> : null}
       </DragOverlay>
     </DndContext>
   );

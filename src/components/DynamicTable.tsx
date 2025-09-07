@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@/components/ui/resizable';
 import { useTasks, Task } from '@/hooks/useTasks';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { MobileDynamicTable } from './responsive/MobileDynamicTable';
 import { TaskTableHeader } from './table/TaskTableHeader';
 import { TaskFixedColumns } from './table/TaskFixedColumns';
 import { TaskActionColumns } from './table/TaskActionColumns';
@@ -21,6 +23,7 @@ const DynamicTable = () => {
     updateTaskAssignee,
     refetch
   } = useTasks();
+  const isMobile = useIsMobile();
   
   const [newActionTitle, setNewActionTitle] = useState('');
   const [selectedTaskId, setSelectedTaskId] = useState<string | undefined>();
@@ -145,6 +148,24 @@ const DynamicTable = () => {
 
   if (error) {
     return <ErrorState error={error} />;
+  }
+
+  // Use mobile version on small screens
+  if (isMobile) {
+    return (
+      <MobileDynamicTable 
+        tasks={optimisticTasks}
+        loading={loading}
+        error={error}
+        duplicateTask={duplicateTask}
+        deleteTask={handleDeleteTask}
+        toggleAction={handleToggleAction}
+        addActionColumn={addActionColumn}
+        createSubTask={handleCreateSubtask}
+        updateTaskAssignee={handleUpdateAssignee}
+        refetch={refetch}
+      />
+    );
   }
 
   return (

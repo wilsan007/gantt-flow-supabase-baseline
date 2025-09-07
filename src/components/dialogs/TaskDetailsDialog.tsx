@@ -41,7 +41,6 @@ export const TaskDetailsDialog = ({ open, onOpenChange, task }: TaskDetailsDialo
   const { 
     taskDetails, 
     loading, 
-    project, 
     department, 
     subtasks, 
     comments, 
@@ -125,48 +124,28 @@ export const TaskDetailsDialog = ({ open, onOpenChange, task }: TaskDetailsDialo
               </CardContent>
             </Card>
 
-            {/* Projet et Département */}
-            {(project || department) && (
+            {/* Département */}
+            {department && (
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Building2 className="h-5 w-5" />
-                    Contexte organisationnel
+                    Département
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  {department && (
-                    <div>
-                      <h4 className="font-medium flex items-center gap-2 mb-2">
-                        <Building2 className="h-4 w-4" />
-                        Département
-                      </h4>
-                      <div className="bg-muted p-3 rounded-lg">
-                        <p className="font-medium">{department.name}</p>
-                        {department.description && (
-                          <p className="text-sm text-muted-foreground mt-1">{department.description}</p>
-                        )}
+                  <div className="bg-muted p-3 rounded-lg">
+                    <p className="font-medium">{department.name}</p>
+                    {department.description && (
+                      <p className="text-sm text-muted-foreground mt-1">{department.description}</p>
+                    )}
+                    {department.budget && (
+                      <div className="flex items-center gap-2 mt-2">
+                        <Euro className="h-4 w-4 text-muted-foreground" />
+                        <span className="text-sm">Budget: {department.budget}€</span>
                       </div>
-                    </div>
-                  )}
-                  {project && (
-                    <div>
-                      <h4 className="font-medium flex items-center gap-2 mb-2">
-                        <FolderOpen className="h-4 w-4" />
-                        Projet
-                      </h4>
-                      <div className="bg-muted p-3 rounded-lg">
-                        <p className="font-medium">{project.name}</p>
-                        {project.description && (
-                          <p className="text-sm text-muted-foreground mt-1">{project.description}</p>
-                        )}
-                        <div className="flex items-center gap-4 mt-2 text-sm">
-                          <span>Statut: <Badge variant="outline">{project.status}</Badge></span>
-                          <span>Priorité: <Badge variant="outline">{project.priority}</Badge></span>
-                        </div>
-                      </div>
-                    </div>
-                  )}
+                    )}
+                  </div>
                 </CardContent>
               </Card>
             )}

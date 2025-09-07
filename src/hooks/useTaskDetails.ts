@@ -3,7 +3,6 @@ import { supabase } from '@/integrations/supabase/client';
 import type { Database } from '@/integrations/supabase/types';
 
 type TaskRow = Database['public']['Tables']['tasks']['Row'];
-type ProjectRow = Database['public']['Tables']['projects']['Row'];
 type DepartmentRow = Database['public']['Tables']['departments']['Row'];
 type TaskCommentRow = Database['public']['Tables']['task_comments']['Row'];
 type TaskRiskRow = Database['public']['Tables']['task_risks']['Row'];
@@ -15,7 +14,6 @@ interface TaskDependency extends TaskDependencyRow {
 
 export const useTaskDetails = (taskId?: string) => {
   const [taskDetails, setTaskDetails] = useState<TaskRow | null>(null);
-  const [project, setProject] = useState<ProjectRow | null>(null);
   const [department, setDepartment] = useState<DepartmentRow | null>(null);
   const [subtasks, setSubtasks] = useState<TaskRow[]>([]);
   const [comments, setComments] = useState<TaskCommentRow[]>([]);
@@ -28,7 +26,6 @@ export const useTaskDetails = (taskId?: string) => {
   useEffect(() => {
     if (!taskId) {
       setTaskDetails(null);
-      setProject(null);
       setDepartment(null);
       setSubtasks([]);
       setComments([]);
@@ -58,34 +55,8 @@ export const useTaskDetails = (taskId?: string) => {
       if (taskError) throw taskError;
       setTaskDetails(task);
 
-      // Récupérer le projet si il y en a un
-      if (task.project_id) {
-        const { data: projectData, error: projectError } = await supabase
-          .from('projects')
-          .select('*')
-          .eq('id', task.project_id)
-          .single();
-
-        if (!projectError && projectData) {
-          setProject(projectData);
-
-          // Récupérer le département du projet
-          if (projectData.department_id) {
-            const { data: deptData, error: deptError } = await supabase
-              .from('departments')
-              .select('*')
-              .eq('id', projectData.department_id)
-              .single();
-
-            if (!deptError && deptData) {
-              setDepartment(deptData);
-            }
-          }
-        }
-      }
-
-      // Récupérer le département de la tâche directement si pas de projet
-      if (!task.project_id && task.department_id) {
+      // Récupérer le département de la tâche directement
+      if (task.department_id) {
         const { data: deptData, error: deptError } = await supabase
           .from('departments')
           .select('*')
@@ -197,7 +168,6 @@ export const useTaskDetails = (taskId?: string) => {
 
   return {
     taskDetails,
-    project,
     department,
     subtasks,
     comments,

@@ -503,7 +503,6 @@ export type Database = {
           parent_id: string | null
           priority: string
           progress: number | null
-          project_id: string | null
           start_date: string
           status: string
           task_level: number | null
@@ -528,7 +527,6 @@ export type Database = {
           parent_id?: string | null
           priority: string
           progress?: number | null
-          project_id?: string | null
           start_date: string
           status?: string
           task_level?: number | null
@@ -553,7 +551,6 @@ export type Database = {
           parent_id?: string | null
           priority?: string
           progress?: number | null
-          project_id?: string | null
           start_date?: string
           status?: string
           task_level?: number | null

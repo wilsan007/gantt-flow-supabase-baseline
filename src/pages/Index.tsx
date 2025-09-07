@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import GanttChart from "../components/GanttChart";
 import DynamicTable from "../components/DynamicTable";
 import KanbanBoard from "../components/KanbanBoard";
@@ -17,14 +18,20 @@ const Index = () => {
       </div>
 
       <div className="mx-auto max-w-7xl relative z-10">
-        <div className="mb-8 text-center">
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent mb-4">
-            Gestion de Projets SaaS
-          </h1>
-          <p className="text-muted-foreground text-lg">
-            Diagramme de Gantt et tableau dynamique d'exécution des tâches
-          </p>
-          <div className="w-20 h-1 bg-gradient-to-r from-primary to-accent mx-auto mt-4 rounded-full"></div>
+        {/* Header avec bouton de thème */}
+        <div className="flex justify-between items-start mb-8">
+          <div className="flex-1 text-center">
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent mb-4">
+              Gestion de Projets SaaS
+            </h1>
+            <p className="text-muted-foreground text-lg">
+              Diagramme de Gantt et tableau dynamique d'exécution des tâches
+            </p>
+            <div className="w-20 h-1 bg-gradient-to-r from-primary to-accent mx-auto mt-4 rounded-full"></div>
+          </div>
+          <div className="ml-4">
+            <ThemeToggle />
+          </div>
         </div>
         
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">

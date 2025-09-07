@@ -8,141 +8,141 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    /* Modern futuristic color scheme - Light Mode */
-    --background: 240 10% 4%;
-    --foreground: 0 0% 98%;
+    /* Modern Light Theme - Clean and bright */
+    --background: 0 0% 100%;
+    --foreground: 240 10% 3.9%;
 
-    --card: 240 8% 8%;
-    --card-foreground: 0 0% 98%;
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 3.9%;
 
-    --popover: 240 10% 6%;
-    --popover-foreground: 0 0% 98%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 3.9%;
 
-    --primary: 263 85% 65%;
-    --primary-foreground: 0 0% 98%;
+    --primary: 217 91% 48%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 240 5% 15%;
-    --secondary-foreground: 0 0% 98%;
+    --secondary: 220 14% 96%;
+    --secondary-foreground: 240 10% 3.9%;
 
-    --muted: 240 4% 16%;
-    --muted-foreground: 240 5% 65%;
+    --muted: 220 14% 96%;
+    --muted-foreground: 215 16% 47%;
 
-    --accent: 217 91% 60%;
-    --accent-foreground: 0 0% 98%;
+    --accent: 183 84% 39%;
+    --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 240 4% 20%;
-    --input: 240 4% 16%;
-    --ring: 263 85% 65%;
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 217 91% 48%;
 
     --radius: 0.75rem;
 
-    /* Modern futuristic design tokens */
-    --tech-blue: 217 91% 60%;
-    --tech-purple: 263 85% 65%;
-    --tech-cyan: 183 100% 75%;
-    --tech-green: 142 76% 36%;
+    /* Light theme futuristic design tokens */
+    --tech-blue: 217 91% 48%;
+    --tech-purple: 263 85% 55%;
+    --tech-cyan: 183 84% 39%;
+    --tech-green: 142 71% 45%;
     --tech-orange: 25 95% 53%;
     --tech-red: 0 84% 60%;
-    --success: 142 76% 36%;
+    --success: 142 71% 45%;
     --warning: 46 90% 56%;
     --danger: 0 84% 60%;
     --info: 204 94% 67%;
     
-    /* Gantt specific - Modern theme */
-    --gantt-grid: 240 4% 18%;
-    --gantt-header: 240 6% 12%;
-    --gantt-hover: 263 85% 65%;
-    --gantt-task-bg: 240 6% 12%;
+    /* Gantt specific - Light theme */
+    --gantt-grid: 220 13% 91%;
+    --gantt-header: 220 14% 95%;
+    --gantt-hover: 217 91% 48%;
+    --gantt-task-bg: 220 14% 98%;
 
-    /* Glass morphism effects */
-    --glass-bg: 240 10% 8%;
-    --glass-border: 240 4% 20%;
+    /* Glass morphism effects - Light */
+    --glass-bg: 255 255 255;
+    --glass-border: 220 13% 91%;
     
-    /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(263 85% 65%), hsl(217 91% 60%));
-    --gradient-secondary: linear-gradient(135deg, hsl(240 8% 8%), hsl(240 6% 12%));
-    --gradient-accent: linear-gradient(135deg, hsl(183 100% 75%), hsl(142 76% 36%));
-    --gradient-bg: linear-gradient(135deg, hsl(240 10% 4%), hsl(240 8% 6%));
+    /* Light Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(217 91% 48%), hsl(183 84% 39%));
+    --gradient-secondary: linear-gradient(135deg, hsl(0 0% 100%), hsl(220 14% 96%));
+    --gradient-accent: linear-gradient(135deg, hsl(183 84% 39%), hsl(142 71% 45%));
+    --gradient-bg: linear-gradient(135deg, hsl(0 0% 100%), hsl(220 14% 98%));
 
-    --sidebar-background: 240 8% 6%;
-    --sidebar-foreground: 0 0% 98%;
-    --sidebar-primary: 263 85% 65%;
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 217 91% 48%;
     --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4% 16%;
-    --sidebar-accent-foreground: 0 0% 98%;
-    --sidebar-border: 240 4% 20%;
-    --sidebar-ring: 263 85% 65%;
+    --sidebar-accent: 220 14% 96%;
+    --sidebar-accent-foreground: 240 10% 3.9%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217 91% 48%;
   }
 
   .dark {
-    /* Enhanced dark mode - Same modern scheme but darker */
-    --background: 240 12% 2%;
+    /* Enhanced Dark Theme - Deep and vibrant */
+    --background: 240 12% 1%;
     --foreground: 0 0% 98%;
 
-    --card: 240 10% 5%;
+    --card: 240 10% 3%;
     --card-foreground: 0 0% 98%;
 
-    --popover: 240 12% 4%;
+    --popover: 240 12% 2%;
     --popover-foreground: 0 0% 98%;
 
-    --primary: 263 85% 70%;
-    --primary-foreground: 0 0% 98%;
+    --primary: 263 85% 75%;
+    --primary-foreground: 240 12% 1%;
 
-    --secondary: 240 5% 12%;
+    --secondary: 240 8% 8%;
     --secondary-foreground: 0 0% 98%;
 
-    --muted: 240 4% 12%;
-    --muted-foreground: 240 5% 70%;
+    --muted: 240 6% 10%;
+    --muted-foreground: 240 5% 75%;
 
-    --accent: 217 91% 65%;
-    --accent-foreground: 0 0% 98%;
+    --accent: 183 100% 70%;
+    --accent-foreground: 240 12% 1%;
 
-    --destructive: 0 84% 65%;
+    --destructive: 0 84% 68%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 240 4% 15%;
-    --input: 240 4% 12%;
-    --ring: 263 85% 70%;
+    --border: 240 6% 12%;
+    --input: 240 6% 8%;
+    --ring: 263 85% 75%;
     
-    /* Enhanced tokens */
-    --tech-blue: 217 91% 65%;
-    --tech-purple: 263 85% 70%;
-    --tech-cyan: 183 100% 80%;
-    --tech-green: 142 76% 40%;
-    --tech-orange: 25 95% 58%;
-    --tech-red: 0 84% 65%;
-    --success: 142 76% 40%;
-    --warning: 46 90% 60%;
-    --danger: 0 84% 65%;
-    --info: 204 94% 72%;
+    /* Enhanced dark tokens with more vibrant colors */
+    --tech-blue: 217 91% 70%;
+    --tech-purple: 263 85% 75%;
+    --tech-cyan: 183 100% 75%;
+    --tech-green: 142 76% 55%;
+    --tech-orange: 25 95% 65%;
+    --tech-red: 0 84% 68%;
+    --success: 142 76% 55%;
+    --warning: 46 90% 65%;
+    --danger: 0 84% 68%;
+    --info: 204 94% 75%;
     
-    /* Enhanced Gantt */
-    --gantt-grid: 240 4% 15%;
-    --gantt-header: 240 6% 8%;
-    --gantt-hover: 263 85% 70%;
-    --gantt-task-bg: 240 6% 8%;
+    /* Enhanced Gantt - darker with more contrast */
+    --gantt-grid: 240 6% 12%;
+    --gantt-header: 240 8% 5%;
+    --gantt-hover: 263 85% 75%;
+    --gantt-task-bg: 240 8% 5%;
 
-    /* Enhanced glass morphism */
-    --glass-bg: 240 12% 5%;
-    --glass-border: 240 4% 15%;
+    /* Enhanced glass morphism - deeper */
+    --glass-bg: 240 12% 3%;
+    --glass-border: 240 6% 12%;
     
-    /* Enhanced gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(263 85% 70%), hsl(217 91% 65%));
-    --gradient-secondary: linear-gradient(135deg, hsl(240 10% 5%), hsl(240 6% 8%));
-    --gradient-accent: linear-gradient(135deg, hsl(183 100% 80%), hsl(142 76% 40%));
-    --gradient-bg: linear-gradient(135deg, hsl(240 12% 2%), hsl(240 10% 4%));
+    /* Enhanced gradients with more vibrant colors */
+    --gradient-primary: linear-gradient(135deg, hsl(263 85% 75%), hsl(217 91% 70%));
+    --gradient-secondary: linear-gradient(135deg, hsl(240 10% 3%), hsl(240 8% 5%));
+    --gradient-accent: linear-gradient(135deg, hsl(183 100% 75%), hsl(142 76% 55%));
+    --gradient-bg: linear-gradient(135deg, hsl(240 12% 1%), hsl(240 10% 2%));
     
-    --sidebar-background: 240 10% 3%;
+    --sidebar-background: 240 10% 2%;
     --sidebar-foreground: 0 0% 98%;
-    --sidebar-primary: 263 85% 70%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4% 12%;
+    --sidebar-primary: 263 85% 75%;
+    --sidebar-primary-foreground: 240 12% 1%;
+    --sidebar-accent: 240 6% 8%;
     --sidebar-accent-foreground: 0 0% 98%;
-    --sidebar-border: 240 4% 15%;
-    --sidebar-ring: 263 85% 70%;
+    --sidebar-border: 240 6% 12%;
+    --sidebar-ring: 263 85% 75%;
   }
 }
 
@@ -157,19 +157,36 @@ All colors MUST be HSL.
     min-height: 100vh;
   }
 
-  /* Glass morphism components */
+  /* Glass morphism components - Adaptive */
   .glass {
+    backdrop-filter: blur(15px) saturate(180%);
+    -webkit-backdrop-filter: blur(15px) saturate(180%);
+  }
+  
+  .dark .glass {
     background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.1);
   }
+  
+  .glass {
+    background: rgba(255, 255, 255, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+  }
 
-  /* Modern card styling */
+  /* Modern card styling - Adaptive */
   .modern-card {
     background: var(--gradient-secondary);
     border: 1px solid hsl(var(--border));
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-    backdrop-filter: blur(10px);
+    backdrop-filter: blur(15px) saturate(180%);
+    -webkit-backdrop-filter: blur(15px) saturate(180%);
+  }
+  
+  .dark .modern-card {
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  }
+  
+  .modern-card {
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
   }
 
   /* Glow effects */

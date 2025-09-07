@@ -38,19 +38,19 @@ export const TaskFixedColumns = ({
     <>
       <div className="h-[600px] overflow-auto">
         <Table>
-          <TableHeader className="sticky top-0 bg-background z-10">
-            <TableRow className="h-12">
-              <TableHead className="min-w-[200px] h-12">Tâche</TableHead>
-              <TableHead className="min-w-[150px] h-12">Responsable</TableHead>
-              <TableHead className="min-w-[80px] h-12">Début</TableHead>
-              <TableHead className="min-w-[80px] h-12">Échéance</TableHead>
-              <TableHead className="min-w-[80px] h-12">Priorité</TableHead>
-              <TableHead className="min-w-[80px] h-12">Statut</TableHead>
-              <TableHead className="min-w-[80px] h-12">Charge (h)</TableHead>
-              <TableHead className="min-w-[100px] h-12">Progression</TableHead>
-              <TableHead className="min-w-[100px] h-12">Documents</TableHead>
-              <TableHead className="min-w-[100px] h-12">Commentaires</TableHead>
-              <TableHead className="w-[50px] h-12">Actions</TableHead>
+          <TableHeader className="sticky top-0 bg-gantt-header/90 backdrop-blur-sm z-10 border-b border-gantt-grid">
+            <TableRow className="h-12 hover:bg-transparent">
+              <TableHead className="min-w-[200px] h-12 text-foreground font-semibold">Tâche</TableHead>
+              <TableHead className="min-w-[150px] h-12 text-foreground font-semibold">Responsable</TableHead>
+              <TableHead className="min-w-[80px] h-12 text-foreground font-semibold">Début</TableHead>
+              <TableHead className="min-w-[80px] h-12 text-foreground font-semibold">Échéance</TableHead>
+              <TableHead className="min-w-[80px] h-12 text-foreground font-semibold">Priorité</TableHead>
+              <TableHead className="min-w-[80px] h-12 text-foreground font-semibold">Statut</TableHead>
+              <TableHead className="min-w-[80px] h-12 text-foreground font-semibold">Charge (h)</TableHead>
+              <TableHead className="min-w-[100px] h-12 text-foreground font-semibold">Progression</TableHead>
+              <TableHead className="min-w-[100px] h-12 text-foreground font-semibold">Documents</TableHead>
+              <TableHead className="min-w-[100px] h-12 text-foreground font-semibold">Commentaires</TableHead>
+              <TableHead className="w-[50px] h-12 text-foreground font-semibold">Actions</TableHead>
             </TableRow>
           </TableHeader>
           

@@ -35,8 +35,8 @@ export const TaskRow = ({
   
   return (
     <TableRow 
-      className={`border-b cursor-pointer transition-colors ${
-        selectedTaskId === task.id ? 'bg-primary/10 border-primary/30' : 'hover:bg-muted/50'
+      className={`border-b border-gantt-grid/30 cursor-pointer transition-colors ${
+        selectedTaskId === task.id ? 'bg-gantt-hover/20 border-gantt-hover/40' : 'hover:bg-gantt-task-bg/50'
       }`}
       style={{ 
         height: isSubtask ? '51px' : '64px',
@@ -77,9 +77,9 @@ export const TaskRow = ({
             )}
           </Button>
           <span 
-            className={`${isSubtask ? 'text-muted-foreground italic text-xs' : ''}`}
+            className={`${isSubtask ? 'text-foreground/70 italic text-xs' : 'text-foreground'}`}
           >
-            <span className={`text-muted-foreground mr-2 ${isSubtask ? 'text-xs' : 'text-xs'}`}>
+            <span className={`text-foreground/60 mr-2 ${isSubtask ? 'text-xs' : 'text-xs'}`}>
               {task.display_order || '1'}
             </span>
             {task.title}
@@ -99,8 +99,8 @@ export const TaskRow = ({
       {/* Date de début */}
       <TableCell className={isSubtask ? 'py-0 text-xs' : 'py-0'} style={{ height: isSubtask ? '51px' : '64px' }}>
         <div className="flex items-center gap-2">
-          <Calendar className={`${isSubtask ? 'h-3 w-3' : 'h-4 w-4'} text-muted-foreground`} />
-          <span className={isSubtask ? 'text-xs' : ''}>
+          <Calendar className={`${isSubtask ? 'h-3 w-3' : 'h-4 w-4'} text-foreground/60`} />
+          <span className={`${isSubtask ? 'text-xs' : ''} text-foreground`}>
             {formatDate(task.start_date)}
           </span>
         </div>
@@ -109,8 +109,8 @@ export const TaskRow = ({
       {/* Échéance */}
       <TableCell className={isSubtask ? 'py-0 text-xs' : 'py-0'} style={{ height: isSubtask ? '51px' : '64px' }}>
         <div className="flex items-center gap-2">
-          <Calendar className={`${isSubtask ? 'h-3 w-3' : 'h-4 w-4'} text-muted-foreground`} />
-          <span className={isSubtask ? 'text-xs' : ''}>
+          <Calendar className={`${isSubtask ? 'h-3 w-3' : 'h-4 w-4'} text-foreground/60`} />
+          <span className={`${isSubtask ? 'text-xs' : ''} text-foreground`}>
             {formatDate(task.due_date)}
           </span>
         </div>
@@ -139,8 +139,8 @@ export const TaskRow = ({
       {/* Charge */}
       <TableCell className={isSubtask ? 'py-0 text-xs' : 'py-0'} style={{ height: isSubtask ? '51px' : '64px' }}>
         <div className="flex items-center gap-2">
-          <Clock className={`${isSubtask ? 'h-3 w-3' : 'h-4 w-4'} text-muted-foreground`} />
-          <span className={isSubtask ? 'text-xs' : ''}>
+          <Clock className={`${isSubtask ? 'h-3 w-3' : 'h-4 w-4'} text-foreground/60`} />
+          <span className={`${isSubtask ? 'text-xs' : ''} text-foreground`}>
             {task.effort_estimate_h}h
           </span>
         </div>
@@ -153,7 +153,7 @@ export const TaskRow = ({
             value={task.progress} 
             className={isSubtask ? 'w-12 h-1' : 'w-16'} 
           />
-          <span className={`font-medium ${isSubtask ? 'text-xs' : 'text-sm'}`}>
+          <span className={`font-medium ${isSubtask ? 'text-xs' : 'text-sm'} text-foreground`}>
             {task.progress}%
           </span>
         </div>

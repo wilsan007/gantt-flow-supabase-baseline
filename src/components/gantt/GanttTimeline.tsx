@@ -33,12 +33,12 @@ export const GanttTimeline = ({
       units.push(
         <div
           key={i}
-          className="flex h-full items-center justify-center border-r border-border text-xs text-muted-foreground"
+          className="flex h-full items-center justify-center border-r border-gantt-grid text-xs text-foreground/70"
           style={{ minWidth: config.unitWidth }}
         >
           <div className="text-center">
-            <div className="font-medium">{config.getUnit(date)}</div>
-            <div className="text-xs opacity-60">
+            <div className="font-medium text-foreground">{config.getUnit(date)}</div>
+            <div className="text-xs opacity-60 text-foreground/60">
               {config.getSubUnit(date)}
             </div>
           </div>
@@ -51,11 +51,11 @@ export const GanttTimeline = ({
   return (
     <div className="flex-1 overflow-x-auto overflow-y-hidden">
       <div 
-        className="gantt-chart relative bg-background"
+        className="gantt-chart relative bg-gantt-task-bg/40 backdrop-blur-sm"
         style={{ minWidth: totalUnits * config.unitWidth }}
       >
         <div 
-          className="flex border-b border-border bg-muted/30 sticky top-0 z-10" 
+          className="flex border-b border-gantt-grid bg-gantt-header/80 backdrop-blur-sm sticky top-0 z-10"
           style={{ 
             height: config.headerHeight,
             minWidth: totalUnits * config.unitWidth 
@@ -74,7 +74,7 @@ export const GanttTimeline = ({
           {tasks.map((_, index) => (
             <div
               key={index}
-              className="absolute w-full border-b border-border"
+              className="absolute w-full border-b border-gantt-grid/60"
               style={{ top: (index + 1) * rowHeight }}
             />
           ))}
@@ -82,7 +82,7 @@ export const GanttTimeline = ({
           {Array.from({ length: totalUnits }).map((_, index) => (
             <div
               key={index}
-              className="absolute h-full border-r border-border"
+              className="absolute h-full border-r border-gantt-grid/60"
               style={{ left: (index + 1) * config.unitWidth }}
             />
           ))}

@@ -62,16 +62,16 @@ function KanbanCard({ task }: KanbanCardProps) {
       {...listeners}
       className={`cursor-grab active:cursor-grabbing ${isDragging ? 'opacity-50' : ''}`}
     >
-      <Card className="mb-3 hover:shadow-md transition-smooth glass hover-glow cursor-grab active:cursor-grabbing">
+      <Card className="mb-3 hover:shadow-md transition-smooth glass hover-glow cursor-grab active:cursor-grabbing border-primary/20 bg-card/60 backdrop-blur-sm">
         <CardHeader className="pb-2">
           <CardTitle className="text-sm font-medium text-foreground">{task.title}</CardTitle>
           <div className="flex items-center justify-between">
-            <Badge className={`text-xs border ${PRIORITY_COLORS[task.priority]}`}>
+            <Badge className={`text-xs border font-medium ${PRIORITY_COLORS[task.priority]}`}>
               {task.priority}
             </Badge>
             <Avatar className="h-6 w-6 ring-2 ring-primary/30">
               <AvatarImage src="" alt={task.assignee} />
-              <AvatarFallback className="text-xs bg-primary/20 text-primary">
+              <AvatarFallback className="text-xs bg-primary/30 text-primary-foreground font-semibold">
                 {task.assignee.slice(0, 2).toUpperCase()}
               </AvatarFallback>
             </Avatar>
@@ -79,19 +79,19 @@ function KanbanCard({ task }: KanbanCardProps) {
         </CardHeader>
         <CardContent className="pt-0">
           <div className="space-y-2">
-            <div className="flex justify-between text-xs text-muted-foreground">
+            <div className="flex justify-between text-xs text-foreground/70">
               <span>Début: {new Date(task.start_date).toLocaleDateString('fr-FR')}</span>
               <span>Fin: {new Date(task.due_date).toLocaleDateString('fr-FR')}</span>
             </div>
             <div className="space-y-1">
               <div className="flex justify-between text-xs">
-                <span>Progrès</span>
+                <span className="text-foreground/80">Progrès</span>
                 <span className="text-primary font-medium">{task.progress}%</span>
               </div>
               <Progress value={task.progress} className="h-2" />
             </div>
             {task.effort_estimate_h > 0 && (
-              <div className="text-xs text-muted-foreground flex items-center gap-1">
+              <div className="text-xs text-foreground/70 flex items-center gap-1">
                 <span className="w-1 h-1 bg-accent rounded-full"></span>
                 Estimé: {task.effort_estimate_h}h
               </div>
@@ -111,18 +111,18 @@ interface KanbanColumnProps {
 function KanbanColumn({ column, tasks }: KanbanColumnProps) {
   return (
     <div className="flex-1 min-w-0">
-      <Card className="h-full glass glow-accent transition-smooth">
-        <CardHeader className="pb-3 bg-gradient-to-r from-primary/5 to-accent/5">
+      <Card className="h-full glass glow-accent transition-smooth border-primary/20">
+        <CardHeader className="pb-3 bg-gradient-to-r from-primary/10 to-accent/10 backdrop-blur-sm border-b border-primary/20">
           <CardTitle className="text-lg flex items-center justify-between text-foreground">
-            <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-tech-purple to-tech-cyan bg-clip-text text-transparent font-bold">
               {column.title}
             </span>
-            <Badge variant="secondary" className="ml-2 bg-primary/20 text-primary border-primary/30">
+            <Badge variant="secondary" className="ml-2 bg-primary/30 text-primary-foreground border-primary/40 font-semibold">
               {tasks.length}
             </Badge>
           </CardTitle>
         </CardHeader>
-        <CardContent className="max-h-[calc(100vh-300px)] overflow-y-auto">
+        <CardContent className="max-h-[calc(100vh-300px)] overflow-y-auto bg-card/50 backdrop-blur-sm">
           <SortableContext items={tasks.map(t => t.id)} strategy={verticalListSortingStrategy}>
             {tasks.map((task) => (
               <KanbanCard key={task.id} task={task} />
@@ -179,9 +179,9 @@ export default function KanbanBoard() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
+      <div className="flex items-center justify-center h-64 glass modern-card">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary glow-primary"></div>
-        <span className="ml-3 text-foreground">Chargement...</span>
+        <span className="ml-3 text-foreground font-medium">Chargement...</span>
       </div>
     );
   }

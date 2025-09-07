@@ -176,6 +176,7 @@ const DynamicTable = () => {
             <TaskActionColumns 
               tasks={optimisticTasks}
               onToggleAction={handleToggleAction}
+              selectedTaskId={selectedTaskId}
             />
           </ResizablePanel>
         </ResizablePanelGroup>

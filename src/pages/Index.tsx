@@ -21,13 +21,13 @@ const Index = () => {
         {/* Header avec bouton de thème */}
         <div className="flex justify-between items-start mb-8">
           <div className="flex-1 text-center">
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent mb-4">
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-primary via-accent to-tech-purple bg-clip-text text-transparent mb-4 drop-shadow-sm">
               Gestion de Projets SaaS
             </h1>
-            <p className="text-muted-foreground text-lg">
+            <p className="text-muted-foreground text-lg font-medium">
               Diagramme de Gantt et tableau dynamique d'exécution des tâches
             </p>
-            <div className="w-20 h-1 bg-gradient-to-r from-primary to-accent mx-auto mt-4 rounded-full"></div>
+            <div className="w-24 h-2 bg-gradient-to-r from-primary via-accent to-tech-purple mx-auto mt-4 rounded-full shadow-lg"></div>
           </div>
           <div className="ml-4">
             <ThemeToggle />
@@ -35,14 +35,23 @@ const Index = () => {
         </div>
         
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-3 modern-card p-1 mb-8 glow-primary">
-            <TabsTrigger value="gantt" className="transition-smooth hover-glow">
+          <TabsList className="grid w-full grid-cols-3 modern-card p-2 mb-8 glow-primary bg-gradient-to-r from-primary/10 via-accent/10 to-tech-purple/10 border-2">
+            <TabsTrigger 
+              value="gantt" 
+              className="transition-smooth hover-glow data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-accent data-[state=active]:text-white font-semibold"
+            >
               Diagramme de Gantt
             </TabsTrigger>
-            <TabsTrigger value="kanban" className="transition-smooth hover-glow">
+            <TabsTrigger 
+              value="kanban" 
+              className="transition-smooth hover-glow data-[state=active]:bg-gradient-to-r data-[state=active]:from-accent data-[state=active]:to-tech-purple data-[state=active]:text-white font-semibold"
+            >
               Kanban
             </TabsTrigger>
-            <TabsTrigger value="table" className="transition-smooth hover-glow">
+            <TabsTrigger 
+              value="table" 
+              className="transition-smooth hover-glow data-[state=active]:bg-gradient-to-r data-[state=active]:from-tech-purple data-[state=active]:to-primary data-[state=active]:text-white font-semibold"
+            >
               Tableau Dynamique
             </TabsTrigger>
           </TabsList>

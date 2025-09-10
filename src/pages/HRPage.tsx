@@ -9,7 +9,11 @@ import { ResponsiveLayout } from "@/components/responsive/ResponsiveLayout";
 import { HRDashboard } from "@/components/hr/HRDashboard";
 import { LeaveManagement } from "@/components/hr/LeaveManagement";
 import { AttendanceManagement } from "@/components/hr/AttendanceManagement";
-import { EmployeeManagement } from "@/components/hr/EmployeeManagement";
+import { EnhancedEmployeeManagement } from "@/components/hr/EnhancedEmployeeManagement";
+import { AbsenceTypeManagement } from "@/components/hr/AbsenceTypeManagement";
+import { LeaveBalanceManagement } from "@/components/hr/LeaveBalanceManagement";
+import { TimesheetManagement } from "@/components/hr/TimesheetManagement";
+import { DepartmentManagement } from "@/components/hr/DepartmentManagement";
 
 const HRPage = () => {
   const [activeTab, setActiveTab] = useState("dashboard");
@@ -45,7 +49,7 @@ const HRPage = () => {
       </div>
       
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className={`grid w-full modern-card glow-primary bg-gradient-to-r from-primary/10 via-accent/10 to-tech-purple/10 border-2 ${isMobile ? 'grid-cols-2 gap-1 p-1 mb-4' : 'grid-cols-4 p-2 mb-8'}`}>
+        <TabsList className={`grid w-full modern-card glow-primary bg-gradient-to-r from-primary/10 via-accent/10 to-tech-purple/10 border-2 ${isMobile ? 'grid-cols-4 gap-1 p-1 mb-4' : 'grid-cols-8 p-2 mb-8'} overflow-x-auto`}>
           <TabsTrigger 
             value="dashboard" 
             className={`transition-smooth hover-glow data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-accent data-[state=active]:text-white font-semibold ${isMobile ? 'text-xs py-2' : ''}`}
@@ -70,6 +74,30 @@ const HRPage = () => {
           >
             {isMobile ? 'Présence' : 'Présences'}
           </TabsTrigger>
+          <TabsTrigger 
+            value="absences" 
+            className={`transition-smooth hover-glow data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-tech-purple data-[state=active]:text-white font-semibold ${isMobile ? 'text-xs py-2' : ''}`}
+          >
+            {isMobile ? 'Types' : 'Types Absence'}
+          </TabsTrigger>
+          <TabsTrigger 
+            value="balances" 
+            className={`transition-smooth hover-glow data-[state=active]:bg-gradient-to-r data-[state=active]:from-accent data-[state=active]:to-primary data-[state=active]:text-white font-semibold ${isMobile ? 'text-xs py-2' : ''}`}
+          >
+            {isMobile ? 'Soldes' : 'Soldes Congés'}
+          </TabsTrigger>
+          <TabsTrigger 
+            value="timesheets" 
+            className={`transition-smooth hover-glow data-[state=active]:bg-gradient-to-r data-[state=active]:from-tech-purple data-[state=active]:to-tech-green data-[state=active]:text-white font-semibold ${isMobile ? 'text-xs py-2' : ''}`}
+          >
+            {isMobile ? 'Temps' : 'Feuilles Temps'}
+          </TabsTrigger>
+          <TabsTrigger 
+            value="departments" 
+            className={`transition-smooth hover-glow data-[state=active]:bg-gradient-to-r data-[state=active]:from-tech-green data-[state=active]:to-primary data-[state=active]:text-white font-semibold ${isMobile ? 'text-xs py-2' : ''}`}
+          >
+            {isMobile ? 'Dpts' : 'Départements'}
+          </TabsTrigger>
         </TabsList>
         
         <TabsContent value="dashboard" className={isMobile ? 'mt-2' : 'mt-6'}>
@@ -80,7 +108,7 @@ const HRPage = () => {
         
         <TabsContent value="employees" className={isMobile ? 'mt-2' : 'mt-6'}>
           <div className="modern-card rounded-xl transition-smooth hover-glow">
-            <EmployeeManagement />
+            <EnhancedEmployeeManagement />
           </div>
         </TabsContent>
         
@@ -93,6 +121,30 @@ const HRPage = () => {
         <TabsContent value="attendance" className={isMobile ? 'mt-2' : 'mt-6'}>
           <div className="modern-card rounded-xl transition-smooth hover-glow">
             <AttendanceManagement />
+          </div>
+        </TabsContent>
+        
+        <TabsContent value="absences" className={isMobile ? 'mt-2' : 'mt-6'}>
+          <div className="modern-card rounded-xl transition-smooth hover-glow">
+            <AbsenceTypeManagement />
+          </div>
+        </TabsContent>
+        
+        <TabsContent value="balances" className={isMobile ? 'mt-2' : 'mt-6'}>
+          <div className="modern-card rounded-xl transition-smooth hover-glow">
+            <LeaveBalanceManagement />
+          </div>
+        </TabsContent>
+        
+        <TabsContent value="timesheets" className={isMobile ? 'mt-2' : 'mt-6'}>
+          <div className="modern-card rounded-xl transition-smooth hover-glow">
+            <TimesheetManagement />
+          </div>
+        </TabsContent>
+        
+        <TabsContent value="departments" className={isMobile ? 'mt-2' : 'mt-6'}>
+          <div className="modern-card rounded-xl transition-smooth hover-glow">
+            <DepartmentManagement />
           </div>
         </TabsContent>
       </Tabs>

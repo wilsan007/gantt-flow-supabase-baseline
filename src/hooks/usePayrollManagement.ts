@@ -144,38 +144,6 @@ export const usePayrollManagement = () => {
       setPayrollPeriods(mappedPeriods);
       setEmployeePayrolls(mappedPayrolls);
       setPayrollChecks(dynamicPayrollChecks);
-      const periodData: PayrollPeriod[] = (periods || []).map(period => ({
-        id: period.id,
-        year: period.year,
-        month: period.month,
-        status: period.status as any,
-        lockDate: period.lock_date || undefined,
-        processedDate: period.processed_date || undefined,
-        totalGross: period.total_gross || 0,
-        totalNet: period.total_net || 0,
-        totalEmployees: period.total_employees || 0,
-        totalCharges: period.total_charges || 0
-      }));
-
-      const payrollData: EmployeePayroll[] = (payrolls || []).map(payroll => ({
-        id: payroll.id,
-        employeeId: payroll.employee_id,
-        employeeName: payroll.employee_name,
-        position: payroll.position || '',
-        baseSalary: payroll.base_salary || 0,
-        grossTotal: payroll.gross_total || 0,
-        netTotal: payroll.net_total || 0,
-        socialCharges: payroll.social_charges || 0,
-        hoursWorked: payroll.hours_worked || 0,
-        standardHours: payroll.standard_hours || 0,
-        overtimeHours: payroll.overtime_hours || 0,
-        bonuses: [], // TODO: Fetch from payroll_components table
-        deductions: [] // TODO: Fetch from payroll_components table
-      }));
-
-      setPayrollPeriods(periodData);
-      setEmployeePayrolls(payrollData);
-      setPayrollChecks(dynamicPayrollChecks);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Une erreur est survenue');
       console.error('Error fetching payroll data:', err);

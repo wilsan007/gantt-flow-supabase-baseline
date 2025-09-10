@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import { useEmployees } from '@/hooks/useEmployees';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -36,12 +37,10 @@ interface Department {
 }
 
 export const EnhancedEmployeeManagement = () => {
-  const [employees, setEmployees] = useState<Employee[]>([]);
-  const [departments, setDepartments] = useState<Department[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { employees, departments, loading, createEmployee, updateEmployee, deleteEmployee } = useEmployees();
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
-  const [editingEmployee, setEditingEmployee] = useState<Employee | null>(null);
-  const [viewingEmployee, setViewingEmployee] = useState<Employee | null>(null);
+  const [editingEmployee, setEditingEmployee] = useState<any>(null);
+  const [viewingEmployee, setViewingEmployee] = useState<any>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedDepartment, setSelectedDepartment] = useState('all');
   const isMobile = useIsMobile();
@@ -49,48 +48,20 @@ export const EnhancedEmployeeManagement = () => {
 
   const { register, handleSubmit, reset, setValue, watch } = useForm();
 
-  const fetchData = async () => {
-    try {
-      setLoading(true);
-      
-      const [employeesRes, departmentsRes] = await Promise.all([
-        supabase.from('profiles').select('*').order('full_name'),
-        supabase.from('departments').select('id, name').order('name')
-      ]);
-
-      if (employeesRes.error) throw employeesRes.error;
-      if (departmentsRes.error) throw departmentsRes.error;
-
-      setEmployees(employeesRes.data || []);
-      setDepartments(departmentsRes.data || []);
-    } catch (error: any) {
-      console.error('Error fetching data:', error);
-      toast({
-        title: "Erreur",
-        description: "Impossible de charger les données",
-        variant: "destructive"
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchData();
-  }, []);
-
   const onSubmit = async (data: any) => {
     try {
       const employeeData = {
         full_name: data.full_name,
+        email: data.email || `${data.full_name.toLowerCase().replace(/\s+/g, '.')}@company.com`,
         job_title: data.job_title || null,
-        employee_id: data.employee_id || null,
+        employee_id: data.employee_id || `EMP${Date.now().toString().slice(-6)}`,
         hire_date: data.hire_date || null,
         contract_type: data.contract_type || 'CDI',
         phone: data.phone || null,
         salary: data.salary ? parseFloat(data.salary) : null,
         weekly_hours: data.weekly_hours ? parseFloat(data.weekly_hours) : 35,
         manager_id: data.manager_id || null,
+        department_id: data.department_id || null,
         emergency_contact: data.emergency_name ? {
           name: data.emergency_name,
           phone: data.emergency_phone,
@@ -98,24 +69,11 @@ export const EnhancedEmployeeManagement = () => {
         } : null
       };
 
-      let error;
       if (editingEmployee) {
-        ({ error } = await supabase
-          .from('profiles')
-          .update(employeeData)
-          .eq('id', editingEmployee.id));
+        await updateEmployee(editingEmployee.id, employeeData);
       } else {
-        // For new employees, we would need to handle auth user creation differently
-        // This is a simplified version for the demo
-        toast({
-          title: "Info",
-          description: "La création d'employés nécessite une gestion d'authentification complète",
-          variant: "default"
-        });
-        return;
+        await createEmployee(employeeData);
       }
-
-      if (error) throw error;
 
       toast({
         title: "Succès",
@@ -125,7 +83,6 @@ export const EnhancedEmployeeManagement = () => {
       reset();
       setIsCreateDialogOpen(false);
       setEditingEmployee(null);
-      fetchData();
     } catch (error: any) {
       console.error('Error managing employee:', error);
       toast({
@@ -136,9 +93,10 @@ export const EnhancedEmployeeManagement = () => {
     }
   };
 
-  const handleEdit = (employee: Employee) => {
+  const handleEdit = (employee: any) => {
     setEditingEmployee(employee);
     setValue('full_name', employee.full_name);
+    setValue('email', employee.email);
     setValue('job_title', employee.job_title);
     setValue('employee_id', employee.employee_id);
     setValue('hire_date', employee.hire_date);
@@ -147,6 +105,7 @@ export const EnhancedEmployeeManagement = () => {
     setValue('salary', employee.salary);
     setValue('weekly_hours', employee.weekly_hours);
     setValue('manager_id', employee.manager_id);
+    setValue('department_id', employee.department_id);
     if (employee.emergency_contact) {
       setValue('emergency_name', employee.emergency_contact.name);
       setValue('emergency_phone', employee.emergency_contact.phone);
@@ -157,19 +116,11 @@ export const EnhancedEmployeeManagement = () => {
 
   const handleDelete = async (employeeId: string) => {
     try {
-      const { error } = await supabase
-        .from('profiles')
-        .delete()
-        .eq('id', employeeId);
-
-      if (error) throw error;
-
+      await deleteEmployee(employeeId);
       toast({
         title: "Succès",
         description: "Employé supprimé avec succès"
       });
-
-      fetchData();
     } catch (error: any) {
       console.error('Error deleting employee:', error);
       toast({

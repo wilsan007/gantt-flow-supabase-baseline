@@ -319,6 +319,72 @@ export type Database = {
           },
         ]
       }
+      employees: {
+        Row: {
+          avatar_url: string | null
+          contract_type: string | null
+          created_at: string
+          department_id: string | null
+          email: string
+          emergency_contact: Json | null
+          employee_id: string
+          full_name: string
+          hire_date: string | null
+          id: string
+          job_title: string | null
+          manager_id: string | null
+          phone: string | null
+          salary: number | null
+          status: string | null
+          tenant_id: string | null
+          updated_at: string
+          user_id: string | null
+          weekly_hours: number | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          contract_type?: string | null
+          created_at?: string
+          department_id?: string | null
+          email: string
+          emergency_contact?: Json | null
+          employee_id: string
+          full_name: string
+          hire_date?: string | null
+          id?: string
+          job_title?: string | null
+          manager_id?: string | null
+          phone?: string | null
+          salary?: number | null
+          status?: string | null
+          tenant_id?: string | null
+          updated_at?: string
+          user_id?: string | null
+          weekly_hours?: number | null
+        }
+        Update: {
+          avatar_url?: string | null
+          contract_type?: string | null
+          created_at?: string
+          department_id?: string | null
+          email?: string
+          emergency_contact?: Json | null
+          employee_id?: string
+          full_name?: string
+          hire_date?: string | null
+          id?: string
+          job_title?: string | null
+          manager_id?: string | null
+          phone?: string | null
+          salary?: number | null
+          status?: string | null
+          tenant_id?: string | null
+          updated_at?: string
+          user_id?: string | null
+          weekly_hours?: number | null
+        }
+        Relationships: []
+      }
       evaluation_categories: {
         Row: {
           created_at: string

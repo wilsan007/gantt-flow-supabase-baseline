@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ArrowLeft, Users, Calendar, Clock, Building } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -17,6 +18,11 @@ import { DepartmentManagement } from "@/components/hr/DepartmentManagement";
 
 const HRPage = () => {
   const [activeTab, setActiveTab] = useState("dashboard");
+  const [activeSubTab, setActiveSubTab] = useState({
+    employees: "management",
+    leaves: "requests",
+    time: "attendance"
+  });
   const isMobile = useIsMobile();
   const navigate = useNavigate();
 
@@ -49,54 +55,34 @@ const HRPage = () => {
       </div>
       
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className={`grid w-full modern-card glow-primary bg-gradient-to-r from-primary/10 via-accent/10 to-tech-purple/10 border-2 ${isMobile ? 'grid-cols-4 gap-1 p-1 mb-4' : 'grid-cols-8 p-2 mb-8'} overflow-x-auto`}>
+        <TabsList className={`grid w-full modern-card glow-primary bg-gradient-to-r from-primary/10 via-accent/10 to-tech-purple/10 border-2 ${isMobile ? 'grid-cols-2 gap-2 p-2 mb-4' : 'grid-cols-4 gap-3 p-3 mb-8'}`}>
           <TabsTrigger 
             value="dashboard" 
-            className={`transition-smooth hover-glow data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-accent data-[state=active]:text-white font-semibold ${isMobile ? 'text-xs py-2' : ''}`}
+            className={`transition-smooth hover-glow data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-accent data-[state=active]:text-white font-semibold ${isMobile ? 'flex flex-col gap-1 py-3' : 'flex items-center gap-2 py-4'}`}
           >
+            <Building className={isMobile ? "h-4 w-4" : "h-5 w-5"} />
             {isMobile ? 'Tableau' : 'Tableau de bord'}
           </TabsTrigger>
           <TabsTrigger 
-            value="employees" 
-            className={`transition-smooth hover-glow data-[state=active]:bg-gradient-to-r data-[state=active]:from-accent data-[state=active]:to-tech-purple data-[state=active]:text-white font-semibold ${isMobile ? 'text-xs py-2' : ''}`}
+            value="personnel" 
+            className={`transition-smooth hover-glow data-[state=active]:bg-gradient-to-r data-[state=active]:from-accent data-[state=active]:to-tech-purple data-[state=active]:text-white font-semibold ${isMobile ? 'flex flex-col gap-1 py-3' : 'flex items-center gap-2 py-4'}`}
           >
-            {isMobile ? 'Employés' : 'Gestion Employés'}
+            <Users className={isMobile ? "h-4 w-4" : "h-5 w-5"} />
+            Personnel
           </TabsTrigger>
           <TabsTrigger 
             value="leaves" 
-            className={`transition-smooth hover-glow data-[state=active]:bg-gradient-to-r data-[state=active]:from-tech-purple data-[state=active]:to-primary data-[state=active]:text-white font-semibold ${isMobile ? 'text-xs py-2' : ''}`}
+            className={`transition-smooth hover-glow data-[state=active]:bg-gradient-to-r data-[state=active]:from-tech-purple data-[state=active]:to-primary data-[state=active]:text-white font-semibold ${isMobile ? 'flex flex-col gap-1 py-3' : 'flex items-center gap-2 py-4'}`}
           >
-            {isMobile ? 'Congés' : 'Gestion Congés'}
+            <Calendar className={isMobile ? "h-4 w-4" : "h-5 w-5"} />
+            Congés
           </TabsTrigger>
           <TabsTrigger 
-            value="attendance" 
-            className={`transition-smooth hover-glow data-[state=active]:bg-gradient-to-r data-[state=active]:from-tech-green data-[state=active]:to-accent data-[state=active]:text-white font-semibold ${isMobile ? 'text-xs py-2' : ''}`}
+            value="time" 
+            className={`transition-smooth hover-glow data-[state=active]:bg-gradient-to-r data-[state=active]:from-tech-green data-[state=active]:to-accent data-[state=active]:text-white font-semibold ${isMobile ? 'flex flex-col gap-1 py-3' : 'flex items-center gap-2 py-4'}`}
           >
-            {isMobile ? 'Présence' : 'Présences'}
-          </TabsTrigger>
-          <TabsTrigger 
-            value="absences" 
-            className={`transition-smooth hover-glow data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-tech-purple data-[state=active]:text-white font-semibold ${isMobile ? 'text-xs py-2' : ''}`}
-          >
-            {isMobile ? 'Types' : 'Types Absence'}
-          </TabsTrigger>
-          <TabsTrigger 
-            value="balances" 
-            className={`transition-smooth hover-glow data-[state=active]:bg-gradient-to-r data-[state=active]:from-accent data-[state=active]:to-primary data-[state=active]:text-white font-semibold ${isMobile ? 'text-xs py-2' : ''}`}
-          >
-            {isMobile ? 'Soldes' : 'Soldes Congés'}
-          </TabsTrigger>
-          <TabsTrigger 
-            value="timesheets" 
-            className={`transition-smooth hover-glow data-[state=active]:bg-gradient-to-r data-[state=active]:from-tech-purple data-[state=active]:to-tech-green data-[state=active]:text-white font-semibold ${isMobile ? 'text-xs py-2' : ''}`}
-          >
-            {isMobile ? 'Temps' : 'Feuilles Temps'}
-          </TabsTrigger>
-          <TabsTrigger 
-            value="departments" 
-            className={`transition-smooth hover-glow data-[state=active]:bg-gradient-to-r data-[state=active]:from-tech-green data-[state=active]:to-primary data-[state=active]:text-white font-semibold ${isMobile ? 'text-xs py-2' : ''}`}
-          >
-            {isMobile ? 'Dpts' : 'Départements'}
+            <Clock className={isMobile ? "h-4 w-4" : "h-5 w-5"} />
+            Temps
           </TabsTrigger>
         </TabsList>
         
@@ -106,45 +92,96 @@ const HRPage = () => {
           </div>
         </TabsContent>
         
-        <TabsContent value="employees" className={isMobile ? 'mt-2' : 'mt-6'}>
-          <div className="modern-card rounded-xl transition-smooth hover-glow">
-            <EnhancedEmployeeManagement />
+        <TabsContent value="personnel" className={isMobile ? 'mt-2' : 'mt-6'}>
+          <div className="space-y-6">
+            <div className="flex gap-2 mb-4">
+              <Button
+                variant={activeSubTab.employees === "management" ? "default" : "outline"}
+                onClick={() => setActiveSubTab(prev => ({...prev, employees: "management"}))}
+                className="flex-1"
+              >
+                <Users className="h-4 w-4 mr-2" />
+                Gestion Employés
+              </Button>
+              <Button
+                variant={activeSubTab.employees === "departments" ? "default" : "outline"}
+                onClick={() => setActiveSubTab(prev => ({...prev, employees: "departments"}))}
+                className="flex-1"
+              >
+                <Building className="h-4 w-4 mr-2" />
+                Départements
+              </Button>
+            </div>
+            
+            <div className="modern-card rounded-xl transition-smooth hover-glow">
+              {activeSubTab.employees === "management" && <EnhancedEmployeeManagement />}
+              {activeSubTab.employees === "departments" && <DepartmentManagement />}
+            </div>
           </div>
         </TabsContent>
         
         <TabsContent value="leaves" className={isMobile ? 'mt-2' : 'mt-6'}>
-          <div className="modern-card rounded-xl transition-smooth hover-glow">
-            <LeaveManagement />
+          <div className="space-y-6">
+            <div className="flex gap-2 mb-4 flex-wrap">
+              <Button
+                variant={activeSubTab.leaves === "requests" ? "default" : "outline"}
+                onClick={() => setActiveSubTab(prev => ({...prev, leaves: "requests"}))}
+                className="flex-1 min-w-32"
+              >
+                <Calendar className="h-4 w-4 mr-2" />
+                Demandes
+              </Button>
+              <Button
+                variant={activeSubTab.leaves === "balances" ? "default" : "outline"}
+                onClick={() => setActiveSubTab(prev => ({...prev, leaves: "balances"}))}
+                className="flex-1 min-w-32"
+              >
+                <Clock className="h-4 w-4 mr-2" />
+                Soldes
+              </Button>
+              <Button
+                variant={activeSubTab.leaves === "types" ? "default" : "outline"}
+                onClick={() => setActiveSubTab(prev => ({...prev, leaves: "types"}))}
+                className="flex-1 min-w-32"
+              >
+                <Building className="h-4 w-4 mr-2" />
+                Types
+              </Button>
+            </div>
+            
+            <div className="modern-card rounded-xl transition-smooth hover-glow">
+              {activeSubTab.leaves === "requests" && <LeaveManagement />}
+              {activeSubTab.leaves === "balances" && <LeaveBalanceManagement />}
+              {activeSubTab.leaves === "types" && <AbsenceTypeManagement />}
+            </div>
           </div>
         </TabsContent>
         
-        <TabsContent value="attendance" className={isMobile ? 'mt-2' : 'mt-6'}>
-          <div className="modern-card rounded-xl transition-smooth hover-glow">
-            <AttendanceManagement />
-          </div>
-        </TabsContent>
-        
-        <TabsContent value="absences" className={isMobile ? 'mt-2' : 'mt-6'}>
-          <div className="modern-card rounded-xl transition-smooth hover-glow">
-            <AbsenceTypeManagement />
-          </div>
-        </TabsContent>
-        
-        <TabsContent value="balances" className={isMobile ? 'mt-2' : 'mt-6'}>
-          <div className="modern-card rounded-xl transition-smooth hover-glow">
-            <LeaveBalanceManagement />
-          </div>
-        </TabsContent>
-        
-        <TabsContent value="timesheets" className={isMobile ? 'mt-2' : 'mt-6'}>
-          <div className="modern-card rounded-xl transition-smooth hover-glow">
-            <TimesheetManagement />
-          </div>
-        </TabsContent>
-        
-        <TabsContent value="departments" className={isMobile ? 'mt-2' : 'mt-6'}>
-          <div className="modern-card rounded-xl transition-smooth hover-glow">
-            <DepartmentManagement />
+        <TabsContent value="time" className={isMobile ? 'mt-2' : 'mt-6'}>
+          <div className="space-y-6">
+            <div className="flex gap-2 mb-4">
+              <Button
+                variant={activeSubTab.time === "attendance" ? "default" : "outline"}
+                onClick={() => setActiveSubTab(prev => ({...prev, time: "attendance"}))}
+                className="flex-1"
+              >
+                <Clock className="h-4 w-4 mr-2" />
+                Présences
+              </Button>
+              <Button
+                variant={activeSubTab.time === "timesheets" ? "default" : "outline"}
+                onClick={() => setActiveSubTab(prev => ({...prev, time: "timesheets"}))}
+                className="flex-1"
+              >
+                <Calendar className="h-4 w-4 mr-2" />
+                Feuilles de temps
+              </Button>
+            </div>
+            
+            <div className="modern-card rounded-xl transition-smooth hover-glow">
+              {activeSubTab.time === "attendance" && <AttendanceManagement />}
+              {activeSubTab.time === "timesheets" && <TimesheetManagement />}
+            </div>
           </div>
         </TabsContent>
       </Tabs>

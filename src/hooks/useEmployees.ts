@@ -4,9 +4,8 @@ import { supabase } from '@/integrations/supabase/client';
 export interface Employee {
   id: string;
   user_id?: string;
-  employee_id: string;
+  employee_id?: string;
   full_name: string;
-  email: string;
   phone?: string;
   job_title?: string;
   department_id?: string;
@@ -15,7 +14,6 @@ export interface Employee {
   contract_type?: string;
   salary?: number;
   weekly_hours?: number;
-  status?: string;
   avatar_url?: string;
   emergency_contact?: any;
   created_at: string;
@@ -48,9 +46,9 @@ export const useEmployees = () => {
     try {
       setLoading(true);
       
-      // Fetch employees
+      // Fetch employees from profiles table (they now have user_id)
       const { data: employeesData, error: employeesError } = await supabase
-        .from('employees')
+        .from('profiles')
         .select('*')
         .order('full_name');
 
@@ -64,7 +62,13 @@ export const useEmployees = () => {
 
       if (departmentsError) throw departmentsError;
 
-      setEmployees(employeesData || []);
+      // Map profiles data to match Employee interface
+      const mappedEmployees = (employeesData || []).map(profile => ({
+        ...profile,
+        employee_id: profile.employee_id || `EMP${profile.id.slice(-4)}`
+      }));
+
+      setEmployees(mappedEmployees);
       setDepartments(departmentsData || []);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Une erreur est survenue');
@@ -76,16 +80,35 @@ export const useEmployees = () => {
 
   const createEmployee = async (employeeData: Omit<Employee, 'id' | 'created_at' | 'updated_at'>) => {
     try {
+      // Create auth user first, then create profile
+      console.log('Creating employee with data:', employeeData);
+      // For now, just create in profiles table
       const { data, error } = await supabase
-        .from('employees')
-        .insert([employeeData])
+        .from('profiles')
+        .insert([{
+          full_name: employeeData.full_name,
+          job_title: employeeData.job_title,
+          employee_id: employeeData.employee_id || `EMP${Date.now().toString().slice(-6)}`,
+          hire_date: employeeData.hire_date,
+          contract_type: employeeData.contract_type || 'CDI',
+          phone: employeeData.phone,
+          salary: employeeData.salary,
+          weekly_hours: employeeData.weekly_hours || 35,
+          manager_id: employeeData.manager_id,
+          emergency_contact: employeeData.emergency_contact
+        }])
         .select()
         .single();
 
       if (error) throw error;
       
-      setEmployees(prev => [...prev, data]);
-      return data;
+      const mappedEmployee = {
+        ...data,
+        employee_id: data.employee_id || `EMP${data.id.slice(-4)}`
+      };
+      
+      setEmployees(prev => [...prev, mappedEmployee]);
+      return mappedEmployee;
     } catch (err) {
       console.error('Error creating employee:', err);
       throw err;
@@ -95,16 +118,16 @@ export const useEmployees = () => {
   const updateEmployee = async (id: string, updates: Partial<Employee>) => {
     try {
       const { data, error } = await supabase
-        .from('employees')
+        .from('profiles')
         .update(updates)
-        .eq('id', id)
+        .eq('user_id', id) // Use user_id for updates
         .select()
         .single();
 
       if (error) throw error;
 
       setEmployees(prev => 
-        prev.map(employee => employee.id === id ? { ...employee, ...data } : employee)
+        prev.map(employee => employee.user_id === id ? { ...employee, ...data } : employee)
       );
       return data;
     } catch (err) {
@@ -116,13 +139,13 @@ export const useEmployees = () => {
   const deleteEmployee = async (id: string) => {
     try {
       const { error } = await supabase
-        .from('employees')
+        .from('profiles')
         .delete()
-        .eq('id', id);
+        .eq('user_id', id); // Use user_id for deletion
 
       if (error) throw error;
 
-      setEmployees(prev => prev.filter(employee => employee.id !== id));
+      setEmployees(prev => prev.filter(employee => employee.user_id !== id));
     } catch (err) {
       console.error('Error deleting employee:', err);
       throw err;

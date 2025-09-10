@@ -83,7 +83,7 @@ export const EmployeeManagement = () => {
               const department = departments.find(d => d.id === employee.department_id);
               
               return (
-                <Card key={employee.id} className="modern-card hover-glow">
+                <Card key={employee.user_id} className="modern-card hover-glow">
                   <CardContent className="p-6">
                     <div className="flex items-start gap-4">
                       <Avatar className="h-12 w-12">

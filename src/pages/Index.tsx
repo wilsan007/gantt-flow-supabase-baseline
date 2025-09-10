@@ -6,6 +6,7 @@ import { ResponsiveLayout } from "@/components/responsive/ResponsiveLayout";
 import GanttChart from "../components/GanttChart";
 import DynamicTable from "../components/DynamicTable";
 import KanbanBoard from "../components/KanbanBoard";
+import { HRDashboard } from "@/components/hr/HRDashboard";
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState("gantt");
@@ -30,7 +31,7 @@ const Index = () => {
         </div>
         
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className={`grid w-full modern-card glow-primary bg-gradient-to-r from-primary/10 via-accent/10 to-tech-purple/10 border-2 ${isMobile ? 'grid-cols-1 gap-1 p-1 mb-4' : 'grid-cols-3 p-2 mb-8'}`}>
+          <TabsList className={`grid w-full modern-card glow-primary bg-gradient-to-r from-primary/10 via-accent/10 to-tech-purple/10 border-2 ${isMobile ? 'grid-cols-2 gap-1 p-1 mb-4' : 'grid-cols-4 p-2 mb-8'}`}>
             <TabsTrigger 
               value="gantt" 
               className={`transition-smooth hover-glow data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-accent data-[state=active]:text-white font-semibold ${isMobile ? 'text-sm py-2' : ''}`}
@@ -49,6 +50,12 @@ const Index = () => {
             >
               {isMobile ? 'Tableau' : 'Tableau Dynamique'}
             </TabsTrigger>
+            <TabsTrigger 
+              value="hr" 
+              className={`transition-smooth hover-glow data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-accent data-[state=active]:text-white font-semibold ${isMobile ? 'text-sm py-2' : ''}`}
+            >
+              RH
+            </TabsTrigger>
           </TabsList>
           
           <TabsContent value="gantt" className={isMobile ? 'mt-2' : 'mt-6'}>
@@ -66,6 +73,12 @@ const Index = () => {
           <TabsContent value="table" className={isMobile ? 'mt-2' : 'mt-6'}>
             <div className="modern-card rounded-xl transition-smooth hover-glow">
               <DynamicTable />
+            </div>
+          </TabsContent>
+          
+          <TabsContent value="hr" className={isMobile ? 'mt-2' : 'mt-6'}>
+            <div className="modern-card rounded-xl transition-smooth hover-glow">
+              <HRDashboard />
             </div>
           </TabsContent>
         </Tabs>

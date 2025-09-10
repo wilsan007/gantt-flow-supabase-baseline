@@ -14,6 +14,98 @@ export type Database = {
   }
   public: {
     Tables: {
+      absence_types: {
+        Row: {
+          code: string
+          color: string | null
+          created_at: string
+          deducts_from_balance: boolean | null
+          id: string
+          max_days_per_year: number | null
+          name: string
+          requires_approval: boolean | null
+          tenant_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          code: string
+          color?: string | null
+          created_at?: string
+          deducts_from_balance?: boolean | null
+          id?: string
+          max_days_per_year?: number | null
+          name: string
+          requires_approval?: boolean | null
+          tenant_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          code?: string
+          color?: string | null
+          created_at?: string
+          deducts_from_balance?: boolean | null
+          id?: string
+          max_days_per_year?: number | null
+          name?: string
+          requires_approval?: boolean | null
+          tenant_id?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      attendances: {
+        Row: {
+          break_duration: number | null
+          check_in: string | null
+          check_out: string | null
+          created_at: string
+          date: string
+          employee_id: string
+          id: string
+          notes: string | null
+          status: string | null
+          tenant_id: string | null
+          total_hours: number | null
+          updated_at: string
+        }
+        Insert: {
+          break_duration?: number | null
+          check_in?: string | null
+          check_out?: string | null
+          created_at?: string
+          date: string
+          employee_id: string
+          id?: string
+          notes?: string | null
+          status?: string | null
+          tenant_id?: string | null
+          total_hours?: number | null
+          updated_at?: string
+        }
+        Update: {
+          break_duration?: number | null
+          check_in?: string | null
+          check_out?: string | null
+          created_at?: string
+          date?: string
+          employee_id?: string
+          id?: string
+          notes?: string | null
+          status?: string | null
+          tenant_id?: string | null
+          total_hours?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "attendances_employee_id_fkey"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       departments: {
         Row: {
           budget: number | null
@@ -55,38 +147,309 @@ export type Database = {
           },
         ]
       }
+      employee_documents: {
+        Row: {
+          created_at: string
+          document_type: string
+          employee_id: string
+          expires_at: string | null
+          file_name: string
+          file_path: string
+          file_size: number | null
+          id: string
+          is_confidential: boolean | null
+          mime_type: string | null
+          tenant_id: string | null
+          updated_at: string
+          uploaded_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          document_type: string
+          employee_id: string
+          expires_at?: string | null
+          file_name: string
+          file_path: string
+          file_size?: number | null
+          id?: string
+          is_confidential?: boolean | null
+          mime_type?: string | null
+          tenant_id?: string | null
+          updated_at?: string
+          uploaded_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          document_type?: string
+          employee_id?: string
+          expires_at?: string | null
+          file_name?: string
+          file_path?: string
+          file_size?: number | null
+          id?: string
+          is_confidential?: boolean | null
+          mime_type?: string | null
+          tenant_id?: string | null
+          updated_at?: string
+          uploaded_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "employee_documents_employee_id_fkey"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "employee_documents_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      leave_balances: {
+        Row: {
+          absence_type_id: string
+          created_at: string
+          employee_id: string
+          id: string
+          remaining_days: number | null
+          tenant_id: string | null
+          total_days: number | null
+          updated_at: string
+          used_days: number | null
+          year: number
+        }
+        Insert: {
+          absence_type_id: string
+          created_at?: string
+          employee_id: string
+          id?: string
+          remaining_days?: number | null
+          tenant_id?: string | null
+          total_days?: number | null
+          updated_at?: string
+          used_days?: number | null
+          year: number
+        }
+        Update: {
+          absence_type_id?: string
+          created_at?: string
+          employee_id?: string
+          id?: string
+          remaining_days?: number | null
+          tenant_id?: string | null
+          total_days?: number | null
+          updated_at?: string
+          used_days?: number | null
+          year?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "leave_balances_absence_type_id_fkey"
+            columns: ["absence_type_id"]
+            isOneToOne: false
+            referencedRelation: "absence_types"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "leave_balances_employee_id_fkey"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      leave_requests: {
+        Row: {
+          absence_type_id: string
+          approved_at: string | null
+          approved_by: string | null
+          created_at: string
+          employee_id: string
+          end_date: string
+          id: string
+          reason: string | null
+          rejection_reason: string | null
+          start_date: string
+          status: string | null
+          tenant_id: string | null
+          total_days: number
+          updated_at: string
+        }
+        Insert: {
+          absence_type_id: string
+          approved_at?: string | null
+          approved_by?: string | null
+          created_at?: string
+          employee_id: string
+          end_date: string
+          id?: string
+          reason?: string | null
+          rejection_reason?: string | null
+          start_date: string
+          status?: string | null
+          tenant_id?: string | null
+          total_days: number
+          updated_at?: string
+        }
+        Update: {
+          absence_type_id?: string
+          approved_at?: string | null
+          approved_by?: string | null
+          created_at?: string
+          employee_id?: string
+          end_date?: string
+          id?: string
+          reason?: string | null
+          rejection_reason?: string | null
+          start_date?: string
+          status?: string | null
+          tenant_id?: string | null
+          total_days?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "leave_requests_absence_type_id_fkey"
+            columns: ["absence_type_id"]
+            isOneToOne: false
+            referencedRelation: "absence_types"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "leave_requests_approved_by_fkey"
+            columns: ["approved_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "leave_requests_employee_id_fkey"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      positions: {
+        Row: {
+          created_at: string
+          department_id: string | null
+          description: string | null
+          id: string
+          requirements: string | null
+          salary_range_max: number | null
+          salary_range_min: number | null
+          tenant_id: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          department_id?: string | null
+          description?: string | null
+          id?: string
+          requirements?: string | null
+          salary_range_max?: number | null
+          salary_range_min?: number | null
+          tenant_id?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          department_id?: string | null
+          description?: string | null
+          id?: string
+          requirements?: string | null
+          salary_range_max?: number | null
+          salary_range_min?: number | null
+          tenant_id?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "positions_department_id_fkey"
+            columns: ["department_id"]
+            isOneToOne: false
+            referencedRelation: "departments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
+          contract_type: string | null
           created_at: string
+          emergency_contact: Json | null
+          employee_id: string | null
           full_name: string
+          hire_date: string | null
           id: string
+          job_title: string | null
+          manager_id: string | null
+          phone: string | null
           role: string | null
+          salary: number | null
           tenant_id: string | null
           updated_at: string
           user_id: string | null
+          weekly_hours: number | null
         }
         Insert: {
           avatar_url?: string | null
+          contract_type?: string | null
           created_at?: string
+          emergency_contact?: Json | null
+          employee_id?: string | null
           full_name: string
+          hire_date?: string | null
           id?: string
+          job_title?: string | null
+          manager_id?: string | null
+          phone?: string | null
           role?: string | null
+          salary?: number | null
           tenant_id?: string | null
           updated_at?: string
           user_id?: string | null
+          weekly_hours?: number | null
         }
         Update: {
           avatar_url?: string | null
+          contract_type?: string | null
           created_at?: string
+          emergency_contact?: Json | null
+          employee_id?: string | null
           full_name?: string
+          hire_date?: string | null
           id?: string
+          job_title?: string | null
+          manager_id?: string | null
+          phone?: string | null
           role?: string | null
+          salary?: number | null
           tenant_id?: string | null
           updated_at?: string
           user_id?: string | null
+          weekly_hours?: number | null
         }
         Relationships: [
+          {
+            foreignKeyName: "profiles_manager_id_fkey"
+            columns: ["manager_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "profiles_tenant_id_fkey"
             columns: ["tenant_id"]
@@ -697,11 +1060,92 @@ export type Database = {
         }
         Relationships: []
       }
+      timesheets: {
+        Row: {
+          approved: boolean | null
+          approved_by: string | null
+          billable: boolean | null
+          created_at: string
+          date: string
+          description: string | null
+          employee_id: string
+          hours: number
+          id: string
+          project_id: string | null
+          task_id: string | null
+          tenant_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          approved?: boolean | null
+          approved_by?: string | null
+          billable?: boolean | null
+          created_at?: string
+          date: string
+          description?: string | null
+          employee_id: string
+          hours?: number
+          id?: string
+          project_id?: string | null
+          task_id?: string | null
+          tenant_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          approved?: boolean | null
+          approved_by?: string | null
+          billable?: boolean | null
+          created_at?: string
+          date?: string
+          description?: string | null
+          employee_id?: string
+          hours?: number
+          id?: string
+          project_id?: string | null
+          task_id?: string | null
+          tenant_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "timesheets_approved_by_fkey"
+            columns: ["approved_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "timesheets_employee_id_fkey"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "timesheets_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "timesheets_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
+      calculate_working_days: {
+        Args: { end_date: string; start_date: string }
+        Returns: number
+      }
       compute_task_progress: {
         Args: { p_task_id: string }
         Returns: number

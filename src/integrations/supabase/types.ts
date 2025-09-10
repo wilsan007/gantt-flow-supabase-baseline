@@ -437,7 +437,15 @@ export type Database = {
           user_id?: string | null
           weekly_hours?: number | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "employees_user_id_fkey1"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+        ]
       }
       evaluation_categories: {
         Row: {

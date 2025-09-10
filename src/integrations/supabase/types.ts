@@ -53,6 +53,60 @@ export type Database = {
         }
         Relationships: []
       }
+      absences: {
+        Row: {
+          absence_type_id: string
+          approved_at: string | null
+          approved_by: string | null
+          created_at: string
+          employee_id: string
+          end_date: string
+          id: string
+          medical_certificate: boolean | null
+          reason: string | null
+          rejection_reason: string | null
+          start_date: string
+          status: string
+          tenant_id: string | null
+          total_days: number
+          updated_at: string
+        }
+        Insert: {
+          absence_type_id: string
+          approved_at?: string | null
+          approved_by?: string | null
+          created_at?: string
+          employee_id: string
+          end_date: string
+          id?: string
+          medical_certificate?: boolean | null
+          reason?: string | null
+          rejection_reason?: string | null
+          start_date: string
+          status?: string
+          tenant_id?: string | null
+          total_days?: number
+          updated_at?: string
+        }
+        Update: {
+          absence_type_id?: string
+          approved_at?: string | null
+          approved_by?: string | null
+          created_at?: string
+          employee_id?: string
+          end_date?: string
+          id?: string
+          medical_certificate?: boolean | null
+          reason?: string | null
+          rejection_reason?: string | null
+          start_date?: string
+          status?: string
+          tenant_id?: string | null
+          total_days?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       attendances: {
         Row: {
           break_duration: number | null
@@ -1471,6 +1525,51 @@ export type Database = {
           id?: string
           name?: string
           tenant_id?: string | null
+        }
+        Relationships: []
+      }
+      tardiness: {
+        Row: {
+          actual_time: string
+          created_at: string
+          date: string
+          delay_minutes: number
+          employee_id: string
+          id: string
+          justification: string | null
+          justified: boolean | null
+          reason: string | null
+          scheduled_time: string
+          tenant_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          actual_time: string
+          created_at?: string
+          date: string
+          delay_minutes: number
+          employee_id: string
+          id?: string
+          justification?: string | null
+          justified?: boolean | null
+          reason?: string | null
+          scheduled_time: string
+          tenant_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          actual_time?: string
+          created_at?: string
+          date?: string
+          delay_minutes?: number
+          employee_id?: string
+          id?: string
+          justification?: string | null
+          justified?: boolean | null
+          reason?: string | null
+          scheduled_time?: string
+          tenant_id?: string | null
+          updated_at?: string
         }
         Relationships: []
       }

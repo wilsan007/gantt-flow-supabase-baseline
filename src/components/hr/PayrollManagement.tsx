@@ -72,112 +72,10 @@ export const PayrollManagement = () => {
   if (loading) return <div>Chargement...</div>;
   if (error) return <div>Erreur: {error}</div>;
 
-  const mockPayrollPeriods: PayrollPeriod[] = payrollPeriods.length > 0 ? payrollPeriods : [
-    {
-      id: "1",
-      year: 2024,
-      month: 1,
-      status: "processed",
-      lockDate: "2024-01-25",
-      processedDate: "2024-01-31",
-      totalGross: 125000,
-      totalNet: 95000,
-      totalEmployees: 25,
-      totalCharges: 35000
-    },
-    {
-      id: "2",
-      year: 2023,
-      month: 12,
-      status: "exported",
-      lockDate: "2023-12-25",
-      processedDate: "2023-12-31",
-      totalGross: 130000,
-      totalNet: 98500,
-      totalEmployees: 24,
-      totalCharges: 36500
-    },
-    {
-      id: "3",
-      year: 2024,
-      month: 2,
-      status: "draft",
-      totalGross: 0,
-      totalNet: 0,
-      totalEmployees: 26,
-      totalCharges: 0
-    }
-  ];
-
-  const mockEmployeePayroll: EmployeePayroll[] = employeePayrolls.length > 0 ? employeePayrolls : [
-    {
-      id: "1",
-      employeeId: "emp1",
-      employeeName: "Marie Dubois",
-      position: "Développeuse Senior",
-      baseSalary: 5000,
-      grossTotal: 5250,
-      netTotal: 3990,
-      socialCharges: 1470,
-      hoursWorked: 152,
-      standardHours: 152,
-      overtimeHours: 0,
-      bonuses: [
-        { id: "b1", type: "bonus", name: "Prime performance", amount: 250, isPercentage: false, isTaxable: true }
-      ],
-      deductions: []
-    },
-    {
-      id: "2",
-      employeeId: "emp2",
-      employeeName: "Pierre Laurent",
-      position: "Chef de projet",
-      baseSalary: 4500,
-      grossTotal: 4950,
-      netTotal: 3762,
-      socialCharges: 1386,
-      hoursWorked: 168,
-      standardHours: 152,
-      overtimeHours: 16,
-      bonuses: [
-        { id: "b2", type: "bonus", name: "Heures supplémentaires", amount: 450, isPercentage: false, isTaxable: true }
-      ],
-      deductions: []
-    }
-  ];
-
-  const mockPayrollChecks: PayrollCheck[] = payrollChecks.length > 0 ? payrollChecks : [
-    {
-      id: "1",
-      type: "attendance",
-      description: "Vérification des présences",
-      status: "ok",
-      details: "Toutes les présences sont correctement saisies"
-    },
-    {
-      id: "2",
-      type: "hours",
-      description: "Contrôle des heures travaillées",
-      status: "warning",
-      details: "3 employés ont des heures supplémentaires non validées",
-      affectedEmployees: ["Pierre Laurent", "Sophie Chen", "Marc Durand"]
-    },
-    {
-      id: "3",
-      type: "leaves",
-      description: "Validation des congés",
-      status: "error",
-      details: "2 demandes de congés en attente d'approbation",
-      affectedEmployees: ["Julie Martin", "Thomas Moreau"]
-    },
-    {
-      id: "4",
-      type: "expenses",
-      description: "Intégration notes de frais",
-      status: "ok",
-      details: "Toutes les notes approuvées sont intégrées"
-    }
-  ];
+  // Use real data directly from the hook
+  const displayPeriods = payrollPeriods;
+  const displayEmployeePayrolls = employeePayrolls;
+  const displayPayrollChecks = payrollChecks;
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -251,7 +149,7 @@ export const PayrollManagement = () => {
 
         <TabsContent value="periods" className="space-y-4">
           <div className="grid gap-4">
-            {mockPayrollPeriods.map((period) => (
+            {displayPeriods.map((period) => (
               <Card key={period.id} className="hover:shadow-lg transition-shadow">
                 <CardHeader>
                   <div className="flex items-center justify-between">
@@ -345,7 +243,7 @@ export const PayrollManagement = () => {
           </div>
 
           <div className="grid gap-4">
-            {mockEmployeePayroll.map((payroll) => (
+            {displayEmployeePayrolls.map((payroll) => (
               <Card key={payroll.id} className="hover:shadow-lg transition-shadow">
                 <CardHeader>
                   <div className="flex items-center justify-between">
@@ -422,7 +320,7 @@ export const PayrollManagement = () => {
 
         <TabsContent value="checks" className="space-y-4">
           <div className="grid gap-4">
-            {mockPayrollChecks.map((check) => (
+            {displayPayrollChecks.map((check) => (
               <Card key={check.id} className="hover:shadow-lg transition-shadow">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between mb-4">

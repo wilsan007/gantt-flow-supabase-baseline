@@ -105,7 +105,15 @@ export type Database = {
           total_days?: number
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "fk_absences_employee"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "employees"
+            referencedColumns: ["user_id"]
+          },
+        ]
       }
       attendances: {
         Row: {
@@ -157,6 +165,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_attendances_employee"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "employees"
+            referencedColumns: ["user_id"]
           },
         ]
       }
@@ -309,6 +324,13 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "fk_employee_documents_employee"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "employees"
+            referencedColumns: ["user_id"]
+          },
         ]
       }
       employee_payrolls: {
@@ -370,6 +392,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "payroll_periods"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_employee_payrolls_employee"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "employees"
+            referencedColumns: ["user_id"]
           },
         ]
       }
@@ -763,6 +792,13 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "fk_leave_balances_employee"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "employees"
+            referencedColumns: ["user_id"]
+          },
+          {
             foreignKeyName: "leave_balances_absence_type_id_fkey"
             columns: ["absence_type_id"]
             isOneToOne: false
@@ -828,6 +864,13 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "fk_leave_requests_employee"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "employees"
+            referencedColumns: ["user_id"]
+          },
           {
             foreignKeyName: "leave_requests_absence_type_id_fkey"
             columns: ["absence_type_id"]
@@ -1501,6 +1544,13 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "fk_skill_assessments_employee"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "employees"
+            referencedColumns: ["user_id"]
+          },
+          {
             foreignKeyName: "skill_assessments_skill_id_fkey"
             columns: ["skill_id"]
             isOneToOne: false
@@ -1579,7 +1629,15 @@ export type Database = {
           tenant_id?: string | null
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "fk_tardiness_employee"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "employees"
+            referencedColumns: ["user_id"]
+          },
+        ]
       }
       task_actions: {
         Row: {
@@ -2345,6 +2403,10 @@ export type Database = {
       }
       generate_display_order: {
         Args: { p_parent_id: string; p_task_level: number }
+        Returns: string
+      }
+      get_employee_name: {
+        Args: { p_user_id: string }
         Returns: string
       }
       get_user_tenant_id: {

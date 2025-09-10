@@ -15,6 +15,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { useForm } from 'react-hook-form';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { EmployeeDetailsDialog } from './EmployeeDetailsDialog';
 
 interface Employee {
   id: string;
@@ -500,102 +501,11 @@ export const EnhancedEmployeeManagement = () => {
       </div>
 
       {/* Employee Details Dialog */}
-      <Dialog open={!!viewingEmployee} onOpenChange={() => setViewingEmployee(null)}>
-        <DialogContent className="max-w-2xl">
-          <DialogHeader>
-            <DialogTitle>Détails de l'employé</DialogTitle>
-          </DialogHeader>
-          {viewingEmployee && (
-            <div className="space-y-6">
-              <div className="flex items-center gap-4">
-                <Avatar className="h-16 w-16">
-                  <AvatarImage src={viewingEmployee.avatar_url || undefined} />
-                  <AvatarFallback className="text-lg">
-                    {viewingEmployee.full_name.split(' ').map(n => n[0]).join('').toUpperCase()}
-                  </AvatarFallback>
-                </Avatar>
-                <div>
-                  <h3 className="text-2xl font-bold">{viewingEmployee.full_name}</h3>
-                  {viewingEmployee.job_title && (
-                    <p className="text-lg text-muted-foreground">{viewingEmployee.job_title}</p>
-                  )}
-                </div>
-              </div>
-
-              <Tabs defaultValue="info" className="w-full">
-                <TabsList>
-                  <TabsTrigger value="info">Informations</TabsTrigger>
-                  <TabsTrigger value="work">Travail</TabsTrigger>
-                  <TabsTrigger value="contact">Contact</TabsTrigger>
-                </TabsList>
-                
-                <TabsContent value="info" className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    {viewingEmployee.employee_id && (
-                      <div>
-                        <Label>ID Employé</Label>
-                        <p className="font-medium">{viewingEmployee.employee_id}</p>
-                      </div>
-                    )}
-                    {viewingEmployee.hire_date && (
-                      <div>
-                        <Label>Date d'embauche</Label>
-                        <p className="font-medium">{new Date(viewingEmployee.hire_date).toLocaleDateString()}</p>
-                      </div>
-                    )}
-                    {viewingEmployee.contract_type && (
-                      <div>
-                        <Label>Type de contrat</Label>
-                        <Badge variant={getContractTypeColor(viewingEmployee.contract_type)}>
-                          {viewingEmployee.contract_type}
-                        </Badge>
-                      </div>
-                    )}
-                  </div>
-                </TabsContent>
-                
-                <TabsContent value="work" className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    {viewingEmployee.weekly_hours && (
-                      <div>
-                        <Label>Heures par semaine</Label>
-                        <p className="font-medium">{viewingEmployee.weekly_hours}h</p>
-                      </div>
-                    )}
-                    {viewingEmployee.salary && (
-                      <div>
-                        <Label>Salaire annuel</Label>
-                        <p className="font-medium">{viewingEmployee.salary.toLocaleString()} €</p>
-                      </div>
-                    )}
-                  </div>
-                </TabsContent>
-                
-                <TabsContent value="contact" className="space-y-4">
-                  <div className="space-y-4">
-                    {viewingEmployee.phone && (
-                      <div>
-                        <Label>Téléphone</Label>
-                        <p className="font-medium">{viewingEmployee.phone}</p>
-                      </div>
-                    )}
-                    {viewingEmployee.emergency_contact && (
-                      <div>
-                        <Label>Contact d'urgence</Label>
-                        <div className="bg-muted/50 p-3 rounded">
-                          <p><strong>Nom:</strong> {viewingEmployee.emergency_contact.name}</p>
-                          <p><strong>Téléphone:</strong> {viewingEmployee.emergency_contact.phone}</p>
-                          <p><strong>Relation:</strong> {viewingEmployee.emergency_contact.relation}</p>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </TabsContent>
-              </Tabs>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
+      <EmployeeDetailsDialog
+        employee={viewingEmployee}
+        isOpen={!!viewingEmployee}
+        onOpenChange={(open) => !open && setViewingEmployee(null)}
+      />
     </div>
   );
 };

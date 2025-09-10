@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Users, Calendar, Clock, CheckCircle, XCircle, AlertCircle } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { AdvancedHRDashboard } from './AdvancedHRDashboard';
 
 export const HRDashboard = () => {
   const { leaveRequests, attendances, employees, loading } = useHR();

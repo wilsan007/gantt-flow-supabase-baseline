@@ -175,6 +175,102 @@ export type Database = {
           },
         ]
       }
+      candidates: {
+        Row: {
+          applied_date: string
+          cover_letter: string | null
+          created_at: string
+          email: string
+          first_name: string
+          id: string
+          last_name: string
+          linkedin_url: string | null
+          phone: string | null
+          resume_url: string | null
+          source: string | null
+          status: string
+          tenant_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          applied_date?: string
+          cover_letter?: string | null
+          created_at?: string
+          email: string
+          first_name: string
+          id?: string
+          last_name: string
+          linkedin_url?: string | null
+          phone?: string | null
+          resume_url?: string | null
+          source?: string | null
+          status?: string
+          tenant_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          applied_date?: string
+          cover_letter?: string | null
+          created_at?: string
+          email?: string
+          first_name?: string
+          id?: string
+          last_name?: string
+          linkedin_url?: string | null
+          phone?: string | null
+          resume_url?: string | null
+          source?: string | null
+          status?: string
+          tenant_id?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      capacity_planning: {
+        Row: {
+          absence_hours: number
+          allocated_hours: number
+          available_hours: number
+          capacity_utilization: number | null
+          created_at: string
+          employee_id: string
+          id: string
+          period_end: string
+          period_start: string
+          project_hours: number
+          tenant_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          absence_hours?: number
+          allocated_hours?: number
+          available_hours?: number
+          capacity_utilization?: number | null
+          created_at?: string
+          employee_id: string
+          id?: string
+          period_end: string
+          period_start: string
+          project_hours?: number
+          tenant_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          absence_hours?: number
+          allocated_hours?: number
+          available_hours?: number
+          capacity_utilization?: number | null
+          created_at?: string
+          employee_id?: string
+          id?: string
+          period_end?: string
+          period_start?: string
+          project_hours?: number
+          tenant_id?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       corrective_actions: {
         Row: {
           completed_date: string | null
@@ -221,6 +317,54 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      country_policies: {
+        Row: {
+          compliance_rules: string | null
+          country_code: string
+          country_name: string
+          created_at: string
+          currency: string
+          id: string
+          language: string
+          leave_policies: Json | null
+          public_holidays: Json | null
+          tax_rates: Json | null
+          tenant_id: string | null
+          updated_at: string
+          working_hours_per_week: number | null
+        }
+        Insert: {
+          compliance_rules?: string | null
+          country_code: string
+          country_name: string
+          created_at?: string
+          currency?: string
+          id?: string
+          language?: string
+          leave_policies?: Json | null
+          public_holidays?: Json | null
+          tax_rates?: Json | null
+          tenant_id?: string | null
+          updated_at?: string
+          working_hours_per_week?: number | null
+        }
+        Update: {
+          compliance_rules?: string | null
+          country_code?: string
+          country_name?: string
+          created_at?: string
+          currency?: string
+          id?: string
+          language?: string
+          leave_policies?: Json | null
+          public_holidays?: Json | null
+          tax_rates?: Json | null
+          tenant_id?: string | null
+          updated_at?: string
+          working_hours_per_week?: number | null
+        }
+        Relationships: []
       }
       departments: {
         Row: {
@@ -332,6 +476,51 @@ export type Database = {
             referencedColumns: ["user_id"]
           },
         ]
+      }
+      employee_insights: {
+        Row: {
+          created_at: string
+          data_sources: Json | null
+          description: string | null
+          employee_id: string
+          id: string
+          insight_type: string
+          is_active: boolean | null
+          recommendations: string | null
+          risk_level: string
+          score: number | null
+          tenant_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          data_sources?: Json | null
+          description?: string | null
+          employee_id: string
+          id?: string
+          insight_type: string
+          is_active?: boolean | null
+          recommendations?: string | null
+          risk_level?: string
+          score?: number | null
+          tenant_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          data_sources?: Json | null
+          description?: string | null
+          employee_id?: string
+          id?: string
+          insight_type?: string
+          is_active?: boolean | null
+          recommendations?: string | null
+          risk_level?: string
+          score?: number | null
+          tenant_id?: string | null
+          updated_at?: string
+        }
+        Relationships: []
       }
       employee_payrolls: {
         Row: {
@@ -720,6 +909,258 @@ export type Database = {
           tenant_id?: string | null
           title?: string
           total_amount?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      hr_analytics: {
+        Row: {
+          calculated_at: string
+          department_id: string | null
+          id: string
+          metadata: Json | null
+          metric_name: string
+          metric_type: string
+          metric_value: number
+          period_end: string
+          period_start: string
+          tenant_id: string | null
+        }
+        Insert: {
+          calculated_at?: string
+          department_id?: string | null
+          id?: string
+          metadata?: Json | null
+          metric_name: string
+          metric_type: string
+          metric_value: number
+          period_end: string
+          period_start: string
+          tenant_id?: string | null
+        }
+        Update: {
+          calculated_at?: string
+          department_id?: string | null
+          id?: string
+          metadata?: Json | null
+          metric_name?: string
+          metric_type?: string
+          metric_value?: number
+          period_end?: string
+          period_start?: string
+          tenant_id?: string | null
+        }
+        Relationships: []
+      }
+      interviews: {
+        Row: {
+          application_id: string
+          created_at: string
+          duration_minutes: number | null
+          feedback: string | null
+          id: string
+          interviewer_id: string | null
+          interviewer_name: string
+          location: string | null
+          recommendation: string | null
+          scheduled_date: string
+          scheduled_time: string | null
+          score: number | null
+          status: string
+          tenant_id: string | null
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          application_id: string
+          created_at?: string
+          duration_minutes?: number | null
+          feedback?: string | null
+          id?: string
+          interviewer_id?: string | null
+          interviewer_name: string
+          location?: string | null
+          recommendation?: string | null
+          scheduled_date: string
+          scheduled_time?: string | null
+          score?: number | null
+          status?: string
+          tenant_id?: string | null
+          type?: string
+          updated_at?: string
+        }
+        Update: {
+          application_id?: string
+          created_at?: string
+          duration_minutes?: number | null
+          feedback?: string | null
+          id?: string
+          interviewer_id?: string | null
+          interviewer_name?: string
+          location?: string | null
+          recommendation?: string | null
+          scheduled_date?: string
+          scheduled_time?: string | null
+          score?: number | null
+          status?: string
+          tenant_id?: string | null
+          type?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      job_applications: {
+        Row: {
+          applied_date: string
+          candidate_id: string
+          created_at: string
+          id: string
+          job_post_id: string
+          notes: string | null
+          score: number | null
+          stage: string
+          status: string
+          tenant_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          applied_date?: string
+          candidate_id: string
+          created_at?: string
+          id?: string
+          job_post_id: string
+          notes?: string | null
+          score?: number | null
+          stage?: string
+          status?: string
+          tenant_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          applied_date?: string
+          candidate_id?: string
+          created_at?: string
+          id?: string
+          job_post_id?: string
+          notes?: string | null
+          score?: number | null
+          stage?: string
+          status?: string
+          tenant_id?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      job_offers: {
+        Row: {
+          application_id: string
+          approved_by: string | null
+          benefits: string | null
+          created_at: string
+          created_by: string | null
+          expiry_date: string | null
+          id: string
+          offer_date: string
+          salary_offered: number
+          start_date: string | null
+          status: string
+          tenant_id: string | null
+          terms_conditions: string | null
+          updated_at: string
+        }
+        Insert: {
+          application_id: string
+          approved_by?: string | null
+          benefits?: string | null
+          created_at?: string
+          created_by?: string | null
+          expiry_date?: string | null
+          id?: string
+          offer_date?: string
+          salary_offered: number
+          start_date?: string | null
+          status?: string
+          tenant_id?: string | null
+          terms_conditions?: string | null
+          updated_at?: string
+        }
+        Update: {
+          application_id?: string
+          approved_by?: string | null
+          benefits?: string | null
+          created_at?: string
+          created_by?: string | null
+          expiry_date?: string | null
+          id?: string
+          offer_date?: string
+          salary_offered?: number
+          start_date?: string | null
+          status?: string
+          tenant_id?: string | null
+          terms_conditions?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      job_posts: {
+        Row: {
+          closing_date: string | null
+          created_at: string
+          created_by: string | null
+          department_id: string | null
+          description: string | null
+          employment_type: string
+          hiring_manager_id: string | null
+          id: string
+          location: string | null
+          position_id: string | null
+          posted_date: string | null
+          requirements: string | null
+          salary_max: number | null
+          salary_min: number | null
+          status: string
+          tenant_id: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          closing_date?: string | null
+          created_at?: string
+          created_by?: string | null
+          department_id?: string | null
+          description?: string | null
+          employment_type?: string
+          hiring_manager_id?: string | null
+          id?: string
+          location?: string | null
+          position_id?: string | null
+          posted_date?: string | null
+          requirements?: string | null
+          salary_max?: number | null
+          salary_min?: number | null
+          status?: string
+          tenant_id?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          closing_date?: string | null
+          created_at?: string
+          created_by?: string | null
+          department_id?: string | null
+          description?: string | null
+          employment_type?: string
+          hiring_manager_id?: string | null
+          id?: string
+          location?: string | null
+          position_id?: string | null
+          posted_date?: string | null
+          requirements?: string | null
+          salary_max?: number | null
+          salary_min?: number | null
+          status?: string
+          tenant_id?: string | null
+          title?: string
           updated_at?: string
         }
         Relationships: []

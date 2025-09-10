@@ -58,7 +58,7 @@ export const AdvancedHRDashboard = () => {
             <BarChart3 className="h-4 w-4 mr-2" />
             Calculer Métriques
           </Button>
-          <Button onClick={() => generateEmployeeInsights('sample-id')} variant="outline">
+          <Button onClick={() => generateEmployeeInsights()} variant="outline">
             <Brain className="h-4 w-4 mr-2" />
             Générer Insights IA
           </Button>

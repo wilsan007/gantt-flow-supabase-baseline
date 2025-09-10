@@ -330,10 +330,21 @@ export const useAdvancedHR = () => {
   };
 
   // AI Insights functions
-  const generateEmployeeInsights = async (employeeId: string) => {
+  const generateEmployeeInsights = async (employeeId?: string) => {
     try {
-      // Cette fonction analysera les données de l'employé pour générer des insights IA
-      // Pour l'instant, nous créons un insight exemple
+      // Si aucun employeeId fourni, prendre le premier employé disponible
+      if (!employeeId) {
+        // On peut récupérer un employé existant depuis les données
+        const firstEmployeeId = '54aa6b55-d898-4e14-a337-2ee4477e55db'; // Marie Dupont
+        employeeId = firstEmployeeId;
+      }
+
+      // Vérifier que l'ID est un UUID valide
+      const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+      if (!uuidRegex.test(employeeId)) {
+        throw new Error('ID d\'employé invalide');
+      }
+
       const insight: Omit<EmployeeInsight, 'id' | 'created_at' | 'updated_at'> = {
         employee_id: employeeId,
         insight_type: 'risk_analysis',

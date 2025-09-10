@@ -8,34 +8,34 @@ All colors MUST be HSL for consistency.
 
 @layer base {
   :root {
-    /* Light Theme - Enhanced contrast and elegant colors */
-    --background: 220 25% 98%;
-    --foreground: 240 20% 8%;
+    /* Light Theme - Maximum contrast */
+    --background: 0 0% 100%;
+    --foreground: 240 25% 5%;
 
     --card: 0 0% 100%;
-    --card-foreground: 240 20% 8%;
+    --card-foreground: 240 25% 5%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 240 20% 8%;
+    --popover-foreground: 240 25% 5%;
 
     --primary: 214 100% 50%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 220 15% 92%;
-    --secondary-foreground: 240 15% 20%;
+    --secondary: 220 15% 88%;
+    --secondary-foreground: 240 25% 5%;
 
-    --muted: 220 12% 90%;
-    --muted-foreground: 215 15% 45%;
+    --muted: 220 12% 85%;
+    --muted-foreground: 215 20% 25%;
 
-    --accent: 176 85% 45%;
+    --accent: 176 85% 40%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84% 55%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 220 13% 85%;
-    --input: 220 13% 95%;
-    --ring: 214 100% 50%;
+    --border: 220 13% 75%;
+    --input: 220 13% 92%;
+    --ring: 214 100% 45%;
 
     --radius: 0.75rem;
 
@@ -85,52 +85,52 @@ All colors MUST be HSL for consistency.
   }
 
   .dark {
-    /* Dark Theme - Enhanced contrast and premium feel */
-    --background: 220 27% 6%;
+    /* Dark Theme - Maximum contrast */
+    --background: 220 30% 4%;
     --foreground: 210 40% 98%;
 
-    --card: 220 27% 8%;
+    --card: 220 30% 6%;
     --card-foreground: 210 40% 98%;
 
-    --popover: 220 27% 8%;
+    --popover: 220 30% 6%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 262 100% 75%;
-    --primary-foreground: 220 27% 6%;
+    --primary: 262 100% 80%;
+    --primary-foreground: 220 30% 4%;
 
-    --secondary: 220 27% 12%;
-    --secondary-foreground: 210 40% 90%;
+    --secondary: 220 30% 10%;
+    --secondary-foreground: 210 40% 95%;
 
-    --muted: 220 27% 10%;
-    --muted-foreground: 220 15% 70%;
+    --muted: 220 30% 8%;
+    --muted-foreground: 220 15% 80%;
 
-    --accent: 180 100% 70%;
-    --accent-foreground: 220 27% 6%;
+    --accent: 180 100% 75%;
+    --accent-foreground: 220 30% 4%;
 
-    --destructive: 0 84% 70%;
-    --destructive-foreground: 220 27% 6%;
+    --destructive: 0 84% 75%;
+    --destructive-foreground: 220 30% 4%;
 
-    --border: 220 27% 18%;
-    --input: 220 27% 10%;
-    --ring: 262 100% 75%;
+    --border: 220 30% 20%;
+    --input: 220 30% 8%;
+    --ring: 262 100% 80%;
     
-    /* Vibrant tech colors for dark theme */
-    --tech-blue: 214 100% 75%;
-    --tech-purple: 262 100% 75%;
-    --tech-cyan: 180 100% 70%;
-    --tech-green: 142 84% 60%;
-    --tech-orange: 25 100% 70%;
-    --tech-red: 0 84% 70%;
-    --success: 142 84% 60%;
-    --warning: 43 100% 70%;
-    --danger: 0 84% 70%;
-    --info: 214 100% 75%;
+    /* Maximum contrast tech colors for dark theme */
+    --tech-blue: 214 100% 80%;
+    --tech-purple: 262 100% 80%;
+    --tech-cyan: 180 100% 75%;
+    --tech-green: 142 84% 65%;
+    --tech-orange: 25 100% 75%;
+    --tech-red: 0 84% 75%;
+    --success: 142 84% 65%;
+    --warning: 43 100% 75%;
+    --danger: 0 84% 75%;
+    --info: 214 100% 80%;
     
-    /* Priority colors for dark theme */
-    --priority-high: 0 84% 70%;
-    --priority-medium: 43 100% 70%;
-    --priority-low: 142 84% 60%;
-    --priority-critical: 340 100% 70%;
+    /* Priority colors with maximum contrast for dark theme */
+    --priority-high: 0 84% 75%;
+    --priority-medium: 43 100% 75%;
+    --priority-low: 142 84% 65%;
+    --priority-critical: 340 100% 75%;
     
     /* Enhanced Gantt colors for dark */
     --gantt-grid: 220 27% 25%;

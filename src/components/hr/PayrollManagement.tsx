@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DollarSign, Download, FileSpreadsheet, Lock, CheckCircle, AlertCircle, TrendingUp, Calendar } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { usePayrollManagement } from "@/hooks/usePayrollManagement";
 
 interface PayrollPeriod {
   id: string;
@@ -56,8 +57,22 @@ interface PayrollCheck {
 export const PayrollManagement = () => {
   const [activeView, setActiveView] = useState("periods");
   const [selectedPeriod, setSelectedPeriod] = useState("2024-01");
+  
+  const { 
+    payrollPeriods, 
+    employeePayrolls, 
+    payrollChecks, 
+    loading, 
+    error,
+    createPayrollPeriod,
+    updatePayrollPeriod,
+    processPayroll 
+  } = usePayrollManagement();
 
-  const mockPayrollPeriods: PayrollPeriod[] = [
+  if (loading) return <div>Chargement...</div>;
+  if (error) return <div>Erreur: {error}</div>;
+
+  const mockPayrollPeriods: PayrollPeriod[] = payrollPeriods.length > 0 ? payrollPeriods : [
     {
       id: "1",
       year: 2024,
@@ -94,7 +109,7 @@ export const PayrollManagement = () => {
     }
   ];
 
-  const mockEmployeePayroll: EmployeePayroll[] = [
+  const mockEmployeePayroll: EmployeePayroll[] = employeePayrolls.length > 0 ? employeePayrolls : [
     {
       id: "1",
       employeeId: "emp1",
@@ -131,7 +146,7 @@ export const PayrollManagement = () => {
     }
   ];
 
-  const mockPayrollChecks: PayrollCheck[] = [
+  const mockPayrollChecks: PayrollCheck[] = payrollChecks.length > 0 ? payrollChecks : [
     {
       id: "1",
       type: "attendance",

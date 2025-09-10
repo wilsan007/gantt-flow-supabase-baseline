@@ -6,6 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Shield, AlertTriangle, FileText, CheckCircle, Clock, TrendingUp, Users, Calendar } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Progress } from "@/components/ui/progress";
+import { useHealthSafety } from "@/hooks/useHealthSafety";
 
 interface Incident {
   id: string;
@@ -56,8 +57,22 @@ interface TrainingRecord {
 
 export const HealthSafety = () => {
   const [activeView, setActiveView] = useState("incidents");
+  
+  const { 
+    incidents, 
+    safetyDocuments, 
+    trainingRecords, 
+    loading, 
+    error,
+    createIncident,
+    updateIncident,
+    uploadDocument 
+  } = useHealthSafety();
 
-  const mockIncidents: Incident[] = [
+  if (loading) return <div>Chargement...</div>;
+  if (error) return <div>Erreur: {error}</div>;
+
+  const mockIncidents: Incident[] = incidents.length > 0 ? incidents : [
     {
       id: "1",
       type: "accident",
@@ -109,7 +124,7 @@ export const HealthSafety = () => {
     }
   ];
 
-  const mockSafetyDocuments: SafetyDocument[] = [
+  const mockSafetyDocuments: SafetyDocument[] = safetyDocuments.length > 0 ? safetyDocuments : [
     {
       id: "1",
       title: "Politique de Sécurité Générale",
@@ -154,7 +169,7 @@ export const HealthSafety = () => {
     }
   ];
 
-  const mockTrainingRecords: TrainingRecord[] = [
+  const mockTrainingRecords: TrainingRecord[] = trainingRecords.length > 0 ? trainingRecords : [
     {
       id: "1",
       employeeName: "Marie Dubois",

@@ -1818,6 +1818,8 @@ export type Database = {
           parent_id: string | null
           priority: string
           progress: number | null
+          project_id: string | null
+          project_name: string | null
           start_date: string
           status: string
           task_level: number | null
@@ -1842,6 +1844,8 @@ export type Database = {
           parent_id?: string | null
           priority: string
           progress?: number | null
+          project_id?: string | null
+          project_name?: string | null
           start_date: string
           status?: string
           task_level?: number | null
@@ -1866,6 +1870,8 @@ export type Database = {
           parent_id?: string | null
           priority?: string
           progress?: number | null
+          project_id?: string | null
+          project_name?: string | null
           start_date?: string
           status?: string
           task_level?: number | null
@@ -1900,6 +1906,13 @@ export type Database = {
             columns: ["parent_id"]
             isOneToOne: false
             referencedRelation: "tasks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tasks_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
             referencedColumns: ["id"]
           },
           {

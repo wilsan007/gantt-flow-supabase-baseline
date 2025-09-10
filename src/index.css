@@ -8,64 +8,71 @@ All colors MUST be HSL for consistency.
 
 @layer base {
   :root {
-    /* Light Theme - High contrast and vibrant colors */
-    --background: 220 60% 96%;
-    --foreground: 240 15% 10%;
+    /* Light Theme - Enhanced contrast and elegant colors */
+    --background: 220 25% 98%;
+    --foreground: 240 20% 8%;
 
-    --card: 220 50% 94%;
-    --card-foreground: 240 15% 10%;
+    --card: 0 0% 100%;
+    --card-foreground: 240 20% 8%;
 
-    --popover: 220 50% 94%;
-    --popover-foreground: 240 15% 10%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 20% 8%;
 
-    --primary: 217 91% 35%;
+    --primary: 214 100% 50%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 220 40% 85%;
-    --secondary-foreground: 240 15% 10%;
+    --secondary: 220 15% 92%;
+    --secondary-foreground: 240 15% 20%;
 
-    --muted: 220 40% 88%;
-    --muted-foreground: 215 25% 35%;
+    --muted: 220 12% 90%;
+    --muted-foreground: 215 15% 45%;
 
-    --accent: 183 84% 28%;
+    --accent: 176 85% 45%;
     --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 84% 50%;
+    --destructive: 0 84% 55%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 220 30% 75%;
-    --input: 220 40% 82%;
-    --ring: 217 91% 35%;
+    --border: 220 13% 85%;
+    --input: 220 13% 95%;
+    --ring: 214 100% 50%;
 
     --radius: 0.75rem;
 
-    /* Vibrant tech colors for light theme */
-    --tech-blue: 217 91% 35%;
-    --tech-purple: 263 85% 40%;
-    --tech-cyan: 183 84% 28%;
-    --tech-green: 142 71% 30%;
-    --tech-orange: 25 95% 40%;
-    --tech-red: 0 84% 50%;
-    --success: 142 71% 30%;
-    --warning: 46 90% 40%;
-    --danger: 0 84% 50%;
-    --info: 204 94% 45%;
+    /* Enhanced tech colors with better contrast */
+    --tech-blue: 214 100% 50%;
+    --tech-purple: 262 100% 58%;
+    --tech-cyan: 176 85% 45%;
+    --tech-green: 142 76% 36%;
+    --tech-orange: 25 95% 50%;
+    --tech-red: 0 84% 55%;
+    --success: 142 76% 36%;
+    --warning: 43 96% 56%;
+    --danger: 0 84% 55%;
+    --info: 214 100% 50%;
     
-    /* Gantt with stronger contrast */
-    --gantt-grid: 220 30% 80%;
-    --gantt-header: 220 40% 88%;
-    --gantt-hover: 217 91% 35%;
-    --gantt-task-bg: 220 50% 92%;
+    /* Priority colors for emphasis */
+    --priority-high: 0 84% 55%;
+    --priority-medium: 43 96% 56%;
+    --priority-low: 142 76% 36%;
+    --priority-critical: 340 82% 52%;
+    
+    /* Enhanced Gantt colors */
+    --gantt-grid: 220 13% 75%;
+    --gantt-header: 220 15% 94%;
+    --gantt-hover: 214 100% 50%;
+    --gantt-task-bg: 0 0% 100%;
 
-    /* Glass morphism with color tints */
-    --glass-bg: 220 60% 96%;
-    --glass-border: 220 30% 75%;
+    /* Refined glass morphism */
+    --glass-bg: 220 25% 98%;
+    --glass-border: 220 13% 85%;
     
-    /* Vibrant gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(217 91% 35%), hsl(183 84% 28%));
-    --gradient-secondary: linear-gradient(135deg, hsl(220 50% 94%), hsl(220 40% 85%));
-    --gradient-accent: linear-gradient(135deg, hsl(183 84% 28%), hsl(142 71% 30%));
-    --gradient-bg: linear-gradient(135deg, hsl(220 60% 96%), hsl(220 50% 90%));
+    /* Premium gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(214 100% 50%), hsl(176 85% 45%));
+    --gradient-secondary: linear-gradient(135deg, hsl(0 0% 100%), hsl(220 15% 92%));
+    --gradient-accent: linear-gradient(135deg, hsl(176 85% 45%), hsl(142 76% 36%));
+    --gradient-bg: linear-gradient(135deg, hsl(220 25% 98%), hsl(220 20% 95%));
+    --gradient-card: linear-gradient(145deg, hsl(0 0% 100%), hsl(220 15% 97%));
 
     --sidebar-background: 220 50% 92%;
     --sidebar-foreground: 240 15% 10%;
@@ -78,62 +85,69 @@ All colors MUST be HSL for consistency.
   }
 
   .dark {
-    /* Ultra Modern Dark Theme - Premium Experience */
-    --background: 220 13% 8%;
-    --foreground: 210 40% 95%;
+    /* Dark Theme - Enhanced contrast and premium feel */
+    --background: 220 27% 6%;
+    --foreground: 210 40% 98%;
 
-    --card: 220 13% 10%;
-    --card-foreground: 210 40% 95%;
+    --card: 220 27% 8%;
+    --card-foreground: 210 40% 98%;
 
-    --popover: 220 13% 9%;
-    --popover-foreground: 210 40% 95%;
+    --popover: 220 27% 8%;
+    --popover-foreground: 210 40% 98%;
 
-    --primary: 262 83% 70%;
-    --primary-foreground: 220 13% 8%;
+    --primary: 262 100% 75%;
+    --primary-foreground: 220 27% 6%;
 
-    --secondary: 220 13% 15%;
-    --secondary-foreground: 210 40% 95%;
+    --secondary: 220 27% 12%;
+    --secondary-foreground: 210 40% 90%;
 
-    --muted: 220 13% 13%;
-    --muted-foreground: 220 13% 65%;
+    --muted: 220 27% 10%;
+    --muted-foreground: 220 15% 70%;
 
-    --accent: 193 76% 68%;
-    --accent-foreground: 220 13% 8%;
+    --accent: 180 100% 70%;
+    --accent-foreground: 220 27% 6%;
 
-    --destructive: 0 72% 65%;
-    --destructive-foreground: 210 40% 95%;
+    --destructive: 0 84% 70%;
+    --destructive-foreground: 220 27% 6%;
 
-    --border: 220 13% 18%;
-    --input: 220 13% 12%;
-    --ring: 262 83% 70%;
+    --border: 220 27% 18%;
+    --input: 220 27% 10%;
+    --ring: 262 100% 75%;
     
-    /* Modern tech colors with perfect contrast */
-    --tech-blue: 217 92% 75%;
-    --tech-purple: 262 83% 70%;
-    --tech-cyan: 193 76% 68%;
-    --tech-green: 158 64% 52%;
-    --tech-orange: 31 81% 68%;
-    --tech-red: 0 72% 65%;
-    --success: 158 64% 52%;
-    --warning: 43 74% 66%;
-    --danger: 0 72% 65%;
-    --info: 200 98% 72%;
+    /* Vibrant tech colors for dark theme */
+    --tech-blue: 214 100% 75%;
+    --tech-purple: 262 100% 75%;
+    --tech-cyan: 180 100% 70%;
+    --tech-green: 142 84% 60%;
+    --tech-orange: 25 100% 70%;
+    --tech-red: 0 84% 70%;
+    --success: 142 84% 60%;
+    --warning: 43 100% 70%;
+    --danger: 0 84% 70%;
+    --info: 214 100% 75%;
     
-    /* Modern Gantt colors */
-    --gantt-grid: 220 13% 20%;
-    --gantt-header: 220 13% 12%;
-    --gantt-hover: 262 83% 70%;
-    --gantt-task-bg: 220 13% 11%;
+    /* Priority colors for dark theme */
+    --priority-high: 0 84% 70%;
+    --priority-medium: 43 100% 70%;
+    --priority-low: 142 84% 60%;
+    --priority-critical: 340 100% 70%;
+    
+    /* Enhanced Gantt colors for dark */
+    --gantt-grid: 220 27% 25%;
+    --gantt-header: 220 27% 10%;
+    --gantt-hover: 262 100% 75%;
+    --gantt-task-bg: 220 27% 8%;
 
-    /* Sophisticated glass morphism */
-    --glass-bg: 220 13% 10%;
-    --glass-border: 220 13% 18%;
+    /* Premium glass morphism */
+    --glass-bg: 220 27% 8%;
+    --glass-border: 220 27% 18%;
     
-    /* Elegant gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(262 83% 70%), hsl(193 76% 68%));
-    --gradient-secondary: linear-gradient(135deg, hsl(220 13% 10%), hsl(220 13% 15%));
-    --gradient-accent: linear-gradient(135deg, hsl(193 76% 68%), hsl(158 64% 52%));
-    --gradient-bg: linear-gradient(135deg, hsl(220 13% 8%), hsl(220 13% 10%));
+    /* Vibrant gradients for dark */
+    --gradient-primary: linear-gradient(135deg, hsl(262 100% 75%), hsl(180 100% 70%));
+    --gradient-secondary: linear-gradient(135deg, hsl(220 27% 8%), hsl(220 27% 12%));
+    --gradient-accent: linear-gradient(135deg, hsl(180 100% 70%), hsl(142 84% 60%));
+    --gradient-bg: linear-gradient(135deg, hsl(220 27% 6%), hsl(220 27% 8%));
+    --gradient-card: linear-gradient(145deg, hsl(220 27% 8%), hsl(220 27% 10%));
     
     --sidebar-background: 220 13% 9%;
     --sidebar-foreground: 210 40% 95%;

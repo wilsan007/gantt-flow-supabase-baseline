@@ -68,6 +68,11 @@ export default {
         warning: "hsl(var(--warning))",
         danger: "hsl(var(--danger))",
         info: "hsl(var(--info))",
+        // Priority colors for better visual hierarchy
+        "priority-high": "hsl(var(--priority-high))",
+        "priority-medium": "hsl(var(--priority-medium))",
+        "priority-low": "hsl(var(--priority-low))",
+        "priority-critical": "hsl(var(--priority-critical))",
       },
       borderRadius: {
         lg: "var(--radius)",

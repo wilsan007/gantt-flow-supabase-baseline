@@ -6,6 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Shield, AlertTriangle, FileText, CheckCircle, Clock, TrendingUp, Users, Calendar } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Progress } from "@/components/ui/progress";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useHealthSafety } from "@/hooks/useHealthSafety";
 
 interface Incident {
@@ -57,6 +58,12 @@ interface TrainingRecord {
 
 export const HealthSafety = () => {
   const [activeView, setActiveView] = useState("incidents");
+  const [selectedCardData, setSelectedCardData] = useState<{
+    type: string;
+    title: string;
+    data: any[];
+  } | null>(null);
+  const [periodMonths, setPeriodMonths] = useState(12);
   
   const { 
     incidents, 
@@ -231,6 +238,17 @@ export const HealthSafety = () => {
     }
   };
 
+  const getIncidentsForPeriod = () => {
+    const now = new Date();
+    const cutoffDate = new Date();
+    cutoffDate.setMonth(now.getMonth() - periodMonths);
+    
+    return incidents.filter(incident => {
+      const incidentDate = new Date(incident.reportedDate);
+      return incidentDate >= cutoffDate;
+    });
+  };
+
   const getDocumentIcon = (type: string) => {
     switch (type) {
       case 'policy': return '📋';
@@ -263,7 +281,19 @@ export const HealthSafety = () => {
 
       {/* Statistics Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card>
+        <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => {
+          const thisMonthIncidents = incidents.filter(incident => {
+            const incidentDate = new Date(incident.reportedDate);
+            const currentDate = new Date();
+            return incidentDate.getMonth() === currentDate.getMonth() && 
+                   incidentDate.getFullYear() === currentDate.getFullYear();
+          });
+          setSelectedCardData({
+            type: 'month-incidents',
+            title: 'Incidents ce mois',
+            data: thisMonthIncidents
+          });
+        }}>
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
@@ -282,7 +312,16 @@ export const HealthSafety = () => {
           </CardContent>
         </Card>
         
-        <Card>
+        <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => {
+          const pendingIncidents = incidents.filter(incident => 
+            incident.status === 'investigating' || incident.status === 'action-required'
+          );
+          setSelectedCardData({
+            type: 'pending-actions',
+            title: 'Actions en cours',
+            data: pendingIncidents
+          });
+        }}>
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
@@ -298,13 +337,24 @@ export const HealthSafety = () => {
           </CardContent>
         </Card>
         
-        <Card>
+        <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => {
+          const expiredTraining = safetyDocuments.filter(doc => 
+            doc.type === 'training' && doc.status === 'expired'
+          );
+          setSelectedCardData({
+            type: 'expired-training',
+            title: 'Formations expirées',
+            data: expiredTraining
+          });
+        }}>
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-muted-foreground">Formations expirées</p>
                 <p className="text-2xl font-bold">
-                  {trainingRecords.filter(record => record.status === 'expired').length}
+                  {safetyDocuments.filter(doc => 
+                    doc.type === 'training' && doc.status === 'expired'
+                  ).length}
                 </p>
               </div>
               <Users className="h-8 w-8 text-red-600" />
@@ -527,12 +577,29 @@ export const HealthSafety = () => {
 
         <TabsContent value="analytics" className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <Card>
+            <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => setSelectedCardData({
+              type: 'total-incidents',
+              title: `Total des incidents (${periodMonths} mois)`,
+              data: getIncidentsForPeriod()
+            })}>
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
                     <h3 className="text-sm font-medium text-muted-foreground">Total incidents</h3>
-                    <p className="text-2xl font-bold">{incidents.length}</p>
+                    <div className="flex items-center gap-2">
+                      <p className="text-2xl font-bold">{getIncidentsForPeriod().length}</p>
+                      <Select value={periodMonths.toString()} onValueChange={(value) => setPeriodMonths(parseInt(value))}>
+                        <SelectTrigger className="w-16 h-6 text-xs">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="3">3M</SelectItem>
+                          <SelectItem value="6">6M</SelectItem>
+                          <SelectItem value="12">12M</SelectItem>
+                          <SelectItem value="24">24M</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
                   </div>
                   <AlertTriangle className="h-8 w-8 text-muted-foreground" />
                 </div>
@@ -644,6 +711,120 @@ export const HealthSafety = () => {
           </div>
         </TabsContent>
       </Tabs>
+
+      {/* Card Details Modal */}
+      <Dialog open={selectedCardData !== null} onOpenChange={() => setSelectedCardData(null)}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>{selectedCardData?.title}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 max-h-96 overflow-y-auto">
+            {selectedCardData?.type === 'total-incidents' && (
+              <div className="space-y-3">
+                {selectedCardData.data.map((incident: any) => (
+                  <div key={incident.id} className="border rounded-lg p-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h4 className="font-medium">{incident.title}</h4>
+                        <p className="text-sm text-muted-foreground">
+                          {new Date(incident.reportedDate).toLocaleDateString('fr-FR')} - {incident.location}
+                        </p>
+                      </div>
+                      <div className="flex gap-2">
+                        <Badge className={getSeverityColor(incident.severity)}>
+                          {incident.severity}
+                        </Badge>
+                        <Badge className={getStatusColor(incident.status)}>
+                          {incident.status}
+                        </Badge>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+                {selectedCardData.data.length === 0 && (
+                  <p className="text-center text-muted-foreground">Aucun incident sur cette période</p>
+                )}
+              </div>
+            )}
+
+            {selectedCardData?.type === 'month-incidents' && (
+              <div className="space-y-3">
+                {selectedCardData.data.map((incident: any) => (
+                  <div key={incident.id} className="border rounded-lg p-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h4 className="font-medium">{incident.title}</h4>
+                        <p className="text-sm text-muted-foreground">
+                          {new Date(incident.reportedDate).toLocaleDateString('fr-FR')} - {incident.location}
+                        </p>
+                        <p className="text-sm">Rapporté par: {incident.reportedBy}</p>
+                      </div>
+                      <Badge className={getSeverityColor(incident.severity)}>
+                        {incident.severity}
+                      </Badge>
+                    </div>
+                  </div>
+                ))}
+                {selectedCardData.data.length === 0 && (
+                  <p className="text-center text-muted-foreground">Aucun incident ce mois-ci</p>
+                )}
+              </div>
+            )}
+
+            {selectedCardData?.type === 'pending-actions' && (
+              <div className="space-y-3">
+                {selectedCardData.data.map((incident: any) => (
+                  <div key={incident.id} className="border rounded-lg p-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h4 className="font-medium">{incident.title}</h4>
+                        <p className="text-sm text-muted-foreground">
+                          {new Date(incident.reportedDate).toLocaleDateString('fr-FR')} - {incident.location}
+                        </p>
+                        <p className="text-sm">Statut: {incident.status === 'investigating' ? 'Investigation' : 'Action requise'}</p>
+                      </div>
+                      <Badge className={getStatusColor(incident.status)}>
+                        {incident.status}
+                      </Badge>
+                    </div>
+                  </div>
+                ))}
+                {selectedCardData.data.length === 0 && (
+                  <p className="text-center text-muted-foreground">Aucune action en cours</p>
+                )}
+              </div>
+            )}
+
+            {selectedCardData?.type === 'expired-training' && (
+              <div className="space-y-3">
+                {selectedCardData.data.map((doc: any) => (
+                  <div key={doc.id} className="border rounded-lg p-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h4 className="font-medium">{doc.title}</h4>
+                        <p className="text-sm text-muted-foreground">
+                          Catégorie: {doc.category} - Version: {doc.version}
+                        </p>
+                        {doc.expiryDate && (
+                          <p className="text-sm text-red-600">
+                            Expiré le: {new Date(doc.expiryDate).toLocaleDateString('fr-FR')}
+                          </p>
+                        )}
+                      </div>
+                      <Badge className="bg-red-100 text-red-800 border-red-200">
+                        Expiré
+                      </Badge>
+                    </div>
+                  </div>
+                ))}
+                {selectedCardData.data.length === 0 && (
+                  <p className="text-center text-muted-foreground">Aucune formation expirée</p>
+                )}
+              </div>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

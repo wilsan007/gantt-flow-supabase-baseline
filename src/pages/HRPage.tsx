@@ -55,34 +55,30 @@ const HRPage = () => {
       </div>
       
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className={`grid w-full modern-card glow-primary bg-gradient-to-r from-primary/10 via-accent/10 to-tech-purple/10 border-2 ${isMobile ? 'grid-cols-2 gap-2 p-2 mb-4' : 'grid-cols-4 gap-3 p-3 mb-8'}`}>
-          <TabsTrigger 
-            value="dashboard" 
-            className={`transition-smooth hover-glow data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-accent data-[state=active]:text-white font-semibold ${isMobile ? 'flex flex-col gap-1 py-3' : 'flex items-center gap-2 py-4'}`}
-          >
-            <Building className={isMobile ? "h-4 w-4" : "h-5 w-5"} />
-            {isMobile ? 'Tableau' : 'Tableau de bord'}
+        <TabsList className={`grid w-full modern-card glow-primary bg-gradient-to-r from-primary/10 via-accent/10 to-tech-purple/10 border-2 ${isMobile ? 'grid-cols-3 gap-2 p-2 mb-4' : 'grid-cols-6 gap-2 p-3 mb-8'}`}>
+          <TabsTrigger value="dashboard" className="flex items-center gap-2">
+            <Building className="h-4 w-4" />
+            {!isMobile && 'Dashboard'}
           </TabsTrigger>
-          <TabsTrigger 
-            value="personnel" 
-            className={`transition-smooth hover-glow data-[state=active]:bg-gradient-to-r data-[state=active]:from-accent data-[state=active]:to-tech-purple data-[state=active]:text-white font-semibold ${isMobile ? 'flex flex-col gap-1 py-3' : 'flex items-center gap-2 py-4'}`}
-          >
-            <Users className={isMobile ? "h-4 w-4" : "h-5 w-5"} />
-            Personnel
+          <TabsTrigger value="personnel" className="flex items-center gap-2">
+            <Users className="h-4 w-4" />
+            {!isMobile && 'Personnel'}
           </TabsTrigger>
-          <TabsTrigger 
-            value="leaves" 
-            className={`transition-smooth hover-glow data-[state=active]:bg-gradient-to-r data-[state=active]:from-tech-purple data-[state=active]:to-primary data-[state=active]:text-white font-semibold ${isMobile ? 'flex flex-col gap-1 py-3' : 'flex items-center gap-2 py-4'}`}
-          >
-            <Calendar className={isMobile ? "h-4 w-4" : "h-5 w-5"} />
-            Congés
+          <TabsTrigger value="performance" className="flex items-center gap-2">
+            <TrendingUp className="h-4 w-4" />
+            {!isMobile && 'Performance'}
           </TabsTrigger>
-          <TabsTrigger 
-            value="time" 
-            className={`transition-smooth hover-glow data-[state=active]:bg-gradient-to-r data-[state=active]:from-tech-green data-[state=active]:to-accent data-[state=active]:text-white font-semibold ${isMobile ? 'flex flex-col gap-1 py-3' : 'flex items-center gap-2 py-4'}`}
-          >
-            <Clock className={isMobile ? "h-4 w-4" : "h-5 w-5"} />
-            Temps
+          <TabsTrigger value="operations" className="flex items-center gap-2">
+            <Clock className="h-4 w-4" />
+            {!isMobile && 'Opérations'}
+          </TabsTrigger>
+          <TabsTrigger value="development" className="flex items-center gap-2">
+            <BookOpen className="h-4 w-4" />
+            {!isMobile && 'Développement'}
+          </TabsTrigger>
+          <TabsTrigger value="safety" className="flex items-center gap-2">
+            <Shield className="h-4 w-4" />
+            {!isMobile && 'Sécurité'}
           </TabsTrigger>
         </TabsList>
         

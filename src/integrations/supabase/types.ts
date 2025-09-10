@@ -568,6 +568,13 @@ export type Database = {
             referencedRelation: "employees"
             referencedColumns: ["user_id"]
           },
+          {
+            foreignKeyName: "evaluations_evaluator_id_fkey"
+            columns: ["evaluator_id"]
+            isOneToOne: false
+            referencedRelation: "employees"
+            referencedColumns: ["user_id"]
+          },
         ]
       }
       expense_categories: {

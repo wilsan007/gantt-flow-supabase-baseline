@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Receipt, CreditCard, FileText, CheckCircle, XCircle, Clock, Euro, Camera, Upload } from "lucide-react";
+import { Receipt, CreditCard, FileText, CheckCircle, XCircle, Clock, Euro, Camera, Upload, TrendingUp } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useExpenseManagement } from '@/hooks/useExpenseManagement';
 
@@ -371,20 +371,109 @@ export const ExpenseManagement = () => {
         </TabsContent>
 
         <TabsContent value="analytics" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Analyses des frais</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center justify-center h-64 text-muted-foreground">
-                <div className="text-center">
-                  <Euro className="h-12 w-12 mx-auto mb-4" />
-                  <p>Graphiques d'analyse à venir</p>
-                  <p className="text-sm">Répartition par catégorie, évolution mensuelle, comparaisons</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Card>
+              <CardHeader>
+                <CardTitle>Répartition par statut</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="flex justify-between items-center">
+                    <span className="flex items-center gap-2">
+                      <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                      En attente
+                    </span>
+                    <span className="font-bold">{getTotalByStatus('pending').toFixed(2)}€</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="flex items-center gap-2">
+                      <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                      Approuvé
+                    </span>
+                    <span className="font-bold">{getTotalByStatus('approved').toFixed(2)}€</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="flex items-center gap-2">
+                      <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+                      Rejeté
+                    </span>
+                    <span className="font-bold">{getTotalByStatus('rejected').toFixed(2)}€</span>
+                  </div>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Répartition par catégorie</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {categories.map(category => {
+                    const categoryTotal = expenseItems
+                      .filter(item => item.category_name === category.name)
+                      .reduce((sum, item) => sum + item.amount, 0);
+                    return (
+                      <div key={category.id} className="flex justify-between items-center">
+                        <span>{category.name}</span>
+                        <span className="font-bold">{categoryTotal.toFixed(2)}€</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <Card>
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="text-sm font-medium text-muted-foreground">Total des frais</h3>
+                    <p className="text-2xl font-bold">
+                      {expenseReports.reduce((sum, report) => sum + report.total_amount, 0).toFixed(2)}€
+                    </p>
+                  </div>
+                  <Euro className="h-8 w-8 text-muted-foreground" />
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="text-sm font-medium text-muted-foreground">Frais moyens</h3>
+                    <p className="text-2xl font-bold">
+                      {expenseReports.length > 0 ? 
+                        (expenseReports.reduce((sum, report) => sum + report.total_amount, 0) / expenseReports.length).toFixed(2) : 
+                        '0.00'
+                      }€
+                    </p>
+                  </div>
+                  <TrendingUp className="h-8 w-8 text-muted-foreground" />
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="text-sm font-medium text-muted-foreground">Taux d'approbation</h3>
+                    <p className="text-2xl font-bold">
+                      {expenseReports.length > 0 ? 
+                        Math.round((expenseReports.filter(r => r.status === 'approved').length / expenseReports.length) * 100) : 
+                        0
+                      }%
+                    </p>
+                  </div>
+                  <CheckCircle className="h-8 w-8 text-muted-foreground" />
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         </TabsContent>
       </Tabs>
     </div>

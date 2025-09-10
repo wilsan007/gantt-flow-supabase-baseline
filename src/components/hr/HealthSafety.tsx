@@ -513,20 +513,118 @@ export const HealthSafety = () => {
         </TabsContent>
 
         <TabsContent value="analytics" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Analyses et Tendances</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center justify-center h-64 text-muted-foreground">
-                <div className="text-center">
-                  <TrendingUp className="h-12 w-12 mx-auto mb-4" />
-                  <p>Tableaux de bord à venir</p>
-                  <p className="text-sm">Évolution des incidents, taux d'accidents, analyses par département</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <Card>
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="text-sm font-medium text-muted-foreground">Total incidents</h3>
+                    <p className="text-2xl font-bold">{incidents.length}</p>
+                  </div>
+                  <AlertTriangle className="h-8 w-8 text-muted-foreground" />
                 </div>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="text-sm font-medium text-muted-foreground">Incidents critiques</h3>
+                    <p className="text-2xl font-bold text-red-600">
+                      {incidents.filter(incident => incident.severity === 'critical').length}
+                    </p>
+                  </div>
+                  <Shield className="h-8 w-8 text-red-500" />
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="text-sm font-medium text-muted-foreground">Incidents résolus</h3>
+                    <p className="text-2xl font-bold text-green-600">
+                      {incidents.filter(incident => incident.status === 'resolved').length}
+                    </p>
+                  </div>
+                  <CheckCircle className="h-8 w-8 text-green-500" />
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="text-sm font-medium text-muted-foreground">Taux résolution</h3>
+                    <p className="text-2xl font-bold">
+                      {incidents.length > 0 ? 
+                        Math.round((incidents.filter(i => i.status === 'resolved').length / incidents.length) * 100) : 
+                        0
+                      }%
+                    </p>
+                  </div>
+                  <TrendingUp className="h-8 w-8 text-muted-foreground" />
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Card>
+              <CardHeader>
+                <CardTitle>Répartition par type</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {['accident', 'near_miss', 'equipment_failure', 'environmental'].map(type => {
+                    const count = incidents.filter(incident => incident.type === type).length;
+                    const percentage = incidents.length > 0 ? Math.round((count / incidents.length) * 100) : 0;
+                    return (
+                      <div key={type} className="flex justify-between items-center">
+                        <span className="capitalize">{type.replace('_', ' ')}</span>
+                        <div className="flex items-center gap-2">
+                          <span className="font-bold">{count}</span>
+                          <span className="text-sm text-muted-foreground">({percentage}%)</span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Répartition par sévérité</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {['low', 'medium', 'high', 'critical'].map(severity => {
+                    const count = incidents.filter(incident => incident.severity === severity).length;
+                    const percentage = incidents.length > 0 ? Math.round((count / incidents.length) * 100) : 0;
+                    const colorClass = severity === 'critical' ? 'text-red-600' : 
+                                      severity === 'high' ? 'text-orange-600' : 
+                                      severity === 'medium' ? 'text-yellow-600' : 'text-green-600';
+                    const displayName = severity === 'low' ? 'Faible' :
+                                       severity === 'medium' ? 'Modéré' :
+                                       severity === 'high' ? 'Élevé' : 'Critique';
+                    return (
+                      <div key={severity} className="flex justify-between items-center">
+                        <span>{displayName}</span>
+                        <div className="flex items-center gap-2">
+                          <span className={`font-bold ${colorClass}`}>{count}</span>
+                          <span className="text-sm text-muted-foreground">({percentage}%)</span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         </TabsContent>
       </Tabs>
     </div>

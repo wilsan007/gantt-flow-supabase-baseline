@@ -338,17 +338,96 @@ export const PerformanceManagement = () => {
             </Card>
           </div>
 
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Card>
+              <CardHeader>
+                <CardTitle>Répartition des objectifs</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {['draft', 'active', 'completed', 'cancelled'].map(status => {
+                    const count = objectives.filter(obj => obj.status === status).length;
+                    const percentage = objectives.length > 0 ? Math.round((count / objectives.length) * 100) : 0;
+                    const colorClass = status === 'completed' ? 'text-green-600' : 
+                                      status === 'active' ? 'text-blue-600' : 
+                                      status === 'cancelled' ? 'text-red-600' : 'text-yellow-600';
+                    return (
+                      <div key={status} className="flex justify-between items-center">
+                        <span className="capitalize">{status === 'draft' ? 'Brouillon' : 
+                                                       status === 'active' ? 'Actif' : 
+                                                       status === 'completed' ? 'Terminé' : 'Annulé'}</span>
+                        <div className="flex items-center gap-2">
+                          <span className={`font-bold ${colorClass}`}>{count}</span>
+                          <span className="text-sm text-muted-foreground">({percentage}%)</span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Évaluations par type</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {['annual', 'quarterly', '360'].map(type => {
+                    const count = evaluations.filter(evaluation => evaluation.type === type).length;
+                    const percentage = evaluations.length > 0 ? Math.round((count / evaluations.length) * 100) : 0;
+                    return (
+                      <div key={type} className="flex justify-between items-center">
+                        <span>{type === 'annual' ? 'Annuelle' : type === 'quarterly' ? 'Trimestrielle' : '360°'}</span>
+                        <div className="flex items-center gap-2">
+                          <span className="font-bold">{count}</span>
+                          <span className="text-sm text-muted-foreground">({percentage}%)</span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
           <Card>
             <CardHeader>
-              <CardTitle>Tendances Performance</CardTitle>
+              <CardTitle>Distribution des scores d'évaluation</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="flex items-center justify-center h-64 text-muted-foreground">
-                <div className="text-center">
-                  <TrendingUp className="h-12 w-12 mx-auto mb-4" />
-                  <p>Graphiques de performance à venir</p>
-                  <p className="text-sm">Évolution des scores et objectifs dans le temps</p>
-                </div>
+              <div className="space-y-4">
+                {evaluations.length > 0 ? (
+                  <>
+                    <div className="flex justify-between items-center">
+                      <span>Score moyen</span>
+                      <span className="font-bold text-2xl">{getPerformanceStats().averageScore}/5</span>
+                    </div>
+                    <div className="space-y-2">
+                      {[5, 4, 3, 2, 1].map(score => {
+                        const count = evaluations.filter(evaluation => Math.round(evaluation.overall_score) === score).length;
+                        const percentage = evaluations.length > 0 ? Math.round((count / evaluations.length) * 100) : 0;
+                        return (
+                          <div key={score} className="flex items-center gap-4">
+                            <span className="w-12">{score} ⭐</span>
+                            <div className="flex-1 bg-muted rounded-full h-2">
+                              <div 
+                                className="bg-primary h-2 rounded-full transition-all duration-300" 
+                                style={{ width: `${percentage}%` }}
+                              />
+                            </div>
+                            <span className="text-sm font-medium w-12">{count}</span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </>
+                ) : (
+                  <div className="text-center text-muted-foreground">
+                    <TrendingUp className="h-12 w-12 mx-auto mb-4" />
+                    <p>Aucune évaluation disponible</p>
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>

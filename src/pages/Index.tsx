@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { Users } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { ResponsiveLayout } from "@/components/responsive/ResponsiveLayout";
 import GanttChart from "../components/GanttChart";
@@ -11,6 +14,7 @@ import KanbanBoard from "../components/KanbanBoard";
 const Index = () => {
   const [activeTab, setActiveTab] = useState("gantt");
   const isMobile = useIsMobile();
+  const navigate = useNavigate();
 
   return (
     <ResponsiveLayout>
@@ -24,6 +28,18 @@ const Index = () => {
               Diagramme de Gantt et tableau dynamique d'exécution des tâches
             </p>
             <div className={`bg-gradient-to-r from-primary via-accent to-tech-purple mx-auto mt-4 rounded-full shadow-lg ${isMobile ? 'w-16 h-1' : 'w-24 h-2'}`}></div>
+            
+            {/* Quick access to HR module */}
+            <div className="mt-6">
+              <Button
+                onClick={() => navigate("/hr")}
+                className="hover-glow bg-gradient-to-r from-primary to-accent"
+                size={isMobile ? "sm" : "default"}
+              >
+                <Users className={`${isMobile ? 'h-3 w-3' : 'h-4 w-4'} mr-2`} />
+                {isMobile ? 'RH' : 'Module RH'}
+              </Button>
+            </div>
           </div>
           <div className={isMobile ? 'ml-2' : 'ml-4'}>
             <ThemeToggle />

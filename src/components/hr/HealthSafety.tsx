@@ -268,7 +268,14 @@ export const HealthSafety = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-muted-foreground">Incidents ce mois</p>
-                <p className="text-2xl font-bold">3</p>
+                <p className="text-2xl font-bold">
+                  {incidents.filter(incident => {
+                    const incidentDate = new Date(incident.reportedDate);
+                    const currentDate = new Date();
+                    return incidentDate.getMonth() === currentDate.getMonth() && 
+                           incidentDate.getFullYear() === currentDate.getFullYear();
+                  }).length}
+                </p>
               </div>
               <AlertTriangle className="h-8 w-8 text-orange-600" />
             </div>
@@ -280,7 +287,11 @@ export const HealthSafety = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-muted-foreground">Actions en cours</p>
-                <p className="text-2xl font-bold">5</p>
+                <p className="text-2xl font-bold">
+                  {incidents.filter(incident => 
+                    incident.status === 'investigating' || incident.status === 'action-required'
+                  ).length}
+                </p>
               </div>
               <Clock className="h-8 w-8 text-blue-600" />
             </div>
@@ -292,7 +303,9 @@ export const HealthSafety = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-muted-foreground">Formations expirées</p>
-                <p className="text-2xl font-bold">2</p>
+                <p className="text-2xl font-bold">
+                  {trainingRecords.filter(record => record.status === 'expired').length}
+                </p>
               </div>
               <Users className="h-8 w-8 text-red-600" />
             </div>
@@ -579,12 +592,16 @@ export const HealthSafety = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {['accident', 'near_miss', 'equipment_failure', 'environmental'].map(type => {
+                  {['accident', 'near-miss', 'hazard', 'illness'].map(type => {
                     const count = incidents.filter(incident => incident.type === type).length;
                     const percentage = incidents.length > 0 ? Math.round((count / incidents.length) * 100) : 0;
+                    const displayName = type === 'accident' ? 'Accident' :
+                                       type === 'near-miss' ? 'Near Miss' :
+                                       type === 'hazard' ? 'Equipment Failure' :
+                                       type === 'illness' ? 'Environmental' : type;
                     return (
                       <div key={type} className="flex justify-between items-center">
-                        <span className="capitalize">{type.replace('_', ' ')}</span>
+                        <span>{displayName}</span>
                         <div className="flex items-center gap-2">
                           <span className="font-bold">{count}</span>
                           <span className="text-sm text-muted-foreground">({percentage}%)</span>

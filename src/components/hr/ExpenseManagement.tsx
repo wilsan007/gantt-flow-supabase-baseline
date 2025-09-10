@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Receipt, CreditCard, FileText, CheckCircle, XCircle, Clock, Euro, Camera, Upload } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useExpenseManagement } from '@/hooks/useExpenseManagement';
 
 interface ExpenseReport {
   id: string;
@@ -43,60 +44,70 @@ interface ExpenseCategory {
 
 export const ExpenseManagement = () => {
   const [activeView, setActiveView] = useState("reports");
+  const { 
+    expenseReports, 
+    expenseItems, 
+    expenseCategories, 
+    loading, 
+    error, 
+    updateExpenseReportStatus, 
+    getTotalByStatus, 
+    getReportItems 
+  } = useExpenseManagement();
 
-  const mockExpenseCategories: ExpenseCategory[] = [
-    { id: "1", name: "Transport", icon: "🚗", maxAmount: 500, requiresReceipt: true, color: "bg-blue-100 text-blue-800" },
-    { id: "2", name: "Repas", icon: "🍽️", maxAmount: 50, requiresReceipt: true, color: "bg-green-100 text-green-800" },
-    { id: "3", name: "Hébergement", icon: "🏨", maxAmount: 200, requiresReceipt: true, color: "bg-purple-100 text-purple-800" },
-    { id: "4", name: "Matériel", icon: "💻", maxAmount: 1000, requiresReceipt: true, color: "bg-orange-100 text-orange-800" },
-    { id: "5", name: "Formation", icon: "📚", requiresReceipt: true, color: "bg-indigo-100 text-indigo-800" },
-    { id: "6", name: "Kilométrage", icon: "📏", requiresReceipt: false, color: "bg-gray-100 text-gray-800" }
+  if (loading) return <div className="p-6 text-center">Chargement...</div>;
+  if (error) return <div className="p-6 text-center text-destructive">Erreur: {error}</div>;
+
+  // Use real data, fallback to sample data if empty
+  const categories = expenseCategories.length > 0 ? expenseCategories : [
+    { id: "1", name: "Transport", icon: "🚗", max_amount: 500, requires_receipt: true, color: "bg-blue-100 text-blue-800", created_at: '', tenant_id: '' },
+    { id: "2", name: "Repas", icon: "🍽️", max_amount: 50, requires_receipt: true, color: "bg-green-100 text-green-800", created_at: '', tenant_id: '' },
+    { id: "3", name: "Hébergement", icon: "🏨", max_amount: 200, requires_receipt: true, color: "bg-purple-100 text-purple-800", created_at: '', tenant_id: '' },
+    { id: "4", name: "Matériel", icon: "💻", max_amount: 1000, requires_receipt: true, color: "bg-orange-100 text-orange-800", created_at: '', tenant_id: '' },
+    { id: "5", name: "Formation", icon: "📚", requires_receipt: true, color: "bg-indigo-100 text-indigo-800", created_at: '', tenant_id: '' },
+    { id: "6", name: "Kilométrage", icon: "📏", requires_receipt: false, color: "bg-gray-100 text-gray-800", created_at: '', tenant_id: '' }
   ];
 
-  const mockExpenseReports: ExpenseReport[] = [
+  // Use real data, fallback to sample data if empty  
+  const reports = expenseReports.length > 0 ? expenseReports : [
     {
       id: "1",
-      employeeName: "Marie Dubois",
+      employee_id: "emp1",
+      employee_name: "Marie Dubois",
       title: "Déplacement client Lyon",
-      totalAmount: 387.50,
+      total_amount: 387.50,
       currency: "EUR",
       status: "submitted",
-      submissionDate: "2024-01-15",
-      expenses: [
-        { id: "e1", date: "2024-01-10", category: "Transport", description: "Train Paris-Lyon", amount: 89.00, currency: "EUR", receiptUrl: "#" },
-        { id: "e2", date: "2024-01-10", category: "Hébergement", description: "Hôtel Mercure Lyon", amount: 120.00, currency: "EUR", receiptUrl: "#" },
-        { id: "e3", date: "2024-01-11", category: "Repas", description: "Déjeuner client", amount: 45.50, currency: "EUR", receiptUrl: "#" },
-        { id: "e4", date: "2024-01-11", category: "Kilométrage", description: "Déplacements locaux", amount: 133.00, currency: "EUR", mileage: 350 }
-      ]
+      submission_date: "2024-01-15",
+      created_at: "2024-01-15",
+      updated_at: "2024-01-15"
     },
     {
       id: "2",
-      employeeName: "Pierre Laurent",
+      employee_id: "emp2",
+      employee_name: "Pierre Laurent",
       title: "Formation React avancé",
-      totalAmount: 1250.00,
+      total_amount: 1250.00,
       currency: "EUR",
       status: "approved",
-      submissionDate: "2024-01-08",
-      approvalDate: "2024-01-12",
-      approvedBy: "Sophie Martin",
-      expenses: [
-        { id: "e5", date: "2024-01-05", category: "Formation", description: "Formation React Advanced", amount: 1200.00, currency: "EUR", receiptUrl: "#" },
-        { id: "e6", date: "2024-01-05", category: "Repas", description: "Déjeuner formation", amount: 50.00, currency: "EUR", receiptUrl: "#" }
-      ]
+      submission_date: "2024-01-08",
+      approval_date: "2024-01-12",
+      approved_by: "Sophie Martin",
+      created_at: "2024-01-08",
+      updated_at: "2024-01-12"
     },
     {
       id: "3",
-      employeeName: "Sophie Chen",
+      employee_id: "emp3",
+      employee_name: "Sophie Chen",
       title: "Achat matériel bureau",
-      totalAmount: 245.99,
+      total_amount: 245.99,
       currency: "EUR",
       status: "rejected",
-      submissionDate: "2024-01-12",
-      rejectionReason: "Matériel non conforme aux standards entreprise",
-      expenses: [
-        { id: "e7", date: "2024-01-10", category: "Matériel", description: "Clavier mécanique", amount: 149.99, currency: "EUR", receiptUrl: "#" },
-        { id: "e8", date: "2024-01-10", category: "Matériel", description: "Souris ergonomique", amount: 96.00, currency: "EUR", receiptUrl: "#" }
-      ]
+      submission_date: "2024-01-12",
+      rejection_reason: "Matériel non conforme aux standards entreprise",
+      created_at: "2024-01-12",
+      updated_at: "2024-01-12"
     }
   ];
 
@@ -121,11 +132,7 @@ export const ExpenseManagement = () => {
     }
   };
 
-  const getTotalByStatus = (status: string) => {
-    return mockExpenseReports
-      .filter(report => report.status === status)
-      .reduce((total, report) => total + report.totalAmount, 0);
-  };
+// This function is now provided by the hook
 
   return (
     <div className="space-y-6">
@@ -190,7 +197,7 @@ export const ExpenseManagement = () => {
               <div>
                 <p className="text-sm font-medium text-muted-foreground">Total ce mois</p>
                 <p className="text-2xl font-bold">
-                  {mockExpenseReports.reduce((total, report) => total + report.totalAmount, 0).toFixed(2)} €
+                  {reports.reduce((total, report) => total + report.total_amount, 0).toFixed(2)} €
                 </p>
               </div>
               <Euro className="h-8 w-8 text-blue-600" />
@@ -217,14 +224,17 @@ export const ExpenseManagement = () => {
 
         <TabsContent value="reports" className="space-y-4">
           <div className="grid gap-4">
-            {mockExpenseReports.map((report) => (
+            {reports.map((report) => {
+              const reportItems = getReportItems(report.id);
+              
+              return (
               <Card key={report.id} className="hover:shadow-lg transition-shadow">
                 <CardHeader>
                   <div className="flex items-center justify-between">
                     <div>
                       <CardTitle className="text-lg">{report.title}</CardTitle>
                       <p className="text-sm text-muted-foreground">
-                        {report.employeeName} • Soumis le {report.submissionDate}
+                        {report.employee_name} • Soumis le {report.submission_date && new Date(report.submission_date).toLocaleDateString()}
                       </p>
                     </div>
                     <div className="flex items-center gap-2">
@@ -234,45 +244,45 @@ export const ExpenseManagement = () => {
                       </Badge>
                       <div className="text-right">
                         <p className="text-xl font-bold">
-                          {report.totalAmount.toFixed(2)} {report.currency}
+                          {report.total_amount.toFixed(2)} {report.currency}
                         </p>
                       </div>
                     </div>
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  {report.approvalDate && report.approvedBy && (
+                  {report.approval_date && report.approved_by && (
                     <div className="p-3 rounded-lg bg-green-50 border border-green-200">
                       <p className="text-sm text-green-800">
-                        ✅ Approuvé le {report.approvalDate} par {report.approvedBy}
+                        ✅ Approuvé le {new Date(report.approval_date).toLocaleDateString()} par {report.approved_by}
                       </p>
                     </div>
                   )}
                   
-                  {report.rejectionReason && (
+                  {report.rejection_reason && (
                     <div className="p-3 rounded-lg bg-red-50 border border-red-200">
                       <p className="text-sm text-red-800">
-                        ❌ Rejeté: {report.rejectionReason}
+                        ❌ Rejeté: {report.rejection_reason}
                       </p>
                     </div>
                   )}
 
                   <div className="space-y-3">
                     <h4 className="font-medium">Détail des frais</h4>
-                    {report.expenses.map((expense) => (
+                    {reportItems.map((expense) => (
                       <div key={expense.id} className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
                         <div className="flex-1">
                           <div className="flex items-center gap-2 mb-1">
                             <Badge className={
-                              mockExpenseCategories.find(cat => cat.name === expense.category)?.color || 
+                              categories.find(cat => cat.name === expense.category_name)?.color || 
                               "bg-gray-100 text-gray-800"
                             }>
-                              {expense.category}
+                              {expense.category_name}
                             </Badge>
                             <span className="text-sm font-medium">{expense.description}</span>
                           </div>
                           <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                            <span>{expense.date}</span>
+                            <span>{new Date(expense.expense_date).toLocaleDateString()}</span>
                             {expense.location && <span>📍 {expense.location}</span>}
                             {expense.mileage && <span>🛣️ {expense.mileage} km</span>}
                           </div>
@@ -281,7 +291,7 @@ export const ExpenseManagement = () => {
                           <span className="font-bold">
                             {expense.amount.toFixed(2)} {expense.currency}
                           </span>
-                          {expense.receiptUrl && (
+                          {expense.receipt_url && (
                             <Button variant="ghost" size="sm">
                               <Receipt className="h-4 w-4" />
                             </Button>
@@ -295,18 +305,28 @@ export const ExpenseManagement = () => {
                     <div className="flex gap-2">
                       {report.status === 'submitted' && (
                         <>
-                          <Button variant="outline" size="sm">
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => updateExpenseReportStatus(report.id, 'rejected', 'Rejeté par le manager')}
+                          >
                             <XCircle className="h-4 w-4 mr-2" />
                             Rejeter
                           </Button>
-                          <Button size="sm">
+                          <Button 
+                            size="sm"
+                            onClick={() => updateExpenseReportStatus(report.id, 'approved')}
+                          >
                             <CheckCircle className="h-4 w-4 mr-2" />
                             Approuver
                           </Button>
                         </>
                       )}
                       {report.status === 'approved' && (
-                        <Button size="sm">
+                        <Button 
+                          size="sm"
+                          onClick={() => updateExpenseReportStatus(report.id, 'paid')}
+                        >
                           <CreditCard className="h-4 w-4 mr-2" />
                           Marquer comme payé
                         </Button>
@@ -319,13 +339,13 @@ export const ExpenseManagement = () => {
                   </div>
                 </CardContent>
               </Card>
-            ))}
+            )})}
           </div>
         </TabsContent>
 
         <TabsContent value="categories" className="space-y-4">
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {mockExpenseCategories.map((category) => (
+            {categories.map((category) => (
               <Card key={category.id} className="hover:shadow-lg transition-shadow">
                 <CardContent className="p-6">
                   <div className="flex items-center gap-3 mb-4">
@@ -333,15 +353,15 @@ export const ExpenseManagement = () => {
                     <div>
                       <h3 className="font-medium">{category.name}</h3>
                       <Badge className={category.color}>
-                        {category.requiresReceipt ? 'Justificatif requis' : 'Pas de justificatif'}
+                        {category.requires_receipt ? 'Justificatif requis' : 'Pas de justificatif'}
                       </Badge>
                     </div>
                   </div>
                   
-                  {category.maxAmount && (
+                  {category.max_amount && (
                     <div className="text-sm">
                       <p className="text-muted-foreground">Montant maximum</p>
-                      <p className="font-bold text-lg">{category.maxAmount} €</p>
+                      <p className="font-bold text-lg">{category.max_amount} €</p>
                     </div>
                   )}
                 </CardContent>

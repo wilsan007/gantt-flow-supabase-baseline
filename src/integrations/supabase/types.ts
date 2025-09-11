@@ -3089,7 +3089,24 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      current_alerts_view: {
+        Row: {
+          category: string | null
+          code: string | null
+          context_data: Json | null
+          description: string | null
+          entity_id: string | null
+          entity_name: string | null
+          entity_type: string | null
+          id: string | null
+          severity: string | null
+          tenant_id: string | null
+          title: string | null
+          triggered_at: string | null
+          type: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       calculate_alert_recommendations: {

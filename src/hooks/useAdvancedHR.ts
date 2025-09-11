@@ -145,13 +145,23 @@ export interface CountryPolicy {
   updated_at: string;
 }
 
-// Fonction pour créer les alertes de capacité
-const createCapacityAlerts = async (overloadedEmployees: any[], highUtilizationEmployees: any[], averageUtilization: number) => {
+// Fonction dynamique pour créer les alertes basées sur les types configurés
+const createDynamicAlerts = async (capacityData: any[], averageUtilization: number) => {
   try {
+    // Récupérer les types d'alertes de capacité
+    const { data: alertTypes, error: alertTypesError } = await supabase
+      .from('alert_types')
+      .select('*')
+      .in('category', ['capacity']);
+
+    if (alertTypesError) {
+      console.error('Erreur lors de la récupération des types d\'alertes:', alertTypesError);
+      return;
+    }
+
     const alertsToCreate = [];
 
-    // Alertes pour surcharge >= 90%
-    for (const employee of overloadedEmployees) {
+    for (const employee of capacityData) {
       // Récupérer le nom de l'employé
       const { data: profile } = await supabase
         .from('profiles')
@@ -159,66 +169,106 @@ const createCapacityAlerts = async (overloadedEmployees: any[], highUtilizationE
         .eq('id', employee.employee_id)
         .maybeSingle();
 
-      alertsToCreate.push({
-        title: `Surcharge détectée - ${profile?.full_name || 'Employé'}`,
-        description: `Taux d'utilisation de ${employee.capacity_utilization}% (≥ 90%)`,
-        severity: 'high',
-        status: 'active',
-        entity_type: 'employee',
-        entity_id: employee.employee_id,
-        entity_name: profile?.full_name || 'Employé',
-        context_data: {
-          capacity_utilization: employee.capacity_utilization,
-          threshold: 90,
-          period_start: employee.period_start,
-          period_end: employee.period_end
-        },
-        alert_type_id: null // À définir si vous avez des types d'alertes configurés
-      });
-    }
+      const employeeName = profile?.full_name || 'Employé';
 
-    // Alertes pour taux > moyenne + 25%
-    for (const employee of highUtilizationEmployees) {
-      // Éviter les doublons avec les alertes de surcharge
-      if (employee.capacity_utilization < 90) {
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('full_name')
-          .eq('id', employee.employee_id)
-          .maybeSingle();
+      // Vérifier chaque type d'alerte
+      for (const alertType of alertTypes || []) {
+        let shouldTrigger = false;
+        const conditions = alertType.auto_trigger_conditions;
 
-        alertsToCreate.push({
-          title: `Utilisation élevée - ${profile?.full_name || 'Employé'}`,
-          description: `Taux de ${employee.capacity_utilization}% (25% au-dessus de la moyenne de ${Math.round(averageUtilization)}%)`,
-          severity: 'medium',
-          status: 'active',
-          entity_type: 'employee',
-          entity_id: employee.employee_id,
-          entity_name: profile?.full_name || 'Employé',
-          context_data: {
-            capacity_utilization: employee.capacity_utilization,
-            average_utilization: averageUtilization,
-            difference: employee.capacity_utilization - averageUtilization,
-            period_start: employee.period_start,
-            period_end: employee.period_end
-          },
-          alert_type_id: null
-        });
+        // Évaluer les conditions de déclenchement
+        const conditionsObj = conditions as any;
+        if (conditionsObj?.capacity_utilization) {
+          const condition = conditionsObj.capacity_utilization;
+          const value = employee.capacity_utilization;
+          
+          switch (condition.operator) {
+            case '>=':
+              shouldTrigger = value >= condition.value;
+              break;
+            case '>':
+              shouldTrigger = value > condition.value;
+              break;
+            case '<':
+              shouldTrigger = value < condition.value;
+              break;
+            case '<=':
+              shouldTrigger = value <= condition.value;
+              break;
+          }
+        }
+
+        if (conditionsObj?.capacity_utilization_vs_avg) {
+          const condition = conditionsObj.capacity_utilization_vs_avg;
+          const difference = employee.capacity_utilization - averageUtilization;
+          
+          switch (condition.operator) {
+            case '>':
+              shouldTrigger = difference > condition.value;
+              break;
+            case '>=':
+              shouldTrigger = difference >= condition.value;
+              break;
+          }
+        }
+
+        // Si les conditions sont remplies, créer l'alerte
+        if (shouldTrigger) {
+          // Vérifier si une alerte similaire existe déjà pour cet employé
+          const { data: existingAlert } = await supabase
+            .from('alert_instances')
+            .select('id')
+            .eq('alert_type_id', alertType.id)
+            .eq('entity_id', employee.employee_id)
+            .eq('status', 'active')
+            .maybeSingle();
+
+          if (!existingAlert) {
+            alertsToCreate.push({
+              title: `${alertType.name} - ${employeeName}`,
+              description: `${alertType.description}. Taux actuel: ${employee.capacity_utilization}%`,
+              severity: alertType.severity,
+              status: 'active',
+              entity_type: 'employee',
+              entity_id: employee.employee_id,
+              entity_name: employeeName,
+              alert_type_id: alertType.id,
+              context_data: {
+                capacity_utilization: employee.capacity_utilization,
+                average_utilization: averageUtilization,
+                period_start: employee.period_start,
+                period_end: employee.period_end,
+                trigger_conditions: conditions
+              }
+            });
+          }
+        }
       }
     }
 
-    // Insérer les alertes
+    // Insérer les alertes et générer les recommandations
     if (alertsToCreate.length > 0) {
-      const { error } = await supabase
+      const { data: insertedAlerts, error } = await supabase
         .from('alert_instances')
-        .insert(alertsToCreate);
+        .insert(alertsToCreate)
+        .select('id');
       
       if (error) {
         console.error('Erreur lors de la création des alertes:', error);
+      } else {
+        // Générer les recommandations pour chaque alerte créée
+        for (const alert of insertedAlerts || []) {
+          await supabase.rpc('calculate_alert_recommendations', { 
+            p_alert_instance_id: alert.id 
+          });
+        }
       }
     }
+
+    return alertsToCreate.length;
   } catch (error) {
-    console.error('Erreur dans createCapacityAlerts:', error);
+    console.error('Erreur dans createDynamicAlerts:', error);
+    return 0;
   }
 };
 
@@ -646,8 +696,8 @@ export const useAdvancedHR = () => {
         row.capacity_utilization > averageUtilization + 25
       );
 
-      // Créer les alertes proactives
-      await createCapacityAlerts(overloadedEmployees, highUtilizationEmployees, averageUtilization);
+      // Créer les alertes proactives dynamiques
+      const alertsCreated = await createDynamicAlerts(capacityRows, averageUtilization);
       
       // Recalculer les métriques pour la période
       await supabase
@@ -687,14 +737,14 @@ export const useAdvancedHR = () => {
       const { error: metErr } = await supabase.from('hr_analytics').insert(metrics);
       if (metErr) throw metErr;
 
-      const message = overloadedEmployees.length > 0 || highUtilizationEmployees.length > 0
-        ? `Capacité recalculée. ${overloadedEmployees.length} surcharge(s) et ${highUtilizationEmployees.filter(e => e.capacity_utilization < 90).length} utilisation(s) élevée(s) détectée(s)`
+      const message = alertsCreated > 0
+        ? `Capacité recalculée. ${alertsCreated} alerte(s) proactive(s) générée(s)`
         : 'Capacité et métriques recalculées avec succès';
 
       toast({ 
         title: 'Succès', 
         description: message,
-        variant: (overloadedEmployees.length > 0 || highUtilizationEmployees.length > 0) ? 'destructive' : 'default'
+        variant: alertsCreated > 0 ? 'destructive' : 'default'
       });
 
       fetchAdvancedHRData();

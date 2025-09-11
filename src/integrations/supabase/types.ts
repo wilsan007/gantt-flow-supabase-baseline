@@ -115,6 +115,239 @@ export type Database = {
           },
         ]
       }
+      alert_instance_recommendations: {
+        Row: {
+          alert_instance_id: string
+          created_at: string
+          id: string
+          is_primary: boolean | null
+          recommended_score: number | null
+          solution_id: string
+          tenant_id: string | null
+        }
+        Insert: {
+          alert_instance_id: string
+          created_at?: string
+          id?: string
+          is_primary?: boolean | null
+          recommended_score?: number | null
+          solution_id: string
+          tenant_id?: string | null
+        }
+        Update: {
+          alert_instance_id?: string
+          created_at?: string
+          id?: string
+          is_primary?: boolean | null
+          recommended_score?: number | null
+          solution_id?: string
+          tenant_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "alert_instance_recommendations_alert_instance_id_fkey"
+            columns: ["alert_instance_id"]
+            isOneToOne: false
+            referencedRelation: "alert_instances"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "alert_instance_recommendations_solution_id_fkey"
+            columns: ["solution_id"]
+            isOneToOne: false
+            referencedRelation: "alert_solutions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      alert_instances: {
+        Row: {
+          acknowledged_at: string | null
+          alert_type_id: string
+          context_data: Json | null
+          created_at: string
+          description: string | null
+          entity_id: string | null
+          entity_name: string | null
+          entity_type: string | null
+          id: string
+          resolved_at: string | null
+          resolved_by: string | null
+          severity: string
+          status: string
+          tenant_id: string | null
+          title: string
+          triggered_at: string
+          updated_at: string
+        }
+        Insert: {
+          acknowledged_at?: string | null
+          alert_type_id: string
+          context_data?: Json | null
+          created_at?: string
+          description?: string | null
+          entity_id?: string | null
+          entity_name?: string | null
+          entity_type?: string | null
+          id?: string
+          resolved_at?: string | null
+          resolved_by?: string | null
+          severity: string
+          status?: string
+          tenant_id?: string | null
+          title: string
+          triggered_at?: string
+          updated_at?: string
+        }
+        Update: {
+          acknowledged_at?: string | null
+          alert_type_id?: string
+          context_data?: Json | null
+          created_at?: string
+          description?: string | null
+          entity_id?: string | null
+          entity_name?: string | null
+          entity_type?: string | null
+          id?: string
+          resolved_at?: string | null
+          resolved_by?: string | null
+          severity?: string
+          status?: string
+          tenant_id?: string | null
+          title?: string
+          triggered_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "alert_instances_alert_type_id_fkey"
+            columns: ["alert_type_id"]
+            isOneToOne: false
+            referencedRelation: "alert_types"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      alert_solutions: {
+        Row: {
+          action_steps: Json | null
+          category: string
+          cost_level: string | null
+          created_at: string
+          description: string
+          effectiveness_score: number | null
+          id: string
+          implementation_time: string | null
+          required_roles: string[] | null
+          tenant_id: string | null
+          title: string
+        }
+        Insert: {
+          action_steps?: Json | null
+          category: string
+          cost_level?: string | null
+          created_at?: string
+          description: string
+          effectiveness_score?: number | null
+          id?: string
+          implementation_time?: string | null
+          required_roles?: string[] | null
+          tenant_id?: string | null
+          title: string
+        }
+        Update: {
+          action_steps?: Json | null
+          category?: string
+          cost_level?: string | null
+          created_at?: string
+          description?: string
+          effectiveness_score?: number | null
+          id?: string
+          implementation_time?: string | null
+          required_roles?: string[] | null
+          tenant_id?: string | null
+          title?: string
+        }
+        Relationships: []
+      }
+      alert_type_solutions: {
+        Row: {
+          alert_type_id: string
+          context_conditions: Json | null
+          id: string
+          priority_order: number | null
+          solution_id: string
+          tenant_id: string | null
+        }
+        Insert: {
+          alert_type_id: string
+          context_conditions?: Json | null
+          id?: string
+          priority_order?: number | null
+          solution_id: string
+          tenant_id?: string | null
+        }
+        Update: {
+          alert_type_id?: string
+          context_conditions?: Json | null
+          id?: string
+          priority_order?: number | null
+          solution_id?: string
+          tenant_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "alert_type_solutions_alert_type_id_fkey"
+            columns: ["alert_type_id"]
+            isOneToOne: false
+            referencedRelation: "alert_types"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "alert_type_solutions_solution_id_fkey"
+            columns: ["solution_id"]
+            isOneToOne: false
+            referencedRelation: "alert_solutions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      alert_types: {
+        Row: {
+          auto_trigger_conditions: Json | null
+          category: string
+          code: string
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+          severity: string
+          tenant_id: string | null
+        }
+        Insert: {
+          auto_trigger_conditions?: Json | null
+          category: string
+          code: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+          severity?: string
+          tenant_id?: string | null
+        }
+        Update: {
+          auto_trigger_conditions?: Json | null
+          category?: string
+          code?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+          severity?: string
+          tenant_id?: string | null
+        }
+        Relationships: []
+      }
       attendances: {
         Row: {
           break_duration: number | null
@@ -2856,6 +3089,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      calculate_alert_recommendations: {
+        Args: { p_alert_instance_id: string }
+        Returns: undefined
+      }
       calculate_working_days: {
         Args: { end_date: string; start_date: string }
         Returns: number

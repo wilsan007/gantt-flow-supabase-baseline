@@ -6,6 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Progress } from '@/components/ui/progress';
 import { useAdvancedHR } from '@/hooks/useAdvancedHR';
 import { useHR } from '@/hooks/useHR';
+import { useAlerts } from '@/hooks/useAlerts';
 import { KPIDetailDialog } from './KPIDetailDialog';
 import {
   Dialog,
@@ -44,8 +45,10 @@ export const AdvancedHRDashboard = () => {
   } = useAdvancedHR();
 
   const { employees } = useHR();
+  const { alertInstances, getActiveAlerts, getHighPriorityAlerts, initializeAlertData } = useAlerts();
   const [selectedKPI, setSelectedKPI] = useState<'employees' | 'utilization' | 'analytics' | 'alerts' | null>(null);
   const [capacityModalOpen, setCapacityModalOpen] = useState(false);
+  const [selectedAlert, setSelectedAlert] = useState<any>(null);
 
   if (loading) {
     return <div className="flex justify-center p-8">Chargement...</div>;
@@ -54,8 +57,10 @@ export const AdvancedHRDashboard = () => {
   // Calculs pour les KPIs RH avancés (corrigés)
   const realEmployeeCount = employees.length; // Vrais employés de la base
   const uniqueEmployeesInCapacity = Array.from(new Set(capacityPlanning.map(cp => cp.employee_id))).length;
-  const highRiskInsights = employeeInsights.filter(insight => insight.risk_level === 'high' || insight.risk_level === 'critical').length;
-  const mediumRiskCount = employeeInsights.filter(insight => insight.risk_level === 'medium').length;
+  const activeAlerts = getActiveAlerts();
+  const highPriorityAlerts = getHighPriorityAlerts();
+  const highRiskInsights = highPriorityAlerts.length;
+  const mediumRiskCount = activeAlerts.filter(alert => alert.severity === 'medium').length;
   const averageUtilization = capacityPlanning.length > 0 
     ? Math.round(
         capacityPlanning.reduce((sum, cp) => sum + (Number(cp.capacity_utilization) || 0), 0) / capacityPlanning.length
@@ -115,6 +120,10 @@ export const AdvancedHRDashboard = () => {
           <Button onClick={() => generateEmployeeInsights()} variant="outline">
             <Brain className="h-4 w-4 mr-2" />
             Générer Insights IA
+          </Button>
+          <Button onClick={initializeAlertData} variant="outline">
+            <Plus className="h-4 w-4 mr-2" />
+            Initialiser Alertes
           </Button>
         </div>
       </div>
@@ -233,17 +242,25 @@ export const AdvancedHRDashboard = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  {employeeInsights.filter(insight => insight.risk_level === 'high' || insight.risk_level === 'medium').slice(0, 3).map((insight) => (
-                    <div key={insight.id} className="flex items-center space-x-2">
+                  {highPriorityAlerts.slice(0, 3).map((alert) => (
+                    <div 
+                      key={alert.id} 
+                      className="flex items-center space-x-2 p-2 rounded cursor-pointer hover:bg-accent/10"
+                      onClick={() => setSelectedAlert(alert)}
+                    >
                       <AlertTriangle className={`h-4 w-4 ${
-                        insight.risk_level === 'high' ? 'text-red-500' : 
-                        insight.risk_level === 'medium' ? 'text-orange-500' : 
+                        alert.severity === 'critical' ? 'text-red-500' : 
+                        alert.severity === 'high' ? 'text-orange-500' : 
+                        alert.severity === 'medium' ? 'text-yellow-500' :
                         'text-green-500'
                       }`} />
-                      <span className="text-sm">{insight.description}</span>
+                      <div className="flex-1">
+                        <div className="text-sm font-medium">{alert.title}</div>
+                        <div className="text-xs text-muted-foreground">{alert.entity_name}</div>
+                      </div>
                     </div>
                   ))}
-                  {employeeInsights.filter(insight => insight.risk_level === 'high' || insight.risk_level === 'medium').length === 0 && (
+                  {highPriorityAlerts.length === 0 && (
                     <div className="flex items-center space-x-2">
                       <TrendingUp className="h-4 w-4 text-green-500" />
                       <span className="text-sm">Aucune alerte détectée - Situation optimale</span>
@@ -302,21 +319,35 @@ export const AdvancedHRDashboard = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  {employeeInsights.slice(0, 4).map((insight) => (
-                    <div key={insight.id} className="p-3 border rounded-lg">
+                  {activeAlerts.slice(0, 4).map((alert) => (
+                    <div 
+                      key={alert.id} 
+                      className="p-3 border rounded-lg cursor-pointer hover:bg-accent/10"
+                      onClick={() => setSelectedAlert(alert)}
+                    >
                       <div className="flex justify-between items-center mb-2">
-                        <span className="text-sm font-medium">{insight.insight_type}</span>
+                        <span className="text-sm font-medium">{alert.alert_type?.name || alert.title}</span>
                         <Badge variant={
-                          insight.risk_level === 'high' ? 'destructive' : 
-                          insight.risk_level === 'medium' ? 'default' : 
+                          alert.severity === 'critical' ? 'destructive' : 
+                          alert.severity === 'high' ? 'destructive' : 
+                          alert.severity === 'medium' ? 'default' : 
                           'secondary'
                         }>
-                          {insight.risk_level}
+                          {alert.severity}
                         </Badge>
                       </div>
-                      <p className="text-xs text-muted-foreground">{insight.description}</p>
+                      <p className="text-xs text-muted-foreground">{alert.description}</p>
+                      {alert.entity_name && (
+                        <p className="text-xs text-primary mt-1">📍 {alert.entity_name}</p>
+                      )}
                     </div>
                   ))}
+                  {activeAlerts.length === 0 && (
+                    <div className="text-center text-muted-foreground py-4">
+                      <Brain className="h-8 w-8 mx-auto mb-2" />
+                      <p>Aucune alerte active détectée</p>
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </Card>
@@ -433,6 +464,86 @@ export const AdvancedHRDashboard = () => {
                 ))
             )}
           </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Modal Détail Alerte */}
+      <Dialog open={!!selectedAlert} onOpenChange={() => setSelectedAlert(null)}>
+        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <AlertTriangle className={`h-5 w-5 ${
+                selectedAlert?.severity === 'critical' ? 'text-red-500' : 
+                selectedAlert?.severity === 'high' ? 'text-orange-500' : 
+                selectedAlert?.severity === 'medium' ? 'text-yellow-500' :
+                'text-green-500'
+              }`} />
+              {selectedAlert?.title}
+            </DialogTitle>
+            <DialogDescription>
+              Détails de l'alerte et recommandations d'actions
+            </DialogDescription>
+          </DialogHeader>
+          
+          {selectedAlert && (
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <div className="text-sm font-medium text-muted-foreground">Sévérité</div>
+                  <Badge variant={
+                    selectedAlert.severity === 'critical' ? 'destructive' : 
+                    selectedAlert.severity === 'high' ? 'destructive' : 
+                    selectedAlert.severity === 'medium' ? 'default' : 
+                    'secondary'
+                  }>
+                    {selectedAlert.severity}
+                  </Badge>
+                </div>
+                <div>
+                  <div className="text-sm font-medium text-muted-foreground">Statut</div>
+                  <div className="text-sm">{selectedAlert.status}</div>
+                </div>
+                <div>
+                  <div className="text-sm font-medium text-muted-foreground">Entité concernée</div>
+                  <div className="text-sm">{selectedAlert.entity_name || 'Non spécifiée'}</div>
+                </div>
+                <div>
+                  <div className="text-sm font-medium text-muted-foreground">Déclenché le</div>
+                  <div className="text-sm">
+                    {new Date(selectedAlert.triggered_at).toLocaleDateString('fr-FR')}
+                  </div>
+                </div>
+              </div>
+              
+              <div>
+                <div className="text-sm font-medium text-muted-foreground mb-2">Description</div>
+                <p className="text-sm">{selectedAlert.description}</p>
+              </div>
+
+              {selectedAlert.recommendations && selectedAlert.recommendations.length > 0 && (
+                <div>
+                  <div className="text-sm font-medium text-muted-foreground mb-2">Recommandations</div>
+                  <div className="space-y-2">
+                    {selectedAlert.recommendations.map((rec: any) => (
+                      <div key={rec.id} className="p-3 border rounded-lg">
+                        <div className="flex justify-between items-start mb-1">
+                          <span className="text-sm font-medium">{rec.solution?.title}</span>
+                          {rec.is_primary && (
+                            <Badge variant="outline" className="text-xs">Recommandé</Badge>
+                          )}
+                        </div>
+                        <p className="text-xs text-muted-foreground mb-2">{rec.solution?.description}</p>
+                        <div className="flex justify-between text-xs text-muted-foreground">
+                          <span>Efficacité: {rec.solution?.effectiveness_score}%</span>
+                          <span>Délai: {rec.solution?.implementation_time}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
         </DialogContent>
       </Dialog>
 

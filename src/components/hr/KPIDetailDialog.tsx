@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { useAdvancedHR } from '@/hooks/useAdvancedHR';
 import { useHR } from '@/hooks/useHR';
+import { useTasks } from '@/hooks/useTasks';
 import { 
   Users, 
   Target, 
@@ -24,19 +25,25 @@ interface KPIDetailDialogProps {
 export const KPIDetailDialog = ({ open, onOpenChange, kpiType }: KPIDetailDialogProps) => {
   const { capacityPlanning, employeeInsights, hrAnalytics } = useAdvancedHR();
   const { employees } = useHR();
+  const { tasks } = useTasks();
 
   const renderContent = () => {
     switch (kpiType) {
       case 'employees':
-        // Problème détecté: capacityPlanning peut contenir plusieurs entrées par employé
         const uniqueEmployees = Array.from(new Set(capacityPlanning.map(cp => cp.employee_id)));
         const realEmployeeCount = employees.length;
+        
+        // Calculs pour les tâches
+        const assignedEmployees = Array.from(new Set(tasks.map(task => task.assignee))).filter(assignee => assignee);
+        const employeesWithTasks = assignedEmployees.length;
+        const employeesWithoutTasks = realEmployeeCount - employeesWithTasks;
+        const avgTasksPerEmployee = realEmployeeCount > 0 ? Math.round((tasks.length / realEmployeeCount) * 10) / 10 : 0;
         
         return (
           <div className="space-y-4">
             <div className="flex items-center justify-between p-4 border rounded-lg">
               <div>
-                <h4 className="font-semibold">Employés réels dans la base</h4>
+                <h4 className="font-semibold">Total employés</h4>
                 <p className="text-sm text-muted-foreground">Nombre d'employés enregistrés</p>
               </div>
               <div className="text-2xl font-bold text-primary">{realEmployeeCount}</div>
@@ -44,25 +51,26 @@ export const KPIDetailDialog = ({ open, onOpenChange, kpiType }: KPIDetailDialog
             
             <div className="flex items-center justify-between p-4 border rounded-lg">
               <div>
-                <h4 className="font-semibold">Employés avec planification capacité</h4>
-                <p className="text-sm text-muted-foreground">Employés ayant des données de capacité</p>
+                <h4 className="font-semibold">Employés avec tâches</h4>
+                <p className="text-sm text-muted-foreground">Employés ayant des tâches assignées</p>
               </div>
-              <div className="text-2xl font-bold text-accent">{uniqueEmployees.length}</div>
+              <div className="text-2xl font-bold text-success">{employeesWithTasks}</div>
             </div>
 
             <div className="flex items-center justify-between p-4 border rounded-lg">
               <div>
-                <h4 className="font-semibold">Entrées de planification totales</h4>
-                <p className="text-sm text-muted-foreground">Nombre total d'enregistrements (plusieurs périodes par employé)</p>
+                <h4 className="font-semibold">Employés sans tâches</h4>
+                <p className="text-sm text-muted-foreground">Employés disponibles</p>
               </div>
-              <div className="text-2xl font-bold text-warning">{capacityPlanning.length}</div>
+              <div className="text-2xl font-bold text-warning">{employeesWithoutTasks}</div>
             </div>
 
-            <div className="mt-4 p-3 bg-muted/50 rounded-lg">
-              <p className="text-sm text-muted-foreground">
-                <strong>Explication:</strong> La différence vient du fait que le tableau avancé compte les entrées de planification de capacité 
-                (qui peuvent inclure plusieurs périodes par employé), tandis que le dashboard principal compte les employés uniques.
-              </p>
+            <div className="flex items-center justify-between p-4 border rounded-lg">
+              <div>
+                <h4 className="font-semibold">Moyenne tâches/employé</h4>
+                <p className="text-sm text-muted-foreground">Charge de travail moyenne</p>
+              </div>
+              <div className="text-2xl font-bold text-info">{avgTasksPerEmployee}</div>
             </div>
           </div>
         );

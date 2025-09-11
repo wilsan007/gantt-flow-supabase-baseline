@@ -496,6 +496,20 @@ export const useAdvancedHR = () => {
         if (periodsOverlap(taskStart, taskEnd, startOfMonth, endOfMonth)) {
           let hoursToAdd = Number(task.effort_estimate_h) || 0;
           
+          // Calculer la période de chevauchement entre la tâche et la période d'analyse
+          const overlapStart = new Date(Math.max(taskStart.getTime(), startOfMonth.getTime()));
+          const overlapEnd = new Date(Math.min(taskEnd.getTime(), endOfMonth.getTime()));
+          
+          // Calculer les jours totaux de la tâche et les jours de chevauchement
+          const totalTaskDays = calculateWorkingDays(taskStart, taskEnd);
+          const overlapDays = calculateWorkingDays(overlapStart, overlapEnd);
+          
+          // Calculer le pourcentage de la tâche qui doit être fait pendant la période d'analyse
+          const overlapPercentage = totalTaskDays > 0 ? overlapDays / totalTaskDays : 0;
+          
+          // Appliquer le pourcentage aux heures totales de la tâche
+          hoursToAdd = hoursToAdd * overlapPercentage;
+          
           // Si la date d'aujourd'hui est dans la période de la tâche ET dans la période d'analyse
           if (today >= startOfMonth && today <= endOfMonth && today >= taskStart && today <= taskEnd) {
             const progress = Number(task.progress) || 0;

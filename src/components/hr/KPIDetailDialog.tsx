@@ -27,6 +27,36 @@ export const KPIDetailDialog = ({ open, onOpenChange, kpiType }: KPIDetailDialog
   const { employees } = useHR();
   const { tasks } = useTasks();
 
+  // Fonction de traduction des métriques
+  const translateMetricName = (name: string) => {
+    const translations: Record<string, string> = {
+      'employee_satisfaction': 'Satisfaction employés',
+      'turnover_rate': 'Taux de rotation',
+      'productivity_score': 'Score de productivité',
+      'attendance_rate': 'Taux de présence',
+      'training_completion': 'Completion formation',
+      'performance_rating': 'Évaluation performance',
+      'engagement_score': 'Score d\'engagement',
+      'retention_rate': 'Taux de rétention',
+      'absenteeism_rate': 'Taux d\'absentéisme',
+      'overtime_hours': 'Heures supplémentaires',
+    };
+    return translations[name] || name;
+  };
+
+  const translateMetricType = (type: string) => {
+    const translations: Record<string, string> = {
+      'percentage': 'Pourcentage',
+      'score': 'Score',
+      'rate': 'Taux',
+      'hours': 'Heures',
+      'count': 'Nombre',
+      'ratio': 'Ratio',
+      'index': 'Indice',
+    };
+    return translations[type] || type;
+  };
+
   const renderContent = () => {
     switch (kpiType) {
       case 'employees':
@@ -129,8 +159,8 @@ export const KPIDetailDialog = ({ open, onOpenChange, kpiType }: KPIDetailDialog
               {uniqueMetrics.length > 0 ? uniqueMetrics.map((metric) => (
                 <div key={metric.id} className="flex items-center justify-between p-3 border rounded-lg">
                   <div>
-                    <div className="font-medium">{metric.metric_name}</div>
-                    <div className="text-sm text-muted-foreground">{metric.metric_type}</div>
+                    <div className="font-medium">{translateMetricName(metric.metric_name)}</div>
+                    <div className="text-sm text-muted-foreground">{translateMetricType(metric.metric_type)}</div>
                   </div>
                   <div className="text-right">
                     <div className="text-lg font-bold">{metric.metric_value}</div>

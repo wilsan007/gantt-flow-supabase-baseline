@@ -178,6 +178,149 @@ export const useComputedAlerts = () => {
         });
       });
 
+      // 6. Alertes de capacité et utilisation
+      const { data: capacityData } = await supabase
+        .from('capacity_planning')
+        .select('*')
+        .gte('period_start', new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]) // Derniers 30 jours
+        .order('period_start', { ascending: false });
+
+      if (capacityData && capacityData.length > 0) {
+        // Calculer la moyenne d'utilisation
+        const averageUtilization = capacityData.reduce((sum, item) => 
+          sum + (Number(item.capacity_utilization) || 0), 0) / capacityData.length;
+
+        // Récupérer les noms des employés
+        const employeeIds = [...new Set(capacityData.map(c => c.employee_id))];
+        const { data: employeesData } = await supabase
+          .from('employees')
+          .select('id, full_name')
+          .in('id', employeeIds);
+
+        const employeeNamesMap = new Map(employeesData?.map(emp => [emp.id, emp.full_name]) || []);
+
+        capacityData.forEach(capacity => {
+          const utilization = Number(capacity.capacity_utilization) || 0;
+          const employeeName = employeeNamesMap.get(capacity.employee_id) || 'Employé';
+
+          // Alerte de sous-utilisation (<30%)
+          if (utilization < 30 && utilization > 0) {
+            alerts.push({
+              id: `underutilization-${capacity.employee_id}`,
+              type: 'UNDERUTILIZATION',
+              code: 'UNDERUTILIZATION',
+              title: 'Sous-utilisation détectée',
+              description: `${employeeName} a une utilisation de ${utilization}% (inférieure à 30%)`,
+              severity: 'low',
+              category: 'capacity',
+              entity_type: 'employee',
+              entity_id: capacity.employee_id,
+              entity_name: employeeName,
+              context_data: { utilization, threshold: 30, averageUtilization },
+              triggered_at: now,
+              recommendations: []
+            });
+          }
+
+          // Alerte de surcharge critique (≥90%)
+          if (utilization >= 90) {
+            alerts.push({
+              id: `overload-critical-${capacity.employee_id}`,
+              type: 'OVERLOAD_90',
+              code: 'OVERLOAD_90',
+              title: 'Surcharge critique détectée',
+              description: `${employeeName} a une utilisation critique de ${utilization}% (≥90%)`,
+              severity: 'critical',
+              category: 'capacity',
+              entity_type: 'employee',
+              entity_id: capacity.employee_id,
+              entity_name: employeeName,
+              context_data: { utilization, threshold: 90, averageUtilization },
+              triggered_at: now,
+              recommendations: []
+            });
+          }
+
+          // Alerte d'utilisation élevée vs moyenne (+25% vs moyenne)
+          if (utilization > averageUtilization * 1.25 && utilization < 90) {
+            alerts.push({
+              id: `high-util-vs-avg-${capacity.employee_id}`,
+              type: 'HIGH_UTILIZATION_ABOVE_AVG',
+              code: 'HIGH_UTILIZATION_ABOVE_AVG',
+              title: 'Utilisation élevée vs moyenne',
+              description: `${employeeName} a ${utilization}% d'utilisation (+25% vs moyenne de ${averageUtilization.toFixed(1)}%)`,
+              severity: 'medium',
+              category: 'capacity',
+              entity_type: 'employee',
+              entity_id: capacity.employee_id,
+              entity_name: employeeName,
+              context_data: { utilization, averageUtilization, threshold: 25 },
+              triggered_at: now,
+              recommendations: []
+            });
+          }
+        });
+      }
+
+      // 7. Alertes d'évaluations manquantes (>12 mois)
+      const oneYearAgo = new Date();
+      oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+
+      const { data: allEmployees } = await supabase
+        .from('employees')
+        .select('id, full_name')
+        .eq('status', 'active');
+
+      if (allEmployees) {
+        for (const employee of allEmployees) {
+          const { data: recentEvaluation } = await supabase
+            .from('evaluations')
+            .select('id')
+            .eq('employee_id', employee.id)
+            .gte('created_at', oneYearAgo.toISOString())
+            .maybeSingle();
+
+          if (!recentEvaluation) {
+            alerts.push({
+              id: `no-evaluation-${employee.id}`,
+              type: 'NO_EVALUATION',
+              code: 'NO_EVALUATION',
+              title: 'Évaluation en retard',
+              description: `${employee.full_name} n'a pas eu d'évaluation depuis plus de 12 mois`,
+              severity: 'medium',
+              category: 'performance',
+              entity_type: 'employee',
+              entity_id: employee.id,
+              entity_name: employee.full_name,
+              context_data: { monthsSinceEvaluation: 12 },
+              triggered_at: now,
+              recommendations: []
+            });
+          }
+        }
+      }
+
+      // 8. Alertes de congés en retard (>180 jours)
+      leaveBalances?.forEach(balance => {
+        if (Number(balance.remaining_days) > 25) { // Seuil pour congés en retard
+          alerts.push({
+            id: `vacation-overdue-${balance.employee_id}`,
+            type: 'VACATION_OVERDUE',
+            code: 'VACATION_OVERDUE',
+            title: 'Congés en retard',
+            description: `${balance.employees?.full_name} n'a pas pris ${balance.remaining_days} jours de congés`,
+            severity: 'low',
+            category: 'hr',
+            entity_type: 'employee',
+            entity_id: balance.employee_id,
+            entity_name: balance.employees?.full_name || 'Employé',
+            context_data: { remainingDays: balance.remaining_days, threshold: 180 },
+            triggered_at: now,
+            recommendations: []
+          });
+        }
+      });
+
       return alerts;
 
     } catch (error) {

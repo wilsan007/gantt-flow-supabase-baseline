@@ -385,48 +385,112 @@ export const useAdvancedHR = () => {
   // Analytics functions
   const calculateHRMetrics = async () => {
     try {
-      // Calculer les métriques RH automatiquement
-      const currentDate = new Date();
-      const startOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
-      const endOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+      // Période = mois courant
+      const now = new Date();
+      const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+      const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+      const period_start = startOfMonth.toISOString().split('T')[0];
+      const period_end = endOfMonth.toISOString().split('T')[0];
+
+      // Charger les employés (profiles) et les tâches
+      const [profilesRes, tasksRes] = await Promise.all([
+        supabase.from('profiles').select('id, full_name'),
+        supabase.from('tasks').select('assigned_name, start_date, due_date, effort_estimate_h')
+      ]);
+
+      if (profilesRes.error) throw profilesRes.error;
+      if (tasksRes.error) throw tasksRes.error;
+
+      const profiles = profilesRes.data || [];
+      const tasks = tasksRes.data || [];
+
+      // Tâche qui chevauche la période
+      const overlaps = (start?: string | null, due?: string | null) => {
+        if (!start || !due) return false;
+        const s = new Date(start);
+        const d = new Date(due);
+        return d >= startOfMonth && s <= endOfMonth;
+      };
+
+      // Heures par personne (nom)
+      const hoursByName = new Map<string, number>();
+      for (const t of tasks as any[]) {
+        if (!overlaps(t.start_date, t.due_date)) continue;
+        const name = t.assigned_name as string | null;
+        if (!name) continue;
+        const hours = Number(t.effort_estimate_h) || 0;
+        hoursByName.set(name, (hoursByName.get(name) || 0) + hours);
+      }
+
+      // Nettoyer la capacité existante pour la période, puis réinsérer
+      await supabase
+        .from('capacity_planning')
+        .delete()
+        .eq('period_start', period_start)
+        .eq('period_end', period_end);
+
+      const allocatedPerMonth = 160; // capacité mensuelle par défaut
+      const capacityRows = profiles.map((p: any) => {
+        const project_hours = Math.round(hoursByName.get(p.full_name) || 0);
+        const absence_hours = 0;
+        const available_hours = Math.max(allocatedPerMonth - absence_hours, 1);
+        const capacity_utilization = Math.min(100, Math.max(0, Math.round((project_hours / available_hours) * 100)));
+        return {
+          employee_id: p.id,
+          period_start,
+          period_end,
+          allocated_hours: allocatedPerMonth,
+          available_hours,
+          project_hours,
+          absence_hours,
+          capacity_utilization,
+        };
+      });
+
+      if (capacityRows.length > 0) {
+        const { error: capErr } = await supabase.from('capacity_planning').insert(capacityRows);
+        if (capErr) throw capErr;
+      }
+
+      // Recalculer les métriques pour la période (sans valeurs en dur)
+      await supabase
+        .from('hr_analytics')
+        .delete()
+        .eq('period_start', period_start)
+        .eq('period_end', period_end)
+        .in('metric_name', ['headcount', 'turnover_rate']);
 
       const metrics = [
         {
           metric_name: 'headcount',
-          metric_value: 45, // À calculer dynamiquement
+          metric_value: profiles.length,
           metric_type: 'count',
-          period_start: startOfMonth.toISOString().split('T')[0],
-          period_end: endOfMonth.toISOString().split('T')[0],
-          metadata: { department: 'all' }
+          period_start,
+          period_end,
+          metadata: { scope: 'profiles' },
         },
         {
           metric_name: 'turnover_rate',
-          metric_value: 12.5,
+          metric_value: 0,
           metric_type: 'percentage',
-          period_start: startOfMonth.toISOString().split('T')[0],
-          period_end: endOfMonth.toISOString().split('T')[0],
-          metadata: { calculation: 'annual_turnover' }
-        }
+          period_start,
+          period_end,
+          metadata: { method: 'basic' },
+        },
       ];
 
-      const { error } = await supabase
-        .from('hr_analytics')
-        .insert(metrics);
+      const { error: metErr } = await supabase.from('hr_analytics').insert(metrics);
+      if (metErr) throw metErr;
 
-      if (error) throw error;
-
-      toast({
-        title: "Succès",
-        description: "Métriques RH calculées"
-      });
+      toast({ title: 'Succès', description: 'Capacité et métriques recalculées' });
 
       fetchAdvancedHRData();
     } catch (error: any) {
       console.error('Error calculating metrics:', error);
       toast({
-        title: "Erreur",
-        description: "Impossible de calculer les métriques",
-        variant: "destructive"
+        title: 'Erreur',
+        description: "Impossible de recalculer la capacité et les métriques",
+        variant: 'destructive',
       });
     }
   };

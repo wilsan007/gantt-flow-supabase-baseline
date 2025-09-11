@@ -62,10 +62,14 @@ export const AdvancedHRDashboard = () => {
   const highPriorityAlerts = getHighPriorityAlerts();
   const highRiskInsights = highPriorityAlerts.length;
   const mediumRiskCount = activeAlerts.filter(alert => alert.severity === 'medium').length;
-  const averageUtilization = capacityPlanning.length > 0 
-    ? Math.round(
-        capacityPlanning.reduce((sum, cp) => sum + (Number(cp.capacity_utilization) || 0), 0) / capacityPlanning.length
-      )
+  const latestPeriodStart = capacityPlanning.length
+    ? capacityPlanning.reduce((max, cp) => (cp.period_start > max ? cp.period_start : max), capacityPlanning[0].period_start)
+    : '';
+  const latestRows = latestPeriodStart
+    ? capacityPlanning.filter((cp) => cp.period_start === latestPeriodStart)
+    : [];
+  const averageUtilization = latestRows.length > 0
+    ? Math.round(latestRows.reduce((sum, cp) => sum + (Number(cp.capacity_utilization) || 0), 0) / latestRows.length)
     : 0;
   // Nombre de métriques RH uniques (par nom + type) pour éviter les doublons
   const uniqueMetricKeys = new Set<string>();
@@ -76,7 +80,7 @@ export const AdvancedHRDashboard = () => {
 
   // Agrégation de la capacité par employé (moyenne)
   const capAgg = new Map<string, { sum: number; count: number }>();
-  capacityPlanning.forEach((cp) => {
+  (latestRows.length ? latestRows : capacityPlanning).forEach((cp) => {
     const util = Number(cp.capacity_utilization) || 0;
     const prev = capAgg.get(cp.employee_id) || { sum: 0, count: 0 };
     capAgg.set(cp.employee_id, { sum: prev.sum + util, count: prev.count + 1 });

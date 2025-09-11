@@ -160,27 +160,20 @@ export const AdvancedHRDashboard = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  <div className="space-y-2">
-                    <div className="flex justify-between text-sm">
-                      <span>Équipe Développement</span>
-                      <span>85%</span>
+                  {capacityPlanning.slice(0, 5).map((capacity, index) => (
+                    <div key={capacity.id} className="space-y-2">
+                      <div className="flex justify-between text-sm">
+                        <span>Employé {capacity.employee_id.slice(0, 8)}...</span>
+                        <span>{capacity.capacity_utilization || 0}%</span>
+                      </div>
+                      <Progress value={capacity.capacity_utilization || 0} className="h-2" />
                     </div>
-                    <Progress value={85} className="h-2" />
-                  </div>
-                  <div className="space-y-2">
-                    <div className="flex justify-between text-sm">
-                      <span>Équipe Marketing</span>
-                      <span>70%</span>
+                  ))}
+                  {capacityPlanning.length === 0 && (
+                    <div className="text-center text-muted-foreground py-4">
+                      Aucune donnée de planification de capacité disponible
                     </div>
-                    <Progress value={70} className="h-2" />
-                  </div>
-                  <div className="space-y-2">
-                    <div className="flex justify-between text-sm">
-                      <span>Équipe Finance</span>
-                      <span>60%</span>
-                    </div>
-                    <Progress value={60} className="h-2" />
-                  </div>
+                  )}
                 </div>
               </CardContent>
             </Card>
@@ -194,18 +187,22 @@ export const AdvancedHRDashboard = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  <div className="flex items-center space-x-2">
-                    <AlertTriangle className="h-4 w-4 text-orange-500" />
-                    <span className="text-sm">Surcharge équipe Dev prévue sem. 12</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <AlertTriangle className="h-4 w-4 text-red-500" />
-                    <span className="text-sm">Profil rare indisponible (React Senior)</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <TrendingUp className="h-4 w-4 text-green-500" />
-                    <span className="text-sm">Capacité Marketing optimale</span>
-                  </div>
+                  {employeeInsights.filter(insight => insight.risk_level === 'high' || insight.risk_level === 'medium').slice(0, 3).map((insight) => (
+                    <div key={insight.id} className="flex items-center space-x-2">
+                      <AlertTriangle className={`h-4 w-4 ${
+                        insight.risk_level === 'high' ? 'text-red-500' : 
+                        insight.risk_level === 'medium' ? 'text-orange-500' : 
+                        'text-green-500'
+                      }`} />
+                      <span className="text-sm">{insight.description}</span>
+                    </div>
+                  ))}
+                  {employeeInsights.filter(insight => insight.risk_level === 'high' || insight.risk_level === 'medium').length === 0 && (
+                    <div className="flex items-center space-x-2">
+                      <TrendingUp className="h-4 w-4 text-green-500" />
+                      <span className="text-sm">Aucune alerte détectée - Situation optimale</span>
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </Card>
@@ -292,22 +289,17 @@ export const AdvancedHRDashboard = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm">Temps moyen recrutement</span>
-                    <span className="text-sm font-medium">28 jours</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm">Taux d'absentéisme</span>
-                    <span className="text-sm font-medium">3.2%</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm">Capacité vs Charge</span>
-                    <span className="text-sm font-medium">92%</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm">Performance moyenne</span>
-                    <span className="text-sm font-medium">4.2/5</span>
-                  </div>
+                  {hrAnalytics.slice(0, 4).map((metric) => (
+                    <div key={metric.id} className="flex justify-between items-center">
+                      <span className="text-sm">{metric.metric_name}</span>
+                      <span className="text-sm font-medium">{metric.metric_value}</span>
+                    </div>
+                  ))}
+                  {hrAnalytics.length === 0 && (
+                    <div className="text-center text-muted-foreground py-4">
+                      Aucune métrique calculée disponible
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </Card>
@@ -321,18 +313,17 @@ export const AdvancedHRDashboard = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm">Congés</span>
-                    <span className="text-sm font-medium">2.1 jours</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm">Notes de frais</span>
-                    <span className="text-sm font-medium">1.8 jours</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm">Onboarding</span>
-                    <span className="text-sm font-medium">5.2 jours</span>
-                  </div>
+                  {hrAnalytics.filter(metric => metric.metric_type === 'process_time').slice(0, 3).map((metric) => (
+                    <div key={metric.id} className="flex justify-between items-center">
+                      <span className="text-sm">{metric.metric_name}</span>
+                      <span className="text-sm font-medium">{metric.metric_value} jours</span>
+                    </div>
+                  ))}
+                  {hrAnalytics.filter(metric => metric.metric_type === 'process_time').length === 0 && (
+                    <div className="text-center text-muted-foreground py-4">
+                      Aucune métrique de processus disponible
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </Card>
@@ -346,18 +337,22 @@ export const AdvancedHRDashboard = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  <div className="p-3 border rounded-lg">
-                    <span className="text-sm font-medium">Performance ↗ Charge optimale</span>
-                    <p className="text-xs text-muted-foreground">
-                      Corrélation positive détectée
-                    </p>
-                  </div>
-                  <div className="p-3 border rounded-lg">
-                    <span className="text-sm font-medium">Absences ↗ Surcharge</span>
-                    <p className="text-xs text-muted-foreground">
-                      Alerte préventive activée
-                    </p>
-                  </div>
+                  {employeeInsights.filter(insight => insight.insight_type === 'correlation').slice(0, 2).map((insight) => (
+                    <div key={insight.id} className="p-3 border rounded-lg">
+                      <span className="text-sm font-medium">{insight.description}</span>
+                      {insight.recommendations && (
+                        <p className="text-xs text-muted-foreground">
+                          {insight.recommendations}
+                        </p>
+                      )}
+                    </div>
+                  ))}
+                  {employeeInsights.filter(insight => insight.insight_type === 'correlation').length === 0 && (
+                    <div className="text-center text-muted-foreground py-4">
+                      <Brain className="h-8 w-8 mx-auto mb-2" />
+                      <p>Aucune corrélation IA détectée</p>
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </Card>

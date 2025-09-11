@@ -2665,7 +2665,7 @@ export type Database = {
       tasks: {
         Row: {
           acceptance_criteria: string | null
-          assignee: string
+          assigned_name: string
           assignee_id: string | null
           budget: number | null
           created_at: string
@@ -2691,7 +2691,7 @@ export type Database = {
         }
         Insert: {
           acceptance_criteria?: string | null
-          assignee: string
+          assigned_name: string
           assignee_id?: string | null
           budget?: number | null
           created_at?: string
@@ -2717,7 +2717,7 @@ export type Database = {
         }
         Update: {
           acceptance_criteria?: string | null
-          assignee?: string
+          assigned_name?: string
           assignee_id?: string | null
           budget?: number | null
           created_at?: string
@@ -2746,8 +2746,8 @@ export type Database = {
             foreignKeyName: "tasks_assignee_id_fkey"
             columns: ["assignee_id"]
             isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            referencedRelation: "employees"
+            referencedColumns: ["user_id"]
           },
           {
             foreignKeyName: "tasks_department_id_fkey"

@@ -11,6 +11,7 @@ import { useHR } from '@/hooks/useHR';
 import { useAlerts } from '@/hooks/useAlerts';
 import { useComputedAlerts } from '@/hooks/useComputedAlerts';
 import { KPIDetailDialog } from './KPIDetailDialog';
+import { AlertDetailDialog } from './AlertDetailDialog';
 import {
   Dialog,
   DialogContent,
@@ -423,7 +424,7 @@ export const AdvancedHRDashboard = () => {
                   {activeAlerts.slice(0, 4).map((alert) => (
                     <div 
                       key={alert.id} 
-                      className="p-3 border rounded-lg cursor-pointer hover:bg-accent/10"
+                      className="p-3 border rounded-lg cursor-pointer hover:bg-accent/10 transition-colors"
                       onClick={() => setSelectedAlert(alert)}
                     >
                       <div className="flex justify-between items-center mb-2">
@@ -614,85 +615,12 @@ export const AdvancedHRDashboard = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Modal Détail Alerte */}
-      <Dialog open={!!selectedAlert} onOpenChange={() => setSelectedAlert(null)}>
-        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <AlertTriangle className={`h-5 w-5 ${
-                selectedAlert?.severity === 'critical' ? 'text-red-500' : 
-                selectedAlert?.severity === 'high' ? 'text-orange-500' : 
-                selectedAlert?.severity === 'medium' ? 'text-yellow-500' :
-                'text-green-500'
-              }`} />
-              {selectedAlert?.title}
-            </DialogTitle>
-            <DialogDescription>
-              Détails de l'alerte et recommandations d'actions
-            </DialogDescription>
-          </DialogHeader>
-          
-          {selectedAlert && (
-            <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <div className="text-sm font-medium text-muted-foreground">Sévérité</div>
-                  <Badge variant={
-                    selectedAlert.severity === 'critical' ? 'destructive' : 
-                    selectedAlert.severity === 'high' ? 'destructive' : 
-                    selectedAlert.severity === 'medium' ? 'default' : 
-                    'secondary'
-                  }>
-                    {selectedAlert.severity}
-                  </Badge>
-                </div>
-                <div>
-                  <div className="text-sm font-medium text-muted-foreground">Statut</div>
-                  <div className="text-sm">{selectedAlert.status}</div>
-                </div>
-                <div>
-                  <div className="text-sm font-medium text-muted-foreground">Entité concernée</div>
-                  <div className="text-sm">{selectedAlert.entity_name || 'Non spécifiée'}</div>
-                </div>
-                <div>
-                  <div className="text-sm font-medium text-muted-foreground">Déclenché le</div>
-                  <div className="text-sm">
-                    {new Date(selectedAlert.triggered_at).toLocaleDateString('fr-FR')}
-                  </div>
-                </div>
-              </div>
-              
-              <div>
-                <div className="text-sm font-medium text-muted-foreground mb-2">Description</div>
-                <p className="text-sm">{selectedAlert.description}</p>
-              </div>
-
-              {selectedAlert.recommendations && selectedAlert.recommendations.length > 0 && (
-                <div>
-                  <div className="text-sm font-medium text-muted-foreground mb-2">Recommandations</div>
-                  <div className="space-y-2">
-                    {selectedAlert.recommendations.map((rec: any) => (
-                      <div key={rec.id} className="p-3 border rounded-lg">
-                        <div className="flex justify-between items-start mb-1">
-                          <span className="text-sm font-medium">{rec.solution?.title}</span>
-                          {rec.is_primary && (
-                            <Badge variant="outline" className="text-xs">Recommandé</Badge>
-                          )}
-                        </div>
-                        <p className="text-xs text-muted-foreground mb-2">{rec.solution?.description}</p>
-                        <div className="flex justify-between text-xs text-muted-foreground">
-                          <span>Efficacité: {rec.solution?.effectiveness_score}%</span>
-                          <span>Délai: {rec.solution?.implementation_time}</span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
+      {/* Modal Détail Alerte Amélioré */}
+      <AlertDetailDialog
+        alert={selectedAlert}
+        open={!!selectedAlert}
+        onOpenChange={(open) => !open && setSelectedAlert(null)}
+      />
 
       {/* Dialog pour les détails des KPI */}
       <KPIDetailDialog 

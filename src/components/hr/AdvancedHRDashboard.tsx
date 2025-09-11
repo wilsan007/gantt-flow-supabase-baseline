@@ -9,6 +9,7 @@ import { Label } from '@/components/ui/label';
 import { useAdvancedHR } from '@/hooks/useAdvancedHR';
 import { useHR } from '@/hooks/useHR';
 import { useAlerts } from '@/hooks/useAlerts';
+import { useComputedAlerts } from '@/hooks/useComputedAlerts';
 import { KPIDetailDialog } from './KPIDetailDialog';
 import {
   Dialog,
@@ -49,6 +50,13 @@ export const AdvancedHRDashboard = () => {
 
   const { employees } = useHR();
   const { alertInstances, getActiveAlerts, getHighPriorityAlerts, initializeAlertData, refetch: refetchAlerts } = useAlerts();
+  const { 
+    computedAlerts,
+    loading: computedAlertsLoading,
+    refreshAlerts,
+    getTopAlerts,
+    getHighPriorityAlerts: getComputedHighPriority
+  } = useComputedAlerts();
   const [selectedKPI, setSelectedKPI] = useState<'employees' | 'utilization' | 'analytics' | 'alerts' | null>(null);
   const [capacityModalOpen, setCapacityModalOpen] = useState(false);
   const [selectedAlert, setSelectedAlert] = useState<any>(null);
@@ -73,23 +81,14 @@ export const AdvancedHRDashboard = () => {
   // Calculs pour les KPIs RH avancés (synchronisés avec la période sélectionnée)
   const realEmployeeCount = employees.length; // Vrais employés de la base
   const uniqueEmployeesInCapacity = Array.from(new Set(capacityPlanning.map(cp => cp.employee_id))).length;
-  const activeAlerts = getActiveAlerts();
-  const highPriorityAlerts = getHighPriorityAlerts();
+  
+  // Utiliser les alertes calculées dynamiquement
+  const activeAlerts = computedAlerts;
+  const highPriorityAlerts = getComputedHighPriority();
   const highRiskInsights = highPriorityAlerts.length;
   const mediumRiskCount = activeAlerts.filter(alert => alert.severity === 'medium').length;
-
-  // Classement par importance (sévérité > score recommandé > récence)
-  const severityWeight: Record<string, number> = { critical: 4, high: 3, medium: 2, low: 1 };
-  const sortedActiveAlerts = [...activeAlerts].sort((a: any, b: any) => {
-    const aw = severityWeight[a.severity] || 0;
-    const bw = severityWeight[b.severity] || 0;
-    if (bw !== aw) return bw - aw;
-    const aRec = Math.max(...(a.recommendations?.map((r: any) => r.recommended_score || 0) ?? [0]));
-    const bRec = Math.max(...(b.recommendations?.map((r: any) => r.recommended_score || 0) ?? [0]));
-    if (bRec !== aRec) return bRec - aRec;
-    return new Date(b.triggered_at).getTime() - new Date(a.triggered_at).getTime();
-  });
-  const topAlerts = sortedActiveAlerts.slice(0, 4);
+  
+  const topAlerts = getTopAlerts(4);
   const activeAlertsCount = activeAlerts.length;
   
   // Filtrer les données selon la période sélectionnée
@@ -158,7 +157,7 @@ export const AdvancedHRDashboard = () => {
           <Button 
             onClick={async () => {
               await calculateHRMetrics(periodStart, periodEnd);
-              await refetchAlerts();
+              await refreshAlerts();
             }} 
             variant="outline"
           >
@@ -168,7 +167,7 @@ export const AdvancedHRDashboard = () => {
           <Button 
             onClick={async () => {
               await generateEmployeeInsights();
-              await refetchAlerts();
+              await refreshAlerts();
             }} 
             variant="outline"
           >
@@ -178,7 +177,7 @@ export const AdvancedHRDashboard = () => {
           <Button 
             onClick={async () => {
               await initializeAlertData();
-              await refetchAlerts();
+              await refreshAlerts();
               toast({ title: 'Initialisation', description: 'Types et solutions d\'alertes prêts.' });
             }} 
             variant="outline"
@@ -220,6 +219,7 @@ export const AdvancedHRDashboard = () => {
             <Button 
               onClick={async () => {
                 await calculateHRMetrics(periodStart, periodEnd);
+                await refreshAlerts();
               }}
             >
               <Calendar className="h-4 w-4 mr-2" />
@@ -427,7 +427,7 @@ export const AdvancedHRDashboard = () => {
                       onClick={() => setSelectedAlert(alert)}
                     >
                       <div className="flex justify-between items-center mb-2">
-                        <span className="text-sm font-medium">{alert.alert_type?.name || alert.title}</span>
+                        <span className="text-sm font-medium">{alert.title}</span>
                         <Badge variant={
                           alert.severity === 'critical' ? 'destructive' : 
                           alert.severity === 'high' ? 'destructive' : 
@@ -576,10 +576,10 @@ export const AdvancedHRDashboard = () => {
             <DialogDescription>Classées par importance</DialogDescription>
           </DialogHeader>
           <div className="space-y-2">
-            {sortedActiveAlerts.length === 0 ? (
+            {activeAlerts.length === 0 ? (
               <div className="text-center text-muted-foreground py-6">Aucune alerte active</div>
             ) : (
-              sortedActiveAlerts.map((alert: any) => (
+              activeAlerts.map((alert: any) => (
                 <div
                   key={alert.id}
                   className="p-3 border rounded-lg cursor-pointer hover:bg-accent/10 flex items-start gap-3"

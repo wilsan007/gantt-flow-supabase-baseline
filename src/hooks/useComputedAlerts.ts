@@ -1,0 +1,242 @@
+import { useState, useEffect } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { AlertType, AlertSolution, AlertInstance } from './useAlerts';
+
+export interface ComputedAlert {
+  id: string;
+  type: string;
+  code: string;
+  title: string;
+  description: string;
+  severity: 'low' | 'medium' | 'high' | 'critical';
+  category: string;
+  entity_type?: string;
+  entity_id?: string;
+  entity_name?: string;
+  context_data?: any;
+  triggered_at: string;
+  recommendations: AlertSolution[];
+}
+
+export const useComputedAlerts = () => {
+  const [computedAlerts, setComputedAlerts] = useState<ComputedAlert[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Calculer les alertes basées sur l'état actuel des données
+  const calculateCurrentAlerts = async (): Promise<ComputedAlert[]> => {
+    const alerts: ComputedAlert[] = [];
+    const now = new Date().toISOString();
+
+    try {
+      // 1. Alertes de surcharge de travail
+      const { data: employees } = await supabase
+        .from('employees')
+        .select('*, tasks:tasks!assignee_id(count)')
+        .eq('status', 'active');
+
+      employees?.forEach(employee => {
+        const taskCount = employee.tasks?.[0]?.count || 0;
+        if (taskCount > 15) { // Seuil configurable
+          alerts.push({
+            id: `workload-${employee.id}`,
+            type: 'WORKLOAD_HIGH',
+            code: 'WORKLOAD_HIGH',
+            title: 'Surcharge de travail détectée',
+            description: `${employee.full_name} a ${taskCount} tâches assignées`,
+            severity: taskCount > 25 ? 'critical' : taskCount > 20 ? 'high' : 'medium',
+            category: 'capacity',
+            entity_type: 'employee',
+            entity_id: employee.id,
+            entity_name: employee.full_name,
+            context_data: { taskCount, threshold: 15 },
+            triggered_at: now,
+            recommendations: []
+          });
+        }
+      });
+
+      // 2. Alertes d'absences anormales
+      const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+      const { data: recentAbsences } = await supabase
+        .from('absences')
+        .select('employee_id, employees(full_name), total_days')
+        .gte('start_date', thirtyDaysAgo)
+        .eq('status', 'approved');
+
+      const absencesByEmployee = recentAbsences?.reduce((acc, absence) => {
+        const key = absence.employee_id;
+        if (!acc[key]) {
+          acc[key] = { 
+            employee_name: absence.employees?.full_name,
+            total_days: 0,
+            count: 0
+          };
+        }
+        acc[key].total_days += Number(absence.total_days);
+        acc[key].count += 1;
+        return acc;
+      }, {} as Record<string, { employee_name: string; total_days: number; count: number }>) || {};
+
+      Object.entries(absencesByEmployee).forEach(([employeeId, data]) => {
+        if (data.total_days > 10 || data.count > 5) { // Seuils configurables
+          alerts.push({
+            id: `absence-${employeeId}`,
+            type: 'ABSENCE_PATTERN',
+            code: 'ABSENCE_PATTERN',
+            title: 'Pattern d\'absences anormal',
+            description: `${data.employee_name} a ${data.total_days} jours d'absence en 30 jours`,
+            severity: data.total_days > 20 ? 'high' : 'medium',
+            category: 'hr',
+            entity_type: 'employee',
+            entity_id: employeeId,
+            entity_name: data.employee_name,
+            context_data: { totalDays: data.total_days, absenceCount: data.count },
+            triggered_at: now,
+            recommendations: []
+          });
+        }
+      });
+
+      // 3. Alertes de retard de projets
+      const { data: lateTasks } = await supabase
+        .from('tasks')
+        .select('*, employees(full_name)')
+        .lt('due_date', new Date().toISOString().split('T')[0])
+        .neq('status', 'done')
+        .is('parent_id', null); // Seulement les tâches principales
+
+      lateTasks?.forEach(task => {
+        const daysLate = Math.floor((Date.now() - new Date(task.due_date).getTime()) / (1000 * 60 * 60 * 24));
+        alerts.push({
+          id: `late-task-${task.id}`,
+          type: 'DEADLINE_RISK',
+          code: 'DEADLINE_RISK',
+          title: 'Tâche en retard',
+          description: `"${task.title}" est en retard de ${daysLate} jour(s)`,
+          severity: daysLate > 14 ? 'critical' : daysLate > 7 ? 'high' : 'medium',
+          category: 'project',
+          entity_type: 'task',
+          entity_id: task.id,
+          entity_name: task.title,
+          context_data: { daysLate, dueDate: task.due_date },
+          triggered_at: now,
+          recommendations: []
+        });
+      });
+
+      // 4. Alertes de performance (tâches bloquées depuis longtemps)
+      const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+      const { data: stuckTasks } = await supabase
+        .from('tasks')
+        .select('*, employees(full_name)')
+        .eq('status', 'doing')
+        .lt('updated_at', sevenDaysAgo)
+        .lt('progress', 50);
+
+      stuckTasks?.forEach(task => {
+        const daysSinceUpdate = Math.floor((Date.now() - new Date(task.updated_at).getTime()) / (1000 * 60 * 60 * 24));
+        alerts.push({
+          id: `stuck-task-${task.id}`,
+          type: 'PERFORMANCE_DROP',
+          code: 'PERFORMANCE_DROP',
+          title: 'Tâche bloquée',
+          description: `"${task.title}" (${task.progress}%) n'a pas progressé depuis ${daysSinceUpdate} jours`,
+          severity: daysSinceUpdate > 14 ? 'high' : 'medium',
+          category: 'performance',
+          entity_type: 'task',
+          entity_id: task.id,
+          entity_name: task.title,
+          context_data: { daysSinceUpdate, progress: task.progress },
+          triggered_at: now,
+          recommendations: []
+        });
+      });
+
+      // 5. Alertes de congés non pris
+      const { data: leaveBalances } = await supabase
+        .from('leave_balances')
+        .select('*, employees(full_name), absence_types(name)')
+        .eq('year', new Date().getFullYear())
+        .gt('remaining_days', 20); // Plus de 20 jours restants
+
+      leaveBalances?.forEach(balance => {
+        alerts.push({
+          id: `unused-leave-${balance.employee_id}-${balance.absence_type_id}`,
+          type: 'UNUSED_LEAVE',
+          code: 'UNUSED_LEAVE',
+          title: 'Congés non utilisés',
+          description: `${balance.employees?.full_name} a encore ${balance.remaining_days} jours de ${balance.absence_types?.name}`,
+          severity: Number(balance.remaining_days) > 30 ? 'medium' : 'low',
+          category: 'hr',
+          entity_type: 'employee',
+          entity_id: balance.employee_id,
+          entity_name: balance.employees?.full_name || 'Employé',
+          context_data: { remainingDays: balance.remaining_days, leaveType: balance.absence_types?.name },
+          triggered_at: now,
+          recommendations: []
+        });
+      });
+
+      return alerts;
+
+    } catch (error) {
+      console.error('Erreur lors du calcul des alertes:', error);
+      throw error;
+    }
+  };
+
+  const refreshAlerts = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const alerts = await calculateCurrentAlerts();
+      
+      // Trier par sévérité puis par date
+      const sortedAlerts = alerts.sort((a, b) => {
+        const severityOrder = { critical: 4, high: 3, medium: 2, low: 1 };
+        const severityDiff = severityOrder[b.severity] - severityOrder[a.severity];
+        if (severityDiff !== 0) return severityDiff;
+        
+        return new Date(b.triggered_at).getTime() - new Date(a.triggered_at).getTime();
+      });
+      
+      setComputedAlerts(sortedAlerts);
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    refreshAlerts();
+  }, []);
+
+  // Fonctions utilitaires
+  const getActiveAlerts = () => computedAlerts;
+
+  const getHighPriorityAlerts = () => 
+    computedAlerts.filter(alert => alert.severity === 'high' || alert.severity === 'critical');
+
+  const getCriticalAlerts = () => 
+    computedAlerts.filter(alert => alert.severity === 'critical');
+
+  const getAlertsByCategory = (category: string) => 
+    computedAlerts.filter(alert => alert.category === category);
+
+  const getTopAlerts = (limit: number = 4) => 
+    computedAlerts.slice(0, limit);
+
+  return {
+    computedAlerts,
+    loading,
+    error,
+    refreshAlerts,
+    getActiveAlerts,
+    getHighPriorityAlerts,
+    getCriticalAlerts,
+    getAlertsByCategory,
+    getTopAlerts
+  };
+};

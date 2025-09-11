@@ -141,8 +141,6 @@ export const AdvancedHRDashboard = () => {
           <Button 
             onClick={async () => {
               await calculateHRMetrics(periodStart, periodEnd);
-              // Recharger les données après le calcul
-              window.location.reload();
             }} 
             variant="outline"
           >
@@ -191,8 +189,6 @@ export const AdvancedHRDashboard = () => {
             <Button 
               onClick={async () => {
                 await calculateHRMetrics(periodStart, periodEnd);
-                // Recharger les données après le calcul
-                window.location.reload();
               }}
             >
               <Calendar className="h-4 w-4 mr-2" />

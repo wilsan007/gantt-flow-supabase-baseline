@@ -108,16 +108,25 @@ export const KPIDetailDialog = ({ open, onOpenChange, kpiType }: KPIDetailDialog
         );
 
       case 'analytics':
+        // Éliminer les doublons basés sur le nom de la métrique
+        const uniqueMetrics = hrAnalytics.reduce((acc, metric) => {
+          const existing = acc.find(m => m.metric_name === metric.metric_name && m.metric_type === metric.metric_type);
+          if (!existing) {
+            acc.push(metric);
+          }
+          return acc;
+        }, [] as typeof hrAnalytics);
+
         return (
           <div className="space-y-4">
             <div className="text-center p-4 border rounded-lg">
-              <div className="text-3xl font-bold text-primary mb-2">{hrAnalytics.length}</div>
-              <p className="text-muted-foreground">Métriques RH calculées</p>
+              <div className="text-3xl font-bold text-primary mb-2">{uniqueMetrics.length}</div>
+              <p className="text-muted-foreground">Métriques RH uniques calculées</p>
             </div>
 
             <div className="space-y-3">
-              <h4 className="font-semibold">Types de métriques</h4>
-              {hrAnalytics.slice(0, 5).map((metric) => (
+              <h4 className="font-semibold">Liste complète des métriques</h4>
+              {uniqueMetrics.length > 0 ? uniqueMetrics.map((metric) => (
                 <div key={metric.id} className="flex items-center justify-between p-3 border rounded-lg">
                   <div>
                     <div className="font-medium">{metric.metric_name}</div>
@@ -126,11 +135,16 @@ export const KPIDetailDialog = ({ open, onOpenChange, kpiType }: KPIDetailDialog
                   <div className="text-right">
                     <div className="text-lg font-bold">{metric.metric_value}</div>
                     <div className="text-xs text-muted-foreground">
-                      {new Date(metric.calculated_at).toLocaleDateString()}
+                      {new Date(metric.calculated_at).toLocaleDateString('fr-FR')}
                     </div>
                   </div>
                 </div>
-              ))}
+              )) : (
+                <div className="text-center p-4 text-muted-foreground">
+                  <BarChart3 className="h-8 w-8 mx-auto mb-2" />
+                  <p>Aucune métrique RH calculée disponible</p>
+                </div>
+              )}
             </div>
           </div>
         );

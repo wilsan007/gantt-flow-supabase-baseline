@@ -2670,6 +2670,7 @@ export type Database = {
           budget: number | null
           created_at: string
           department_id: string | null
+          department_name: string
           description: string | null
           display_order: string | null
           due_date: string
@@ -2681,7 +2682,7 @@ export type Database = {
           priority: string
           progress: number | null
           project_id: string | null
-          project_name: string | null
+          project_name: string
           start_date: string
           status: string
           task_level: number | null
@@ -2696,6 +2697,7 @@ export type Database = {
           budget?: number | null
           created_at?: string
           department_id?: string | null
+          department_name: string
           description?: string | null
           display_order?: string | null
           due_date: string
@@ -2707,7 +2709,7 @@ export type Database = {
           priority: string
           progress?: number | null
           project_id?: string | null
-          project_name?: string | null
+          project_name: string
           start_date: string
           status?: string
           task_level?: number | null
@@ -2722,6 +2724,7 @@ export type Database = {
           budget?: number | null
           created_at?: string
           department_id?: string | null
+          department_name?: string
           description?: string | null
           display_order?: string | null
           due_date?: string
@@ -2733,7 +2736,7 @@ export type Database = {
           priority?: string
           progress?: number | null
           project_id?: string | null
-          project_name?: string | null
+          project_name?: string
           start_date?: string
           status?: string
           task_level?: number | null
@@ -2747,7 +2750,7 @@ export type Database = {
             columns: ["assignee_id"]
             isOneToOne: false
             referencedRelation: "employees"
-            referencedColumns: ["user_id"]
+            referencedColumns: ["id"]
           },
           {
             foreignKeyName: "tasks_department_id_fkey"

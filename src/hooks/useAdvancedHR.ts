@@ -145,6 +145,83 @@ export interface CountryPolicy {
   updated_at: string;
 }
 
+// Fonction pour créer les alertes de capacité
+const createCapacityAlerts = async (overloadedEmployees: any[], highUtilizationEmployees: any[], averageUtilization: number) => {
+  try {
+    const alertsToCreate = [];
+
+    // Alertes pour surcharge >= 90%
+    for (const employee of overloadedEmployees) {
+      // Récupérer le nom de l'employé
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('full_name')
+        .eq('id', employee.employee_id)
+        .maybeSingle();
+
+      alertsToCreate.push({
+        title: `Surcharge détectée - ${profile?.full_name || 'Employé'}`,
+        description: `Taux d'utilisation de ${employee.capacity_utilization}% (≥ 90%)`,
+        severity: 'high',
+        status: 'active',
+        entity_type: 'employee',
+        entity_id: employee.employee_id,
+        entity_name: profile?.full_name || 'Employé',
+        context_data: {
+          capacity_utilization: employee.capacity_utilization,
+          threshold: 90,
+          period_start: employee.period_start,
+          period_end: employee.period_end
+        },
+        alert_type_id: null // À définir si vous avez des types d'alertes configurés
+      });
+    }
+
+    // Alertes pour taux > moyenne + 25%
+    for (const employee of highUtilizationEmployees) {
+      // Éviter les doublons avec les alertes de surcharge
+      if (employee.capacity_utilization < 90) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('full_name')
+          .eq('id', employee.employee_id)
+          .maybeSingle();
+
+        alertsToCreate.push({
+          title: `Utilisation élevée - ${profile?.full_name || 'Employé'}`,
+          description: `Taux de ${employee.capacity_utilization}% (25% au-dessus de la moyenne de ${Math.round(averageUtilization)}%)`,
+          severity: 'medium',
+          status: 'active',
+          entity_type: 'employee',
+          entity_id: employee.employee_id,
+          entity_name: profile?.full_name || 'Employé',
+          context_data: {
+            capacity_utilization: employee.capacity_utilization,
+            average_utilization: averageUtilization,
+            difference: employee.capacity_utilization - averageUtilization,
+            period_start: employee.period_start,
+            period_end: employee.period_end
+          },
+          alert_type_id: null
+        });
+      }
+    }
+
+    // Insérer les alertes
+    if (alertsToCreate.length > 0) {
+      const { error } = await supabase
+        .from('alert_instances')
+        .insert(alertsToCreate);
+      
+      if (error) {
+        console.error('Erreur lors de la création des alertes:', error);
+      }
+    }
+  } catch (error) {
+    console.error('Erreur dans createCapacityAlerts:', error);
+  }
+};
+
 export const useAdvancedHR = () => {
   // Capacity Planning
   const [capacityPlanning, setCapacityPlanning] = useState<CapacityPlanning[]>([]);
@@ -556,8 +633,21 @@ export const useAdvancedHR = () => {
         if (capErr) throw capErr;
       }
 
+      // Calculer le taux moyen d'utilisation
+      const averageUtilization = capacityRows.length > 0 
+        ? capacityRows.reduce((sum, row) => sum + row.capacity_utilization, 0) / capacityRows.length
+        : 0;
+
       // Détecter les surcharges (>= 90%)
       const overloadedEmployees = capacityRows.filter(row => row.capacity_utilization >= 90);
+      
+      // Détecter les employés avec un taux supérieur à 25% par rapport à la moyenne
+      const highUtilizationEmployees = capacityRows.filter(row => 
+        row.capacity_utilization > averageUtilization + 25
+      );
+
+      // Créer les alertes proactives
+      await createCapacityAlerts(overloadedEmployees, highUtilizationEmployees, averageUtilization);
       
       // Recalculer les métriques pour la période
       await supabase
@@ -597,14 +687,14 @@ export const useAdvancedHR = () => {
       const { error: metErr } = await supabase.from('hr_analytics').insert(metrics);
       if (metErr) throw metErr;
 
-      const message = overloadedEmployees.length > 0 
-        ? `Capacité recalculée. ${overloadedEmployees.length} employé(s) en surcharge détecté(s) (≥90%)`
+      const message = overloadedEmployees.length > 0 || highUtilizationEmployees.length > 0
+        ? `Capacité recalculée. ${overloadedEmployees.length} surcharge(s) et ${highUtilizationEmployees.filter(e => e.capacity_utilization < 90).length} utilisation(s) élevée(s) détectée(s)`
         : 'Capacité et métriques recalculées avec succès';
 
       toast({ 
         title: 'Succès', 
         description: message,
-        variant: overloadedEmployees.length > 0 ? 'destructive' : 'default'
+        variant: (overloadedEmployees.length > 0 || highUtilizationEmployees.length > 0) ? 'destructive' : 'default'
       });
 
       fetchAdvancedHRData();

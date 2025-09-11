@@ -29,6 +29,7 @@ import {
   Globe,
   Plus
 } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 export const AdvancedHRDashboard = () => {
   const {
@@ -47,11 +48,12 @@ export const AdvancedHRDashboard = () => {
   } = useAdvancedHR();
 
   const { employees } = useHR();
-  const { alertInstances, getActiveAlerts, getHighPriorityAlerts, initializeAlertData } = useAlerts();
+  const { alertInstances, getActiveAlerts, getHighPriorityAlerts, initializeAlertData, refetch: refetchAlerts } = useAlerts();
   const [selectedKPI, setSelectedKPI] = useState<'employees' | 'utilization' | 'analytics' | 'alerts' | null>(null);
   const [capacityModalOpen, setCapacityModalOpen] = useState(false);
   const [selectedAlert, setSelectedAlert] = useState<any>(null);
   const [alertsModalOpen, setAlertsModalOpen] = useState(false);
+  const { toast } = useToast();
 
   // États pour la sélection de période
   const [periodStart, setPeriodStart] = useState(() => {
@@ -156,17 +158,31 @@ export const AdvancedHRDashboard = () => {
           <Button 
             onClick={async () => {
               await calculateHRMetrics(periodStart, periodEnd);
+              await refetchAlerts();
             }} 
             variant="outline"
           >
             <BarChart3 className="h-4 w-4 mr-2" />
             Calculer Métriques
           </Button>
-          <Button onClick={() => generateEmployeeInsights()} variant="outline">
+          <Button 
+            onClick={async () => {
+              await generateEmployeeInsights();
+              await refetchAlerts();
+            }} 
+            variant="outline"
+          >
             <Brain className="h-4 w-4 mr-2" />
             Générer Insights IA
           </Button>
-          <Button onClick={initializeAlertData} variant="outline">
+          <Button 
+            onClick={async () => {
+              await initializeAlertData();
+              await refetchAlerts();
+              toast({ title: 'Initialisation', description: 'Types et solutions d\'alertes prêts.' });
+            }} 
+            variant="outline"
+          >
             <Plus className="h-4 w-4 mr-2" />
             Initialiser Alertes
           </Button>
@@ -319,7 +335,7 @@ export const AdvancedHRDashboard = () => {
             </Card>
 
             <Card>
-              <CardHeader>
+              <CardHeader onClick={() => setAlertsModalOpen(true)} className="cursor-pointer">
                 <CardTitle>Alertes Proactives</CardTitle>
                 <CardDescription>
                   Détection automatique des surcharges
@@ -327,7 +343,7 @@ export const AdvancedHRDashboard = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  {highPriorityAlerts.slice(0, 3).map((alert) => (
+                  {topAlerts.map((alert) => (
                     <div 
                       key={alert.id} 
                       className="flex items-center space-x-2 p-2 rounded cursor-pointer hover:bg-accent/10"
@@ -345,7 +361,7 @@ export const AdvancedHRDashboard = () => {
                       </div>
                     </div>
                   ))}
-                  {highPriorityAlerts.length === 0 && (
+                  {topAlerts.length === 0 && (
                     <div className="flex items-center space-x-2">
                       <TrendingUp className="h-4 w-4 text-green-500" />
                       <span className="text-sm">Aucune alerte détectée - Situation optimale</span>
@@ -547,6 +563,52 @@ export const AdvancedHRDashboard = () => {
                     </div>
                   </div>
                 ))
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Modal Liste Alertes */}
+      <Dialog open={alertsModalOpen} onOpenChange={setAlertsModalOpen}>
+        <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Toutes les alertes ({activeAlertsCount})</DialogTitle>
+            <DialogDescription>Classées par importance</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-2">
+            {sortedActiveAlerts.length === 0 ? (
+              <div className="text-center text-muted-foreground py-6">Aucune alerte active</div>
+            ) : (
+              sortedActiveAlerts.map((alert: any) => (
+                <div
+                  key={alert.id}
+                  className="p-3 border rounded-lg cursor-pointer hover:bg-accent/10 flex items-start gap-3"
+                  onClick={() => { setSelectedAlert(alert); setAlertsModalOpen(false); }}
+                >
+                  <AlertTriangle className={`h-4 w-4 ${
+                    alert.severity === 'critical' ? 'text-red-500' : 
+                    alert.severity === 'high' ? 'text-orange-500' : 
+                    alert.severity === 'medium' ? 'text-yellow-500' :
+                    'text-green-500'
+                  }`} />
+                  <div className="flex-1">
+                    <div className="flex justify-between items-center">
+                      <div className="text-sm font-medium">{alert.title}</div>
+                      <Badge variant={
+                        alert.severity === 'critical' ? 'destructive' : 
+                        alert.severity === 'high' ? 'destructive' : 
+                        alert.severity === 'medium' ? 'default' : 
+                        'secondary'
+                      }>
+                        {alert.severity}
+                      </Badge>
+                    </div>
+                    <div className="text-xs text-muted-foreground">
+                      {alert.entity_name} • {new Date(alert.triggered_at).toLocaleDateString('fr-FR')}
+                    </div>
+                  </div>
+                </div>
+              ))
             )}
           </div>
         </DialogContent>

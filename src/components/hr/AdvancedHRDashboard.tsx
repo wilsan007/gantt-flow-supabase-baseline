@@ -38,6 +38,7 @@ export const AdvancedHRDashboard = () => {
 
   const { employees } = useHR();
   const [selectedKPI, setSelectedKPI] = useState<'employees' | 'utilization' | 'analytics' | 'alerts' | null>(null);
+  const [capacityModalOpen, setCapacityModalOpen] = useState(false);
 
   if (loading) {
     return <div className="flex justify-center p-8">Chargement...</div>;
@@ -47,10 +48,48 @@ export const AdvancedHRDashboard = () => {
   const realEmployeeCount = employees.length; // Vrais employés de la base
   const uniqueEmployeesInCapacity = Array.from(new Set(capacityPlanning.map(cp => cp.employee_id))).length;
   const highRiskInsights = employeeInsights.filter(insight => insight.risk_level === 'high' || insight.risk_level === 'critical').length;
+  const mediumRiskCount = employeeInsights.filter(insight => insight.risk_level === 'medium').length;
   const averageUtilization = capacityPlanning.length > 0 
-    ? Math.round(capacityPlanning.reduce((sum, cp) => sum + (cp.capacity_utilization || 0), 0) / capacityPlanning.length)
+    ? Math.round(
+        capacityPlanning.reduce((sum, cp) => sum + (Number(cp.capacity_utilization) || 0), 0) / capacityPlanning.length
+      )
     : 0;
-  const analyticsCount = hrAnalytics.length;
+  // Nombre de métriques RH uniques (par nom + type) pour éviter les doublons
+  const uniqueMetricKeys = new Set<string>();
+  hrAnalytics.forEach((m) => {
+    uniqueMetricKeys.add(`${m.metric_name}__${m.metric_type}`);
+  });
+  const analyticsCount = uniqueMetricKeys.size;
+
+  // Agrégation de la capacité par employé (moyenne)
+  const capAgg = new Map<string, { sum: number; count: number }>();
+  capacityPlanning.forEach((cp) => {
+    const util = Number(cp.capacity_utilization) || 0;
+    const prev = capAgg.get(cp.employee_id) || { sum: 0, count: 0 };
+    capAgg.set(cp.employee_id, { sum: prev.sum + util, count: prev.count + 1 });
+  });
+  const perEmployeeUtilization = Array.from(capAgg.entries()).map(([employee_id, { sum, count }]) => {
+    const avg = count ? Math.round(sum / count) : 0;
+    const emp = employees.find((e) => e.id === employee_id);
+    return {
+      employee_id,
+      full_name: emp?.full_name || `Employé ${employee_id.slice(0, 8)}...`,
+      avgUtilization: avg,
+    };
+  });
+  // Top 3 les plus élevés et Bottom 2 les plus faibles
+  const sortedDesc = [...perEmployeeUtilization].sort((a, b) => b.avgUtilization - a.avgUtilization);
+  const sortedAsc = [...perEmployeeUtilization].sort((a, b) => a.avgUtilization - b.avgUtilization);
+  const top3 = sortedDesc.slice(0, 3);
+  const bottom2 = sortedAsc.slice(0, 2);
+  const selectedEmployees: { employee_id: string; full_name: string; avgUtilization: number }[] = [];
+  const seen = new Set<string>();
+  [...top3, ...bottom2].forEach((e) => {
+    if (!seen.has(e.employee_id)) {
+      seen.add(e.employee_id);
+      selectedEmployees.push(e);
+    }
+  });
 
   return (
     <div className="space-y-6">
@@ -152,7 +191,7 @@ export const AdvancedHRDashboard = () => {
         <TabsContent value="capacity" className="space-y-4">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             <Card>
-              <CardHeader>
+              <CardHeader onClick={() => setCapacityModalOpen(true)} className="cursor-pointer">
                 <CardTitle>Vue Capacité vs Charge</CardTitle>
                 <CardDescription>
                   Analyse des ressources et planification
@@ -160,26 +199,20 @@ export const AdvancedHRDashboard = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {capacityPlanning.slice(0, 5).map((capacity, index) => {
-                    // Trouver le nom de l'employé correspondant
-                    const employee = employees.find(emp => emp.id === capacity.employee_id);
-                    const employeeName = employee?.full_name || `Employé ${capacity.employee_id.slice(0, 8)}...`;
-                    
-                    return (
-                    <div key={capacity.id} className="space-y-2">
+                  {selectedEmployees.map((item) => (
+                    <div key={item.employee_id} className="space-y-2">
                       <div className="flex justify-between text-sm">
-                        <span>{employeeName}</span>
-                        <span>{capacity.capacity_utilization || 0}%</span>
+                        <span>{item.full_name}</span>
+                        <span>{item.avgUtilization}%</span>
                       </div>
-                       <Progress value={capacity.capacity_utilization || 0} className="h-2" />
-                     </div>
-                   );
-                 })}
-                 {capacityPlanning.length === 0 && (
-                   <div className="text-center text-muted-foreground py-4">
-                     Aucune donnée de planification de capacité disponible
-                   </div>
-                 )}
+                      <Progress value={item.avgUtilization} className="h-2" />
+                    </div>
+                  ))}
+                  {selectedEmployees.length === 0 && (
+                    <div className="text-center text-muted-foreground py-4">
+                      Aucune donnée de planification de capacité disponible
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </Card>
@@ -235,7 +268,7 @@ export const AdvancedHRDashboard = () => {
                     </p>
                     <div className="flex items-center space-x-2">
                       <AlertTriangle className="h-4 w-4 text-orange-500" />
-                      <span className="text-sm">3 employés à risque moyen</span>
+                      <span className="text-sm">{mediumRiskCount} employé{mediumRiskCount > 1 ? 's' : ''} à risque moyen</span>
                     </div>
                   </div>
                   
@@ -366,6 +399,34 @@ export const AdvancedHRDashboard = () => {
         </TabsContent>
 
       </Tabs>
+
+      {/* Modal Vue Capacité Vs Charge */}
+      <Dialog open={capacityModalOpen} onOpenChange={setCapacityModalOpen}>
+        <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Vue Capacité vs Charge</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3">
+            {perEmployeeUtilization.length === 0 ? (
+              <div className="text-center text-muted-foreground py-4">
+                Aucune donnée de planification de capacité disponible
+              </div>
+            ) : (
+              [...perEmployeeUtilization]
+                .sort((a, b) => b.avgUtilization - a.avgUtilization)
+                .map((item) => (
+                  <div key={item.employee_id} className="flex items-center justify-between p-3 border rounded-lg">
+                    <div className="font-medium">{item.full_name}</div>
+                    <div className="text-right">
+                      <div className="text-sm font-bold">{item.avgUtilization}%</div>
+                      <Progress value={item.avgUtilization} className="w-32 h-2" />
+                    </div>
+                  </div>
+                ))
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* Dialog pour les détails des KPI */}
       <KPIDetailDialog 

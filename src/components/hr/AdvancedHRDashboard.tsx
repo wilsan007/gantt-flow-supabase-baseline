@@ -4,6 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Progress } from '@/components/ui/progress';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { useAdvancedHR } from '@/hooks/useAdvancedHR';
 import { useHR } from '@/hooks/useHR';
 import { KPIDetailDialog } from './KPIDetailDialog';
@@ -405,6 +406,7 @@ export const AdvancedHRDashboard = () => {
         <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Vue Capacité vs Charge</DialogTitle>
+            <DialogDescription>Liste de tous les employés avec leur utilisation moyenne</DialogDescription>
           </DialogHeader>
           <div className="space-y-3">
             {perEmployeeUtilization.length === 0 ? (

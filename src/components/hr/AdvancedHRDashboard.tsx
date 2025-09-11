@@ -160,20 +160,26 @@ export const AdvancedHRDashboard = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {capacityPlanning.slice(0, 5).map((capacity, index) => (
+                  {capacityPlanning.slice(0, 5).map((capacity, index) => {
+                    // Trouver le nom de l'employé correspondant
+                    const employee = employees.find(emp => emp.id === capacity.employee_id);
+                    const employeeName = employee?.full_name || `Employé ${capacity.employee_id.slice(0, 8)}...`;
+                    
+                    return (
                     <div key={capacity.id} className="space-y-2">
                       <div className="flex justify-between text-sm">
-                        <span>Employé {capacity.employee_id.slice(0, 8)}...</span>
+                        <span>{employeeName}</span>
                         <span>{capacity.capacity_utilization || 0}%</span>
                       </div>
-                      <Progress value={capacity.capacity_utilization || 0} className="h-2" />
-                    </div>
-                  ))}
-                  {capacityPlanning.length === 0 && (
-                    <div className="text-center text-muted-foreground py-4">
-                      Aucune donnée de planification de capacité disponible
-                    </div>
-                  )}
+                       <Progress value={capacity.capacity_utilization || 0} className="h-2" />
+                     </div>
+                   );
+                 })}
+                 {capacityPlanning.length === 0 && (
+                   <div className="text-center text-muted-foreground py-4">
+                     Aucune donnée de planification de capacité disponible
+                   </div>
+                 )}
                 </div>
               </CardContent>
             </Card>

@@ -119,20 +119,26 @@ export const KPIDetailDialog = ({ open, onOpenChange, kpiType }: KPIDetailDialog
 
             <div className="space-y-3">
               <h4 className="font-semibold">Détail par période</h4>
-              {capacityPlanning.slice(0, 5).map((cp) => (
-                <div key={cp.id} className="flex items-center justify-between p-3 border rounded-lg">
-                  <div>
-                    <div className="font-medium">Employé {cp.employee_id.slice(0, 8)}...</div>
-                    <div className="text-sm text-muted-foreground">
-                      {cp.period_start} - {cp.period_end}
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <div className="text-lg font-bold">{cp.capacity_utilization || 0}%</div>
-                    <Progress value={cp.capacity_utilization || 0} className="w-20 h-2" />
-                  </div>
-                </div>
-              ))}
+                  {capacityPlanning.slice(0, 5).map((cp) => {
+                    // Trouver le nom de l'employé correspondant
+                    const employee = employees.find(emp => emp.id === cp.employee_id);
+                    const employeeName = employee?.full_name || `Employé ${cp.employee_id.slice(0, 8)}...`;
+                    
+                    return (
+                    <div key={cp.id} className="flex items-center justify-between p-3 border rounded-lg">
+                      <div>
+                        <div className="font-medium">{employeeName}</div>
+                        <div className="text-sm text-muted-foreground">
+                          {cp.period_start} - {cp.period_end}
+                        </div>
+                      </div>
+                       <div className="text-right">
+                         <div className="text-lg font-bold">{cp.capacity_utilization || 0}%</div>
+                         <Progress value={cp.capacity_utilization || 0} className="w-20 h-2" />
+                       </div>
+                     </div>
+                   );
+                 })}
             </div>
           </div>
         );

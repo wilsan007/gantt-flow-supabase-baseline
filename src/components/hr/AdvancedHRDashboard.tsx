@@ -38,11 +38,13 @@ export const AdvancedHRDashboard = () => {
     return <div className="flex justify-center p-8">Chargement...</div>;
   }
 
-  // Calculs pour les KPIs
-  const activeJobPosts = jobPosts.filter(job => job.status === 'active').length;
-  const totalCandidates = candidates.length;
-  const pendingInterviews = interviews.filter(interview => interview.status === 'scheduled').length;
-  const highRiskInsights = employeeInsights.filter(insight => insight.risk_level === 'high').length;
+  // Calculs pour les KPIs RH avancés
+  const totalEmployees = capacityPlanning.length;
+  const highRiskInsights = employeeInsights.filter(insight => insight.risk_level === 'high' || insight.risk_level === 'critical').length;
+  const averageUtilization = capacityPlanning.length > 0 
+    ? Math.round(capacityPlanning.reduce((sum, cp) => sum + (cp.capacity_utilization || 0), 0) / capacityPlanning.length)
+    : 0;
+  const analyticsCount = hrAnalytics.length;
 
   return (
     <div className="space-y-6">
@@ -50,7 +52,7 @@ export const AdvancedHRDashboard = () => {
         <div>
           <h2 className="text-3xl font-bold">Tableau de Bord RH Avancé</h2>
           <p className="text-muted-foreground">
-            Planification capacité, recrutement et intelligence artificielle
+            Planification capacité, analyses IA et métriques RH
           </p>
         </div>
         <div className="flex gap-2">
@@ -69,39 +71,39 @@ export const AdvancedHRDashboard = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Offres Actives</CardTitle>
-            <Building2 className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{activeJobPosts}</div>
-            <p className="text-xs text-muted-foreground">
-              +2 depuis le mois dernier
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Candidats</CardTitle>
+            <CardTitle className="text-sm font-medium">Employés Actifs</CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{totalCandidates}</div>
+            <div className="text-2xl font-bold">{totalEmployees}</div>
             <p className="text-xs text-muted-foreground">
-              {jobApplications.length} candidatures actives
+              Ressources planifiées
             </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Entretiens</CardTitle>
-            <Calendar className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium">Utilisation Capacité</CardTitle>
+            <Target className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{pendingInterviews}</div>
+            <div className="text-2xl font-bold">{averageUtilization}%</div>
             <p className="text-xs text-muted-foreground">
-              À venir cette semaine
+              Taux d'utilisation moyen
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Métriques RH</CardTitle>
+            <BarChart3 className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{analyticsCount}</div>
+            <p className="text-xs text-muted-foreground">
+              Indicateurs calculés
             </p>
           </CardContent>
         </Card>
@@ -122,12 +124,10 @@ export const AdvancedHRDashboard = () => {
 
       {/* Tabs pour les différents modules */}
       <Tabs defaultValue="capacity" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-5">
+        <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="capacity">Capacité</TabsTrigger>
-          <TabsTrigger value="recruitment">Recrutement</TabsTrigger>
           <TabsTrigger value="ai-insights">IA Insights</TabsTrigger>
           <TabsTrigger value="analytics">Analytics</TabsTrigger>
-          <TabsTrigger value="policies">Politiques</TabsTrigger>
         </TabsList>
 
         {/* Onglet Capacité & Planification */}
@@ -194,97 +194,6 @@ export const AdvancedHRDashboard = () => {
           </div>
         </TabsContent>
 
-        {/* Onglet Recrutement (Mini-ATS) */}
-        <TabsContent value="recruitment" className="space-y-4">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>Pipeline Candidats</CardTitle>
-                <CardDescription>
-                  Suivi des candidatures par étape
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm">Candidatures reçues</span>
-                    <Badge variant="secondary">{candidates.length}</Badge>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm">En cours d'évaluation</span>
-                    <Badge variant="secondary">
-                      {jobApplications.filter(app => app.stage === 'screening').length}
-                    </Badge>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm">Entretiens programmés</span>
-                    <Badge variant="secondary">{interviews.length}</Badge>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm">Offres en cours</span>
-                    <Badge variant="secondary">{jobOffers.length}</Badge>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Offres d'Emploi</CardTitle>
-                <CardDescription>
-                  Job board et gestion des postes
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {jobPosts.slice(0, 3).map((job) => (
-                    <div key={job.id} className="flex justify-between items-center">
-                      <div>
-                        <p className="text-sm font-medium">{job.title}</p>
-                        <p className="text-xs text-muted-foreground">{job.location}</p>
-                      </div>
-                      <Badge variant={job.status === 'active' ? 'default' : 'secondary'}>
-                        {job.status}
-                      </Badge>
-                    </div>
-                  ))}
-                  <Button size="sm" variant="outline" className="w-full">
-                    <Plus className="h-4 w-4 mr-2" />
-                    Nouvelle Offre
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Scorecards Entretiens</CardTitle>
-                <CardDescription>
-                  Évaluations et recommandations
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {interviews.slice(0, 3).map((interview) => (
-                    <div key={interview.id} className="space-y-2">
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm">{interview.interviewer_name}</span>
-                        <Badge variant="outline">
-                          {interview.score ? `${interview.score}/10` : 'Pending'}
-                        </Badge>
-                      </div>
-                      {interview.recommendation && (
-                        <p className="text-xs text-muted-foreground">
-                          {interview.recommendation}
-                        </p>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
 
         {/* Onglet IA Insights */}
         <TabsContent value="ai-insights" className="space-y-4">
@@ -437,78 +346,6 @@ export const AdvancedHRDashboard = () => {
           </div>
         </TabsContent>
 
-        {/* Onglet Politiques Multi-pays */}
-        <TabsContent value="policies" className="space-y-4">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>Conformité Multi-pays</CardTitle>
-                <CardDescription>
-                  Règles par pays et conformité légale
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {countryPolicies.length > 0 ? (
-                    countryPolicies.slice(0, 4).map((policy) => (
-                      <div key={policy.id} className="flex justify-between items-center">
-                        <div className="flex items-center space-x-2">
-                          <Globe className="h-4 w-4" />
-                          <span className="text-sm">{policy.country_name}</span>
-                        </div>
-                        <div className="flex space-x-2">
-                          <Badge variant="outline">{policy.currency}</Badge>
-                          <Badge variant="outline">{policy.working_hours_per_week}h/sem</Badge>
-                        </div>
-                      </div>
-                    ))
-                  ) : (
-                    <p className="text-sm text-muted-foreground">
-                      Aucune politique configurée
-                    </p>
-                  )}
-                  <Button size="sm" variant="outline" className="w-full">
-                    <Plus className="h-4 w-4 mr-2" />
-                    Ajouter Pays
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Registre Légal</CardTitle>
-                <CardDescription>
-                  Documents et accusés de lecture
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  <div className="p-3 border rounded-lg">
-                    <h4 className="font-medium text-sm mb-2">Règlement Intérieur</h4>
-                    <div className="flex justify-between items-center">
-                      <span className="text-xs text-muted-foreground">23/25 accusés</span>
-                      <Badge variant="outline">92%</Badge>
-                    </div>
-                  </div>
-                  
-                  <div className="p-3 border rounded-lg">
-                    <h4 className="font-medium text-sm mb-2">Code de Conduite</h4>
-                    <div className="flex justify-between items-center">
-                      <span className="text-xs text-muted-foreground">25/25 accusés</span>
-                      <Badge variant="default">100%</Badge>
-                    </div>
-                  </div>
-                  
-                  <Button size="sm" variant="outline" className="w-full">
-                    <Plus className="h-4 w-4 mr-2" />
-                    Nouveau Document
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
       </Tabs>
     </div>
   );

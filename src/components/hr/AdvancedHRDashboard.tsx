@@ -1,10 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Progress } from '@/components/ui/progress';
 import { useAdvancedHR } from '@/hooks/useAdvancedHR';
+import { useHR } from '@/hooks/useHR';
+import { KPIDetailDialog } from './KPIDetailDialog';
 import { 
   Users, 
   TrendingUp, 
@@ -34,12 +36,16 @@ export const AdvancedHRDashboard = () => {
     calculateHRMetrics
   } = useAdvancedHR();
 
+  const { employees } = useHR();
+  const [selectedKPI, setSelectedKPI] = useState<'employees' | 'utilization' | 'analytics' | 'alerts' | null>(null);
+
   if (loading) {
     return <div className="flex justify-center p-8">Chargement...</div>;
   }
 
-  // Calculs pour les KPIs RH avancés
-  const totalEmployees = capacityPlanning.length;
+  // Calculs pour les KPIs RH avancés (corrigés)
+  const realEmployeeCount = employees.length; // Vrais employés de la base
+  const uniqueEmployeesInCapacity = Array.from(new Set(capacityPlanning.map(cp => cp.employee_id))).length;
   const highRiskInsights = employeeInsights.filter(insight => insight.risk_level === 'high' || insight.risk_level === 'critical').length;
   const averageUtilization = capacityPlanning.length > 0 
     ? Math.round(capacityPlanning.reduce((sum, cp) => sum + (cp.capacity_utilization || 0), 0) / capacityPlanning.length)
@@ -69,52 +75,64 @@ export const AdvancedHRDashboard = () => {
 
       {/* KPIs Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card>
+        <Card 
+          className="modern-card hover-glow cursor-pointer transition-all hover:scale-105"
+          onClick={() => setSelectedKPI('employees')}
+        >
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Employés Actifs</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
+            <Users className="h-4 w-4 text-primary" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{totalEmployees}</div>
+            <div className="text-2xl font-bold text-primary">{realEmployeeCount}</div>
             <p className="text-xs text-muted-foreground">
-              Ressources planifiées
+              Employés réels enregistrés
             </p>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card 
+          className="modern-card hover-glow cursor-pointer transition-all hover:scale-105"
+          onClick={() => setSelectedKPI('utilization')}
+        >
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Utilisation Capacité</CardTitle>
-            <Target className="h-4 w-4 text-muted-foreground" />
+            <Target className="h-4 w-4 text-accent" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{averageUtilization}%</div>
+            <div className="text-2xl font-bold text-accent">{averageUtilization}%</div>
             <p className="text-xs text-muted-foreground">
               Taux d'utilisation moyen
             </p>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card 
+          className="modern-card hover-glow cursor-pointer transition-all hover:scale-105"
+          onClick={() => setSelectedKPI('analytics')}
+        >
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Métriques RH</CardTitle>
-            <BarChart3 className="h-4 w-4 text-muted-foreground" />
+            <BarChart3 className="h-4 w-4 text-success" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{analyticsCount}</div>
+            <div className="text-2xl font-bold text-success">{analyticsCount}</div>
             <p className="text-xs text-muted-foreground">
               Indicateurs calculés
             </p>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card 
+          className="modern-card hover-glow cursor-pointer transition-all hover:scale-105"
+          onClick={() => setSelectedKPI('alerts')}
+        >
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Alertes IA</CardTitle>
-            <AlertTriangle className="h-4 w-4 text-muted-foreground" />
+            <AlertTriangle className="h-4 w-4 text-warning" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{highRiskInsights}</div>
+            <div className="text-2xl font-bold text-warning">{highRiskInsights}</div>
             <p className="text-xs text-muted-foreground">
               Risques détectés
             </p>
@@ -347,6 +365,13 @@ export const AdvancedHRDashboard = () => {
         </TabsContent>
 
       </Tabs>
+
+      {/* Dialog pour les détails des KPI */}
+      <KPIDetailDialog 
+        open={selectedKPI !== null}
+        onOpenChange={(open) => !open && setSelectedKPI(null)}
+        kpiType={selectedKPI}
+      />
     </div>
   );
 };

@@ -67,19 +67,27 @@ export const AdvancedHRDashboard = () => {
     return <div className="flex justify-center p-8">Chargement...</div>;
   }
 
-  // Calculs pour les KPIs RH avancés (corrigés)
+  // Calculs pour les KPIs RH avancés (synchronisés avec la période sélectionnée)
   const realEmployeeCount = employees.length; // Vrais employés de la base
   const uniqueEmployeesInCapacity = Array.from(new Set(capacityPlanning.map(cp => cp.employee_id))).length;
   const activeAlerts = getActiveAlerts();
   const highPriorityAlerts = getHighPriorityAlerts();
   const highRiskInsights = highPriorityAlerts.length;
   const mediumRiskCount = activeAlerts.filter(alert => alert.severity === 'medium').length;
+  
+  // Filtrer les données selon la période sélectionnée
+  const selectedPeriodRows = capacityPlanning.filter(cp => 
+    cp.period_start === periodStart && cp.period_end === periodEnd
+  );
+  
+  // Si aucune donnée pour la période sélectionnée, utiliser les plus récentes
   const latestPeriodStart = capacityPlanning.length
     ? capacityPlanning.reduce((max, cp) => (cp.period_start > max ? cp.period_start : max), capacityPlanning[0].period_start)
     : '';
-  const latestRows = latestPeriodStart
-    ? capacityPlanning.filter((cp) => cp.period_start === latestPeriodStart)
-    : [];
+  const latestRows = selectedPeriodRows.length > 0 
+    ? selectedPeriodRows 
+    : capacityPlanning.filter((cp) => cp.period_start === latestPeriodStart);
+    
   const averageUtilization = latestRows.length > 0
     ? Math.round(latestRows.reduce((sum, cp) => sum + (Number(cp.capacity_utilization) || 0), 0) / latestRows.length)
     : 0;
@@ -130,7 +138,14 @@ export const AdvancedHRDashboard = () => {
           </p>
         </div>
         <div className="flex gap-2">
-          <Button onClick={() => calculateHRMetrics(periodStart, periodEnd)} variant="outline">
+          <Button 
+            onClick={async () => {
+              await calculateHRMetrics(periodStart, periodEnd);
+              // Recharger les données après le calcul
+              window.location.reload();
+            }} 
+            variant="outline"
+          >
             <BarChart3 className="h-4 w-4 mr-2" />
             Calculer Métriques
           </Button>
@@ -173,7 +188,13 @@ export const AdvancedHRDashboard = () => {
                 onChange={(e) => setPeriodEnd(e.target.value)}
               />
             </div>
-            <Button onClick={() => calculateHRMetrics(periodStart, periodEnd)}>
+            <Button 
+              onClick={async () => {
+                await calculateHRMetrics(periodStart, periodEnd);
+                // Recharger les données après le calcul
+                window.location.reload();
+              }}
+            >
               <Calendar className="h-4 w-4 mr-2" />
               Actualiser
             </Button>

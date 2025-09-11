@@ -8,7 +8,9 @@ export const useTaskActions = () => {
         .from('tasks')
         .insert([{
           title: task.title,
-          assignee: task.assignee,
+          assigned_name: task.assignee,
+          department_name: 'Aucun Département',
+          project_name: 'Aucun Projet',
           start_date: task.start_date,
           due_date: task.due_date,
           priority: task.priority,
@@ -40,7 +42,9 @@ export const useTaskActions = () => {
         .from('tasks')
         .insert([{
           title: `${originalTask.title} (copie)`,
-          assignee: originalTask.assignee,
+          assigned_name: originalTask.assigned_name,
+          department_name: originalTask.department_name,
+          project_name: originalTask.project_name,
           start_date: originalTask.start_date,
           due_date: originalTask.due_date,
           priority: originalTask.priority,
@@ -224,7 +228,9 @@ export const useTaskActions = () => {
 
       const subtaskData = {
         title: customData?.title || `Sous-tâche de ${parentTask.title}`,
-        assignee: parentTask.assignee,
+        assigned_name: parentTask.assigned_name,
+        department_name: parentTask.department_name,
+        project_name: parentTask.project_name,
         start_date: customData?.start_date || parentTask.start_date,
         due_date: customData?.due_date || parentTask.due_date,
         priority: parentTask.priority,
@@ -262,7 +268,7 @@ export const useTaskActions = () => {
     try {
       const { error } = await supabase
         .from('tasks')
-        .update({ assignee })
+        .update({ assigned_name: assignee })
         .eq('id', taskId);
 
       if (error) throw error;

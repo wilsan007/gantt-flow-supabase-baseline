@@ -30,7 +30,7 @@ export const useTaskDatabase = () => {
         const tasksWithActions: Task[] = tasksData.map(task => ({
           id: task.id,
           title: task.title,
-          assignee: task.assignee,
+          assignee: task.assigned_name,
           start_date: task.start_date,
           due_date: task.due_date,
           priority: task.priority as 'low' | 'medium' | 'high' | 'urgent',

@@ -130,15 +130,15 @@ export const useTaskDetails = (taskId?: string) => {
       const participantSet = new Set<string>();
       
       // Ajouter le responsable principal
-      if (task.assignee) {
-        participantSet.add(task.assignee);
+      if (task.assigned_name) {
+        participantSet.add(task.assigned_name);
       }
 
       // Ajouter les responsables des sous-tâches
       if (subtasksData) {
         subtasksData.forEach(subtask => {
-          if (subtask.assignee) {
-            participantSet.add(subtask.assignee);
+          if (subtask.assigned_name) {
+            participantSet.add(subtask.assigned_name);
           }
         });
       }

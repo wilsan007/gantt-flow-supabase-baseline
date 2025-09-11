@@ -148,13 +148,21 @@ export const EmployeeDetailsDialog = ({ employee, isOpen, onOpenChange }: Employ
       const { data: tasks } = await supabase
         .from('tasks')
         .select('*')
-        .eq('assignee', employee.full_name)
+        .eq('assigned_name', employee.full_name)
         .in('status', ['todo', 'doing'])
         .order('created_at', { ascending: false })
         .limit(10);
 
       if (tasks) {
-        setCurrentTasks(tasks);
+        setCurrentTasks(tasks.map((t) => ({
+          id: t.id,
+          title: t.title,
+          status: t.status,
+          priority: t.priority,
+          progress: t.progress || 0,
+          due_date: t.due_date,
+          assignee: (t as any).assigned_name
+        })));
       }
 
       // Fetch recent absences

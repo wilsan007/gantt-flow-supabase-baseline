@@ -383,44 +383,130 @@ export const useAdvancedHR = () => {
   };
 
   // Analytics functions
-  const calculateHRMetrics = async () => {
+  const calculateHRMetrics = async (customPeriodStart?: string, customPeriodEnd?: string) => {
     try {
-      // Période = mois courant
+      // Utiliser la période personnalisée ou le mois courant
       const now = new Date();
-      const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-      const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+      const startOfMonth = customPeriodStart ? new Date(customPeriodStart) : new Date(now.getFullYear(), now.getMonth(), 1);
+      const endOfMonth = customPeriodEnd ? new Date(customPeriodEnd) : new Date(now.getFullYear(), now.getMonth() + 1, 0);
       const period_start = startOfMonth.toISOString().split('T')[0];
       const period_end = endOfMonth.toISOString().split('T')[0];
+      const today = new Date();
 
-      // Charger les employés (profiles) et les tâches
-      const [profilesRes, tasksRes] = await Promise.all([
+      // Charger les employés (profiles), les tâches, absences et congés
+      const [profilesRes, tasksRes, employeesRes, absencesRes, leaveRequestsRes] = await Promise.all([
         supabase.from('profiles').select('id, full_name'),
-        supabase.from('tasks').select('assigned_name, start_date, due_date, effort_estimate_h')
+        supabase.from('tasks').select('assigned_name, start_date, due_date, effort_estimate_h, progress'),
+        supabase.from('employees').select('id, full_name, weekly_hours'),
+        supabase.from('absences').select('employee_id, start_date, end_date, total_days'),
+        supabase.from('leave_requests').select('employee_id, start_date, end_date, total_days, status').eq('status', 'approved')
       ]);
 
       if (profilesRes.error) throw profilesRes.error;
       if (tasksRes.error) throw tasksRes.error;
+      if (employeesRes.error) throw employeesRes.error;
+      if (absencesRes.error) throw absencesRes.error;
+      if (leaveRequestsRes.error) throw leaveRequestsRes.error;
 
       const profiles = profilesRes.data || [];
       const tasks = tasksRes.data || [];
+      const employees = employeesRes.data || [];
+      const absences = absencesRes.data || [];
+      const leaveRequests = leaveRequestsRes.data || [];
 
-      // Tâche qui chevauche la période
-      const overlaps = (start?: string | null, due?: string | null) => {
-        if (!start || !due) return false;
-        const s = new Date(start);
-        const d = new Date(due);
-        return d >= startOfMonth && s <= endOfMonth;
+      // Fonction pour calculer les jours ouvrés dans une période
+      const calculateWorkingDays = (start: Date, end: Date): number => {
+        let count = 0;
+        const current = new Date(start);
+        while (current <= end) {
+          const dayOfWeek = current.getDay();
+          if (dayOfWeek !== 0 && dayOfWeek !== 6) { // Exclure dimanche (0) et samedi (6)
+            count++;
+          }
+          current.setDate(current.getDate() + 1);
+        }
+        return count;
       };
 
-      // Heures par personne (nom)
-      const hoursByName = new Map<string, number>();
-      for (const t of tasks as any[]) {
-        if (!overlaps(t.start_date, t.due_date)) continue;
-        const name = t.assigned_name as string | null;
-        if (!name) continue;
-        const hours = Number(t.effort_estimate_h) || 0;
-        hoursByName.set(name, (hoursByName.get(name) || 0) + hours);
-      }
+      // Fonction pour vérifier si une période chevauche avec une autre
+      const periodsOverlap = (start1: Date, end1: Date, start2: Date, end2: Date): boolean => {
+        return start1 <= end2 && end1 >= start2;
+      };
+
+      // Fonction pour calculer les jours d'absence d'un employé sur la période
+      const calculateAbsenceDays = (employeeId: string): number => {
+        let totalAbsenceDays = 0;
+        
+        // Absences
+        absences.forEach(absence => {
+          if (absence.employee_id === employeeId) {
+            const absenceStart = new Date(absence.start_date);
+            const absenceEnd = new Date(absence.end_date);
+            if (periodsOverlap(absenceStart, absenceEnd, startOfMonth, endOfMonth)) {
+              const overlapStart = new Date(Math.max(absenceStart.getTime(), startOfMonth.getTime()));
+              const overlapEnd = new Date(Math.min(absenceEnd.getTime(), endOfMonth.getTime()));
+              totalAbsenceDays += calculateWorkingDays(overlapStart, overlapEnd);
+            }
+          }
+        });
+
+        // Congés approuvés
+        leaveRequests.forEach(leave => {
+          if (leave.employee_id === employeeId) {
+            const leaveStart = new Date(leave.start_date);
+            const leaveEnd = new Date(leave.end_date);
+            if (periodsOverlap(leaveStart, leaveEnd, startOfMonth, endOfMonth)) {
+              const overlapStart = new Date(Math.max(leaveStart.getTime(), startOfMonth.getTime()));
+              const overlapEnd = new Date(Math.min(leaveEnd.getTime(), endOfMonth.getTime()));
+              totalAbsenceDays += calculateWorkingDays(overlapStart, overlapEnd);
+            }
+          }
+        });
+
+        return totalAbsenceDays;
+      };
+
+      // Calculer les heures de travail par employé sur la période
+      const employeeWorkingHours = new Map<string, number>();
+      const totalWorkingDays = calculateWorkingDays(startOfMonth, endOfMonth);
+      
+      profiles.forEach(profile => {
+        const employee = employees.find(emp => emp.full_name === profile.full_name);
+        const weeklyHours = employee?.weekly_hours || 35;
+        const dailyHours = weeklyHours / 5; // 5 jours ouvrés par semaine
+        
+        const absenceDays = calculateAbsenceDays(profile.id);
+        const availableWorkingDays = Math.max(0, totalWorkingDays - absenceDays);
+        const totalAvailableHours = availableWorkingDays * dailyHours;
+        
+        employeeWorkingHours.set(profile.full_name, totalAvailableHours);
+      });
+
+      // Calculer les heures de projet par employé avec prise en compte du progrès
+      const projectHoursByEmployee = new Map<string, number>();
+      
+      tasks.forEach((task: any) => {
+        const taskStart = new Date(task.start_date);
+        const taskEnd = new Date(task.due_date);
+        const assignedName = task.assigned_name;
+        
+        if (!assignedName || !task.effort_estimate_h) return;
+        
+        // Vérifier si la tâche chevauche avec la période
+        if (periodsOverlap(taskStart, taskEnd, startOfMonth, endOfMonth)) {
+          let hoursToAdd = Number(task.effort_estimate_h) || 0;
+          
+          // Si la date d'aujourd'hui est dans la période de la tâche ET dans la période d'analyse
+          if (today >= startOfMonth && today <= endOfMonth && today >= taskStart && today <= taskEnd) {
+            const progress = Number(task.progress) || 0;
+            // Calculer les heures restantes basées sur le progrès
+            hoursToAdd = hoursToAdd * (1 - progress / 100);
+          }
+          
+          const currentHours = projectHoursByEmployee.get(assignedName) || 0;
+          projectHoursByEmployee.set(assignedName, currentHours + hoursToAdd);
+        }
+      });
 
       // Nettoyer la capacité existante pour la période, puis réinsérer
       await supabase
@@ -429,20 +515,24 @@ export const useAdvancedHR = () => {
         .eq('period_start', period_start)
         .eq('period_end', period_end);
 
-      const allocatedPerMonth = 160; // capacité mensuelle par défaut
-      const capacityRows = profiles.map((p: any) => {
-        const project_hours = Math.round(hoursByName.get(p.full_name) || 0);
-        const absence_hours = 0;
-        const available_hours = Math.max(allocatedPerMonth - absence_hours, 1);
-        const capacity_utilization = Math.min(100, Math.max(0, Math.round((project_hours / available_hours) * 100)));
+      const capacityRows = profiles.map((profile: any) => {
+        const availableHours = Math.round(employeeWorkingHours.get(profile.full_name) || 0);
+        const projectHours = Math.round(projectHoursByEmployee.get(profile.full_name) || 0);
+        const absenceDays = calculateAbsenceDays(profile.id);
+        const absenceHours = Math.round(absenceDays * 7); // 7h par jour d'absence
+        
+        const capacity_utilization = availableHours > 0 
+          ? Math.round((projectHours / availableHours) * 100)
+          : 0;
+
         return {
-          employee_id: p.id,
+          employee_id: profile.id,
           period_start,
           period_end,
-          allocated_hours: allocatedPerMonth,
-          available_hours,
-          project_hours,
-          absence_hours,
+          allocated_hours: Math.round(employeeWorkingHours.get(profile.full_name) || 0) + absenceHours,
+          available_hours: availableHours,
+          project_hours: projectHours,
+          absence_hours: absenceHours,
           capacity_utilization,
         };
       });
@@ -452,13 +542,16 @@ export const useAdvancedHR = () => {
         if (capErr) throw capErr;
       }
 
-      // Recalculer les métriques pour la période (sans valeurs en dur)
+      // Détecter les surcharges (>= 90%)
+      const overloadedEmployees = capacityRows.filter(row => row.capacity_utilization >= 90);
+      
+      // Recalculer les métriques pour la période
       await supabase
         .from('hr_analytics')
         .delete()
         .eq('period_start', period_start)
         .eq('period_end', period_end)
-        .in('metric_name', ['headcount', 'turnover_rate']);
+        .in('metric_name', ['headcount', 'turnover_rate', 'overload_count']);
 
       const metrics = [
         {
@@ -477,12 +570,28 @@ export const useAdvancedHR = () => {
           period_end,
           metadata: { method: 'basic' },
         },
+        {
+          metric_name: 'overload_count',
+          metric_value: overloadedEmployees.length,
+          metric_type: 'count',
+          period_start,
+          period_end,
+          metadata: { threshold: '90%', employees: overloadedEmployees.map(e => e.employee_id) },
+        },
       ];
 
       const { error: metErr } = await supabase.from('hr_analytics').insert(metrics);
       if (metErr) throw metErr;
 
-      toast({ title: 'Succès', description: 'Capacité et métriques recalculées' });
+      const message = overloadedEmployees.length > 0 
+        ? `Capacité recalculée. ${overloadedEmployees.length} employé(s) en surcharge détecté(s) (≥90%)`
+        : 'Capacité et métriques recalculées avec succès';
+
+      toast({ 
+        title: 'Succès', 
+        description: message,
+        variant: overloadedEmployees.length > 0 ? 'destructive' : 'default'
+      });
 
       fetchAdvancedHRData();
     } catch (error: any) {

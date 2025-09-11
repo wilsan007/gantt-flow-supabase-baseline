@@ -4,6 +4,8 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Progress } from '@/components/ui/progress';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { useAdvancedHR } from '@/hooks/useAdvancedHR';
 import { useHR } from '@/hooks/useHR';
 import { useAlerts } from '@/hooks/useAlerts';
@@ -49,6 +51,16 @@ export const AdvancedHRDashboard = () => {
   const [selectedKPI, setSelectedKPI] = useState<'employees' | 'utilization' | 'analytics' | 'alerts' | null>(null);
   const [capacityModalOpen, setCapacityModalOpen] = useState(false);
   const [selectedAlert, setSelectedAlert] = useState<any>(null);
+
+  // États pour la sélection de période
+  const [periodStart, setPeriodStart] = useState(() => {
+    const now = new Date();
+    return new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0];
+  });
+  const [periodEnd, setPeriodEnd] = useState(() => {
+    const now = new Date();
+    return new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString().split('T')[0];
+  });
 
 
   if (loading) {
@@ -118,7 +130,7 @@ export const AdvancedHRDashboard = () => {
           </p>
         </div>
         <div className="flex gap-2">
-          <Button onClick={calculateHRMetrics} variant="outline">
+          <Button onClick={() => calculateHRMetrics(periodStart, periodEnd)} variant="outline">
             <BarChart3 className="h-4 w-4 mr-2" />
             Calculer Métriques
           </Button>
@@ -132,6 +144,42 @@ export const AdvancedHRDashboard = () => {
           </Button>
         </div>
       </div>
+
+      {/* Sélection de période */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Période d'analyse</CardTitle>
+          <CardDescription>
+            Sélectionnez la période pour calculer l'utilisation de capacité
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="flex gap-4 items-end">
+            <div className="flex-1">
+              <Label htmlFor="period-start">Date de début</Label>
+              <Input
+                id="period-start"
+                type="date"
+                value={periodStart}
+                onChange={(e) => setPeriodStart(e.target.value)}
+              />
+            </div>
+            <div className="flex-1">
+              <Label htmlFor="period-end">Date de fin</Label>
+              <Input
+                id="period-end"
+                type="date"
+                value={periodEnd}
+                onChange={(e) => setPeriodEnd(e.target.value)}
+              />
+            </div>
+            <Button onClick={() => calculateHRMetrics(periodStart, periodEnd)}>
+              <Calendar className="h-4 w-4 mr-2" />
+              Actualiser
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* KPIs Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">

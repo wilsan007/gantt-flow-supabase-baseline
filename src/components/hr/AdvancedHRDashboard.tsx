@@ -50,6 +50,25 @@ export const AdvancedHRDashboard = () => {
   const [capacityModalOpen, setCapacityModalOpen] = useState(false);
   const [selectedAlert, setSelectedAlert] = useState<any>(null);
 
+  // Auto-trigger calculations when component loads
+  React.useEffect(() => {
+    const performInitialCalculations = async () => {
+      try {
+        console.log('Auto-launching HR metrics calculations...');
+        await calculateHRMetrics();
+        console.log('Auto-generating employee insights...');
+        await generateEmployeeInsights();
+        console.log('Initial calculations completed');
+      } catch (error) {
+        console.error('Error in initial calculations:', error);
+      }
+    };
+
+    if (employees.length > 0) {
+      performInitialCalculations();
+    }
+  }, [employees.length, calculateHRMetrics, generateEmployeeInsights]);
+
   if (loading) {
     return <div className="flex justify-center p-8">Chargement...</div>;
   }

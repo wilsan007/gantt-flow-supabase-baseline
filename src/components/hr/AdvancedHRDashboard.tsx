@@ -51,6 +51,7 @@ export const AdvancedHRDashboard = () => {
   const [selectedKPI, setSelectedKPI] = useState<'employees' | 'utilization' | 'analytics' | 'alerts' | null>(null);
   const [capacityModalOpen, setCapacityModalOpen] = useState(false);
   const [selectedAlert, setSelectedAlert] = useState<any>(null);
+  const [alertsModalOpen, setAlertsModalOpen] = useState(false);
 
   // États pour la sélection de période
   const [periodStart, setPeriodStart] = useState(() => {
@@ -74,6 +75,20 @@ export const AdvancedHRDashboard = () => {
   const highPriorityAlerts = getHighPriorityAlerts();
   const highRiskInsights = highPriorityAlerts.length;
   const mediumRiskCount = activeAlerts.filter(alert => alert.severity === 'medium').length;
+
+  // Classement par importance (sévérité > score recommandé > récence)
+  const severityWeight: Record<string, number> = { critical: 4, high: 3, medium: 2, low: 1 };
+  const sortedActiveAlerts = [...activeAlerts].sort((a: any, b: any) => {
+    const aw = severityWeight[a.severity] || 0;
+    const bw = severityWeight[b.severity] || 0;
+    if (bw !== aw) return bw - aw;
+    const aRec = Math.max(...(a.recommendations?.map((r: any) => r.recommended_score || 0) ?? [0]));
+    const bRec = Math.max(...(b.recommendations?.map((r: any) => r.recommended_score || 0) ?? [0]));
+    if (bRec !== aRec) return bRec - aRec;
+    return new Date(b.triggered_at).getTime() - new Date(a.triggered_at).getTime();
+  });
+  const topAlerts = sortedActiveAlerts.slice(0, 4);
+  const activeAlertsCount = activeAlerts.length;
   
   // Filtrer les données selon la période sélectionnée
   const selectedPeriodRows = capacityPlanning.filter(cp => 

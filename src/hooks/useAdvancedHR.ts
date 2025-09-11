@@ -246,6 +246,167 @@ const createDynamicAlerts = async (capacityData: any[], averageUtilization: numb
       }
     }
 
+    // Nouvelle logique pour les alertes spécialisées
+    const tenantId = capacityData[0]?.tenant_id;
+    
+    // Alerte ABSENCE_SPIKE - Pic d'absences (+50% vs mois précédent)
+    const currentMonth = new Date();
+    const previousMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 1);
+    const currentMonthStart = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1);
+
+    const { data: currentAbsences } = await supabase
+      .from('absences')
+      .select('*')
+      .gte('start_date', currentMonthStart.toISOString().split('T')[0])
+      .eq('tenant_id', tenantId);
+
+    const { data: previousAbsences } = await supabase
+      .from('absences')
+      .select('*')
+      .gte('start_date', previousMonth.toISOString().split('T')[0])
+      .lt('start_date', currentMonthStart.toISOString().split('T')[0])
+      .eq('tenant_id', tenantId);
+
+    const currentCount = currentAbsences?.length || 0;
+    const previousCount = previousAbsences?.length || 0;
+    const absenceIncrease = previousCount > 0 ? ((currentCount - previousCount) / previousCount) * 100 : 0;
+
+    if (absenceIncrease >= 50) {
+      const absenceSpikeAlert = alertTypes?.find(at => at.code === 'ABSENCE_SPIKE');
+      if (absenceSpikeAlert) {
+        const { data: existing } = await supabase
+          .from('alert_instances')
+          .select('id')
+          .eq('alert_type_id', absenceSpikeAlert.id)
+          .eq('status', 'active')
+          .gte('triggered_at', currentMonthStart.toISOString())
+          .maybeSingle();
+
+        if (!existing) {
+          alertsToCreate.push({
+            title: 'Pic d\'absences détecté',
+            description: `Augmentation de ${absenceIncrease.toFixed(1)}% des absences ce mois`,
+            severity: absenceSpikeAlert.severity,
+            status: 'active',
+            entity_type: 'organization',
+            entity_id: tenantId,
+            entity_name: 'Organisation',
+            alert_type_id: absenceSpikeAlert.id,
+            context_data: {
+              current_count: currentCount,
+              previous_count: previousCount,
+              increase_percentage: absenceIncrease
+            }
+          });
+        }
+      }
+    }
+
+    // Alerte SICK_LEAVE_PATTERN - 3+ arrêts maladie en 3 mois
+    const threeMonthsAgo = new Date();
+    threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
+
+    const { data: sickLeaves } = await supabase
+      .from('absences')
+      .select('employee_id, absence_types!inner(code)')
+      .eq('absence_types.code', 'SICK')
+      .gte('start_date', threeMonthsAgo.toISOString().split('T')[0])
+      .eq('tenant_id', tenantId);
+
+    if (sickLeaves) {
+      const employeeSickCount = sickLeaves.reduce((acc: Record<string, number>, leave) => {
+        acc[leave.employee_id] = (acc[leave.employee_id] || 0) + 1;
+        return acc;
+      }, {});
+
+      for (const [employeeId, count] of Object.entries(employeeSickCount)) {
+        if (count >= 3) {
+          const sickPatternAlert = alertTypes?.find(at => at.code === 'SICK_LEAVE_PATTERN');
+          if (sickPatternAlert) {
+            const { data: existing } = await supabase
+              .from('alert_instances')
+              .select('id')
+              .eq('alert_type_id', sickPatternAlert.id)
+              .eq('entity_id', employeeId)
+              .eq('status', 'active')
+              .maybeSingle();
+
+            if (!existing) {
+              const { data: employee } = await supabase
+                .from('profiles')
+                .select('full_name')
+                .eq('id', employeeId)
+                .maybeSingle();
+
+              alertsToCreate.push({
+                title: `Arrêts maladie fréquents - ${employee?.full_name || 'Employé'}`,
+                description: `${count} arrêts maladie en 3 mois`,
+                severity: sickPatternAlert.severity,
+                status: 'active',
+                entity_type: 'employee',
+                entity_id: employeeId,
+                entity_name: employee?.full_name || 'Employé',
+                alert_type_id: sickPatternAlert.id,
+                context_data: {
+                  sick_leaves_count: count,
+                  period_months: 3
+                }
+              });
+            }
+          }
+        }
+      }
+    }
+
+    // Alerte NO_EVALUATION - Pas d'évaluation depuis 12 mois
+    const oneYearAgo = new Date();
+    oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+
+    const { data: allEmployees } = await supabase
+      .from('profiles')
+      .select('id, full_name')
+      .eq('tenant_id', tenantId);
+
+    if (allEmployees) {
+      for (const employee of allEmployees) {
+        const { data: recentEvaluation } = await supabase
+          .from('evaluations')
+          .select('id')
+          .eq('employee_id', employee.id)
+          .gte('created_at', oneYearAgo.toISOString())
+          .maybeSingle();
+
+        if (!recentEvaluation) {
+          const noEvalAlert = alertTypes?.find(at => at.code === 'NO_EVALUATION');
+          if (noEvalAlert) {
+            const { data: existing } = await supabase
+              .from('alert_instances')
+              .select('id')
+              .eq('alert_type_id', noEvalAlert.id)
+              .eq('entity_id', employee.id)
+              .eq('status', 'active')
+              .maybeSingle();
+
+            if (!existing) {
+              alertsToCreate.push({
+                title: `Évaluation en retard - ${employee.full_name}`,
+                description: 'Aucune évaluation depuis plus de 12 mois',
+                severity: noEvalAlert.severity,
+                status: 'active',
+                entity_type: 'employee',
+                entity_id: employee.id,
+                entity_name: employee.full_name || 'Employé',
+                alert_type_id: noEvalAlert.id,
+                context_data: {
+                  months_since_evaluation: 12
+                }
+              });
+            }
+          }
+        }
+      }
+    }
+
     // Insérer les alertes et générer les recommandations
     if (alertsToCreate.length > 0) {
       const { data: insertedAlerts, error } = await supabase

@@ -168,7 +168,7 @@ export const useNotifications = () => {
     return notifications.filter(n => n.priority === 'urgent' || n.priority === 'high');
   };
 
-  // Real-time subscription
+  // Real-time subscription and auto-popup for unread notifications
   useEffect(() => {
     fetchNotifications();
     fetchPreferences();

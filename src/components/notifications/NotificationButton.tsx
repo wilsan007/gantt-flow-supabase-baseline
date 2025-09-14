@@ -1,13 +1,32 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Bell } from 'lucide-react';
 import { NotificationCenter } from './NotificationCenter';
+import { NotificationPopup } from './NotificationPopup';
 import { useNotifications } from '@/hooks/useNotifications';
 
 export const NotificationButton: React.FC = () => {
   const [showNotifications, setShowNotifications] = useState(false);
-  const { unreadCount } = useNotifications();
+  const [showPopup, setShowPopup] = useState(false);
+  const { unreadCount, getUnreadNotifications } = useNotifications();
+
+  // Auto-show popup when user has high priority unread notifications
+  useEffect(() => {
+    const unreadNotifications = getUnreadNotifications();
+    const hasHighPriorityUnread = unreadNotifications.some(
+      n => n.priority === 'urgent' || n.priority === 'high'
+    );
+    
+    if (hasHighPriorityUnread && unreadNotifications.length > 0) {
+      // Show popup after a short delay to avoid interrupting user flow
+      const timer = setTimeout(() => {
+        setShowPopup(true);
+      }, 2000);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [unreadCount]);
 
   return (
     <>
@@ -31,6 +50,11 @@ export const NotificationButton: React.FC = () => {
       <NotificationCenter
         open={showNotifications}
         onOpenChange={setShowNotifications}
+      />
+
+      <NotificationPopup
+        open={showPopup}
+        onOpenChange={setShowPopup}
       />
     </>
   );

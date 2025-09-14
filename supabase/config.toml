@@ -1,1 +1,96 @@
 project_id = "qliinxtanjdnwxlvnxji"
+
+[api]
+enabled = true
+port = 54321
+schemas = ["public", "graphql_public"]
+extra_search_path = ["public", "extensions"]
+max_rows = 1000
+
+[auth]
+enabled = true
+image = "supabase/gotrue:v2.151.0"
+port = 9999
+site_url = "http://localhost:3000"
+additional_redirect_urls = ["https://lovable.dev"]
+jwt_expiry = 3600
+refresh_token_rotation_enabled = true
+security_update_password_require_reauthentication = false
+enable_signup = true
+enable_confirmations = false
+
+[auth.email]
+enable_signup = true
+double_confirm_changes = true
+enable_confirmations = false
+
+[auth.email.template.invite]
+subject = "You have been invited"
+content_path = "./supabase/templates/invite.html"
+
+[auth.email.template.confirmation]
+subject = "Confirm your signup"
+content_path = "./supabase/templates/confirmation.html"
+
+[auth.email.template.recovery]
+subject = "Reset your password"
+content_path = "./supabase/templates/recovery.html"
+
+[auth.email.template.magic_link]
+subject = "Your magic link"
+content_path = "./supabase/templates/magic_link.html"
+
+[auth.email.template.email_change]
+subject = "Confirm your email change"
+content_path = "./supabase/templates/email_change.html"
+
+[auth.sms.template.signup]
+content = "Your confirmation code is {{ .Code }} ."
+
+[auth.sms.template.invite]
+content = "You have been invited to create a user on {{ .SiteURL }}. Your confirmation code is {{ .Code }} ."
+
+[auth.sms.template.recovery]
+content = "Your recovery code is {{ .Code }} ."
+
+[functions.send-notifications]
+verify_jwt = false
+
+[realtime]
+enabled = true
+ip_version = "dual"
+
+[studio]
+enabled = true
+port = 54323
+api_url = "http://127.0.0.1:54321"
+
+[inbucket]
+enabled = true
+port = 54324
+smtp_port = 54325
+pop3_port = 54326
+
+[storage]
+enabled = true
+image = "supabase/storage-api:v1.0.6"
+file_size_limit = "50MiB"
+
+[analytics]
+enabled = false
+port = 54327
+vector_port = 54328
+
+[functions]
+verify_jwt = true
+
+[edge_runtime]
+enabled = true
+ip_version = "dual"
+image = "supabase/edge-runtime:v1.58.2"
+
+[db]
+enabled = true
+port = 54322
+shadow_port = 54320
+major_version = 15

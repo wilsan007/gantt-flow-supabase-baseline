@@ -15,6 +15,7 @@ export interface ComputedAlert {
   entity_name?: string;
   context_data?: any;
   triggered_at: string;
+  application_domain: 'hr' | 'project';
   recommendations: AlertSolution[];
 }
 
@@ -49,6 +50,7 @@ export const useComputedAlerts = () => {
         entity_name: alert.entity_name,
         context_data: alert.context_data,
         triggered_at: alert.triggered_at,
+        application_domain: alert.application_domain as 'hr' | 'project',
         recommendations: [] // À implémenter si nécessaire
       }));
 
@@ -100,11 +102,9 @@ export const useComputedAlerts = () => {
   const getTopAlerts = (limit: number = 4) => 
     computedAlerts.slice(0, limit);
 
-  // Fonctions spécialisées pour filtrer par contexte
+  // Fonctions spécialisées pour filtrer par domaine d'application (utilisant la colonne DB)
   const getHRAlerts = () => 
-    computedAlerts.filter(alert => 
-      ['hr', 'capacity', 'budget', 'compliance'].includes(alert.category)
-    );
+    computedAlerts.filter(alert => alert.application_domain === 'hr');
 
   const getHRHighPriorityAlerts = () => 
     getHRAlerts().filter(alert => alert.severity === 'high' || alert.severity === 'critical');
@@ -113,9 +113,13 @@ export const useComputedAlerts = () => {
     getHRAlerts().slice(0, limit);
 
   const getProjectAlerts = () => 
-    computedAlerts.filter(alert => 
-      ['project', 'performance'].includes(alert.category)
-    );
+    computedAlerts.filter(alert => alert.application_domain === 'project');
+
+  const getProjectHighPriorityAlerts = () => 
+    getProjectAlerts().filter(alert => alert.severity === 'high' || alert.severity === 'critical');
+
+  const getTopProjectAlerts = (limit: number = 4) => 
+    getProjectAlerts().slice(0, limit);
 
   return {
     computedAlerts,
@@ -130,6 +134,8 @@ export const useComputedAlerts = () => {
     getHRAlerts,
     getHRHighPriorityAlerts,
     getTopHRAlerts,
-    getProjectAlerts
+    getProjectAlerts,
+    getProjectHighPriorityAlerts,
+    getTopProjectAlerts
   };
 };

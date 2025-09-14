@@ -59,7 +59,10 @@ export const AdvancedHRDashboard = () => {
     getHighPriorityAlerts: getComputedHighPriority,
     getHRAlerts,
     getHRHighPriorityAlerts,
-    getTopHRAlerts
+    getTopHRAlerts,
+    getProjectAlerts,
+    getProjectHighPriorityAlerts,
+    getTopProjectAlerts
   } = useComputedAlerts();
   const [selectedKPI, setSelectedKPI] = useState<'employees' | 'utilization' | 'analytics' | 'alerts' | null>(null);
   const [capacityModalOpen, setCapacityModalOpen] = useState(false);

@@ -164,6 +164,7 @@ export type Database = {
         Row: {
           acknowledged_at: string | null
           alert_type_id: string
+          application_domain: string
           context_data: Json | null
           created_at: string
           description: string | null
@@ -183,6 +184,7 @@ export type Database = {
         Insert: {
           acknowledged_at?: string | null
           alert_type_id: string
+          application_domain?: string
           context_data?: Json | null
           created_at?: string
           description?: string | null
@@ -202,6 +204,7 @@ export type Database = {
         Update: {
           acknowledged_at?: string | null
           alert_type_id?: string
+          application_domain?: string
           context_data?: Json | null
           created_at?: string
           description?: string | null
@@ -314,6 +317,7 @@ export type Database = {
       }
       alert_types: {
         Row: {
+          application_domain: string
           auto_trigger_conditions: Json | null
           category: string
           code: string
@@ -325,6 +329,7 @@ export type Database = {
           tenant_id: string | null
         }
         Insert: {
+          application_domain?: string
           auto_trigger_conditions?: Json | null
           category: string
           code: string
@@ -336,6 +341,7 @@ export type Database = {
           tenant_id?: string | null
         }
         Update: {
+          application_domain?: string
           auto_trigger_conditions?: Json | null
           category?: string
           code?: string
@@ -3091,6 +3097,7 @@ export type Database = {
     Views: {
       current_alerts_view: {
         Row: {
+          application_domain: string | null
           category: string | null
           code: string | null
           context_data: Json | null

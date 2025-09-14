@@ -3455,6 +3455,13 @@ export type Database = {
         Args: { p_parent_id: string; p_task_level: number }
         Returns: string
       }
+      get_basic_notification_recipients: {
+        Args: { p_entity_id: string; p_notification_type: string }
+        Returns: {
+          recipient_id: string
+          should_notify: boolean
+        }[]
+      }
       get_current_user_tenant_membership: {
         Args: Record<PropertyKey, never>
         Returns: {
@@ -3474,18 +3481,6 @@ export type Database = {
       get_employee_name: {
         Args: { p_user_id: string }
         Returns: string
-      }
-      get_notification_recipients: {
-        Args: {
-          p_entity_id: string
-          p_entity_type: string
-          p_metadata?: Json
-          p_notification_type: string
-        }
-        Returns: {
-          recipient_id: string
-          should_notify: boolean
-        }[]
       }
       get_user_actual_tenant_id: {
         Args: Record<PropertyKey, never>
@@ -3523,12 +3518,14 @@ export type Database = {
         Returns: undefined
       }
       should_notify_user: {
-        Args: {
-          p_entity_id: string
-          p_entity_type: string
-          p_notification_type: string
-          p_user_id: string
-        }
+        Args:
+          | {
+              p_entity_id: string
+              p_entity_type: string
+              p_notification_type: string
+              p_user_id: string
+            }
+          | { p_notification_type: string; p_user_id: string }
         Returns: boolean
       }
     }

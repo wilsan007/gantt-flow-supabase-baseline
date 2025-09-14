@@ -1589,6 +1589,90 @@ export type Database = {
           },
         ]
       }
+      notification_preferences: {
+        Row: {
+          created_at: string
+          email_enabled: boolean
+          enabled: boolean
+          id: string
+          in_app_enabled: boolean
+          notification_type: string
+          tenant_id: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          email_enabled?: boolean
+          enabled?: boolean
+          id?: string
+          in_app_enabled?: boolean
+          notification_type: string
+          tenant_id?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          email_enabled?: boolean
+          enabled?: boolean
+          id?: string
+          in_app_enabled?: boolean
+          notification_type?: string
+          tenant_id?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      notifications: {
+        Row: {
+          created_at: string
+          entity_id: string | null
+          entity_type: string | null
+          id: string
+          message: string
+          metadata: Json | null
+          notification_type: string
+          priority: string
+          read_at: string | null
+          recipient_id: string
+          sender_id: string | null
+          tenant_id: string | null
+          title: string
+        }
+        Insert: {
+          created_at?: string
+          entity_id?: string | null
+          entity_type?: string | null
+          id?: string
+          message: string
+          metadata?: Json | null
+          notification_type: string
+          priority?: string
+          read_at?: string | null
+          recipient_id: string
+          sender_id?: string | null
+          tenant_id?: string | null
+          title: string
+        }
+        Update: {
+          created_at?: string
+          entity_id?: string | null
+          entity_type?: string | null
+          id?: string
+          message?: string
+          metadata?: Json | null
+          notification_type?: string
+          priority?: string
+          read_at?: string | null
+          recipient_id?: string
+          sender_id?: string | null
+          tenant_id?: string | null
+          title?: string
+        }
+        Relationships: []
+      }
       objectives: {
         Row: {
           created_at: string
@@ -3132,6 +3216,19 @@ export type Database = {
         Args: { p_task_id: string }
         Returns: string
       }
+      create_smart_notification: {
+        Args: {
+          p_entity_id: string
+          p_entity_type: string
+          p_message: string
+          p_metadata?: Json
+          p_notification_type: string
+          p_priority?: string
+          p_sender_id?: string
+          p_title: string
+        }
+        Returns: undefined
+      }
       distribute_equal_weights: {
         Args: { p_task_id: string }
         Returns: undefined
@@ -3144,9 +3241,25 @@ export type Database = {
         Args: { p_user_id: string }
         Returns: string
       }
+      get_notification_recipients: {
+        Args: {
+          p_entity_id: string
+          p_entity_type: string
+          p_metadata?: Json
+          p_notification_type: string
+        }
+        Returns: {
+          recipient_id: string
+          should_notify: boolean
+        }[]
+      }
       get_user_tenant_id: {
         Args: Record<PropertyKey, never>
         Returns: string
+      }
+      mark_notifications_read: {
+        Args: { notification_ids: string[] }
+        Returns: undefined
       }
     }
     Enums: {

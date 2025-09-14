@@ -2005,6 +2005,42 @@ export type Database = {
         }
         Relationships: []
       }
+      permissions: {
+        Row: {
+          action: string
+          context: string | null
+          created_at: string
+          description: string | null
+          display_name: string
+          id: string
+          name: string
+          resource: string
+          tenant_id: string | null
+        }
+        Insert: {
+          action: string
+          context?: string | null
+          created_at?: string
+          description?: string | null
+          display_name: string
+          id?: string
+          name: string
+          resource: string
+          tenant_id?: string | null
+        }
+        Update: {
+          action?: string
+          context?: string | null
+          created_at?: string
+          description?: string | null
+          display_name?: string
+          id?: string
+          name?: string
+          resource?: string
+          tenant_id?: string | null
+        }
+        Relationships: []
+      }
       positions: {
         Row: {
           created_at: string
@@ -2189,6 +2225,81 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      role_permissions: {
+        Row: {
+          created_at: string
+          id: string
+          permission_id: string
+          role_id: string
+          tenant_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          permission_id: string
+          role_id: string
+          tenant_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          permission_id?: string
+          role_id?: string
+          tenant_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "role_permissions_permission_id_fkey"
+            columns: ["permission_id"]
+            isOneToOne: false
+            referencedRelation: "permissions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "role_permissions_role_id_fkey"
+            columns: ["role_id"]
+            isOneToOne: false
+            referencedRelation: "roles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      roles: {
+        Row: {
+          created_at: string
+          description: string | null
+          display_name: string
+          hierarchy_level: number
+          id: string
+          is_system_role: boolean
+          name: string
+          tenant_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          display_name: string
+          hierarchy_level?: number
+          id?: string
+          is_system_role?: boolean
+          name: string
+          tenant_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          display_name?: string
+          hierarchy_level?: number
+          id?: string
+          is_system_role?: boolean
+          name?: string
+          tenant_id?: string | null
+          updated_at?: string
+        }
+        Relationships: []
       }
       safety_documents: {
         Row: {
@@ -3177,6 +3288,59 @@ export type Database = {
         }
         Relationships: []
       }
+      user_roles: {
+        Row: {
+          assigned_at: string
+          assigned_by: string | null
+          context_id: string | null
+          context_type: string | null
+          created_at: string
+          expires_at: string | null
+          id: string
+          is_active: boolean
+          role_id: string
+          tenant_id: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          assigned_at?: string
+          assigned_by?: string | null
+          context_id?: string | null
+          context_type?: string | null
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean
+          role_id: string
+          tenant_id?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          assigned_at?: string
+          assigned_by?: string | null
+          context_id?: string | null
+          context_type?: string | null
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean
+          role_id?: string
+          tenant_id?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_roles_role_id_fkey"
+            columns: ["role_id"]
+            isOneToOne: false
+            referencedRelation: "roles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       current_alerts_view: {
@@ -3207,6 +3371,14 @@ export type Database = {
       calculate_working_days: {
         Args: { end_date: string; start_date: string }
         Returns: number
+      }
+      can_access_resource: {
+        Args: {
+          p_action?: string
+          p_resource_id: string
+          p_resource_type: string
+        }
+        Returns: boolean
       }
       compute_task_progress: {
         Args: { p_task_id: string }
@@ -3253,9 +3425,28 @@ export type Database = {
           should_notify: boolean
         }[]
       }
+      get_user_roles: {
+        Args: { p_user_id?: string }
+        Returns: {
+          context_id: string
+          context_type: string
+          hierarchy_level: number
+          role_display_name: string
+          role_name: string
+        }[]
+      }
       get_user_tenant_id: {
         Args: Record<PropertyKey, never>
         Returns: string
+      }
+      has_permission: {
+        Args: {
+          p_action: string
+          p_context?: string
+          p_context_id?: string
+          p_resource: string
+        }
+        Returns: boolean
       }
       mark_notifications_read: {
         Args: { notification_ids: string[] }

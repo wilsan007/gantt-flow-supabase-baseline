@@ -6,7 +6,8 @@ import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useEmployees } from '@/hooks/useEmployees';
 import { useTaskCRUD } from '@/hooks/useTaskCRUD';
-import { Users, UserPlus, UserMinus } from 'lucide-react';
+import { SmartAssigneeSelect } from './SmartAssigneeSelect';
+import { Users, UserPlus, UserMinus, TrendingUp } from 'lucide-react';
 import type { Task } from '@/hooks/useTasks';
 
 interface TaskAssignmentManagerProps {
@@ -22,6 +23,7 @@ export const TaskAssignmentManager: React.FC<TaskAssignmentManagerProps> = ({
   const { assignTask, loading } = useTaskCRUD();
   const [selectedTask, setSelectedTask] = useState<string>('');
   const [selectedEmployee, setSelectedEmployee] = useState<string>('');
+  const [showSmartAssignee, setShowSmartAssignee] = useState(false);
 
   const unassignedTasks = tasks.filter(task => !task.assignee);
   const assignedTasks = tasks.filter(task => task.assignee);
@@ -126,12 +128,23 @@ export const TaskAssignmentManager: React.FC<TaskAssignmentManagerProps> = ({
               </Select>
             </div>
             
-            <Button 
-              onClick={handleAssignTask}
-              disabled={!selectedTask || !selectedEmployee || loading}
-            >
-              Assigner
-            </Button>
+            <div className="flex gap-2">
+              <Button 
+                onClick={handleAssignTask}
+                disabled={!selectedTask || !selectedEmployee || loading}
+              >
+                Assigner
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setShowSmartAssignee(true)}
+                disabled={!selectedTask}
+              >
+                <TrendingUp className="h-4 w-4 mr-2" />
+                Sélection intelligente
+              </Button>
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -244,6 +257,21 @@ export const TaskAssignmentManager: React.FC<TaskAssignmentManagerProps> = ({
           );
         })}
       </div>
+
+      <SmartAssigneeSelect
+        open={showSmartAssignee}
+        onOpenChange={setShowSmartAssignee}
+        currentAssignee={selectedEmployee}
+        onAssigneeSelect={(employeeId) => {
+          setSelectedEmployee(employeeId);
+          if (selectedTask) {
+            handleAssignTask();
+          }
+        }}
+        taskStartDate={selectedTask ? tasks.find(t => t.id === selectedTask)?.start_date || new Date().toISOString().split('T')[0] : new Date().toISOString().split('T')[0]}
+        taskEndDate={selectedTask ? tasks.find(t => t.id === selectedTask)?.due_date || new Date().toISOString().split('T')[0] : new Date().toISOString().split('T')[0]}
+        taskSkills={[]} // TODO: Extract skills from task
+      />
     </div>
   );
 };

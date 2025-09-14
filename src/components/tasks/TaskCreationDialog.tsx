@@ -14,6 +14,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge';
 import { useTaskCRUD, CreateTaskData } from '@/hooks/useTaskCRUD';
 import { useEmployees } from '@/hooks/useEmployees';
+import { SmartAssigneeSelect } from './SmartAssigneeSelect';
 import { supabase } from '@/integrations/supabase/client';
 import type { Task } from '@/hooks/useTasks';
 
@@ -46,6 +47,7 @@ export const TaskCreationDialog: React.FC<TaskCreationDialogProps> = ({
   const { employees } = useEmployees();
   const [projects, setProjects] = useState<Project[]>([]);
   const [departments, setDepartments] = useState<Department[]>([]);
+  const [showSmartAssignee, setShowSmartAssignee] = useState(false);
 
   const [formData, setFormData] = useState<CreateTaskData>({
     title: '',
@@ -179,22 +181,33 @@ export const TaskCreationDialog: React.FC<TaskCreationDialogProps> = ({
 
             <div>
               <Label htmlFor="assignee">Assigné à</Label>
-              <Select
-                value={formData.assignee_id || ''}
-                onValueChange={(value) => setFormData(prev => ({ ...prev, assignee_id: value }))}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Sélectionner un employé" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="">Non assigné</SelectItem>
-                  {employees.map((employee) => (
-                    <SelectItem key={employee.id} value={employee.id}>
-                      {employee.full_name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <div className="space-y-2">
+                <Select
+                  value={formData.assignee_id || ''}
+                  onValueChange={(value) => setFormData(prev => ({ ...prev, assignee_id: value }))}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Sélectionner un employé" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="">Non assigné</SelectItem>
+                    {employees.map((employee) => (
+                      <SelectItem key={employee.id} value={employee.id}>
+                        {employee.full_name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowSmartAssignee(true)}
+                  className="w-full"
+                >
+                  🎯 Sélection intelligente
+                </Button>
+              </div>
             </div>
 
             <div>
@@ -369,6 +382,18 @@ export const TaskCreationDialog: React.FC<TaskCreationDialogProps> = ({
             </Button>
           </div>
         </form>
+
+        <SmartAssigneeSelect
+          open={showSmartAssignee}
+          onOpenChange={setShowSmartAssignee}
+          currentAssignee={formData.assignee_id}
+          onAssigneeSelect={(employeeId) => {
+            setFormData(prev => ({ ...prev, assignee_id: employeeId }));
+          }}
+          taskStartDate={formData.start_date}
+          taskEndDate={formData.due_date}
+          taskSkills={[]} // TODO: Extract from task description or add skill selection
+        />
       </DialogContent>
     </Dialog>
   );

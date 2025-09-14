@@ -3409,6 +3409,22 @@ export type Database = {
         Args: { p_parent_id: string; p_task_level: number }
         Returns: string
       }
+      get_current_user_tenant_membership: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          created_at: string
+          id: string
+          invited_at: string | null
+          invited_by: string | null
+          joined_at: string | null
+          permissions: Json | null
+          role: string
+          status: string
+          tenant_id: string
+          updated_at: string
+          user_id: string
+        }[]
+      }
       get_employee_name: {
         Args: { p_user_id: string }
         Returns: string
@@ -3450,6 +3466,10 @@ export type Database = {
           p_context_id?: string
           p_resource: string
         }
+        Returns: boolean
+      }
+      is_tenant_admin: {
+        Args: Record<PropertyKey, never>
         Returns: boolean
       }
       mark_notifications_read: {

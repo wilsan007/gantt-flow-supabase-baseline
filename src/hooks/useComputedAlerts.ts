@@ -100,6 +100,23 @@ export const useComputedAlerts = () => {
   const getTopAlerts = (limit: number = 4) => 
     computedAlerts.slice(0, limit);
 
+  // Fonctions spécialisées pour filtrer par contexte
+  const getHRAlerts = () => 
+    computedAlerts.filter(alert => 
+      ['hr', 'capacity', 'budget', 'compliance'].includes(alert.category)
+    );
+
+  const getHRHighPriorityAlerts = () => 
+    getHRAlerts().filter(alert => alert.severity === 'high' || alert.severity === 'critical');
+
+  const getTopHRAlerts = (limit: number = 4) => 
+    getHRAlerts().slice(0, limit);
+
+  const getProjectAlerts = () => 
+    computedAlerts.filter(alert => 
+      ['project', 'performance'].includes(alert.category)
+    );
+
   return {
     computedAlerts,
     loading,
@@ -109,6 +126,10 @@ export const useComputedAlerts = () => {
     getHighPriorityAlerts,
     getCriticalAlerts,
     getAlertsByCategory,
-    getTopAlerts
+    getTopAlerts,
+    getHRAlerts,
+    getHRHighPriorityAlerts,
+    getTopHRAlerts,
+    getProjectAlerts
   };
 };

@@ -56,7 +56,10 @@ export const AdvancedHRDashboard = () => {
     loading: computedAlertsLoading,
     refreshAlerts,
     getTopAlerts,
-    getHighPriorityAlerts: getComputedHighPriority
+    getHighPriorityAlerts: getComputedHighPriority,
+    getHRAlerts,
+    getHRHighPriorityAlerts,
+    getTopHRAlerts
   } = useComputedAlerts();
   const [selectedKPI, setSelectedKPI] = useState<'employees' | 'utilization' | 'analytics' | 'alerts' | null>(null);
   const [capacityModalOpen, setCapacityModalOpen] = useState(false);
@@ -83,13 +86,13 @@ export const AdvancedHRDashboard = () => {
   const realEmployeeCount = employees.length; // Vrais employés de la base
   const uniqueEmployeesInCapacity = Array.from(new Set(capacityPlanning.map(cp => cp.employee_id))).length;
   
-  // Utiliser les alertes calculées dynamiquement
-  const activeAlerts = computedAlerts;
-  const highPriorityAlerts = getComputedHighPriority();
+  // Utiliser uniquement les alertes RH
+  const activeAlerts = getHRAlerts();
+  const highPriorityAlerts = getHRHighPriorityAlerts();
   const highRiskInsights = highPriorityAlerts.length;
   const mediumRiskCount = activeAlerts.filter(alert => alert.severity === 'medium').length;
   
-  const topAlerts = getTopAlerts(4);
+  const topAlerts = getTopHRAlerts(4);
   const activeAlertsCount = activeAlerts.length;
   
   // Filtrer les données selon la période sélectionnée
@@ -337,9 +340,9 @@ export const AdvancedHRDashboard = () => {
 
             <Card>
               <CardHeader onClick={() => setAlertsModalOpen(true)} className="cursor-pointer">
-                <CardTitle>Alertes Proactives</CardTitle>
+                <CardTitle>Alertes RH</CardTitle>
                 <CardDescription>
-                  Détection automatique des surcharges
+                  Alertes spécifiques aux ressources humaines
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -573,8 +576,8 @@ export const AdvancedHRDashboard = () => {
       <Dialog open={alertsModalOpen} onOpenChange={setAlertsModalOpen}>
         <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Toutes les alertes ({activeAlertsCount})</DialogTitle>
-            <DialogDescription>Classées par importance</DialogDescription>
+            <DialogTitle>Alertes RH ({activeAlertsCount})</DialogTitle>
+            <DialogDescription>Alertes spécifiques aux ressources humaines, classées par importance</DialogDescription>
           </DialogHeader>
           <div className="space-y-2">
             {activeAlerts.length === 0 ? (

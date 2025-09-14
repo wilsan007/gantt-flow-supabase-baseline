@@ -9,6 +9,7 @@ import { Auth } from "@/components/Auth";
 import { ThemeProvider } from "next-themes";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { NotificationButton } from "@/components/notifications/NotificationButton";
+import { RoleManagementButton } from "@/components/admin/RoleManagementButton";
 import Index from "./pages/Index";
 import HRPage from "./pages/HRPage";
 import ProjectPage from "./pages/ProjectPage";
@@ -97,6 +98,7 @@ const App = () => {
                       </Link>
                     </nav>
                     <div className="flex items-center gap-2">
+                      <RoleManagementButton />
                       <NotificationButton />
                       <ThemeToggle />
                     </div>

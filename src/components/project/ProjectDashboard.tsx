@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Progress } from '@/components/ui/progress';
 import { useProjectAlerts } from '@/hooks/useProjectAlerts';
-import { useTasks } from '@/hooks/useTasks';
+import { useProjectMetrics } from '@/hooks/useProjectMetrics';
 import { AlertDetailDialog } from '@/components/hr/AlertDetailDialog';
 import {
   Dialog,
@@ -18,7 +19,15 @@ import {
   BarChart3,
   Clock,
   TrendingDown,
-  CheckCircle
+  CheckCircle,
+  Users,
+  Calendar,
+  TrendingUp,
+  Activity,
+  FileText,
+  Zap,
+  Shield,
+  Settings
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
@@ -32,7 +41,6 @@ export const ProjectDashboard = () => {
     getProjectMetrics
   } = useProjectAlerts();
 
-  const { tasks } = useTasks();
   const [selectedAlert, setSelectedAlert] = useState<any>(null);
   const [alertsModalOpen, setAlertsModalOpen] = useState(false);
   const { toast } = useToast();
@@ -40,14 +48,7 @@ export const ProjectDashboard = () => {
   const metrics = getProjectMetrics();
   const highPriorityAlerts = getProjectHighPriorityAlerts();
   const topAlerts = getTopProjectAlerts(4);
-
-  // Calculs pour les KPIs projet
-  const totalTasks = tasks.length;
-  const doneTasks = tasks.filter(task => task.status === 'done').length;
-  const overdueTasks = tasks.filter(task => 
-    task.due_date && new Date(task.due_date) < new Date() && task.status !== 'done'
-  ).length;
-  const completionRate = totalTasks > 0 ? Math.round((doneTasks / totalTasks) * 100) : 0;
+  const projectMetrics = useProjectMetrics();
 
   if (loading) {
     return <div className="flex justify-center p-8">Chargement...</div>;
@@ -76,7 +77,7 @@ export const ProjectDashboard = () => {
         </div>
       </div>
 
-      {/* KPIs Cards */}
+      {/* KPIs Cards - Ligne 1 */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card className="modern-card hover-glow">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -84,55 +85,168 @@ export const ProjectDashboard = () => {
             <Target className="h-4 w-4 text-primary" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-primary">{totalTasks}</div>
+            <div className="text-2xl font-bold text-primary">{projectMetrics.totalTasks}</div>
             <p className="text-xs text-muted-foreground">
-              {doneTasks} terminées
+              {projectMetrics.doneTasks} terminées • {projectMetrics.doingTasks} en cours
             </p>
+            <Progress value={projectMetrics.completionRate} className="mt-2" />
           </CardContent>
         </Card>
 
         <Card className="modern-card hover-glow">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Taux d'Achèvement</CardTitle>
-            <CheckCircle className="h-4 w-4 text-success" />
+            <CardTitle className="text-sm font-medium">Productivité</CardTitle>
+            <TrendingUp className="h-4 w-4 text-success" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-success">{completionRate}%</div>
+            <div className="text-2xl font-bold text-success">{projectMetrics.productivityRate}%</div>
             <p className="text-xs text-muted-foreground">
-              Progression globale
+              Tâches actives + terminées
             </p>
+            <Progress value={projectMetrics.productivityRate} className="mt-2" />
           </CardContent>
         </Card>
 
         <Card className="modern-card hover-glow">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Tâches en Retard</CardTitle>
-            <Clock className="h-4 w-4 text-warning" />
+            <CardTitle className="text-sm font-medium">Vélocité Hebdo</CardTitle>
+            <Activity className="h-4 w-4 text-info" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-warning">{overdueTasks}</div>
+            <div className="text-2xl font-bold text-info">{projectMetrics.tasksCompletedThisWeek}</div>
             <p className="text-xs text-muted-foreground">
-              Nécessitent attention
+              Tâches terminées cette semaine
             </p>
           </CardContent>
         </Card>
 
         <Card className="modern-card hover-glow">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Alertes Projet</CardTitle>
+            <CardTitle className="text-sm font-medium">Alertes Actives</CardTitle>
             <AlertTriangle className="h-4 w-4 text-danger" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-danger">{metrics.critical + metrics.high}</div>
             <p className="text-xs text-muted-foreground">
-              Priorité haute/critique
+              {metrics.critical} critiques • {metrics.high} hautes
             </p>
           </CardContent>
         </Card>
       </div>
 
+      {/* KPIs Cards - Ligne 2 */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <Card className="modern-card hover-glow">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Tâches Bloquées</CardTitle>
+            <Shield className="h-4 w-4 text-warning" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-warning">{projectMetrics.blockedTasks}</div>
+            <p className="text-xs text-muted-foreground">
+              Nécessitent déblocage
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card className="modern-card hover-glow">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Échéances Urgentes</CardTitle>
+            <Clock className="h-4 w-4 text-destructive" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-destructive">{projectMetrics.overdueTasks + projectMetrics.dueSoonTasks}</div>
+            <p className="text-xs text-muted-foreground">
+              {projectMetrics.overdueTasks} en retard • {projectMetrics.dueSoonTasks} prochaines
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card className="modern-card hover-glow">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Priorités Hautes</CardTitle>
+            <Zap className="h-4 w-4 text-orange-500" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-orange-500">{projectMetrics.highPriorityTasks}</div>
+            <p className="text-xs text-muted-foreground">
+              Tâches haute priorité
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card className="modern-card hover-glow">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Charge de Travail</CardTitle>
+            <Settings className="h-4 w-4 text-purple-500" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-purple-500">{projectMetrics.totalEstimatedHours}h</div>
+            <p className="text-xs text-muted-foreground">
+              {projectMetrics.completedHours}h terminées ({projectMetrics.timeProgress}%)
+            </p>
+            <Progress value={projectMetrics.timeProgress} className="mt-2" />
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Tableau de bord analytique et alertes */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        {/* Répartition des statuts */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Répartition des Tâches</CardTitle>
+            <CardDescription>Distribution par statut</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <CheckCircle className="h-4 w-4 text-green-500" />
+                  <span className="text-sm">Terminées</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <span className="text-sm font-medium">{projectMetrics.doneTasks}</span>
+                  <Badge variant="secondary">{projectMetrics.totalTasks > 0 ? Math.round((projectMetrics.doneTasks / projectMetrics.totalTasks) * 100) : 0}%</Badge>
+                </div>
+              </div>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <Activity className="h-4 w-4 text-blue-500" />
+                  <span className="text-sm">En cours</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <span className="text-sm font-medium">{projectMetrics.doingTasks}</span>
+                  <Badge variant="default">{projectMetrics.totalTasks > 0 ? Math.round((projectMetrics.doingTasks / projectMetrics.totalTasks) * 100) : 0}%</Badge>
+                </div>
+              </div>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <Shield className="h-4 w-4 text-orange-500" />
+                  <span className="text-sm">Bloquées</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <span className="text-sm font-medium">{projectMetrics.blockedTasks}</span>
+                  <Badge variant="destructive">{projectMetrics.totalTasks > 0 ? Math.round((projectMetrics.blockedTasks / projectMetrics.totalTasks) * 100) : 0}%</Badge>
+                </div>
+              </div>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <FileText className="h-4 w-4 text-gray-500" />
+                  <span className="text-sm">À faire</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <span className="text-sm font-medium">{projectMetrics.todoTasks}</span>
+                  <Badge variant="outline">{projectMetrics.totalTasks > 0 ? Math.round((projectMetrics.todoTasks / projectMetrics.totalTasks) * 100) : 0}%</Badge>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
       {/* Alertes Projet */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <div className="lg:col-span-2">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <Card>
           <CardHeader onClick={() => setAlertsModalOpen(true)} className="cursor-pointer">
             <CardTitle>Alertes Projet</CardTitle>
@@ -198,6 +312,8 @@ export const ProjectDashboard = () => {
             </div>
           </CardContent>
         </Card>
+        </div>
+      </div>
       </div>
 
       {/* Modal Liste Alertes Projet */}

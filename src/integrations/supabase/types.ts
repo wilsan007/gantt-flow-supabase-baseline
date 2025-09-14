@@ -646,6 +646,44 @@ export type Database = {
           },
         ]
       }
+      employee_access_logs: {
+        Row: {
+          access_context: string | null
+          access_type: string
+          accessed_at: string | null
+          accessed_by: string
+          employee_id: string | null
+          id: string
+          tenant_id: string | null
+        }
+        Insert: {
+          access_context?: string | null
+          access_type: string
+          accessed_at?: string | null
+          accessed_by: string
+          employee_id?: string | null
+          id?: string
+          tenant_id?: string | null
+        }
+        Update: {
+          access_context?: string | null
+          access_type?: string
+          accessed_at?: string | null
+          accessed_by?: string
+          employee_id?: string | null
+          id?: string
+          tenant_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "employee_access_logs_employee_id_fkey"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "employees"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       employee_documents: {
         Row: {
           created_at: string

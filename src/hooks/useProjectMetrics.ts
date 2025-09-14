@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { useTasks } from './useTasks';
+import { useRoleManagement } from './useRoleManagement';
 
 export interface ProjectMetrics {
   totalTasks: number;
@@ -23,8 +24,10 @@ export interface ProjectMetrics {
 
 export const useProjectMetrics = (): ProjectMetrics => {
   const { tasks } = useTasks();
+  const { checkUserPermission } = useRoleManagement();
 
   return useMemo(() => {
+    // Les tâches sont déjà filtrées par permissions dans useTaskDatabase
     const totalTasks = tasks.length;
     const doneTasks = tasks.filter(task => task.status === 'done').length;
     const doingTasks = tasks.filter(task => task.status === 'doing').length;

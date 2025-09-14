@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { AlertType, AlertSolution, AlertInstance } from './useAlerts';
+import { usePermissionFilters } from './usePermissionFilters';
 
 export interface ComputedAlert {
   id: string;
@@ -23,8 +24,9 @@ export const useComputedAlerts = () => {
   const [computedAlerts, setComputedAlerts] = useState<ComputedAlert[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { canViewHRData, checkUserPermission } = usePermissionFilters();
 
-  // Récupérer les alertes depuis la vue SQL
+  // Récupérer les alertes depuis la vue SQL avec filtrage par permissions
   const calculateCurrentAlerts = async (): Promise<ComputedAlert[]> => {
     try {
       const { data: alerts, error } = await supabase
@@ -36,8 +38,31 @@ export const useComputedAlerts = () => {
         throw error;
       }
 
+      let filteredAlerts = alerts || [];
+
+      // Filtrer selon les permissions
+      if (!canViewHRData) {
+        filteredAlerts = filteredAlerts.filter(alert => alert.application_domain !== 'hr');
+      }
+
+      // Vérifier les permissions pour les alertes spécifiques aux projets
+      const accessibleAlerts = [];
+      for (const alert of filteredAlerts) {
+        let hasAccess = true;
+
+        if (alert.application_domain === 'project' && alert.entity_type === 'task' && alert.entity_id) {
+          hasAccess = await checkUserPermission('tasks', 'read');
+        } else if (alert.application_domain === 'project' && alert.entity_type === 'project' && alert.entity_id) {
+          hasAccess = await checkUserPermission('projects', 'read');
+        }
+
+        if (hasAccess) {
+          accessibleAlerts.push(alert);
+        }
+      }
+
       // Mapper les données de la vue vers le format ComputedAlert
-      return (alerts || []).map(alert => ({
+      return accessibleAlerts.map(alert => ({
         id: alert.id,
         type: alert.type,
         code: alert.code,

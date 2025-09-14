@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Task, TaskAction } from '@/hooks/useTasks';
+import { usePermissionFilters } from './usePermissionFilters';
 
 export const useTaskDatabase = () => {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { filterTasksByPermissions } = usePermissionFilters();
 
   const fetchTasks = async () => {
     try {
@@ -54,7 +56,9 @@ export const useTaskDatabase = () => {
             })) : []
         }));
 
-        setTasks(tasksWithActions);
+        // Filtrer les tâches selon les permissions de l'utilisateur
+        const filteredTasks = await filterTasksByPermissions(tasksWithActions);
+        setTasks(filteredTasks);
       }
     } catch (error: any) {
       console.error('Error fetching tasks:', error);

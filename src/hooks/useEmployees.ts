@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { usePermissionFilters } from './usePermissionFilters';
 
 export interface Employee {
   id: string;
@@ -37,6 +38,7 @@ export const useEmployees = () => {
   const [departments, setDepartments] = useState<Department[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { filterEmployeesByPermissions } = usePermissionFilters();
 
   useEffect(() => {
     fetchData();
@@ -68,7 +70,10 @@ export const useEmployees = () => {
         employee_id: profile.employee_id || `EMP${profile.id.slice(-4)}`
       }));
 
-      setEmployees(mappedEmployees);
+      // Filtrer les employés selon les permissions
+      const filteredEmployees = await filterEmployeesByPermissions(mappedEmployees);
+
+      setEmployees(filteredEmployees);
       setDepartments(departmentsData || []);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Une erreur est survenue');

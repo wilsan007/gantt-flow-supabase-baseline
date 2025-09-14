@@ -3400,6 +3400,14 @@ export type Database = {
         }
         Relationships: []
       }
+      security_status: {
+        Row: {
+          checked_at: string | null
+          description: string | null
+          status: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       calculate_alert_recommendations: {

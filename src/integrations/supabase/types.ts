@@ -3425,6 +3425,10 @@ export type Database = {
           should_notify: boolean
         }[]
       }
+      get_user_actual_tenant_id: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
       get_user_roles: {
         Args: { p_user_id?: string }
         Returns: {

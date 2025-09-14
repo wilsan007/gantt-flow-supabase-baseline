@@ -9,6 +9,7 @@ import { Auth } from "@/components/Auth";
 import Index from "./pages/Index";
 import HRPage from "./pages/HRPage";
 import ProjectPage from "./pages/ProjectPage";
+import TaskManagementPage from "./pages/TaskManagementPage";
 import NotFound from "./pages/NotFound";
 import type { User, Session } from '@supabase/supabase-js';
 
@@ -68,6 +69,7 @@ const App = () => {
             <Route path="/" element={<Index />} />
             <Route path="/hr" element={<HRPage />} />
             <Route path="/projects" element={<ProjectPage />} />
+            <Route path="/tasks" element={<TaskManagementPage />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

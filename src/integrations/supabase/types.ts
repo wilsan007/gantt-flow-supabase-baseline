@@ -3475,6 +3475,18 @@ export type Database = {
         Args: { p_user_id: string }
         Returns: string
       }
+      get_notification_recipients: {
+        Args: {
+          p_entity_id: string
+          p_entity_type: string
+          p_metadata?: Json
+          p_notification_type: string
+        }
+        Returns: {
+          recipient_id: string
+          should_notify: boolean
+        }[]
+      }
       get_user_actual_tenant_id: {
         Args: Record<PropertyKey, never>
         Returns: string

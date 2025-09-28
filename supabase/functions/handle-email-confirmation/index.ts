@@ -107,27 +107,17 @@ serve(async (req)=>{
     console.log('✅ Rôle tenant_admin trouvé:', role.id);
     // 4. Créer l'enregistrement user_roles
     console.log('👤 Attribution du rôle tenant_admin...');
-    // D'abord vérifier si le rôle existe déjà
-    const { data: existingRole } = await supabaseAdmin.from('user_roles').select('id').eq('user_id', user.id).eq('role_id', role.id).eq('tenant_id', invitation.tenant_id).single();
-    if (!existingRole) {
-      const { error: userRoleError } = await supabaseAdmin.from('user_roles').insert({
-        user_id: user.id,
-        role_id: role.id,
-        tenant_id: invitation.tenant_id,
-        is_active: true,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
-      });
-      if (userRoleError) {
-        console.error('❌ Erreur attribution rôle:', userRoleError);
-        throw new Error(`Erreur attribution rôle: ${userRoleError.message}`);
-      }
-    } else {
-      console.log('ℹ️ Rôle déjà existant, mise à jour...');
-      await supabaseAdmin.from('user_roles').update({
-        is_active: true,
-        updated_at: new Date().toISOString()
-      }).eq('id', existingRole.id);
+    const { error: userRoleError } = await supabaseAdmin.from('user_roles').insert({
+      user_id: user.id,
+      role_id: role.id,
+      tenant_id: invitation.tenant_id,
+      is_active: true,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    });
+    if (userRoleError) {
+      console.error('❌ Erreur attribution rôle:', userRoleError);
+      throw new Error(`Erreur attribution rôle: ${userRoleError.message}`);
     }
     console.log('✅ Rôle tenant_admin attribué');
     // 5. Créer le profil utilisateur
@@ -147,58 +137,35 @@ serve(async (req)=>{
       throw new Error(`Erreur création profil: ${profileError.message}`);
     }
     console.log('✅ Profil créé');
-    // 6. Générer un employee_id unique
-    console.log('🔢 Génération employee_id...');
-    // Récupérer tous les employee_id existants (pas seulement pour ce tenant)
-    const { data: existingEmployees } = await supabaseAdmin.from('employees').select('employee_id').like('employee_id', 'EMP%');
-    // Extraire tous les numéros utilisés
-    const usedNumbers = new Set();
-    if (existingEmployees && existingEmployees.length > 0) {
-      existingEmployees.forEach((emp)=>{
-        const match = emp.employee_id.match(/^EMP(\d{3})$/);
-        if (match) {
-          usedNumbers.add(parseInt(match[1]));
-        }
-      });
+    // 6. Générer un employee_id unique en utilisant la fonction RPC
+    console.log('🔢 Génération employee_id via RPC...');
+    const { data: employeeId, error: employeeIdError } = await supabaseAdmin.rpc('generate_next_employee_id', {
+      p_tenant_id: invitation.tenant_id,
+    });
+
+    if (employeeIdError) {
+      console.error('❌ Erreur génération employee_id:', employeeIdError);
+      throw new Error(`Erreur génération employee_id: ${employeeIdError.message}`);
     }
-    // Trouver le premier numéro disponible
-    let employeeIdCounter = 1;
-    while(usedNumbers.has(employeeIdCounter)){
-      employeeIdCounter++;
-    }
-    const employeeId = `EMP${employeeIdCounter.toString().padStart(3, '0')}`;
-    console.log('✅ Employee ID généré:', employeeId, `(numéro ${employeeIdCounter})`);
+    console.log('✅ Employee ID généré:', employeeId);
     // 7. Créer l'enregistrement employé
     console.log('👨‍💼 Création de l\'employé...');
-    // Vérifier si l'employé existe déjà
-    const { data: existingEmployee } = await supabaseAdmin.from('employees').select('id').eq('user_id', user.id).eq('tenant_id', invitation.tenant_id).single();
-    if (!existingEmployee) {
-      const { error: employeeError } = await supabaseAdmin.from('employees').insert({
-        user_id: user.id,
-        employee_id: employeeId,
-        full_name: invitation.full_name,
-        email: user.email,
-        job_title: 'Directeur Général',
-        hire_date: new Date().toISOString().split('T')[0],
-        contract_type: 'CDI',
-        status: 'active',
-        tenant_id: invitation.tenant_id,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
-      });
-      if (employeeError) {
-        console.error('❌ Erreur création employé:', employeeError);
-        throw new Error(`Erreur création employé: ${employeeError.message}`);
-      }
-    } else {
-      console.log('ℹ️ Employé déjà existant, mise à jour...');
-      await supabaseAdmin.from('employees').update({
-        employee_id: employeeId,
-        full_name: invitation.full_name,
-        email: user.email,
-        status: 'active',
-        updated_at: new Date().toISOString()
-      }).eq('id', existingEmployee.id);
+    const { error: employeeError } = await supabaseAdmin.from('employees').insert({
+      user_id: user.id,
+      employee_id: employeeId,
+      full_name: invitation.full_name,
+      email: user.email,
+      job_title: 'Directeur Général',
+      hire_date: new Date().toISOString().split('T')[0],
+      contract_type: 'CDI',
+      status: 'active',
+      tenant_id: invitation.tenant_id,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    });
+    if (employeeError) {
+      console.error('❌ Erreur création employé:', employeeError);
+      throw new Error(`Erreur création employé: ${employeeError.message}`);
     }
     console.log('✅ Employé créé avec ID:', employeeId);
     // 8. Mettre à jour l'invitation

@@ -1,208 +1,175 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Loader2, Send, UserPlus } from 'lucide-react';
+import { Loader2, Send, UserPlus, Users, Clock } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/contexts/AuthContext'; // Using the real context
 
-interface InvitationForm {
-  email: string;
-  fullName: string;
-}
-
+// --- Main Component ---
 export const SuperAdminInvitations: React.FC = () => {
-  const [form, setForm] = useState<InvitationForm>({
-    email: '',
-    fullName: ''
-  });
-  const [isLoading, setIsLoading] = useState(false);
-  const [lastInvitation, setLastInvitation] = useState<any>(null);
+  const [form, setForm] = useState({ email: '', fullName: '' });
+  const [invitations, setInvitations] = useState<any[]>([]);
+  const [isSending, setIsSending] = useState(false);
+  const [isLoadingList, setIsLoadingList] = useState(true);
+  const [refreshKey, setRefreshKey] = useState(0); // To trigger list refresh
   const { toast } = useToast();
+  const { session, isSuperAdmin } = useAuth();
 
-  const handleInputChange = (field: keyof InvitationForm, value: string) => {
+  // Fetch pending invitations
+  const fetchInvitations = useCallback(async () => {
+    setIsLoadingList(true);
+    try {
+      // RLS policy on the 'invitations' table ensures only a super admin can read all records.
+      const { data, error } = await supabase
+        .from('invitations')
+        .select('id, email, full_name, status, created_at')
+        .eq('status', 'pending')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setInvitations(data || []);
+    } catch (error: any) {
+      toast({
+        title: "❌ Error fetching invitations",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoadingList(false);
+    }
+  }, [toast]);
+
+  useEffect(() => {
+    if (isSuperAdmin) {
+      fetchInvitations();
+    }
+  }, [isSuperAdmin, refreshKey, fetchInvitations]);
+
+
+  const handleInputChange = (field: keyof typeof form, value: string) => {
     setForm(prev => ({ ...prev, [field]: value }));
   };
 
-  const validateForm = (): boolean => {
-    if (!form.email.trim()) {
-      toast({
-        title: "Erreur",
-        description: "L'email est requis",
-        variant: "destructive"
-      });
-      return false;
-    }
-
-    if (!form.fullName.trim()) {
-      toast({
-        title: "Erreur", 
-        description: "Le nom complet est requis",
-        variant: "destructive"
-      });
-      return false;
-    }
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(form.email)) {
-      toast({
-        title: "Erreur",
-        description: "Format d'email invalide",
-        variant: "destructive"
-      });
-      return false;
-    }
-
-    return true;
-  };
-
+  // Send invitation function
   const sendInvitation = async () => {
-    if (!validateForm()) return;
+    if (!form.email.trim() || !form.fullName.trim()) {
+        toast({ title: "Validation Error", description: "Email and Full Name are required.", variant: "destructive" });
+        return;
+    }
 
-    setIsLoading(true);
+    setIsSending(true);
     try {
-      // Récupérer le token d'authentification
-      const { data: { session } } = await supabase.auth.getSession();
-      
       if (!session?.access_token) {
-        throw new Error('Session non trouvée');
+        throw new Error('Authentication session not found. Please log in again.');
       }
 
-      // Appeler la Edge Function
-      const response = await fetch(
-        `${supabase.supabaseUrl}/functions/v1/send-invitation`,
-        {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${session.access_token}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            email: form.email.toLowerCase().trim(),
-            fullName: form.fullName.trim(),
-            invitationType: 'tenant_owner',
-            siteUrl: window.location.origin
-          }),
-        }
-      );
-
-      const result = await response.json();
-
-      if (!response.ok) {
-        throw new Error(result.error || 'Erreur lors de l\'envoi de l\'invitation');
-      }
-
-      // Succès
-      setLastInvitation({
-        email: form.email,
-        fullName: form.fullName,
-        tenantId: result.tenant_id,
-        invitationId: result.invitation_id,
-        sentAt: new Date().toISOString()
+      const { error } = await supabase.functions.invoke('send-tenant-invitation', {
+        body: {
+          email: form.email.toLowerCase().trim(),
+          full_name: form.fullName.trim(),
+        },
       });
 
-      setForm({ email: '', fullName: '' });
+      if (error) {
+        throw new Error(error.message);
+      }
 
       toast({
-        title: "✅ Invitation envoyée !",
-        description: `L'invitation a été envoyée à ${form.email}`,
+        title: "✅ Invitation Sent!",
+        description: `Invitation has been successfully sent to ${form.email}.`,
         variant: "default"
       });
 
+      setForm({ email: '', fullName: '' }); // Reset form
+      setRefreshKey(prev => prev + 1); // Trigger list refresh
+
     } catch (error: any) {
-      console.error('Erreur envoi invitation:', error);
+      console.error('Error sending invitation:', error);
       toast({
-        title: "❌ Erreur",
-        description: error.message || 'Erreur lors de l\'envoi de l\'invitation',
+        title: "❌ Error",
+        description: error.message || 'An unexpected error occurred.',
         variant: "destructive"
       });
     } finally {
-      setIsLoading(false);
+      setIsSending(false);
     }
   };
 
+  // Render nothing if user is not super admin
+  if (!isSuperAdmin) {
+      return (
+        <Alert variant="destructive">
+            <AlertDescription>You do not have permission to view or manage invitations.</AlertDescription>
+        </Alert>
+      );
+  }
+
   return (
     <div className="space-y-6">
+      {/* --- Invitation Form Card --- */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <UserPlus className="h-5 w-5" />
-            Inviter un Tenant Owner
-          </CardTitle>
-          <CardDescription>
-            Envoyez une invitation pour créer un nouveau tenant avec son propriétaire
-          </CardDescription>
+          <CardTitle className="flex items-center gap-2"><UserPlus className="h-5 w-5" />Invite New Tenant Owner</CardTitle>
+          <CardDescription>Send an invitation to create a new tenant account.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="email">Email *</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="tenant.owner@exemple.com"
-                value={form.email}
-                onChange={(e) => handleInputChange('email', e.target.value)}
-                disabled={isLoading}
-              />
+              <Input id="email" type="email" placeholder="owner@company.com" value={form.email} onChange={(e) => handleInputChange('email', e.target.value)} disabled={isSending} />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="fullName">Nom complet *</Label>
-              <Input
-                id="fullName"
-                type="text"
-                placeholder="Jean Dupont"
-                value={form.fullName}
-                onChange={(e) => handleInputChange('fullName', e.target.value)}
-                disabled={isLoading}
-              />
+              <Label htmlFor="fullName">Full Name *</Label>
+              <Input id="fullName" type="text" placeholder="John Doe" value={form.fullName} onChange={(e) => handleInputChange('fullName', e.target.value)} disabled={isSending} />
             </div>
           </div>
-
-          <Button 
-            onClick={sendInvitation}
-            disabled={isLoading || !form.email.trim() || !form.fullName.trim()}
-            className="w-full md:w-auto"
-          >
-            {isLoading ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Envoi en cours...
-              </>
-            ) : (
-              <>
-                <Send className="mr-2 h-4 w-4" />
-                Envoyer l'invitation
-              </>
-            )}
+          <Button onClick={sendInvitation} disabled={isSending || !form.email || !form.fullName} className="w-full md:w-auto">
+            {isSending ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Sending...</> : <><Send className="mr-2 h-4 w-4" />Send Invitation</>}
           </Button>
         </CardContent>
       </Card>
 
-      {lastInvitation && (
-        <Alert>
-          <Send className="h-4 w-4" />
-          <AlertDescription>
-            <strong>Dernière invitation envoyée :</strong><br />
-            📧 Email : {lastInvitation.email}<br />
-            👤 Nom : {lastInvitation.fullName}<br />
-            🏢 Tenant ID : {lastInvitation.tenantId}<br />
-            📅 Envoyée le : {new Date(lastInvitation.sentAt).toLocaleString('fr-FR')}
-          </AlertDescription>
-        </Alert>
-      )}
-
+      {/* --- Pending Invitations List Card --- */}
       <Card>
         <CardHeader>
-          <CardTitle>ℹ️ Informations</CardTitle>
+          <CardTitle className="flex items-center gap-2"><Users className="h-5 w-5" />Pending Invitations</CardTitle>
+          <CardDescription>List of invitations that have been sent but not yet accepted.</CardDescription>
         </CardHeader>
-        <CardContent className="space-y-2 text-sm text-muted-foreground">
-          <p>• L'invitation expire automatiquement après 7 jours</p>
-          <p>• Le tenant owner pourra créer son entreprise lors de l'inscription</p>
-          <p>• Un UUID unique sera pré-généré pour le futur tenant</p>
-          <p>• L'email d'invitation contient un lien sécurisé vers la page d'inscription</p>
+        <CardContent>
+          {isLoadingList ? (
+            <div className="flex items-center justify-center p-8"><Loader2 className="h-6 w-6 animate-spin text-muted-foreground" /></div>
+          ) : invitations.length === 0 ? (
+            <p className="text-sm text-muted-foreground text-center p-4">No pending invitations.</p>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Full Name</TableHead>
+                  <TableHead>Email</TableHead>
+                  <TableHead>Sent At</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {invitations.map((inv) => (
+                  <TableRow key={inv.id}>
+                    <TableCell className="font-medium">{inv.full_name}</TableCell>
+                    <TableCell>{inv.email}</TableCell>
+                    <TableCell>
+                        <div className="flex items-center gap-2">
+                           <Clock className="h-4 w-4 text-muted-foreground"/>
+                           {new Date(inv.created_at).toLocaleString()}
+                        </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
         </CardContent>
       </Card>
     </div>

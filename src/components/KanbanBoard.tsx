@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { useTasks } from '@/hooks/useTasks';
+import { useProjects } from '@/hooks/useProjects';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { MobileKanbanBoard } from './responsive/MobileKanbanBoard';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Progress } from '@/components/ui/progress';
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import {
   DndContext,
   DragEndEvent,
@@ -23,11 +25,18 @@ import {
 import { CSS } from '@dnd-kit/utilities';
 import type { Task } from '@/hooks/useTasks';
 
-const COLUMNS = [
+const TASK_COLUMNS = [
   { id: 'todo', title: 'À faire', status: 'todo' as const },
   { id: 'doing', title: 'En cours', status: 'doing' as const },
   { id: 'blocked', title: 'Bloqué', status: 'blocked' as const },
   { id: 'done', title: 'Terminé', status: 'done' as const },
+];
+
+const PROJECT_COLUMNS = [
+  { id: 'planning', title: 'Planification', status: 'planning' as const },
+  { id: 'active', title: 'En cours', status: 'active' as const },
+  { id: 'on_hold', title: 'En pause', status: 'on_hold' as const },
+  { id: 'completed', title: 'Terminé', status: 'completed' as const },
 ];
 
 const PRIORITY_COLORS = {
@@ -38,7 +47,7 @@ const PRIORITY_COLORS = {
 };
 
 interface KanbanCardProps {
-  task: Task;
+  task: Task | any; // Peut être une tâche ou un projet
 }
 
 function KanbanCard({ task }: KanbanCardProps) {
@@ -66,36 +75,34 @@ function KanbanCard({ task }: KanbanCardProps) {
     >
       <Card className="mb-3 hover:shadow-md transition-smooth glass hover-glow cursor-grab active:cursor-grabbing border-primary/30 bg-card/40 backdrop-blur-sm">
         <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-medium text-foreground">{task.title}</CardTitle>
+          <CardTitle className="text-sm font-medium text-foreground">
+            {task.title || task.name}
+          </CardTitle>
           <div className="flex items-center justify-between">
-            <Badge className={`text-xs border font-medium ${PRIORITY_COLORS[task.priority]}`}>
+            <Badge className={`text-xs border font-medium ${PRIORITY_COLORS[task.priority] || PRIORITY_COLORS.medium}`}>
               {task.priority}
             </Badge>
             <Avatar className="h-6 w-6 ring-2 ring-primary/40">
-              <AvatarImage src="" alt={task.assignee} />
+              <AvatarImage src="" alt={task.assignee || task.manager_name} />
               <AvatarFallback className="text-xs bg-primary/40 text-primary-foreground font-semibold">
-                {task.assignee.slice(0, 2).toUpperCase()}
+                {(task.assignee || task.manager_name || 'NA').slice(0, 2).toUpperCase()}
               </AvatarFallback>
             </Avatar>
           </div>
         </CardHeader>
         <CardContent className="pt-0">
           <div className="space-y-2">
-            <div className="flex justify-between text-xs text-foreground/70">
-              <span>Début: {new Date(task.start_date).toLocaleDateString('fr-FR')}</span>
-              <span>Fin: {new Date(task.due_date).toLocaleDateString('fr-FR')}</span>
+            <Progress value={task.progress || 0} className="h-2 bg-muted/50" />
+            <div className="flex justify-between items-center text-xs text-muted-foreground">
+              <span>{task.progress || 0}% terminé</span>
+              <span className="bg-accent/30 px-2 py-1 rounded text-accent-foreground font-medium">
+                {task.status}
+              </span>
             </div>
-            <div className="space-y-1">
-              <div className="flex justify-between text-xs">
-                <span className="text-foreground/80">Progrès</span>
-                <span className="text-primary font-medium">{task.progress}%</span>
-              </div>
-              <Progress value={task.progress} className="h-2" />
-            </div>
-            {task.effort_estimate_h > 0 && (
-              <div className="text-xs text-foreground/70 flex items-center gap-1">
-                <span className="w-1 h-1 bg-accent rounded-full"></span>
-                Estimé: {task.effort_estimate_h}h
+            {/* Affichage spécifique aux projets */}
+            {task.task_count !== undefined && (
+              <div className="text-xs text-muted-foreground">
+                📝 {task.task_count} tâche{task.task_count > 1 ? 's' : ''}
               </div>
             )}
           </div>
@@ -106,8 +113,8 @@ function KanbanCard({ task }: KanbanCardProps) {
 }
 
 interface KanbanColumnProps {
-  column: typeof COLUMNS[0];
-  tasks: Task[];
+  column: typeof TASK_COLUMNS[0] | typeof PROJECT_COLUMNS[0];
+  tasks: Task[] | any[];
 }
 
 function KanbanColumn({ column, tasks }: KanbanColumnProps) {
@@ -138,7 +145,9 @@ function KanbanColumn({ column, tasks }: KanbanColumnProps) {
 
 export default function KanbanBoard() {
   const { tasks, updateTaskStatus, loading } = useTasks();
+  const { projects, loading: projectsLoading } = useProjects();
   const [activeTask, setActiveTask] = useState<Task | null>(null);
+  const [displayMode, setDisplayMode] = useState<'tasks' | 'projects'>('tasks');
   const isMobile = useIsMobile();
 
   const sensors = useSensors(
@@ -162,11 +171,17 @@ export default function KanbanBoard() {
       return;
     }
 
+    // Pour l'instant, le drag & drop n'est actif que pour les tâches
+    if (displayMode === 'projects') {
+      setActiveTask(null);
+      return;
+    }
+
     const taskId = active.id as string;
     const overId = over.id as string;
 
-    // Check if dropped over a column
-    const targetColumn = COLUMNS.find(col => col.id === overId);
+    // Check if dropped over a column (seulement pour les tâches)
+    const targetColumn = TASK_COLUMNS.find(col => col.id === overId);
     if (targetColumn) {
       updateTaskStatus(taskId, targetColumn.status);
     } else {
@@ -180,7 +195,7 @@ export default function KanbanBoard() {
     setActiveTask(null);
   };
 
-  if (loading) {
+  if (loading || (displayMode === 'projects' && projectsLoading)) {
     return (
       <div className="flex items-center justify-center h-64 glass modern-card">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary glow-primary"></div>
@@ -194,30 +209,57 @@ export default function KanbanBoard() {
     return <MobileKanbanBoard />;
   }
 
-  const tasksByStatus = COLUMNS.map(column => ({
+  const columns = displayMode === 'tasks' ? TASK_COLUMNS : PROJECT_COLUMNS;
+  const items = displayMode === 'tasks' ? tasks : projects;
+  
+  const itemsByStatus = columns.map(column => ({
     ...column,
-    tasks: tasks.filter(task => task.status === column.status)
+    tasks: items.filter((item: any) => item.status === column.status)
   }));
 
   return (
-    <DndContext
-      sensors={sensors}
-      onDragStart={handleDragStart}
-      onDragEnd={handleDragEnd}
-    >
-      <div className="h-full">
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 h-full">
-          {tasksByStatus.map((column) => (
-            <div key={column.id}>
-              <KanbanColumn column={column} tasks={column.tasks} />
-            </div>
-          ))}
-        </div>
+    <div className="space-y-4">
+      {/* Boutons de basculement Projet/Tâches */}
+      <div className="flex justify-between items-center">
+        <ToggleGroup 
+          type="single" 
+          value={displayMode} 
+          onValueChange={(value) => value && setDisplayMode(value as 'tasks' | 'projects')}
+          className="justify-start"
+        >
+          <ToggleGroupItem value="tasks" className="data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">
+            📝 Tâches
+          </ToggleGroupItem>
+          <ToggleGroupItem value="projects" className="data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">
+            📁 Projets
+          </ToggleGroupItem>
+        </ToggleGroup>
+        {displayMode === 'projects' && (
+          <p className="text-sm text-muted-foreground">
+            Vue Kanban des projets par statut
+          </p>
+        )}
       </div>
-      
-      <DragOverlay>
-        {activeTask ? <KanbanCard task={activeTask} /> : null}
-      </DragOverlay>
-    </DndContext>
+
+      <DndContext
+        sensors={sensors}
+        onDragStart={handleDragStart}
+        onDragEnd={handleDragEnd}
+      >
+        <div className="h-full">
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 h-full">
+            {itemsByStatus.map((column) => (
+              <div key={column.id}>
+                <KanbanColumn column={column} tasks={column.tasks} />
+              </div>
+            ))}
+          </div>
+        </div>
+        
+        <DragOverlay>
+          {activeTask ? <KanbanCard task={activeTask} /> : null}
+        </DragOverlay>
+      </DndContext>
+    </div>
   );
 }

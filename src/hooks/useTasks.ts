@@ -1,9 +1,7 @@
-import type { Database } from '@/integrations/supabase/types';
+import { useState, useEffect } from 'react';
+import { supabase } from '@/integrations/supabase/client';
 import { useTaskDatabase } from './useTaskDatabase';
 import { useTaskActions } from './useTaskActions';
-
-type TaskRow = Database['public']['Tables']['tasks']['Row'];
-type TaskActionRow = Database['public']['Tables']['task_actions']['Row'];
 
 export interface TaskAction {
   id: string;
@@ -32,6 +30,9 @@ export interface Task {
   display_order: string;
   linked_action_id?: string;
   project_id?: string;
+  project_name?: string;
+  department_name?: string;
+  assigned_name?: string;
 }
 
 export const useTasks = () => {

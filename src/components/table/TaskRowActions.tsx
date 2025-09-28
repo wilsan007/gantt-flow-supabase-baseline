@@ -5,15 +5,16 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { MoreHorizontal, Copy, Trash2 } from 'lucide-react';
+import { MoreHorizontal, Copy, Trash2, Edit } from 'lucide-react';
 
 interface TaskRowActionsProps {
   taskId: string;
   onDuplicate: (taskId: string) => void;
   onDelete: (taskId: string) => void;
+  onEdit: (taskId: string) => void;
 }
 
-export const TaskRowActions = ({ taskId, onDuplicate, onDelete }: TaskRowActionsProps) => (
+export const TaskRowActions = ({ taskId, onDuplicate, onDelete, onEdit }: TaskRowActionsProps) => (
   <DropdownMenu>
     <DropdownMenuTrigger asChild>
       <Button variant="ghost" size="sm">
@@ -21,6 +22,10 @@ export const TaskRowActions = ({ taskId, onDuplicate, onDelete }: TaskRowActions
       </Button>
     </DropdownMenuTrigger>
     <DropdownMenuContent align="end">
+      <DropdownMenuItem onClick={() => onEdit(taskId)}>
+        <Edit className="h-4 w-4 mr-2" />
+        Modifier
+      </DropdownMenuItem>
       <DropdownMenuItem onClick={() => onDuplicate(taskId)}>
         <Copy className="h-4 w-4 mr-2" />
         Dupliquer

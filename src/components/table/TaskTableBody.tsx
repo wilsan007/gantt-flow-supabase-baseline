@@ -7,9 +7,27 @@ interface TaskTableBodyProps {
   selectedTaskId?: string;
   onSelectTask: (taskId: string) => void;
   onRowDoubleClick: (task: Task) => void;
-  onCreateSubtask: (taskId: string) => void;
+  onCreateSubtask: (parentId: string, linkedActionId?: string, customData?: {
+    title: string;
+    start_date: string;
+    due_date: string;
+    effort_estimate_h: number;
+  }) => void;
+  onCreateSubtaskWithActions?: (parentId: string, customData: {
+    title: string;
+    start_date: string;
+    due_date: string;
+    effort_estimate_h: number;
+  }, actions: Array<{
+    id: string;
+    title: string;
+    weight_percentage: number;
+    due_date?: string;
+    notes?: string;
+  }>) => void;
   onDelete: (taskId: string) => void;
   onDuplicate: (taskId: string) => void;
+  onEdit: (taskId: string) => void;
   onUpdateAssignee: (taskId: string, assignee: string) => void;
 }
 
@@ -19,8 +37,10 @@ export const TaskTableBody = ({
   onSelectTask,
   onRowDoubleClick,
   onCreateSubtask,
+  onCreateSubtaskWithActions,
   onDelete,
   onDuplicate,
+  onEdit,
   onUpdateAssignee
 }: TaskTableBodyProps) => {
   // Trier les tâches par display_order pour afficher les sous-tâches correctement
@@ -46,8 +66,10 @@ export const TaskTableBody = ({
           onSelectTask={onSelectTask}
           onRowDoubleClick={onRowDoubleClick}
           onCreateSubtask={onCreateSubtask}
+          onCreateSubtaskWithActions={onCreateSubtaskWithActions}
           onDelete={onDelete}
           onDuplicate={onDuplicate}
+          onEdit={onEdit}
           onUpdateAssignee={onUpdateAssignee}
         />
       ))}

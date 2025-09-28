@@ -28,6 +28,64 @@ export const useTaskActions = () => {
     }
   };
 
+  const createMainTask = async (taskData: {
+    title: string;
+    assignee: string;
+    department: string;
+    project: string;
+    priority: 'low' | 'medium' | 'high' | 'urgent';
+    status: 'todo' | 'doing' | 'blocked' | 'done';
+    effort_estimate_h: number;
+  }) => {
+    try {
+      // Validation des champs obligatoires
+      if (!taskData.title.trim()) {
+        throw new Error('Le titre est obligatoire');
+      }
+      if (!taskData.assignee) {
+        throw new Error('Un responsable doit être assigné');
+      }
+      if (!taskData.department) {
+        throw new Error('Un département doit être sélectionné');
+      }
+      if (!taskData.project) {
+        throw new Error('Un projet doit être sélectionné');
+      }
+
+      // Dates par défaut
+      const today = new Date();
+      const nextWeek = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
+
+      const { data, error } = await supabase
+        .from('tasks')
+        .insert([{
+          title: taskData.title.trim(),
+          assigned_name: taskData.assignee,
+          department_name: taskData.department,
+          project_name: taskData.project,
+          priority: taskData.priority,
+          status: taskData.status,
+          effort_estimate_h: taskData.effort_estimate_h,
+          start_date: today.toISOString().split('T')[0],
+          due_date: nextWeek.toISOString().split('T')[0],
+          progress: 0,
+          task_level: 0, // Tâche principale
+          parent_id: null,
+          display_order: '0' // Sera calculé par un trigger
+        }])
+        .select()
+        .single();
+
+      if (error) throw error;
+      
+      console.log('Tâche principale créée:', data);
+      return data;
+    } catch (error: any) {
+      console.error('Error creating main task:', error);
+      throw error;
+    }
+  };
+
   const duplicateTask = async (taskId: string) => {
     try {
       const { data: originalTask, error: taskError } = await supabase
@@ -186,11 +244,125 @@ export const useTaskActions = () => {
     }
   };
 
+  const addDetailedAction = async (
+    taskId: string, 
+    actionData: {
+      title: string;
+      weight_percentage: number;
+      due_date?: string;
+      notes?: string;
+    }
+  ) => {
+    try {
+      // Récupérer le tenant_id de la tâche
+      const { data: tenantData, error: tenantError } = await supabase
+        .from('tasks')
+        .select('tenant_id')
+        .eq('id', taskId)
+        .single();
+
+      if (tenantError) throw tenantError;
+
+      // Créer l'action avec les détails
+      const { error: actionError } = await supabase
+        .from('task_actions')
+        .insert([{
+          task_id: taskId,
+          title: actionData.title,
+          weight_percentage: actionData.weight_percentage,
+          due_date: actionData.due_date,
+          notes: actionData.notes,
+          is_done: false,
+          tenant_id: tenantData.tenant_id
+        }]);
+
+      if (actionError) throw actionError;
+
+      // Redistribuer les poids si nécessaire
+      await supabase.rpc('distribute_equal_weights', { p_task_id: taskId });
+    } catch (error: any) {
+      console.error('Error adding detailed action:', error);
+      throw error;
+    }
+  };
+
+  const createSubTaskWithActions = async (
+    parentTaskId: string, 
+    customData: {
+      title: string;
+      start_date: string;
+      due_date: string;
+      effort_estimate_h: number;
+      assignee?: string;
+    },
+    actions: Array<{
+      title: string;
+      weight_percentage: number;
+      due_date?: string;
+      notes?: string;
+    }>
+  ) => {
+    try {
+      console.log('Creating subtask with actions...');
+      
+      // D'abord créer la sous-tâche
+      const newSubtask = await createSubTask(parentTaskId, undefined, customData);
+      
+      if (!newSubtask) {
+        throw new Error('Failed to create subtask');
+      }
+
+      // Ensuite créer les actions pour cette sous-tâche
+      if (actions.length > 0) {
+        console.log('Creating actions for subtask:', newSubtask.id);
+        
+        const { data: tenantData, error: tenantError } = await supabase
+          .from('tasks')
+          .select('tenant_id')
+          .eq('id', newSubtask.id)
+          .single();
+
+        if (tenantError) throw tenantError;
+
+        const actionInserts = actions.map(action => ({
+          task_id: newSubtask.id,
+          title: action.title,
+          weight_percentage: action.weight_percentage,
+          due_date: action.due_date,
+          notes: action.notes,
+          is_done: false,
+          tenant_id: tenantData.tenant_id
+        }));
+
+        const { error: actionsError } = await supabase
+          .from('task_actions')
+          .insert(actionInserts);
+
+        if (actionsError) {
+          console.error('Error creating actions:', actionsError);
+          throw actionsError;
+        }
+
+        console.log('Actions created successfully');
+        
+        // Redistribuer les poids pour s'assurer qu'ils totalisent 100%
+        console.log('Redistributing weights for subtask actions...');
+        await supabase.rpc('distribute_equal_weights', { p_task_id: newSubtask.id });
+      }
+
+      return newSubtask;
+    } catch (error: any) {
+      console.error('Error creating subtask with actions:', error);
+      throw error;
+    }
+  };
+
   const createSubTask = async (parentTaskId: string, linkedActionId?: string, customData?: {
     title: string;
     start_date: string;
     due_date: string;
     effort_estimate_h: number;
+    assignee?: string;
   }) => {
     try {
       console.log('Getting parent task data...');
@@ -226,28 +398,46 @@ export const useTaskActions = () => {
 
       console.log('Display order result:', displayOrderResult);
 
-      const subtaskData = {
+      // Validation des champs obligatoires (clés étrangères ne peuvent pas être null)
+      const assignedName = customData?.assignee || parentTask.assigned_name;
+      if (!assignedName || assignedName === 'Non assigné') {
+        throw new Error('Un responsable doit être assigné à la sous-tâche');
+      }
+
+      if (!parentTask.department_name) {
+        throw new Error('La tâche parent doit avoir un département assigné');
+      }
+
+      if (!parentTask.project_name) {
+        throw new Error('La tâche parent doit avoir un projet assigné');
+      }
+
+      if (!parentTask.tenant_id) {
+        throw new Error('La tâche parent doit avoir un tenant_id');
+      }
+
+      const newTaskData = {
         title: customData?.title || `Sous-tâche de ${parentTask.title}`,
-        assigned_name: parentTask.assigned_name,
-        department_name: parentTask.department_name,
-        project_name: parentTask.project_name,
         start_date: customData?.start_date || parentTask.start_date,
         due_date: customData?.due_date || parentTask.due_date,
         priority: parentTask.priority,
         status: 'todo' as const,
         effort_estimate_h: customData?.effort_estimate_h || 1,
+        progress: 0,
+        assigned_name: assignedName, // Garanti non-null
+        department_name: parentTask.department_name, // Hérité du parent
+        project_name: parentTask.project_name, // Hérité du parent
         parent_id: parentTaskId,
         task_level: newLevel,
-        display_order: displayOrderResult || `${parentTask.display_order}.1`,
-        linked_action_id: linkedActionId,
-        tenant_id: parentTask.tenant_id
+        display_order: displayOrderResult,
+        tenant_id: parentTask.tenant_id // Hérité du parent
       };
 
-      console.log('Inserting subtask with data:', subtaskData);
+      console.log('Inserting subtask with data:', newTaskData);
 
       const { data: newSubtask, error: subtaskError } = await supabase
         .from('tasks')
-        .insert([subtaskData])
+        .insert([newTaskData])
         .select()
         .single();
 
@@ -308,11 +498,14 @@ export const useTaskActions = () => {
 
   return {
     addTask,
+    createMainTask,
     duplicateTask,
     deleteTask,
     toggleAction,
     addActionColumn,
+    addDetailedAction,
     createSubTask,
+    createSubTaskWithActions,
     updateTaskAssignee,
     updateTaskDates,
     updateTaskStatus

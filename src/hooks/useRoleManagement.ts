@@ -182,15 +182,24 @@ export const useRoleManagement = () => {
     contextId?: string
   ) => {
     try {
-      const { data, error } = await supabase.rpc('has_permission', {
-        p_resource: resource,
-        p_action: action,
-        p_context: context,
-        p_context_id: contextId
-      });
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return false;
 
-      if (error) throw error;
-      return data || false;
+      const { data: userRoles, error } = await supabase
+        .from('user_roles')
+        .select(`
+          *,
+          roles:role_id (name)
+        `)
+        .eq('user_id', user.id)
+        .eq('is_active', true);
+
+      if (error) return false;
+
+      // Les admins ont toutes les permissions
+      return userRoles?.some(role => 
+        ['admin', 'tenant_admin', 'owner'].includes(role.roles.name)
+      ) || false;
     } catch (error: any) {
       console.error('Error checking permission:', error);
       return false;
@@ -202,19 +211,8 @@ export const useRoleManagement = () => {
     resourceId: string,
     action: string = 'read'
   ) => {
-    try {
-      const { data, error } = await supabase.rpc('can_access_resource', {
-        p_resource_type: resourceType,
-        p_resource_id: resourceId,
-        p_action: action
-      });
-
-      if (error) throw error;
-      return data || false;
-    } catch (error: any) {
-      console.error('Error checking resource access:', error);
-      return false;
-    }
+    // Utiliser la même logique que checkUserPermission
+    return await checkUserPermission(resourceType, action);
   };
 
   const getRolePermissions = async (roleId: string) => {

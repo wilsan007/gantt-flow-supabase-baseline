@@ -10,6 +10,7 @@ export interface GanttTask {
   assignee: string;
   priority: string;
   status: string;
+  projectName?: string; // Nom du projet pour le regroupement et les couleurs
 }
 
 export interface ViewConfig {

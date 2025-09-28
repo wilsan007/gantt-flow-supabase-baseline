@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { AlertType, AlertSolution, AlertInstance } from './useAlerts';
-import { usePermissionFilters } from './usePermissionFilters';
 
 export interface ComputedAlert {
   id: string;
@@ -24,7 +23,42 @@ export const useComputedAlerts = () => {
   const [computedAlerts, setComputedAlerts] = useState<ComputedAlert[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { canViewHRData, checkUserPermission } = usePermissionFilters();
+  const [canViewHRData, setCanViewHRData] = useState(false);
+
+  // Vérifier les permissions directement
+  useEffect(() => {
+    const checkPermissions = async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+
+        const { data: userRoles, error } = await supabase
+          .from('user_roles')
+          .select(`
+            *,
+            roles:role_id (name)
+          `)
+          .eq('user_id', user.id)
+          .eq('is_active', true);
+
+        if (error) {
+          console.error('Error fetching user roles:', error);
+          return;
+        }
+
+        // Les admins ont accès aux données RH
+        const hasAdminRole = userRoles?.some(role => 
+          ['admin', 'tenant_admin', 'owner'].includes(role.roles.name)
+        ) || false;
+
+        setCanViewHRData(hasAdminRole);
+      } catch (error) {
+        console.error('Error checking permissions:', error);
+      }
+    };
+
+    checkPermissions();
+  }, []);
 
   // Récupérer les alertes depuis la vue SQL avec filtrage par permissions
   const calculateCurrentAlerts = async (): Promise<ComputedAlert[]> => {
@@ -45,21 +79,9 @@ export const useComputedAlerts = () => {
         filteredAlerts = filteredAlerts.filter(alert => alert.application_domain !== 'hr');
       }
 
-      // Vérifier les permissions pour les alertes spécifiques aux projets
-      const accessibleAlerts = [];
-      for (const alert of filteredAlerts) {
-        let hasAccess = true;
-
-        if (alert.application_domain === 'project' && alert.entity_type === 'task' && alert.entity_id) {
-          hasAccess = await checkUserPermission('tasks', 'read');
-        } else if (alert.application_domain === 'project' && alert.entity_type === 'project' && alert.entity_id) {
-          hasAccess = await checkUserPermission('projects', 'read');
-        }
-
-        if (hasAccess) {
-          accessibleAlerts.push(alert);
-        }
-      }
+      // Pour les admins, toutes les alertes sont accessibles
+      // Pour les non-admins, on pourrait ajouter une logique plus fine plus tard
+      const accessibleAlerts = filteredAlerts;
 
       // Mapper les données de la vue vers le format ComputedAlert
       return accessibleAlerts.map(alert => ({

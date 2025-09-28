@@ -3028,56 +3028,6 @@ export type Database = {
           },
         ]
       }
-      tenant_members: {
-        Row: {
-          created_at: string
-          id: string
-          invited_at: string | null
-          invited_by: string | null
-          joined_at: string | null
-          permissions: Json | null
-          role: string
-          status: string
-          tenant_id: string
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          invited_at?: string | null
-          invited_by?: string | null
-          joined_at?: string | null
-          permissions?: Json | null
-          role?: string
-          status?: string
-          tenant_id: string
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          invited_at?: string | null
-          invited_by?: string | null
-          joined_at?: string | null
-          permissions?: Json | null
-          role?: string
-          status?: string
-          tenant_id?: string
-          updated_at?: string
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "tenant_members_tenant_id_fkey"
-            columns: ["tenant_id"]
-            isOneToOne: false
-            referencedRelation: "tenants"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       tenants: {
         Row: {
           created_at: string

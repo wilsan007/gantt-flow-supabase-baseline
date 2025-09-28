@@ -59,6 +59,34 @@ This project is built with:
 - React
 - shadcn-ui
 - Tailwind CSS
+- Supabase (Database & Auth)
+
+## 🗄️ Database Setup (Supabase)
+
+This project includes a complete Supabase database baseline with:
+
+- ✅ **Complete schema** with all tables, functions, and triggers
+- ✅ **Row Level Security (RLS)** policies for data protection
+- ✅ **Edge Functions** for server-side logic
+- ✅ **Email templates** for authentication flows
+
+### Quick Setup:
+
+1. Create a new Supabase project
+2. Run the baseline migration:
+   ```bash
+   supabase db reset
+   ```
+3. Deploy Edge Functions:
+   ```bash
+   supabase functions deploy
+   ```
+
+### Files:
+- `baseline_schema.sql` - Complete database schema
+- `supabase/migrations/` - All database migrations
+- `supabase/functions/` - Edge Functions
+- `supabase/config.toml` - Supabase configuration
 
 ## How can I deploy this project?
 

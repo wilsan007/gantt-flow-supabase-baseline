@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { useTenant } from '../contexts/TenantContext';
 
 // Capacity Planning interfaces
 export interface CapacityPlanning {
@@ -145,14 +146,55 @@ export interface CountryPolicy {
   updated_at: string;
 }
 
-// Fonction dynamique pour créer les alertes basées sur les types configurés
-const createDynamicAlerts = async (capacityData: any[], averageUtilization: number) => {
-  try {
-    // Récupérer les types d'alertes de capacité
-    const { data: alertTypes, error: alertTypesError } = await supabase
-      .from('alert_types')
-      .select('*')
-      .in('category', ['capacity']);
+export const useAdvancedHR = () => {
+  // Capacity Planning
+  const [capacityPlanning, setCapacityPlanning] = useState<CapacityPlanning[]>([]);
+  
+  // Recruitment (ATS)
+  const [jobPosts, setJobPosts] = useState<JobPost[]>([]);
+  const [candidates, setCandidates] = useState<Candidate[]>([]);
+  const [jobApplications, setJobApplications] = useState<JobApplication[]>([]);
+  const [interviews, setInterviews] = useState<Interview[]>([]);
+  const [jobOffers, setJobOffers] = useState<JobOffer[]>([]);
+  
+  // AI Insights
+  const [employeeInsights, setEmployeeInsights] = useState<EmployeeInsight[]>([]);
+  
+  // Analytics
+  const [hrAnalytics, setHRAnalytics] = useState<HRAnalytics[]>([]);
+  
+  // Country Policies
+  const [countryPolicies, setCountryPolicies] = useState<CountryPolicy[]>([]);
+  
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const { toast } = useToast();
+  const { tenantId } = useTenant();
+
+  // Fetch data on tenantId change
+  useEffect(() => {
+    if (tenantId) {
+      console.log('🔄 useAdvancedHR: tenantId available, fetching data:', tenantId);
+      fetchAdvancedHRData();
+    } else {
+      console.log('⚠️ useAdvancedHR: waiting for tenantId...');
+    }
+  }, [tenantId]);
+
+  // Fonction dynamique pour créer les alertes basées sur les types configurés
+  const createDynamicAlerts = async (capacityData: any[], averageUtilization: number, currentTenantId: string) => {
+    try {
+      if (!currentTenantId) {
+        console.log('⚠️ No tenantId provided for createDynamicAlerts');
+        return 0;
+      }
+
+      // Récupérer les types d'alertes de capacité
+      const { data: alertTypes, error: alertTypesError } = await supabase
+        .from('alert_types')
+        .select('*')
+        .in('category', ['capacity'])
+        .eq('tenant_id', currentTenantId);
 
     if (alertTypesError) {
       console.error('Erreur lors de la récupération des types d\'alertes:', alertTypesError);
@@ -431,37 +473,22 @@ const createDynamicAlerts = async (capacityData: any[], averageUtilization: numb
     console.error('Erreur dans createDynamicAlerts:', error);
     return 0;
   }
-};
+  };
 
-export const useAdvancedHR = () => {
-  // Capacity Planning
-  const [capacityPlanning, setCapacityPlanning] = useState<CapacityPlanning[]>([]);
-  
-  // Recruitment (ATS)
-  const [jobPosts, setJobPosts] = useState<JobPost[]>([]);
-  const [candidates, setCandidates] = useState<Candidate[]>([]);
-  const [jobApplications, setJobApplications] = useState<JobApplication[]>([]);
-  const [interviews, setInterviews] = useState<Interview[]>([]);
-  const [jobOffers, setJobOffers] = useState<JobOffer[]>([]);
-  
-  // AI Insights
-  const [employeeInsights, setEmployeeInsights] = useState<EmployeeInsight[]>([]);
-  
-  // Analytics
-  const [hrAnalytics, setHRAnalytics] = useState<HRAnalytics[]>([]);
-  
-  // Country Policies
-  const [countryPolicies, setCountryPolicies] = useState<CountryPolicy[]>([]);
-  
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const { toast } = useToast();
 
   // Fetch all advanced HR data
   const fetchAdvancedHRData = async () => {
     try {
       setLoading(true);
       setError(null);
+
+      if (!tenantId) {
+        console.log('⚠️ Tenant ID not available, skipping HR data fetch');
+        setLoading(false);
+        return;
+      }
+
+      console.log('🔄 Fetching advanced HR data for tenant:', tenantId);
 
       const [
         capacityRes,
@@ -474,14 +501,14 @@ export const useAdvancedHR = () => {
         analyticsRes,
         policiesRes
       ] = await Promise.all([
-        supabase.from('capacity_planning').select('*').order('period_start', { ascending: false }),
-        supabase.from('job_posts').select('*').order('created_at', { ascending: false }),
-        supabase.from('candidates').select('*').order('applied_date', { ascending: false }),
-        supabase.from('job_applications').select('*').order('applied_date', { ascending: false }),
-        supabase.from('interviews').select('*').order('scheduled_date', { ascending: false }),
-        supabase.from('job_offers').select('*').order('offer_date', { ascending: false }),
-        supabase.from('employee_insights').select('*').order('created_at', { ascending: false }),
-        supabase.from('hr_analytics').select('*').order('calculated_at', { ascending: false }),
+        supabase.from('capacity_planning').select('*').eq('tenant_id', tenantId).order('period_start', { ascending: false }),
+        supabase.from('job_posts').select('*').eq('tenant_id', tenantId).order('created_at', { ascending: false }),
+        supabase.from('candidates').select('*').eq('tenant_id', tenantId).order('applied_date', { ascending: false }),
+        supabase.from('job_applications').select('*').eq('tenant_id', tenantId).order('applied_date', { ascending: false }),
+        supabase.from('interviews').select('*').eq('tenant_id', tenantId).order('scheduled_date', { ascending: false }),
+        supabase.from('job_offers').select('*').eq('tenant_id', tenantId).order('offer_date', { ascending: false }),
+        supabase.from('employee_insights').select('*').eq('tenant_id', tenantId).order('created_at', { ascending: false }),
+        supabase.from('hr_analytics').select('*').eq('tenant_id', tenantId).order('calculated_at', { ascending: false }),
         supabase.from('country_policies').select('*').order('country_name')
       ]);
 
@@ -504,8 +531,15 @@ export const useAdvancedHR = () => {
       setEmployeeInsights(insightsRes.data || []);
       setHRAnalytics(analyticsRes.data || []);
       setCountryPolicies(policiesRes.data || []);
+
+      console.log('✅ Advanced HR data loaded:', {
+        capacity: capacityRes.data?.length || 0,
+        jobPosts: jobPostsRes.data?.length || 0,
+        candidates: candidatesRes.data?.length || 0,
+        analytics: analyticsRes.data?.length || 0
+      });
     } catch (error: any) {
-      console.error('Error fetching advanced HR data:', error);
+      console.error('❌ Error fetching advanced HR data:', error);
       setError(error.message);
       toast({
         title: "Erreur",
@@ -673,6 +707,14 @@ export const useAdvancedHR = () => {
   // Analytics functions
   const calculateHRMetrics = async (customPeriodStart?: string, customPeriodEnd?: string) => {
     try {
+      if (!tenantId) {
+        console.log('⚠️ Tenant ID not available for metrics calculation');
+        return;
+      }
+
+      // Feedback immédiat - mise à jour optimiste des états
+      setLoading(true);
+
       // Utiliser la période personnalisée ou le mois courant
       const now = new Date();
       const startOfMonth = customPeriodStart ? new Date(customPeriodStart) : new Date(now.getFullYear(), now.getMonth(), 1);
@@ -683,11 +725,11 @@ export const useAdvancedHR = () => {
 
       // Charger les employés (profiles), les tâches, absences et congés
       const [profilesRes, tasksRes, employeesRes, absencesRes, leaveRequestsRes] = await Promise.all([
-        supabase.from('profiles').select('id, full_name'),
-        supabase.from('tasks').select('assigned_name, start_date, due_date, effort_estimate_h, progress'),
-        supabase.from('employees').select('id, full_name, weekly_hours'),
-        supabase.from('absences').select('employee_id, start_date, end_date, total_days'),
-        supabase.from('leave_requests').select('employee_id, start_date, end_date, total_days, status').eq('status', 'approved')
+        supabase.from('profiles').select('id, full_name').eq('tenant_id', tenantId),
+        supabase.from('tasks').select('assigned_name, start_date, due_date, effort_estimate_h, progress').eq('tenant_id', tenantId),
+        supabase.from('employees').select('id, full_name, weekly_hours').eq('tenant_id', tenantId),
+        supabase.from('absences').select('employee_id, start_date, end_date, total_days').eq('tenant_id', tenantId),
+        supabase.from('leave_requests').select('employee_id, start_date, end_date, total_days, status').eq('status', 'approved').eq('tenant_id', tenantId)
       ]);
 
       if (profilesRes.error) throw profilesRes.error;
@@ -858,7 +900,7 @@ export const useAdvancedHR = () => {
       );
 
       // Créer les alertes proactives dynamiques
-      const alertsCreated = await createDynamicAlerts(capacityRows, averageUtilization);
+      const alertsCreated = await createDynamicAlerts(capacityRows, averageUtilization, tenantId!);
       
       // Recalculer les métriques pour la période
       await supabase
@@ -900,28 +942,30 @@ export const useAdvancedHR = () => {
 
       const message = alertsCreated > 0
         ? `Capacité recalculée. ${alertsCreated} alerte(s) proactive(s) générée(s)`
-        : 'Capacité et métriques recalculées avec succès';
+        : 'Capacité recalculée avec succès';
 
-      toast({ 
-        title: 'Succès', 
+      toast({
+        title: 'Succès',
         description: message,
-        variant: alertsCreated > 0 ? 'destructive' : 'default'
       });
-
-      fetchAdvancedHRData();
     } catch (error: any) {
-      console.error('Error calculating metrics:', error);
+      console.error('Error calculating HR metrics:', error);
       toast({
         title: 'Erreur',
         description: "Impossible de recalculer la capacité et les métriques",
         variant: 'destructive',
       });
+    } finally {
+      setLoading(false);
     }
   };
 
-  useEffect(() => {
-    fetchAdvancedHRData();
-  }, []);
+  // Supprimer le calcul automatique qui cause la boucle infinie
+  // useEffect(() => {
+  //   if (tenantId && !loading) {
+  //     calculateHRMetrics();
+  //   }
+  // }, [tenantId, loading]);
 
   return {
     // Data

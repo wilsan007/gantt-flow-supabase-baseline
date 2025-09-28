@@ -46,7 +46,8 @@ export const AdvancedHRDashboard = () => {
     countryPolicies,
     loading,
     generateEmployeeInsights,
-    calculateHRMetrics
+    calculateHRMetrics,
+    refetch: fetchAdvancedHRData
   } = useAdvancedHR();
 
   const { employees } = useHR();
@@ -68,6 +69,7 @@ export const AdvancedHRDashboard = () => {
   const [capacityModalOpen, setCapacityModalOpen] = useState(false);
   const [selectedAlert, setSelectedAlert] = useState<any>(null);
   const [alertsModalOpen, setAlertsModalOpen] = useState(false);
+  const [isCalculating, setIsCalculating] = useState(false);
   const { toast } = useToast();
 
   // États pour la sélection de période
@@ -85,6 +87,15 @@ export const AdvancedHRDashboard = () => {
     return <div className="flex justify-center p-8">Chargement...</div>;
   }
 
+  console.log('🔍 AdvancedHRDashboard render state:', {
+    loading,
+    capacityPlanningCount: capacityPlanning?.length || 0,
+    jobPostsCount: jobPosts?.length || 0,
+    candidatesCount: candidates?.length || 0,
+    employeesCount: employees?.length || 0,
+    hrAnalyticsCount: hrAnalytics?.length || 0
+  });
+
   // Calculs pour les KPIs RH avancés (synchronisés avec la période sélectionnée)
   const realEmployeeCount = employees.length; // Vrais employés de la base
   const uniqueEmployeesInCapacity = Array.from(new Set(capacityPlanning.map(cp => cp.employee_id))).length;
@@ -98,6 +109,14 @@ export const AdvancedHRDashboard = () => {
   const topAlerts = getTopHRAlerts(4);
   const activeAlertsCount = activeAlerts.length;
   
+  const refreshData = async () => {
+    // Actualiser les données après calcul des métriques
+    await Promise.all([
+      refetchAlerts(), // Recharger les alertes
+      fetchAdvancedHRData() // Recharger les données useAdvancedHR
+    ]);
+  };
+
   // Filtrer les données selon la période sélectionnée
   const selectedPeriodRows = capacityPlanning.filter(cp => 
     cp.period_start === periodStart && cp.period_end === periodEnd
@@ -114,9 +133,25 @@ export const AdvancedHRDashboard = () => {
   const averageUtilization = latestRows.length > 0
     ? Math.round(latestRows.reduce((sum, cp) => sum + (Number(cp.capacity_utilization) || 0), 0) / latestRows.length)
     : 0;
+  // Filtrer les métriques RH pour la période sélectionnée
+  const filteredAnalytics = hrAnalytics.filter(m => 
+    m.period_start === periodStart && m.period_end === periodEnd
+  );
+  
+  // Si aucune métrique pour la période, utiliser les plus récentes
+  const latestAnalytics = filteredAnalytics.length > 0 
+    ? filteredAnalytics 
+    : hrAnalytics.filter(m => {
+        const latestPeriod = hrAnalytics.reduce((max, metric) => 
+          metric.period_start > max ? metric.period_start : max, 
+          hrAnalytics[0]?.period_start || ''
+        );
+        return m.period_start === latestPeriod;
+      });
+
   // Nombre de métriques RH uniques (par nom + type) pour éviter les doublons
   const uniqueMetricKeys = new Set<string>();
-  hrAnalytics.forEach((m) => {
+  latestAnalytics.forEach((m) => {
     uniqueMetricKeys.add(`${m.metric_name}__${m.metric_type}`);
   });
   const analyticsCount = uniqueMetricKeys.size;
@@ -163,18 +198,43 @@ export const AdvancedHRDashboard = () => {
         <div className="flex gap-2">
           <Button 
             onClick={async () => {
-              await calculateHRMetrics(periodStart, periodEnd);
-              await refreshAlerts();
+              setIsCalculating(true);
+              toast({
+                title: "Calcul en cours...",
+                description: "Les métriques RH sont en cours de calcul"
+              });
+              
+              try {
+                // Exécuter en parallèle pour plus de rapidité
+                await Promise.all([
+                  calculateHRMetrics(periodStart, periodEnd),
+                  refreshData()
+                ]);
+                
+                toast({
+                  title: "✅ Métriques calculées",
+                  description: "Les indicateurs RH ont été mis à jour avec succès"
+                });
+              } catch (error) {
+                toast({
+                  title: "❌ Erreur",
+                  description: "Impossible de calculer les métriques",
+                  variant: "destructive"
+                });
+              } finally {
+                setIsCalculating(false);
+              }
             }} 
             variant="outline"
+            disabled={isCalculating}
           >
-            <BarChart3 className="h-4 w-4 mr-2" />
-            Calculer Métriques
+            <BarChart3 className={`h-4 w-4 mr-2 ${isCalculating ? 'animate-spin' : ''}`} />
+            {isCalculating ? 'Calcul...' : 'Calculer Métriques'}
           </Button>
           <Button 
             onClick={async () => {
               await generateEmployeeInsights();
-              await refreshAlerts();
+              await refreshData();
             }} 
             variant="outline"
           >

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { useTenant } from '../contexts/TenantContext';
 
 export interface LeaveRequest {
   id: string;
@@ -68,12 +69,21 @@ export const useHR = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
+  const { tenantId } = useTenant();
 
   // Fetch all HR data
   const fetchHRData = async () => {
     try {
       setLoading(true);
       setError(null);
+
+      if (!tenantId) {
+        console.log('⚠️ Tenant ID not available, skipping HR data fetch');
+        setLoading(false);
+        return;
+      }
+
+      console.log('🔄 Fetching HR data for tenant:', tenantId);
 
       const [
         leaveRequestsRes,
@@ -82,11 +92,11 @@ export const useHR = () => {
         leaveBalancesRes,
         employeesRes
       ] = await Promise.all([
-        supabase.from('leave_requests').select('*').order('created_at', { ascending: false }),
-        supabase.from('absence_types').select('*').order('name'),
-        supabase.from('attendances').select('*').order('date', { ascending: false }).limit(100),
-        supabase.from('leave_balances').select('*'),
-        supabase.from('profiles').select('id, full_name, avatar_url, job_title, employee_id, hire_date, contract_type')
+        supabase.from('leave_requests').select('*').eq('tenant_id', tenantId).order('created_at', { ascending: false }),
+        supabase.from('absence_types').select('*').eq('tenant_id', tenantId).order('name'),
+        supabase.from('attendances').select('*').eq('tenant_id', tenantId).order('date', { ascending: false }).limit(100),
+        supabase.from('leave_balances').select('*').eq('tenant_id', tenantId),
+        supabase.from('profiles').select('id, full_name, avatar_url, job_title, employee_id, hire_date, contract_type').eq('tenant_id', tenantId)
       ]);
 
       if (leaveRequestsRes.error) throw leaveRequestsRes.error;
@@ -100,8 +110,15 @@ export const useHR = () => {
       setAttendances(attendancesRes.data || []);
       setLeaveBalances(leaveBalancesRes.data || []);
       setEmployees(employeesRes.data || []);
+
+      console.log('✅ HR data loaded:', {
+        leaveRequests: leaveRequestsRes.data?.length || 0,
+        absenceTypes: absenceTypesRes.data?.length || 0,
+        attendances: attendancesRes.data?.length || 0,
+        employees: employeesRes.data?.length || 0
+      });
     } catch (error: any) {
-      console.error('Error fetching HR data:', error);
+      console.error('❌ Error fetching HR data:', error);
       setError(error.message);
       toast({
         title: "Erreur",
@@ -199,8 +216,10 @@ export const useHR = () => {
   };
 
   useEffect(() => {
-    fetchHRData();
-  }, []);
+    if (tenantId) {
+      fetchHRData();
+    }
+  }, [tenantId]);
 
   return {
     // Data

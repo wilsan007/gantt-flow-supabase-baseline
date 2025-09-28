@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Task, TaskAction } from '@/hooks/useTasks';
 import { usePermissionFilters } from './usePermissionFilters';
@@ -8,16 +8,47 @@ export const useTaskDatabase = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { filterTasksByPermissions } = usePermissionFilters();
+  
+  // Éviter les requêtes multiples simultanées
+  const fetchingRef = useRef(false);
+  const lastFetchRef = useRef<number>(0);
 
   const fetchTasks = async () => {
+    // Éviter les requêtes simultanées
+    if (fetchingRef.current) {
+      console.log('📋 Fetch tasks - Requête déjà en cours, ignorée');
+      return;
+    }
+
+    // Éviter les requêtes trop fréquentes (debounce de 1 seconde)
+    const now = Date.now();
+    if (now - lastFetchRef.current < 1000) {
+      console.log('📋 Fetch tasks - Requête trop récente, ignorée');
+      return;
+    }
     try {
+      fetchingRef.current = true;
+      lastFetchRef.current = now;
       setLoading(true);
       setError(null);
+      
+      // Log de l'utilisateur connecté
+      const { data: { session } } = await supabase.auth.getSession();
+      console.log('📋 Fetch tasks - Utilisateur:', session?.user ? {
+        id: session.user.id,
+        email: session.user.email
+      } : 'Non connecté');
       
       const { data: tasksData, error: tasksError } = await supabase
         .from('tasks')
         .select('*')
         .order('display_order', { ascending: true });
+
+      console.log('📋 Tasks query result:', {
+        error: tasksError,
+        count: tasksData?.length || 0,
+        data: tasksData?.slice(0, 2) // Afficher les 2 premiers pour debug
+      });
 
       if (tasksError) throw tasksError;
 
@@ -65,6 +96,7 @@ export const useTaskDatabase = () => {
       setError(error.message);
     } finally {
       setLoading(false);
+      fetchingRef.current = false;
     }
   };
 
@@ -72,10 +104,16 @@ export const useTaskDatabase = () => {
     const tasksSubscription = supabase
       .channel('tasks_channel')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'tasks' }, () => {
-        fetchTasks();
+        console.log('📋 Realtime - Changement détecté dans tasks');
+        setTimeout(() => fetchTasks(), 500); // Debounce de 500ms
       })
       .on('postgres_changes', { event: '*', schema: 'public', table: 'task_actions' }, () => {
-        fetchTasks();
+        console.log('📋 Realtime - Changement détecté dans task_actions');
+        setTimeout(() => fetchTasks(), 500); // Debounce de 500ms
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'task_history' }, () => {
+        console.log('📋 Realtime - Changement détecté dans task_history');
+        // Pas besoin de refetch les tâches pour l'historique, juste un log
       })
       .subscribe();
 

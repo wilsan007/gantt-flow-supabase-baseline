@@ -23,9 +23,14 @@ interface KPIDetailDialogProps {
 }
 
 export const KPIDetailDialog = ({ open, onOpenChange, kpiType }: KPIDetailDialogProps) => {
-  const { capacityPlanning, employeeInsights, hrAnalytics } = useAdvancedHR();
+  const { capacityPlanning, employeeInsights, hrAnalytics, loading } = useAdvancedHR();
   const { employees } = useHR();
   const { tasks } = useTasks();
+
+  // Ne pas rendre si en cours de chargement pour éviter les re-renders
+  if (loading) {
+    return null;
+  }
 
   // Fonction de traduction des métriques
   const translateMetricName = (name: string) => {

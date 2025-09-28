@@ -17,6 +17,13 @@ export const HRDashboard = () => {
     );
   }
 
+  console.log('🔍 HRDashboard render state:', {
+    loading,
+    employeesCount: employees?.length || 0,
+    leaveRequestsCount: leaveRequests?.length || 0,
+    attendancesCount: attendances?.length || 0
+  });
+
   const stats = {
     totalEmployees: employees.length,
     pendingRequests: leaveRequests.filter(req => req.status === 'pending').length,

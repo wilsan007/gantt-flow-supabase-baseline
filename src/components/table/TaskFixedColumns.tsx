@@ -12,12 +12,25 @@ interface TaskFixedColumnsProps {
   tasks: Task[];
   onDuplicate: (taskId: string) => void;
   onDelete: (taskId: string) => void;
+  onEdit: (taskId: string) => void;
   onCreateSubtask: (parentId: string, linkedActionId?: string, customData?: {
     title: string;
     start_date: string;
     due_date: string;
     effort_estimate_h: number;
   }) => void;
+  onCreateSubtaskWithActions?: (parentId: string, customData: {
+    title: string;
+    start_date: string;
+    due_date: string;
+    effort_estimate_h: number;
+  }, actions: Array<{
+    id: string;
+    title: string;
+    weight_percentage: number;
+    due_date?: string;
+    notes?: string;
+  }>) => void;
   onUpdateAssignee: (taskId: string, assignee: string) => void;
   selectedTaskId?: string;
   onSelectTask: (taskId: string) => void;
@@ -27,7 +40,9 @@ export const TaskFixedColumns = ({
   tasks, 
   onDuplicate, 
   onDelete, 
+  onEdit,
   onCreateSubtask, 
+  onCreateSubtaskWithActions,
   onUpdateAssignee,
   selectedTaskId,
   onSelectTask
@@ -59,9 +74,11 @@ export const TaskFixedColumns = ({
             selectedTaskId={selectedTaskId}
             onSelectTask={onSelectTask}
             onRowDoubleClick={dialogManager.handleRowDoubleClick}
-            onCreateSubtask={dialogManager.handleCreateSubtask}
+            onCreateSubtask={onCreateSubtask}
+            onCreateSubtaskWithActions={onCreateSubtaskWithActions}
             onDelete={onDelete}
             onDuplicate={onDuplicate}
+            onEdit={onEdit}
             onUpdateAssignee={onUpdateAssignee}
           />
         </Table>

@@ -48,11 +48,25 @@ export const useEmployees = () => {
     try {
       setLoading(true);
       
+      // Log de l'utilisateur connecté
+      const { data: { session } } = await supabase.auth.getSession();
+      console.log('👥 Fetch employees - Utilisateur:', session?.user ? {
+        id: session.user.id,
+        email: session.user.email
+      } : 'Non connecté');
+      
+
       // Fetch employees from profiles table (they now have user_id)
       const { data: employeesData, error: employeesError } = await supabase
         .from('profiles')
         .select('*')
         .order('full_name');
+
+      console.log('👥 Employees query result:', {
+        error: employeesError?.message,
+        count: employeesData?.length || 0,
+        data: employeesData?.slice(0, 2) // Afficher les 2 premiers pour debug
+      });
 
       if (employeesError) throw employeesError;
 

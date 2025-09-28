@@ -1,23 +1,43 @@
+import React, { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { TableCell, TableRow } from '@/components/ui/table';
 import { Progress } from '@/components/ui/progress';
-import { Calendar, Clock, Plus, Trash2 } from 'lucide-react';
+import { Calendar, Clock, Plus, Trash2, Settings } from 'lucide-react';
 import { Task } from '@/hooks/useTasks';
 import { TaskRowActions } from './TaskRowActions';
 import { AssigneeSelect } from './AssigneeSelect';
 import { priorityColors, statusColors, formatDate } from '@/lib/taskHelpers';
 import { DocumentCellColumn } from './DocumentCellColumn';
 import { CommentCellColumn } from './CommentCellColumn';
+import { SubtaskCreationDialog } from './SubtaskCreationDialog';
 
 interface TaskRowProps {
   task: Task;
   selectedTaskId?: string;
   onSelectTask: (taskId: string) => void;
   onRowDoubleClick: (task: Task) => void;
-  onCreateSubtask: (taskId: string) => void;
+  onCreateSubtask: (parentId: string, linkedActionId?: string, customData?: {
+    title: string;
+    start_date: string;
+    due_date: string;
+    effort_estimate_h: number;
+  }) => void;
+  onCreateSubtaskWithActions?: (parentId: string, customData: {
+    title: string;
+    start_date: string;
+    due_date: string;
+    effort_estimate_h: number;
+  }, actions: Array<{
+    id: string;
+    title: string;
+    weight_percentage: number;
+    due_date?: string;
+    notes?: string;
+  }>) => void;
   onDelete: (taskId: string) => void;
   onDuplicate: (taskId: string) => void;
+  onEdit: (taskId: string) => void;
   onUpdateAssignee: (taskId: string, assignee: string) => void;
 }
 
@@ -27,38 +47,42 @@ export const TaskRow = ({
   onSelectTask,
   onRowDoubleClick,
   onCreateSubtask,
+  onCreateSubtaskWithActions,
   onDelete,
   onDuplicate,
+  onEdit,
   onUpdateAssignee
 }: TaskRowProps) => {
   const isSubtask = (task.task_level || 0) > 0;
+  const [subtaskDialogOpen, setSubtaskDialogOpen] = useState(false);
   
   return (
-    <TableRow 
-      className={`border-b border-gantt-grid/30 cursor-pointer transition-colors ${
-        selectedTaskId === task.id ? 'bg-primary/15 border-primary/40' : 'hover:bg-gantt-task-bg/50'
-      }`}
-      style={{ 
-        height: isSubtask ? '51px' : '64px',
-        minHeight: isSubtask ? '51px' : '64px',
-        maxHeight: isSubtask ? '51px' : '64px'
-      }}
-      onClick={(e) => {
-        e.stopPropagation();
-        onSelectTask(task.id);
-      }}
-      onDoubleClick={(e) => {
-        e.stopPropagation();
-        onRowDoubleClick(task);
-      }}
-    >
+    <>
+      <TableRow 
+        className={`border-b border-gantt-grid/30 cursor-pointer transition-colors ${
+          selectedTaskId === task.id ? 'bg-primary/15 border-primary/40' : 'hover:bg-gantt-task-bg/50'
+        }`}
+        style={{ 
+          height: isSubtask ? '51px' : '64px',
+          minHeight: isSubtask ? '51px' : '64px',
+          maxHeight: isSubtask ? '51px' : '64px'
+        }}
+        onClick={(e) => {
+          e.stopPropagation();
+          onSelectTask(task.id);
+        }}
+        onDoubleClick={(e) => {
+          e.stopPropagation();
+          onRowDoubleClick(task);
+        }}
+      >
       {/* Titre de la tâche avec actions */}
       <TableCell 
         className={`font-medium ${isSubtask ? 'py-0 text-sm' : 'py-0'}`} 
         style={{ height: isSubtask ? '51px' : '64px' }}
       >
         <div 
-          className="flex items-center gap-2"
+          className="flex items-center gap-1"
           style={{ paddingLeft: `${(task.task_level || 0) * 20}px` }}
         >
           <Button
@@ -66,9 +90,14 @@ export const TaskRow = ({
             size="sm"
             onClick={(e) => {
               e.stopPropagation();
-              isSubtask ? onDelete(task.id) : onCreateSubtask(task.id);
+              if (isSubtask) {
+                onDelete(task.id);
+              } else {
+                setSubtaskDialogOpen(true); // Ouvrir le dialog complet
+              }
             }}
             className="h-6 w-6 p-0 opacity-70 hover:opacity-100"
+            title={isSubtask ? "Supprimer la sous-tâche" : "Créer une sous-tâche"}
           >
             {isSubtask ? (
               <Trash2 className="h-3 w-3 text-destructive" />
@@ -171,14 +200,25 @@ export const TaskRow = ({
       
       {/* Actions */}
       <TableCell className={isSubtask ? 'py-0 text-xs' : 'py-0'} style={{ height: isSubtask ? '51px' : '64px' }}>
-        {!isSubtask && (
-          <TaskRowActions 
-            taskId={task.id}
-            onDuplicate={onDuplicate}
-            onDelete={onDelete}
-          />
-        )}
+        <TaskRowActions 
+          taskId={task.id}
+          onDuplicate={onDuplicate}
+          onDelete={onDelete}
+          onEdit={onEdit}
+        />
       </TableCell>
     </TableRow>
+      
+      {/* Dialog de création de sous-tâche personnalisée */}
+      {!isSubtask && (
+        <SubtaskCreationDialog
+          open={subtaskDialogOpen}
+          onOpenChange={setSubtaskDialogOpen}
+          parentTask={task}
+          onCreateSubtask={onCreateSubtask}
+          onCreateSubtaskWithActions={onCreateSubtaskWithActions}
+        />
+      )}
+    </>
   );
 };

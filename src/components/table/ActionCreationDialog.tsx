@@ -11,6 +11,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
 import { Calendar } from '@/components/ui/calendar';
+import { LimitedTextArea } from '@/components/ui/limited-text-area';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Textarea } from '@/components/ui/textarea';
 import { CalendarIcon, Plus } from 'lucide-react';
@@ -72,16 +73,14 @@ export const ActionCreationDialog = ({ onCreateAction, selectedTaskId }: ActionC
           {/* Titre */}
           <div className="grid gap-2">
             <Label htmlFor="title">Titre de l'action *</Label>
-            <Input
-              id="title"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="Ex: Révision du code, Tests unitaires..."
-              maxLength={50}
-            />
-            <p className="text-xs text-muted-foreground">
-              {title.length}/50 caractères (limite pour préserver la mise en page)
-            </p>
+            <div className="flex justify-center">
+              <LimitedTextArea
+                value={title}
+                onChange={setTitle}
+                placeholder="Ex: Révision code..."
+                disabled={false}
+              />
+            </div>
           </div>
 
           {/* Poids */}
@@ -129,13 +128,14 @@ export const ActionCreationDialog = ({ onCreateAction, selectedTaskId }: ActionC
           {/* Notes */}
           <div className="grid gap-2">
             <Label htmlFor="notes">Notes (optionnelles)</Label>
-            <Textarea
-              id="notes"
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              placeholder="Détails supplémentaires, instructions..."
-              rows={3}
-            />
+            <div className="flex justify-center">
+              <LimitedTextArea
+                value={notes}
+                onChange={setNotes}
+                placeholder="Détails, instructions..."
+                disabled={false}
+              />
+            </div>
           </div>
         </div>
 
@@ -151,3 +151,4 @@ export const ActionCreationDialog = ({ onCreateAction, selectedTaskId }: ActionC
     </Dialog>
   );
 };
+

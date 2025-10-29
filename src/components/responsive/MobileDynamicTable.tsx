@@ -1,17 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { type Task } from '@/hooks/useTasksWithActions';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { FormattedActionText } from '@/components/ui/formatted-action-text';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Plus, CheckCircle2, Circle } from 'lucide-react';
-import { useTasks, Task } from '@/hooks/useTasks';
-import { LoadingState } from '../table/LoadingState';
-import { ErrorState } from '../table/ErrorState';
+import { LoadingState } from '@/components/table/LoadingState';
+import { ErrorState } from '@/components/table/ErrorState';
+import { Progress } from '@/components/ui/progress';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 interface MobileDynamicTableProps {
   tasks?: Task[];
@@ -77,12 +78,12 @@ function MobileTaskCard({
           </Badge>
           <div className="flex items-center gap-1 ml-auto">
             <Avatar className="h-6 w-6 ring-2 ring-primary/40">
-              <AvatarImage src="" alt={task.assignee} />
+              <AvatarImage src="" alt={task.assigned_name || 'Non assigné'} />
               <AvatarFallback className="text-xs bg-primary/40 text-primary-foreground font-semibold">
-                {task.assignee.slice(0, 2).toUpperCase()}
+                {(task.assigned_name || 'NA').slice(0, 2).toUpperCase()}
               </AvatarFallback>
             </Avatar>
-            <span className="text-xs text-foreground/80">{task.assignee}</span>
+            <span className="text-xs text-foreground/80">{task.assigned_name || 'Non assigné'}</span>
           </div>
         </div>
       </CardHeader>

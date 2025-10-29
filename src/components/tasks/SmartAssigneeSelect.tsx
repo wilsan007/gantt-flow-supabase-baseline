@@ -9,7 +9,7 @@ import { Progress } from '@/components/ui/progress';
 import { Search, TrendingUp, Clock, Calendar } from 'lucide-react';
 import { useEmployees } from '@/hooks/useEmployees';
 import { useSkillsTraining } from '@/hooks/useSkillsTraining';
-import { useTasks } from '@/hooks/useTasks';
+import { useTasksEnterprise as useTasks , type Task } from '@/hooks/useTasksEnterprise';
 
 interface SmartAssigneeSelectProps {
   open: boolean;

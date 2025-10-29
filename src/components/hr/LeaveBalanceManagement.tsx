@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useHR } from '@/hooks/useHR';
+import { useHRMinimal } from '@/hooks/useHRMinimal';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -14,7 +14,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
 export const LeaveBalanceManagement = () => {
-  const { leaveBalances, absenceTypes, employees, loading, refetch } = useHR();
+  const { absenceTypes, employees, leaveBalances, loading, refresh } = useHRMinimal();
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const isMobile = useIsMobile();
@@ -53,7 +53,7 @@ export const LeaveBalanceManagement = () => {
 
       reset();
       setIsCreateDialogOpen(false);
-      refetch();
+      refresh();
     } catch (error: any) {
       console.error('Error creating leave balance:', error);
       toast({
@@ -86,7 +86,7 @@ export const LeaveBalanceManagement = () => {
         description: "Solde mis à jour avec succès"
       });
 
-      refetch();
+      refresh();
     } catch (error: any) {
       console.error('Error updating balance:', error);
       toast({
@@ -225,7 +225,7 @@ export const LeaveBalanceManagement = () => {
         ) : (
           <div className={`grid gap-4 ${isMobile ? 'grid-cols-1' : 'grid-cols-2 lg:grid-cols-3'}`}>
             {filteredBalances.map((balance) => {
-              const employee = employees.find(emp => emp.id === balance.employee_id);
+              const employee = employees.find(emp => emp.user_id === balance.employee_id);
               const absenceType = absenceTypes.find(type => type.id === balance.absence_type_id);
               const usagePercentage = balance.total_days > 0 ? (balance.used_days / balance.total_days) * 100 : 0;
               

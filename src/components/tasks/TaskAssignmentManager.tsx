@@ -5,10 +5,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useEmployees } from '@/hooks/useEmployees';
-import { useTaskCRUD } from '@/hooks/useTaskCRUD';
 import { SmartAssigneeSelect } from './SmartAssigneeSelect';
 import { Users, UserPlus, UserMinus, TrendingUp } from 'lucide-react';
-import type { Task } from '@/hooks/useTasks';
+import type { Task } from '@/types/tasks';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
 
 interface TaskAssignmentManagerProps {
   tasks: Task[];
@@ -20,7 +21,8 @@ export const TaskAssignmentManager: React.FC<TaskAssignmentManagerProps> = ({
   onTaskUpdate
 }) => {
   const { employees } = useEmployees();
-  const { assignTask, loading } = useTaskCRUD();
+  const { toast } = useToast();
+  const [loading, setLoading] = useState(false);
   const [selectedTask, setSelectedTask] = useState<string>('');
   const [selectedEmployee, setSelectedEmployee] = useState<string>('');
   const [showSmartAssignee, setShowSmartAssignee] = useState(false);
@@ -31,22 +33,60 @@ export const TaskAssignmentManager: React.FC<TaskAssignmentManagerProps> = ({
   const handleAssignTask = async () => {
     if (!selectedTask || !selectedEmployee) return;
     
+    setLoading(true);
     try {
-      await assignTask(selectedTask, selectedEmployee);
+      const { error } = await supabase
+        .from('tasks')
+        .update({ assignee_id: selectedEmployee })
+        .eq('id', selectedTask);
+      
+      if (error) throw error;
+      
+      toast({
+        title: 'Tâche assignée',
+        description: 'La tâche a été assignée avec succès',
+      });
+      
       setSelectedTask('');
       setSelectedEmployee('');
       onTaskUpdate();
     } catch (error) {
       console.error('Error assigning task:', error);
+      toast({
+        title: 'Erreur',
+        description: 'Impossible d\'assigner la tâche',
+        variant: 'destructive',
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleUnassignTask = async (taskId: string) => {
+    setLoading(true);
     try {
-      await assignTask(taskId, '');
+      const { error } = await supabase
+        .from('tasks')
+        .update({ assignee_id: null })
+        .eq('id', taskId);
+      
+      if (error) throw error;
+      
+      toast({
+        title: 'Tâche désassignée',
+        description: 'La tâche a été désassignée avec succès',
+      });
+      
       onTaskUpdate();
     } catch (error) {
       console.error('Error unassigning task:', error);
+      toast({
+        title: 'Erreur',
+        description: 'Impossible de désassigner la tâche',
+        variant: 'destructive',
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -59,10 +99,14 @@ export const TaskAssignmentManager: React.FC<TaskAssignmentManagerProps> = ({
     
     assignedTasks.forEach(task => {
       if (task.assignee) {
-        if (!tasksByEmployee[task.assignee]) {
-          tasksByEmployee[task.assignee] = [];
+        const assigneeKey = typeof task.assignee === 'object' 
+          ? task.assignee.full_name 
+          : task.assigned_name || 'Unknown';
+        
+        if (!tasksByEmployee[assigneeKey]) {
+          tasksByEmployee[assigneeKey] = [];
         }
-        tasksByEmployee[task.assignee].push(task);
+        tasksByEmployee[assigneeKey].push(task);
       }
     });
     

@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Alignement Automatique des Colonnes</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #f5f5f5;
+        }
+
+        .table-demo {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+            background: white;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+
+        /* En-tête fixe */
+        .fixed-table-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-bottom: 2px solid rgba(102, 126, 234, 0.3);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .fixed-table-header table {
+            table-layout: auto;
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .fixed-table-header th {
+            color: #ffffff;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+            font-weight: 700;
+            padding: 12px 8px;
+            border-right: 1px solid rgba(255, 255, 255, 0.2);
+            text-align: left;
+        }
+
+        /* Colonne Tâche avec ajustement automatique */
+        .fixed-table-header th:nth-child(1),
+        .table-body-container td:nth-child(1) {
+            min-width: 150px;
+            max-width: 350px;
+            width: auto !important;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Corps du tableau */
+        .table-body-container {
+            height: 400px;
+            overflow: auto;
+        }
+
+        .table-body-container table {
+            table-layout: auto;
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table-body-container td {
+            padding: 12px 8px;
+            border-right: 1px solid #e5e7eb;
+            border-bottom: 1px solid #e5e7eb;
+            text-align: left;
+        }
+
+        .table-body-container tr:hover {
+            background: #f8f9fa;
+        }
+
+        /* Autres colonnes */
+        .fixed-table-header th:nth-child(2),
+        .table-body-container td:nth-child(2) { min-width: 150px; width: 150px; }
+
+        .fixed-table-header th:nth-child(3),
+        .table-body-container td:nth-child(3) { min-width: 80px; width: 80px; }
+
+        .fixed-table-header th:nth-child(4),
+        .table-body-container td:nth-child(4) { min-width: 80px; width: 80px; }
+
+        .fixed-table-header th:nth-child(5),
+        .table-body-container td:nth-child(5) { min-width: 80px; width: 80px; }
+
+        .info-box {
+            background: #e3f2fd;
+            border: 1px solid #2196f3;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .test-controls {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .test-button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            margin: 5px;
+        }
+
+        .test-button:hover {
+            transform: translateY(-1px);
+        }
+    </style>
+</head>
+<body>
+    <h1>🔧 Test Alignement Automatique des Colonnes</h1>
+    
+    <div class="table-demo">
+        <div class="fixed-table-header">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tâche</th>
+                        <th>Responsable</th>
+                        <th>Début</th>
+                        <th>Échéance</th>
+                        <th>Statut</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+
+        <div class="table-body-container">
+            <table>
+                <tbody id="tableBody">
+                    <tr>
+                        <td>Tâche courte</td>
+                        <td>Jean Dupont</td>
+                        <td>01/10</td>
+                        <td>07/10</td>
+                        <td>En cours</td>
+                    </tr>
+                    <tr>
+                        <td>Tâche avec un nom beaucoup plus long qui doit s'adapter</td>
+                        <td>Marie Martin</td>
+                        <td>02/10</td>
+                        <td>08/10</td>
+                        <td>Terminé</td>
+                    </tr>
+                    <tr>
+                        <td>Design UI/UX</td>
+                        <td>Pierre Durand</td>
+                        <td>03/10</td>
+                        <td>09/10</td>
+                        <td>À faire</td>
+                    </tr>
+                    <tr>
+                        <td>Développement de la fonctionnalité de gestion des utilisateurs avec authentification</td>
+                        <td>Sophie Leroy</td>
+                        <td>04/10</td>
+                        <td>10/10</td>
+                        <td>En cours</td>
+                    </tr>
+                    <tr>
+                        <td>Test</td>
+                        <td>Luc Bernard</td>
+                        <td>05/10</td>
+                        <td>11/10</td>
+                        <td>À faire</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="test-controls">
+        <h3>🧪 Contrôles de Test</h3>
+        <button class="test-button" onclick="addLongTask()">Ajouter Tâche Longue</button>
+        <button class="test-button" onclick="addShortTask()">Ajouter Tâche Courte</button>
+        <button class="test-button" onclick="syncColumnWidths()">Synchroniser Largeurs</button>
+        <button class="test-button" onclick="resetTable()">Reset</button>
+    </div>
+
+    <div class="info-box">
+        <h3>✅ Fonctionnalités Testées :</h3>
+        <ul>
+            <li><strong>Ajustement automatique</strong> → La colonne "Tâche" s'adapte au contenu</li>
+            <li><strong>Largeur minimale</strong> → 150px minimum pour éviter les colonnes trop étroites</li>
+            <li><strong>Largeur maximale</strong> → 350px maximum pour éviter les colonnes trop larges</li>
+            <li><strong>Text overflow</strong> → Ellipsis (...) pour les textes trop longs</li>
+            <li><strong>Alignement parfait</strong> → En-tête et corps synchronisés</li>
+            <li><strong>Responsive</strong> → S'adapte au contenu dynamiquement</li>
+        </ul>
+
+        <h3>🎯 Résultat Attendu :</h3>
+        <p>La colonne "Tâche" doit s'ajuster automatiquement à la largeur du contenu le plus long, tout en respectant les limites min/max. L'alignement entre l'en-tête et le corps doit être parfait.</p>
+    </div>
+
+    <script>
+        function syncColumnWidths() {
+            // Calculer la largeur optimale pour la colonne "Tâche"
+            const taskCells = document.querySelectorAll('.table-body-container td:nth-child(1)');
+            const taskHeader = document.querySelector('.fixed-table-header th:nth-child(1)');
+            
+            let maxWidth = 150; // Largeur minimale
+            
+            taskCells.forEach(cell => {
+                const textContent = cell.textContent || '';
+                const tempSpan = document.createElement('span');
+                tempSpan.style.visibility = 'hidden';
+                tempSpan.style.position = 'absolute';
+                tempSpan.style.whiteSpace = 'nowrap';
+                tempSpan.style.fontSize = '14px';
+                tempSpan.style.fontFamily = 'Arial, sans-serif';
+                tempSpan.textContent = textContent;
+                
+                document.body.appendChild(tempSpan);
+                const width = tempSpan.offsetWidth + 24; // +24 pour le padding
+                maxWidth = Math.max(maxWidth, Math.min(width, 350)); // Max 350px
+                document.body.removeChild(tempSpan);
+            });
+            
+            // Appliquer la largeur calculée
+            if (taskHeader) {
+                taskHeader.style.width = `${maxWidth}px`;
+            }
+            
+            taskCells.forEach(cell => {
+                cell.style.width = `${maxWidth}px`;
+            });
+            
+            console.log(`Largeur optimale calculée: ${maxWidth}px`);
+        }
+
+        function addLongTask() {
+            const tbody = document.getElementById('tableBody');
+            const newRow = document.createElement('tr');
+            newRow.innerHTML = `
+                <td>Nouvelle tâche avec un nom extrêmement long qui va tester l'ajustement automatique de la largeur</td>
+                <td>Nouveau User</td>
+                <td>06/10</td>
+                <td>12/10</td>
+                <td>Nouveau</td>
+            `;
+            tbody.appendChild(newRow);
+            setTimeout(syncColumnWidths, 100);
+        }
+
+        function addShortTask() {
+            const tbody = document.getElementById('tableBody');
+            const newRow = document.createElement('tr');
+            newRow.innerHTML = `
+                <td>Court</td>
+                <td>User</td>
+                <td>07/10</td>
+                <td>13/10</td>
+                <td>Test</td>
+            `;
+            tbody.appendChild(newRow);
+            setTimeout(syncColumnWidths, 100);
+        }
+
+        function resetTable() {
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = `
+                <tr>
+                    <td>Tâche courte</td>
+                    <td>Jean Dupont</td>
+                    <td>01/10</td>
+                    <td>07/10</td>
+                    <td>En cours</td>
+                </tr>
+                <tr>
+                    <td>Tâche avec un nom beaucoup plus long qui doit s'adapter</td>
+                    <td>Marie Martin</td>
+                    <td>02/10</td>
+                    <td>08/10</td>
+                    <td>Terminé</td>
+                </tr>
+                <tr>
+                    <td>Design UI/UX</td>
+                    <td>Pierre Durand</td>
+                    <td>03/10</td>
+                    <td>09/10</td>
+                    <td>À faire</td>
+                </tr>
+                <tr>
+                    <td>Développement de la fonctionnalité de gestion des utilisateurs avec authentification</td>
+                    <td>Sophie Leroy</td>
+                    <td>04/10</td>
+                    <td>10/10</td>
+                    <td>En cours</td>
+                </tr>
+                <tr>
+                    <td>Test</td>
+                    <td>Luc Bernard</td>
+                    <td>05/10</td>
+                    <td>11/10</td>
+                    <td>À faire</td>
+                </tr>
+            `;
+            setTimeout(syncColumnWidths, 100);
+        }
+
+        // Initialisation automatique
+        window.onload = function() {
+            setTimeout(syncColumnWidths, 500);
+        };
+
+        // Re-synchroniser lors du redimensionnement
+        window.addEventListener('resize', () => {
+            setTimeout(syncColumnWidths, 100);
+        });
+    </script>
+</body>
+</html>

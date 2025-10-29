@@ -1,0 +1,13 @@
+{
+  "timestamp": "2025-10-13T22:20:49.445Z",
+  "tests": {
+    "projects": {
+      "success": false,
+      "error": "permission denied for table projects"
+    },
+    "hr": {
+      "success": false,
+      "error": "permission denied for table employees"
+    }
+  }
+}

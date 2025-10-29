@@ -1,204 +1,174 @@
+/**
+ * ProjectTableView - Vue tableau des projets
+ * Pattern: Data table (Notion/Airtable)
+ */
+
 import React from 'react';
-import { Card, CardContent } from '@/components/ui/card';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@/components/ui/resizable';
+import { Calendar, Users } from 'lucide-react';
 
 interface Project {
   id: string;
   name: string;
-  status: string; // 'planning', 'active', 'completed', 'on_hold'
-  progress: number;
-  manager: string;
-  skills: string[];
-  start_date: string;
-  end_date: string;
-}
-
-interface Task {
-  id: string;
-  title: string;
-  project_name: string;
-  progress: number;
-  assignee: string;
+  description?: string;
   status: string;
+  priority: string;
+  start_date?: string;
+  due_date?: string;
+  progress?: number;
+  budget?: number;
+  owner_id?: string;
+  owner_name?: string;
+  team_size?: number;
 }
 
 interface ProjectTableViewProps {
   projects: Project[];
-  tasks: Task[];
+  loading?: boolean;
+  onProjectClick?: (project: Project) => void;
 }
 
-export const ProjectTableView: React.FC<ProjectTableViewProps> = ({ projects, tasks }) => {
-  const getTasksForProject = (projectName: string) => {
-    return tasks.filter(task => task.project_name === projectName);
-  };
+const STATUS_COLORS = {
+  active: 'bg-green-500',
+  planning: 'bg-blue-500',
+  on_hold: 'bg-yellow-500',
+  completed: 'bg-gray-500',
+  cancelled: 'bg-red-500',
+};
 
-  const getStatusBadge = (status: string) => {
-    const statusConfig = {
-      'planning': { label: 'Planification', color: 'bg-gray-500 text-white' },
-      'active': { label: 'En cours', color: 'bg-blue-500 text-white' },
-      'completed': { label: 'Terminé', color: 'bg-green-500 text-white' },
-      'on_hold': { label: 'En pause', color: 'bg-yellow-500 text-white' }
-    };
-    return statusConfig[status as keyof typeof statusConfig] || { label: status, color: 'bg-gray-500' };
-  };
+const PRIORITY_COLORS = {
+  low: 'bg-slate-400',
+  medium: 'bg-yellow-500',
+  high: 'bg-orange-500',
+  urgent: 'bg-red-600',
+};
+
+export const ProjectTableView: React.FC<ProjectTableViewProps> = ({
+  projects,
+  loading,
+  onProjectClick,
+}) => {
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <p className="text-muted-foreground">Chargement des projets...</p>
+      </div>
+    );
+  }
+
+  if (projects.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center py-12">
+        <p className="text-lg font-medium text-muted-foreground">Aucun projet</p>
+        <p className="text-sm text-muted-foreground mt-2">
+          Créez votre premier projet pour commencer
+        </p>
+      </div>
+    );
+  }
 
   return (
-    <ResizablePanelGroup direction="horizontal" className="border rounded-lg border-border/50 overflow-hidden">
-      {/* Panel gauche - Projets */}
-      <ResizablePanel defaultSize={40} minSize={30}>
-        <div className="h-full bg-background border-r">
-          <div className="p-4 border-b bg-muted/50">
-            <h3 className="font-semibold text-lg">📁 Projets</h3>
-          </div>
-          <div className="p-4 space-y-3 overflow-y-auto max-h-[600px]">
-            {projects.map((project) => {
-              const statusBadge = getStatusBadge(project.status);
-              const projectTasks = getTasksForProject(project.name);
-              
-              return (
-                <Card key={project.id} className="hover:shadow-md transition-shadow">
-                  <CardContent className="p-4">
-                    <div className="space-y-3">
-                      {/* Nom et statut du projet */}
-                      <div className="flex items-center justify-between">
-                        <h4 className="font-bold text-lg text-primary" style={{ fontSize: '1.1rem' }}>
-                          {project.name}
-                        </h4>
-                        <Badge className={statusBadge.color}>
-                          {statusBadge.label}
-                        </Badge>
-                      </div>
-                      
-                      {/* Informations du projet */}
-                      <div className="space-y-2">
-                        <div className="text-sm text-muted-foreground">
-                          Manager: {project.manager}
-                        </div>
-                        
-                        <div className="flex items-center gap-2">
-                          <Progress value={project.progress} className="flex-1" />
-                          <span className="text-sm font-medium">{project.progress}%</span>
-                        </div>
-                        
-                        <div className="flex flex-wrap gap-1">
-                          {project.skills.slice(0, 3).map((skill) => (
-                            <Badge key={skill} variant="outline" className="text-xs">
-                              {skill}
-                            </Badge>
-                          ))}
-                          {project.skills.length > 3 && (
-                            <Badge variant="outline" className="text-xs">
-                              +{project.skills.length - 3}
-                            </Badge>
-                          )}
-                        </div>
-                        
-                        <div className="text-xs text-muted-foreground">
-                          {projectTasks.length} tâche{projectTasks.length > 1 ? 's' : ''}
-                        </div>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              );
-            })}
-          </div>
-        </div>
-      </ResizablePanel>
+    <div className="rounded-md border">
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Projet</TableHead>
+            <TableHead>Statut</TableHead>
+            <TableHead>Priorité</TableHead>
+            <TableHead>Responsable</TableHead>
+            <TableHead>Échéance</TableHead>
+            <TableHead>Progression</TableHead>
+            <TableHead>Budget</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {projects.map((project) => (
+            <TableRow
+              key={project.id}
+              className="cursor-pointer hover:bg-muted/50"
+              onClick={() => onProjectClick?.(project)}
+            >
+              <TableCell>
+                <div className="flex flex-col">
+                  <span className="font-medium">{project.name}</span>
+                  {project.description && (
+                    <span className="text-xs text-muted-foreground truncate max-w-md">
+                      {project.description}
+                    </span>
+                  )}
+                </div>
+              </TableCell>
 
-      <ResizableHandle withHandle />
+              <TableCell>
+                <Badge
+                  variant="secondary"
+                  className={`${STATUS_COLORS[project.status as keyof typeof STATUS_COLORS] || 'bg-gray-500'} text-white`}
+                >
+                  {project.status}
+                </Badge>
+              </TableCell>
 
-      {/* Panel droit - Tâches */}
-      <ResizablePanel defaultSize={60} minSize={40}>
-        <div className="h-full bg-background">
-          <div className="p-4 border-b bg-muted/50">
-            <h3 className="font-semibold text-lg">📝 Tâches Associées</h3>
-          </div>
-          <div className="p-4 space-y-4 overflow-y-auto max-h-[600px]">
-            {projects.map((project) => {
-              const projectTasks = getTasksForProject(project.name);
-              
-              if (projectTasks.length === 0) return null;
-              
-              return (
-                <div key={project.id} className="space-y-2">
-                  {/* Nom du projet en en-tête */}
-                  <div className="font-bold text-primary border-b pb-1" style={{ 
-                    fontSize: '1.1rem',
-                    fontFamily: 'system-ui, -apple-system, sans-serif'
-                  }}>
-                    📁 {project.name}
+              <TableCell>
+                <Badge
+                  className={`${PRIORITY_COLORS[project.priority as keyof typeof PRIORITY_COLORS] || 'bg-gray-500'} text-white`}
+                >
+                  {project.priority}
+                </Badge>
+              </TableCell>
+
+              <TableCell>
+                {project.owner_name ? (
+                  <div className="flex items-center gap-2">
+                    <Users className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-sm">{project.owner_name}</span>
                   </div>
-                  
-                  {/* Tâches du projet */}
-                  <div className="pl-4 space-y-2">
-                    {projectTasks.map((task) => (
-                      <Card key={task.id} className="border-l-4 border-l-primary/30">
-                        <CardContent className="p-3">
-                          <div className="flex items-center justify-between">
-                            <div className="flex-1">
-                              <h5 className="font-medium">{task.title}</h5>
-                              <div className="text-sm text-muted-foreground">
-                                Assigné à: {task.assignee}
-                              </div>
-                            </div>
-                            <div className="text-right space-y-1">
-                              <Badge variant="outline" className="text-xs">
-                                {task.status}
-                              </Badge>
-                              <div className="flex items-center gap-2">
-                                <Progress value={task.progress} className="w-16" />
-                                <span className="text-xs font-medium">{task.progress}%</span>
-                              </div>
-                            </div>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    ))}
+                ) : (
+                  <span className="text-sm text-muted-foreground">Non assigné</span>
+                )}
+              </TableCell>
+
+              <TableCell>
+                {project.due_date ? (
+                  <div className="flex items-center gap-1 text-sm">
+                    <Calendar className="h-4 w-4" />
+                    {new Date(project.due_date).toLocaleDateString('fr-FR')}
                   </div>
+                ) : (
+                  <span className="text-muted-foreground">-</span>
+                )}
+              </TableCell>
+
+              <TableCell>
+                <div className="flex items-center gap-2">
+                  <Progress value={project.progress || 0} className="w-20" />
+                  <span className="text-sm text-muted-foreground">
+                    {project.progress || 0}%
+                  </span>
                 </div>
-              );
-            })}
-            
-            {tasks.filter(task => !projects.some(p => p.name === task.project_name)).length > 0 && (
-              <div className="space-y-2">
-                <div className="font-bold text-muted-foreground border-b pb-1">
-                  📝 Tâches sans projet
-                </div>
-                <div className="pl-4 space-y-2">
-                  {tasks
-                    .filter(task => !projects.some(p => p.name === task.project_name))
-                    .map((task) => (
-                      <Card key={task.id} className="border-l-4 border-l-muted">
-                        <CardContent className="p-3">
-                          <div className="flex items-center justify-between">
-                            <div className="flex-1">
-                              <h5 className="font-medium">{task.title}</h5>
-                              <div className="text-sm text-muted-foreground">
-                                Assigné à: {task.assignee}
-                              </div>
-                            </div>
-                            <div className="text-right space-y-1">
-                              <Badge variant="outline" className="text-xs">
-                                {task.status}
-                              </Badge>
-                              <div className="flex items-center gap-2">
-                                <Progress value={task.progress} className="w-16" />
-                                <span className="text-xs font-medium">{task.progress}%</span>
-                              </div>
-                            </div>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    ))}
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-      </ResizablePanel>
-    </ResizablePanelGroup>
+              </TableCell>
+
+              <TableCell>
+                {project.budget ? (
+                  <span className="text-sm font-medium">
+                    {project.budget.toLocaleString('fr-FR')} €
+                  </span>
+                ) : (
+                  <span className="text-muted-foreground">-</span>
+                )}
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </div>
   );
 };

@@ -8,6 +8,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Loader2, UserPlus, Building, Mail, User, Lock, Eye, EyeOff } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { useMultiplePlaceholderHandler } from '@/hooks/usePlaceholderHandler';
 
 interface SignupForm {
   email: string;
@@ -28,6 +29,13 @@ export const TenantOwnerSignup: React.FC = () => {
     confirmPassword: '',
     fullName: '',
     companyName: ''
+  });
+  
+  // Gestion des placeholders
+  const { handleFocus, getPlaceholder } = useMultiplePlaceholderHandler({
+    companyName: 'Mon Entreprise SARL',
+    password: 'Minimum 8 caractères',
+    confirmPassword: 'Répétez votre mot de passe'
   });
   
   const [isLoading, setIsLoading] = useState(false);
@@ -496,9 +504,10 @@ export const TenantOwnerSignup: React.FC = () => {
               <Input
                 id="companyName"
                 type="text"
-                placeholder="Mon Entreprise SARL"
+                placeholder={getPlaceholder('companyName', form.companyName)}
                 value={form.companyName}
                 onChange={(e) => handleInputChange('companyName', e.target.value)}
+                onFocus={() => handleFocus('companyName')}
                 disabled={isLoading}
                 className="pl-10"
               />
@@ -512,9 +521,10 @@ export const TenantOwnerSignup: React.FC = () => {
               <Input
                 id="password"
                 type={showPassword ? "text" : "password"}
-                placeholder="Minimum 8 caractères"
+                placeholder={getPlaceholder('password', form.password)}
                 value={form.password}
                 onChange={(e) => handleInputChange('password', e.target.value)}
+                onFocus={() => handleFocus('password')}
                 disabled={isLoading}
                 className="pl-10 pr-10"
               />
@@ -541,9 +551,10 @@ export const TenantOwnerSignup: React.FC = () => {
               <Input
                 id="confirmPassword"
                 type={showConfirmPassword ? "text" : "password"}
-                placeholder="Répétez votre mot de passe"
+                placeholder={getPlaceholder('confirmPassword', form.confirmPassword)}
                 value={form.confirmPassword}
                 onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
+                onFocus={() => handleFocus('confirmPassword')}
                 disabled={isLoading}
                 className="pl-10 pr-10"
               />

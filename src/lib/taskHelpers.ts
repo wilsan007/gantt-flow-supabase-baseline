@@ -1,4 +1,4 @@
-import { Task } from '@/hooks/useTasks';
+import { Task , type Task } from '@/hooks/useTasksEnterprise';
 
 export const priorityColors = {
   low: 'bg-success/10 text-success border-success/20',

@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Complet Couleurs Tableau</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #f5f5f5;
+        }
+
+        .full-table-demo {
+            display: flex;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            background: white;
+            margin-bottom: 30px;
+        }
+
+        /* Partie gauche - Colonnes fixes */
+        .left-section {
+            flex: 2;
+            border-right: 1px solid #ddd;
+        }
+
+        .left-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 15px;
+            color: #ffffff;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+            font-weight: 700;
+            border-bottom: 2px solid rgba(102, 126, 234, 0.3);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+        }
+
+        .left-content {
+            padding: 20px;
+            background: white;
+        }
+
+        /* Partie droite - Colonnes d'actions */
+        .right-section {
+            flex: 1;
+        }
+
+        .right-header {
+            padding: 15px;
+            color: #ffffff;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.4);
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .right-header.default {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            border-bottom: 2px solid rgba(79, 172, 254, 0.4);
+            box-shadow: 0 4px 12px rgba(79, 172, 254, 0.2);
+        }
+
+        .right-header.selected {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            border-bottom: 2px solid rgba(245, 87, 108, 0.4);
+            box-shadow: 0 4px 12px rgba(245, 87, 108, 0.3);
+        }
+
+        .right-content {
+            padding: 20px;
+            background: white;
+            text-align: center;
+        }
+
+        .action-columns {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin: 15px 0;
+        }
+
+        .action-column {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .action-column.highlighted {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            transform: scale(1.05);
+            border: 2px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 4px 12px rgba(255, 255, 255, 0.2);
+        }
+
+        .action-column.highlighted::after {
+            content: '';
+            display: block;
+            width: 16px;
+            height: 4px;
+            background: linear-gradient(90deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.6) 100%);
+            border-radius: 2px;
+            margin: 4px auto 0;
+            animation: pulse 2s infinite;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .demo-controls {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .control-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            margin: 0 10px;
+            transition: transform 0.2s ease;
+        }
+
+        .control-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .color-comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .color-card {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .color-header {
+            padding: 20px;
+            text-align: center;
+            color: white;
+            font-weight: 700;
+        }
+
+        .color-header.main {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+        }
+
+        .color-header.action-default {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            text-shadow: 0 1px 3px rgba(0,0,0,0.4);
+        }
+
+        .color-header.action-selected {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            text-shadow: 0 1px 3px rgba(0,0,0,0.4);
+        }
+
+        .color-info {
+            padding: 15px;
+            text-align: center;
+            color: #666;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-left: 10px;
+        }
+
+        .status-indicator.active {
+            background: #4CAF50;
+            animation: pulse 2s infinite;
+        }
+
+        .status-indicator.inactive {
+            background: #ccc;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎨 Test Complet - Couleurs Tableau Dynamique</h1>
+    
+    <div class="full-table-demo">
+        <div class="left-section">
+            <div class="left-header">
+                <h3>📊 Colonnes Fixes</h3>
+                <p style="margin: 5px 0 0 0; font-size: 12px; opacity: 0.9;">
+                    Tâche • Responsable • Dates • Statut
+                </p>
+            </div>
+            <div class="left-content">
+                <p><strong>En-tête Principal</strong></p>
+                <p>Dégradé violet-bleu élégant</p>
+                <p>Texte blanc avec ombre</p>
+                <p>Toujours visible (sticky)</p>
+            </div>
+        </div>
+
+        <div class="right-section">
+            <div class="right-header default" id="rightHeader">
+                <h3>⚡ Actions</h3>
+                <p style="margin: 5px 0 0 0; font-size: 12px; opacity: 0.9;" id="headerStatus">
+                    Mode par défaut
+                </p>
+            </div>
+            <div class="right-content">
+                <p><strong>Colonnes d'Actions</strong></p>
+                <div class="action-columns">
+                    <div class="action-column" onclick="toggleAction(this)">Action 1</div>
+                    <div class="action-column" onclick="toggleAction(this)">Action 2</div>
+                    <div class="action-column highlighted" onclick="toggleAction(this)">Action 3</div>
+                    <div class="action-column" onclick="toggleAction(this)">Action 4</div>
+                </div>
+                <p>Cliquez sur les actions pour les sélectionner</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="demo-controls">
+        <button class="control-btn" onclick="toggleTableState()">
+            🔄 Basculer État Global
+        </button>
+        <button class="control-btn" onclick="resetActions()">
+            🔄 Reset Actions
+        </button>
+        <span id="globalState">État: Par défaut</span>
+        <span class="status-indicator active" id="statusIndicator"></span>
+    </div>
+
+    <div class="color-comparison">
+        <div class="color-card">
+            <div class="color-header main">
+                <h4>En-tête Principal</h4>
+            </div>
+            <div class="color-info">
+                <p><strong>Violet → Bleu</strong></p>
+                <p>#667eea → #764ba2</p>
+                <p>Colonnes fixes</p>
+                <p>Toujours stable</p>
+            </div>
+        </div>
+
+        <div class="color-card">
+            <div class="color-header action-default">
+                <h4>Actions (Défaut)</h4>
+            </div>
+            <div class="color-info">
+                <p><strong>Bleu → Cyan</strong></p>
+                <p>#4facfe → #00f2fe</p>
+                <p>Mode normal</p>
+                <p>Aucune sélection</p>
+            </div>
+        </div>
+
+        <div class="color-card">
+            <div class="color-header action-selected">
+                <h4>Actions (Sélection)</h4>
+            </div>
+            <div class="color-info">
+                <p><strong>Rose → Rouge</strong></p>
+                <p>#f093fb → #f5576c</p>
+                <p>Tâche sélectionnée</p>
+                <p>Mode actif</p>
+            </div>
+        </div>
+    </div>
+
+    <div style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+        <h3>✅ Caractéristiques Appliquées :</h3>
+        <ul>
+            <li><strong>Cohérence visuelle</strong> → Même style pour les deux parties</li>
+            <li><strong>Contraste optimal</strong> → Texte blanc sur tous les fonds colorés</li>
+            <li><strong>Text-shadow renforcé</strong> → Lisibilité maximale</li>
+            <li><strong>Transitions fluides</strong> → Animation 0.3s sur tous les changements</li>
+            <li><strong>États dynamiques</strong> → Couleurs qui changent selon la sélection</li>
+            <li><strong>Indicateurs visuels</strong> → Points lumineux qui pulsent</li>
+            <li><strong>Repositionnement</strong> → Actions sélectionnées mises en avant</li>
+        </ul>
+    </div>
+
+    <script>
+        let isGlobalSelected = false;
+        let selectedActions = new Set(['Action 3']);
+
+        function toggleAction(element) {
+            const actionName = element.textContent;
+            
+            if (selectedActions.has(actionName)) {
+                selectedActions.delete(actionName);
+                element.classList.remove('highlighted');
+            } else {
+                selectedActions.add(actionName);
+                element.classList.add('highlighted');
+            }
+            
+            updateHeaderState();
+        }
+
+        function toggleTableState() {
+            isGlobalSelected = !isGlobalSelected;
+            updateHeaderState();
+            
+            document.getElementById('globalState').textContent = 
+                `État: ${isGlobalSelected ? 'Sélectionné' : 'Par défaut'}`;
+            
+            const indicator = document.getElementById('statusIndicator');
+            indicator.className = `status-indicator ${isGlobalSelected ? 'active' : 'inactive'}`;
+        }
+
+        function resetActions() {
+            selectedActions.clear();
+            selectedActions.add('Action 3');
+            
+            document.querySelectorAll('.action-column').forEach((el, index) => {
+                if (index === 2) {
+                    el.classList.add('highlighted');
+                } else {
+                    el.classList.remove('highlighted');
+                }
+            });
+            
+            updateHeaderState();
+        }
+
+        function updateHeaderState() {
+            const header = document.getElementById('rightHeader');
+            const status = document.getElementById('headerStatus');
+            
+            if (selectedActions.size > 0 || isGlobalSelected) {
+                header.className = 'right-header selected';
+                status.textContent = `${selectedActions.size} action(s) sélectionnée(s)`;
+            } else {
+                header.className = 'right-header default';
+                status.textContent = 'Mode par défaut';
+            }
+        }
+
+        // Animation d'introduction
+        setTimeout(() => {
+            document.querySelector('.full-table-demo').style.transform = 'scale(1)';
+            document.querySelector('.full-table-demo').style.opacity = '1';
+        }, 100);
+    </script>
+</body>
+</html>

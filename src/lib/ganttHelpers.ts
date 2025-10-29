@@ -10,7 +10,7 @@ export interface GanttTask {
   assignee: string;
   priority: string;
   status: string;
-  projectName?: string; // Nom du projet pour le regroupement et les couleurs
+  project_id?: string; // ✅ UNIQUEMENT project_id pour lier au projet (pas de projectName)
 }
 
 export interface ViewConfig {
@@ -50,8 +50,8 @@ export const getViewConfig = (viewMode: ViewMode): ViewConfig => {
       return { 
         unitWidth: 200, 
         headerHeight: 80,
-        getUnit: (date: Date) => date.toLocaleDateString('fr-FR', { month: 'short' }),
-        getSubUnit: (date: Date) => date.getFullYear().toString(),
+        getUnit: (date: Date) => date.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' }),
+        getSubUnit: (date: Date) => `${date.toLocaleDateString('fr-FR', { month: 'short' })} ${date.getFullYear()}`,
         unitDuration: 30
       };
     default:
@@ -71,6 +71,14 @@ export const getTaskWidth = (task: GanttTask, config: ViewConfig) => {
 };
 
 export const getTotalUnits = (startDate: Date, endDate: Date, config: ViewConfig) => {
+  // Pour le mode mois, calculer le nombre de mois entre les dates
+  if (config.unitDuration === 30) {
+    const monthsDiff = (endDate.getFullYear() - startDate.getFullYear()) * 12 + 
+                       (endDate.getMonth() - startDate.getMonth());
+    return Math.max(1, monthsDiff + 1); // +1 pour inclure le mois de fin
+  }
+  
+  // Pour jour et semaine, utiliser le calcul en jours
   const totalDays = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
   return Math.ceil(totalDays / config.unitDuration);
 };

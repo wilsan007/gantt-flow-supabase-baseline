@@ -10,7 +10,8 @@ interface DragState {
 export const useGanttDrag = (
   config: ViewConfig,
   timelineStartDate: Date,
-  updateTaskDates?: (taskId: string, startDate: string, endDate: string) => Promise<void>
+  updateTaskDates?: (taskId: string, startDate: string, endDate: string) => Promise<void>,
+  onError?: (taskId: string) => Promise<void>
 ) => {
   const [draggedTask, setDraggedTask] = useState<string | null>(null);
   const [resizeTask, setResizeTask] = useState<{ taskId: string; side: 'left' | 'right' } | null>(null);
@@ -128,14 +129,23 @@ export const useGanttDrag = (
       }
     } catch (error) {
       console.error('Error updating task:', error);
-      // Reset visual state on error
-      window.location.reload();
+      // ✅ Utiliser la fonction de callback pour gérer l'erreur et rafraîchir les données
+      if (onError) {
+        const errorTaskId = draggedTask || resizeTask?.taskId;
+        if (errorTaskId) {
+          // Appeler le callback qui va refresh() les données depuis Supabase
+          await onError(errorTaskId);
+        }
+      } else {
+        // Fallback : recharger la page si pas de callback
+        window.location.reload();
+      }
     } finally {
       setDraggedTask(null);
       setResizeTask(null);
       setDragStart(null);
     }
-  }, [dragStart, draggedTask, resizeTask, config, updateTaskDates]);
+  }, [dragStart, draggedTask, resizeTask, config, updateTaskDates, onError]);
 
   return {
     draggedTask,

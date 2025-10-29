@@ -7,8 +7,10 @@ import {
 } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { FormattedActionText } from '@/components/ui/formatted-action-text';
 import { Progress } from '@/components/ui/progress';
-import { Separator } from '@/components/ui/separator';
+import { Task , type Task } from '@/hooks/useTasksEnterprise';
+import { format } from 'date-fns';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { 
@@ -26,7 +28,7 @@ import {
   Link,
   History
 } from 'lucide-react';
-import { Task } from '@/hooks/useTasks';
+import { Task , type Task } from '@/hooks/useTasksEnterprise';
 import { useTaskDetails } from '@/hooks/useTaskDetails';
 import { TaskHistorySection } from '@/components/task/TaskHistorySection';
 import { priorityColors, statusColors, formatDate } from '@/lib/taskHelpers';
@@ -191,7 +193,10 @@ export const TaskDetailsDialog = ({ open, onOpenChange, task }: TaskDetailsDialo
                       {task.task_actions.map((action) => (
                         <div key={action.id} className="flex items-center gap-3 p-2 bg-muted rounded-lg">
                           <div className={`h-3 w-3 rounded-full ${action.is_done ? 'bg-green-500' : 'bg-gray-300'}`} />
-                          <span className={action.is_done ? 'line-through text-muted-foreground' : ''}>{action.title}</span>
+                          <FormattedActionText 
+                            text={action.title}
+                            className={action.is_done ? 'line-through text-muted-foreground' : ''}
+                          />
                           <Badge variant="outline" className="ml-auto">{action.weight_percentage}%</Badge>
                         </div>
                       ))}

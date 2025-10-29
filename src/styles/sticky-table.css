@@ -1,0 +1,423 @@
+/* Styles pour les en-têtes de tableau fixes - Version renforcée */
+
+/* Conteneur principal */
+.table-container {
+  position: relative !important;
+  overflow: auto !important;
+  max-height: 600px !important;
+}
+
+/* En-tête principal des colonnes fixes avec dégradé violet */
+.sticky-table-header,
+.fixed-table-header {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 100 !important;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  backdrop-filter: blur(8px) !important;
+  border-bottom: 2px solid rgba(102, 126, 234, 0.3) !important;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2) !important;
+}
+
+/* Hauteur augmentée de 25% pour l'en-tête des parties tâche ET action */
+.fixed-table-header tr,
+.fixed-table-header th,
+.action-header-fixed tr,
+.action-header-fixed th {
+  height: 60px !important;
+  min-height: 60px !important;
+}
+
+.fixed-table-header th,
+.action-header-fixed th {
+  padding: 15px 12px !important;
+  vertical-align: middle;
+}
+
+/* Synchronisation du défilement horizontal - Parties tâche ET action */
+.fixed-table-header,
+.action-header-fixed {
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
+}
+
+/* Masquer la scrollbar de l'en-tête pour Chrome/Safari */
+.fixed-table-header::-webkit-scrollbar,
+.action-header-fixed::-webkit-scrollbar {
+  display: none;
+}
+
+.fixed-table-header table {
+  min-width: 1500px !important; /* Force le défilement horizontal */
+  width: 1500px !important;
+  table-layout: fixed !important;
+}
+
+.action-header-fixed table {
+  min-width: 800px !important; /* Force le défilement horizontal pour actions */
+  width: 800px !important;
+  table-layout: fixed !important;
+}
+
+.table-body-container {
+  overflow-x: auto !important;
+  overflow-y: auto !important;
+}
+
+.table-body-container table {
+  min-width: 1500px !important; /* Force le défilement horizontal */
+  width: 1500px !important;
+  table-layout: fixed !important;
+}
+
+.action-body-scrollable {
+  overflow-x: auto !important;
+  overflow-y: auto !important;
+}
+
+.action-body-scrollable table {
+  min-width: 800px !important; /* Force le défilement horizontal pour actions */
+  width: 800px !important;
+  table-layout: fixed !important;
+}
+
+/* Texte blanc avec ombre pour contraste sur fond violet */
+.fixed-table-header th,
+.sticky-table-header th {
+  color: #ffffff !important;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.3) !important;
+  font-weight: 700 !important;
+  border-right: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+/* Centrage de la zone d'écriture limitée dans les cellules */
+.limited-text-area-container {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 100% !important;
+  height: 100% !important;
+  padding: 4px !important;
+}
+
+/* Centrage du texte dans les cellules de commentaires */
+td:has(.limited-text-area-container) {
+  text-align: center !important;
+  vertical-align: middle !important;
+}
+
+/* En-tête des colonnes d'actions avec dégradés dynamiques */
+.sticky-action-header,
+.action-header-fixed {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 95 !important;
+  backdrop-filter: blur(8px) !important;
+  transition: all 0.3s ease !important;
+}
+
+/* Couleurs par défaut (violet moderne) - Force maximale */
+.action-header-fixed,
+div[class*="action-header-fixed"] {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  border-bottom: 2px solid rgba(102, 126, 234, 0.4) !important;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2) !important;
+}
+
+/* Force spécifique pour les conteneurs d'actions */
+.action-table-container .action-header-fixed {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  border-bottom: 2px solid rgba(102, 126, 234, 0.4) !important;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2) !important;
+}
+
+/* Couleurs quand une tâche est sélectionnée (rose magenta vibrant) */
+.action-header-fixed[data-selected="true"] {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%) !important;
+  border-bottom: 2px solid rgba(245, 87, 108, 0.4) !important;
+  box-shadow: 0 4px 12px rgba(245, 87, 108, 0.3) !important;
+}
+
+/* Texte blanc avec ombre renforcée pour les actions */
+.action-header-fixed th,
+.sticky-action-header th {
+  color: #ffffff !important;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.4) !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.5px !important;
+}
+
+/* Amélioration des cellules d'actions sélectionnées */
+.action-header-fixed .action-header-cell.highlighted {
+  background: rgba(255, 255, 255, 0.2) !important;
+  border: 2px solid rgba(255, 255, 255, 0.4) !important;
+  border-radius: 6px !important;
+  transform: scale(1.05) !important;
+  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.2) !important;
+}
+
+/* Style pour les indicateurs d'actions */
+.action-header-indicator {
+  background: linear-gradient(90deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.6) 100%) !important;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.8) !important;
+  animation: pulse 2s infinite !important;
+}
+
+
+/* Force les couleurs des cellules d'en-tête */
+.action-header-fixed th,
+.action-header-fixed .action-header-cell,
+[class*="action-header-fixed"] th {
+  color: #ffffff !important;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.4) !important;
+  font-weight: 700 !important;
+}
+
+/* Cellules d'en-tête individuelles */
+.sticky-header-cell {
+  position: sticky !important;
+  top: 0 !important;
+  background-color: rgba(255, 255, 255, 0.95) !important;
+  z-index: 99 !important;
+}
+
+/* Cellules d'en-tête des actions */
+.action-header-cell {
+  position: sticky !important;
+  top: 0 !important;
+  background-color: rgba(255, 255, 255, 0.95) !important;
+  z-index: 90 !important;
+}
+
+/* Amélioration de la visibilité lors du défilement */
+.table-container {
+  position: relative;
+  overflow: auto;
+  max-height: 600px;
+}
+
+.table-container table {
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+/* Style spécial pour les en-têtes en mode sélection */
+.sticky-action-header.selected {
+  background-color: rgba(var(--primary), 0.1) !important;
+  border-bottom: 2px solid rgba(var(--primary), 0.3) !important;
+}
+
+/* Assurer que les en-têtes restent au-dessus du contenu */
+.sticky-table-header th,
+.sticky-action-header th {
+  position: sticky !important;
+  top: 0 !important;
+  background-color: inherit !important;
+}
+
+/* Animation douce lors du défilement */
+.sticky-table-header,
+.sticky-action-header {
+  transition: box-shadow 0.2s ease-in-out;
+}
+
+/* Ombre plus prononcée lors du défilement */
+.sticky-table-header.scrolled,
+.sticky-action-header.scrolled {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Structure séparée - En-tête fixe et corps défilant */
+.table-with-fixed-header {
+  display: flex;
+  flex-direction: column;
+  height: 600px;
+}
+
+.fixed-table-header,
+.fixed-action-header {
+  flex-shrink: 0;
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 100 !important;
+}
+
+.table-body-container,
+.action-body-container {
+  flex: 1;
+  overflow: auto !important;
+}
+
+/* Alignement des colonnes */
+.fixed-table-header table,
+.table-body-container table {
+  table-layout: auto;
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.action-body-container table {
+  table-layout: fixed;
+  width: 100%;
+}
+
+/* Synchronisation automatique des largeurs de colonnes */
+.fixed-table-header th,
+.table-body-container td {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 8px 12px;
+  box-sizing: border-box;
+}
+
+/* Styles spécifiques par colonne - seront surchargés par JavaScript */
+.fixed-table-header th:nth-child(1),
+.table-body-container td:nth-child(1) { 
+  min-width: 150px; 
+  max-width: 400px; 
+}
+
+.fixed-table-header th:nth-child(2),
+.table-body-container td:nth-child(2) { 
+  min-width: 120px; 
+  max-width: 200px; 
+}
+
+.fixed-table-header th:nth-child(3),
+.table-body-container td:nth-child(3) { 
+  min-width: 80px; 
+  max-width: 120px; 
+}
+
+.fixed-table-header th:nth-child(4),
+.table-body-container td:nth-child(4) { 
+  min-width: 80px; 
+  max-width: 120px; 
+}
+
+.fixed-table-header th:nth-child(5),
+.table-body-container td:nth-child(5) { 
+  min-width: 80px; 
+  max-width: 120px; 
+}
+
+.fixed-table-header th:nth-child(6),
+.table-body-container td:nth-child(6) { 
+  min-width: 80px; 
+  max-width: 120px; 
+}
+
+.fixed-table-header th:nth-child(7),
+.table-body-container td:nth-child(7) { 
+  min-width: 80px; 
+  max-width: 120px; 
+}
+
+.fixed-table-header th:nth-child(8),
+.table-body-container td:nth-child(8) { 
+  min-width: 100px; 
+  max-width: 150px; 
+}
+
+.fixed-table-header th:nth-child(9),
+.table-body-container td:nth-child(9) { 
+  min-width: 100px; 
+  max-width: 150px; 
+}
+
+.fixed-table-header th:nth-child(10),
+.table-body-container td:nth-child(10) { 
+  min-width: 100px; 
+  max-width: 150px; 
+}
+
+.fixed-table-header th:nth-child(11),
+.table-body-container td:nth-child(11) { 
+  min-width: 80px; 
+  max-width: 100px; 
+}
+
+/* Actions colonnes */
+.fixed-action-header th,
+.action-body-container td {
+  min-width: 120px;
+}
+
+/* Structure détachée pour les actions avec repositionnement dynamique */
+.action-table-container {
+  display: flex;
+  flex-direction: column;
+  height: 600px;
+}
+
+.action-header-fixed {
+  flex-shrink: 0;
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 95 !important;
+}
+
+.action-body-scrollable {
+  flex: 1;
+  overflow: auto !important;
+}
+
+/* Repositionnement dynamique des colonnes d'actions */
+.action-header-fixed .action-header-cell {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.action-header-fixed .action-header-cell.highlighted {
+  transform: scale(1.02) !important;
+  box-shadow: 0 4px 12px rgba(var(--primary), 0.2) !important;
+}
+
+/* Animation de l'indicateur */
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.action-header-indicator {
+  animation: pulse 2s infinite;
+}
+
+/* Synchronisation des largeurs pour les actions */
+.action-header-fixed table,
+.action-body-scrollable table {
+  table-layout: fixed;
+  width: 100%;
+}
+
+/* Largeurs fixes identiques pour les colonnes d'actions */
+.action-header-fixed th,
+.action-body-scrollable td {
+  width: 120px !important;
+  min-width: 120px !important;
+  max-width: 120px !important;
+  box-sizing: border-box !important;
+}
+
+/* Forcer l'alignement des colonnes */
+.action-header-fixed .action-header-cell,
+.action-body-scrollable .action-cell {
+  flex-shrink: 0 !important;
+  flex-grow: 0 !important;
+  flex-basis: 120px !important;
+}
+
+/* Effet de transition lors du changement de tâche sélectionnée */
+.action-header-fixed[data-selected="true"] {
+  background-color: rgba(var(--primary), 0.1) !important;
+  border-bottom: 2px solid rgba(var(--primary), 0.3) !important;
+}
+
+/* Amélioration visuelle lors du repositionnement */
+.action-header-cell {
+  will-change: transform, order;
+}
+

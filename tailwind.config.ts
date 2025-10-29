@@ -73,6 +73,22 @@ export default {
         "priority-medium": "hsl(var(--priority-medium))",
         "priority-low": "hsl(var(--priority-low))",
         "priority-critical": "hsl(var(--priority-critical))",
+        // Status colors - Monday.com/Linear inspired
+        "status-todo": "hsl(var(--status-todo))",
+        "status-doing": "hsl(var(--status-doing))",
+        "status-blocked": "hsl(var(--status-blocked))",
+        "status-done": "hsl(var(--status-done))",
+        "status-review": "hsl(var(--status-review))",
+        "status-backlog": "hsl(var(--status-backlog))",
+        // Badge colors - Notion inspired
+        "badge-blue": "hsl(var(--badge-blue))",
+        "badge-purple": "hsl(var(--badge-purple))",
+        "badge-pink": "hsl(var(--badge-pink))",
+        "badge-green": "hsl(var(--badge-green))",
+        "badge-yellow": "hsl(var(--badge-yellow))",
+        "badge-orange": "hsl(var(--badge-orange))",
+        "badge-red": "hsl(var(--badge-red))",
+        "badge-gray": "hsl(var(--badge-gray))",
       },
       borderRadius: {
         lg: "var(--radius)",

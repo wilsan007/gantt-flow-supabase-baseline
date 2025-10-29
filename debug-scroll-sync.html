@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Synchronisation Défilement</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #f5f5f5;
+        }
+
+        .container {
+            width: 600px;
+            margin: 20px auto;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+            background: white;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            overflow-x: auto;
+            overflow-y: hidden;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        .header::-webkit-scrollbar {
+            display: none;
+        }
+
+        .header table {
+            min-width: 1200px;
+            width: max-content;
+            border-collapse: collapse;
+        }
+
+        .header th {
+            color: white;
+            padding: 15px 12px;
+            text-align: left;
+            font-weight: 700;
+            border-right: 1px solid rgba(255,255,255,0.2);
+            min-width: 120px;
+        }
+
+        .body {
+            height: 300px;
+            overflow: auto;
+        }
+
+        .body table {
+            min-width: 1200px;
+            width: max-content;
+            border-collapse: collapse;
+        }
+
+        .body td {
+            padding: 12px;
+            border-right: 1px solid #e5e7eb;
+            border-bottom: 1px solid #e5e7eb;
+            min-width: 120px;
+        }
+
+        .info {
+            background: #e3f2fd;
+            padding: 15px;
+            margin: 20px;
+            border-radius: 6px;
+        }
+
+        .debug-info {
+            background: #fff3e0;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔄 Debug Synchronisation Défilement Horizontal</h1>
+    
+    <div class="container">
+        <div class="header" id="header">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tâche</th>
+                        <th>Responsable</th>
+                        <th>Début</th>
+                        <th>Échéance</th>
+                        <th>Priorité</th>
+                        <th>Statut</th>
+                        <th>Charge</th>
+                        <th>Progression</th>
+                        <th>Documents</th>
+                        <th>Commentaires</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+
+        <div class="body" id="body">
+            <table>
+                <tbody>
+                    <tr>
+                        <td>Tâche 1</td>
+                        <td>Jean Dupont</td>
+                        <td>01/10</td>
+                        <td>07/10</td>
+                        <td>Haute</td>
+                        <td>En cours</td>
+                        <td>8h</td>
+                        <td>50%</td>
+                        <td>3 docs</td>
+                        <td>2 commentaires</td>
+                        <td>Éditer</td>
+                    </tr>
+                    <tr>
+                        <td>Tâche 2</td>
+                        <td>Marie Martin</td>
+                        <td>02/10</td>
+                        <td>08/10</td>
+                        <td>Moyenne</td>
+                        <td>Terminé</td>
+                        <td>6h</td>
+                        <td>100%</td>
+                        <td>1 doc</td>
+                        <td>0 commentaire</td>
+                        <td>Voir</td>
+                    </tr>
+                    <tr>
+                        <td>Tâche 3</td>
+                        <td>Pierre Durand</td>
+                        <td>03/10</td>
+                        <td>09/10</td>
+                        <td>Basse</td>
+                        <td>À faire</td>
+                        <td>4h</td>
+                        <td>0%</td>
+                        <td>0 doc</td>
+                        <td>1 commentaire</td>
+                        <td>Démarrer</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="info">
+        <h3>🧪 Test de Synchronisation :</h3>
+        <p>Faites défiler horizontalement dans le corps du tableau ou dans l'en-tête. Les deux doivent se synchroniser.</p>
+        
+        <div class="debug-info" id="debugInfo">
+            Header scrollLeft: 0px | Body scrollLeft: 0px
+        </div>
+        
+        <h4>✅ Fonctionnalités testées :</h4>
+        <ul>
+            <li><strong>Défilement corps → en-tête</strong> : Quand vous faites défiler le corps, l'en-tête suit</li>
+            <li><strong>Défilement en-tête → corps</strong> : Quand vous faites défiler l'en-tête, le corps suit</li>
+            <li><strong>Scrollbar masquée</strong> : L'en-tête n'affiche pas de scrollbar</li>
+            <li><strong>Largeur forcée</strong> : 1200px minimum pour forcer le défilement</li>
+        </ul>
+    </div>
+
+    <script>
+        const header = document.getElementById('header');
+        const body = document.getElementById('body');
+        const debugInfo = document.getElementById('debugInfo');
+
+        function updateDebugInfo() {
+            debugInfo.textContent = `Header scrollLeft: ${header.scrollLeft}px | Body scrollLeft: ${body.scrollLeft}px`;
+        }
+
+        // Synchronisation corps → en-tête
+        body.addEventListener('scroll', function() {
+            header.scrollLeft = body.scrollLeft;
+            updateDebugInfo();
+        });
+
+        // Synchronisation en-tête → corps
+        header.addEventListener('scroll', function() {
+            body.scrollLeft = header.scrollLeft;
+            updateDebugInfo();
+        });
+
+        // Mise à jour initiale
+        updateDebugInfo();
+    </script>
+</body>
+</html>

@@ -13,5 +13,29 @@ export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABL
     storage: localStorage,
     persistSession: true,
     autoRefreshToken: true,
+    detectSessionInUrl: true,
+    // Gestion des erreurs de refresh token
+    storageKey: 'supabase.auth.token',
+    flowType: 'pkce',
+  },
+  global: {
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+    }
+  }
+});
+
+// Gérer les erreurs de refresh token globalement
+supabase.auth.onAuthStateChange((event, session) => {
+  if (event === 'TOKEN_REFRESHED') {
+    console.log('✅ Token rafraîchi avec succès');
+  }
+  
+  if (event === 'SIGNED_OUT') {
+    // Nettoyer complètement le localStorage en cas de déconnexion
+    console.log('🔒 Utilisateur déconnecté - Nettoyage du localStorage');
+    localStorage.removeItem('lastActivity');
+    localStorage.removeItem('manualLogout');
   }
 });

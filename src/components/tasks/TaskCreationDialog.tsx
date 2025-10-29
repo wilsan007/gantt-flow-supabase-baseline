@@ -12,11 +12,15 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { useTaskCRUD, CreateTaskData } from '@/hooks/useTaskCRUD';
 import { useEmployees } from '@/hooks/useEmployees';
 import { SmartAssigneeSelect } from './SmartAssigneeSelect';
 import { supabase } from '@/integrations/supabase/client';
-import type { Task } from '@/hooks/useTasks';
+import type { Task, CreateTaskData } from '@/types/tasks';
+import { useFormValidation } from '@/hooks/useFormValidation';
+import { useErrorHandler } from '@/hooks/useErrorHandler';
+import { ErrorList, InlineError } from '@/components/ui/error-alert';
+import { AlertTriangle } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 interface TaskCreationDialogProps {
   open: boolean;
@@ -43,21 +47,79 @@ export const TaskCreationDialog: React.FC<TaskCreationDialogProps> = ({
   parentTask,
   onSuccess
 }) => {
-  const { createTask, updateTask, loading } = useTaskCRUD();
+  const { toast } = useToast();
+  const [loading, setLoading] = useState(false);
+  
+  // Fonctions CRUD locales
+  const createTask = async (data: CreateTaskData) => {
+    const { error } = await supabase.from('tasks').insert([data]);
+    if (error) throw error;
+  };
+  
+  const updateTask = async (id: string, data: Partial<CreateTaskData>) => {
+    const { error } = await supabase.from('tasks').update(data).eq('id', id);
+    if (error) throw error;
+  };
   const { employees } = useEmployees();
   const [projects, setProjects] = useState<Project[]>([]);
   const [departments, setDepartments] = useState<Department[]>([]);
   const [showSmartAssignee, setShowSmartAssignee] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const [formData, setFormData] = useState<CreateTaskData>({
+  const initialFormData: CreateTaskData = {
     title: '',
+    assigned_name: '',
+    department_name: '',
+    project_name: '',
     start_date: new Date().toISOString().split('T')[0],
     due_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
     priority: 'medium',
     status: 'todo',
     effort_estimate_h: 1,
     description: ''
+  };
+
+  const validationRules = {
+    title: {
+      required: true,
+      minLength: 3,
+      maxLength: 100
+    },
+    start_date: {
+      required: true
+    },
+    due_date: {
+      required: true,
+      dateAfter: new Date().toISOString().split('T')[0]
+    },
+    effort_estimate_h: {
+      required: true,
+      custom: (value: number) => {
+        if (value < 0.5) return 'L\'estimation doit être d\'au moins 0.5 heure.';
+        if (value > 1000) return 'L\'estimation ne peut pas dépasser 1000 heures.';
+        return null;
+      }
+    }
+  };
+
+  const {
+    data: formData,
+    updateField,
+    handleBlur,
+    validateForm,
+    validateDateRange,
+    fieldErrors,
+    getFieldError,
+    hasFieldError,
+    clearAllErrors,
+    resetForm,
+    isValid
+  } = useFormValidation(initialFormData, validationRules, {
+    validateOnChange: true,
+    validateOnBlur: true
   });
+
+  const { errors, clearErrors, hasBlockingErrors } = useErrorHandler();
 
   // Charger les projets et départements
   useEffect(() => {
@@ -82,50 +144,105 @@ export const TaskCreationDialog: React.FC<TaskCreationDialogProps> = ({
 
   // Initialiser le formulaire avec les données de la tâche à éditer
   useEffect(() => {
-    if (editTask) {
-      setFormData({
-        title: editTask.title,
-        assignee_id: editTask.assignee || undefined,
-        start_date: editTask.start_date,
-        due_date: editTask.due_date,
-        priority: editTask.priority,
-        status: editTask.status,
-        effort_estimate_h: editTask.effort_estimate_h,
-        parent_id: editTask.parent_id || undefined,
-        project_id: editTask.project_id || undefined,
-        description: ''
-      });
-    } else if (parentTask) {
-      setFormData(prev => ({
-        ...prev,
-        parent_id: parentTask.id,
-        project_id: parentTask.project_id || undefined
-      }));
-    } else {
-      setFormData({
-        title: '',
-        start_date: new Date().toISOString().split('T')[0],
-        due_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-        priority: 'medium',
-        status: 'todo',
-        effort_estimate_h: 1,
-        description: ''
-      });
+    if (open) {
+      clearAllErrors();
+      clearErrors();
+      
+      if (editTask) {
+        const editData = {
+          title: editTask.title,
+          assigned_name: editTask.assigned_name || '',
+          department_name: editTask.department_name || '',
+          project_name: editTask.project_name || '',
+          start_date: editTask.start_date,
+          due_date: editTask.due_date,
+          priority: editTask.priority,
+          status: editTask.status,
+          effort_estimate_h: editTask.effort_estimate_h,
+          parent_id: editTask.parent_id || undefined,
+          project_id: editTask.project_id || undefined,
+          assignee_id: editTask.assignee_id || undefined,
+          department_id: editTask.department_id || undefined,
+          description: editTask.description || ''
+        };
+        Object.entries(editData).forEach(([key, value]) => {
+          updateField(key, value);
+        });
+      } else if (parentTask) {
+        // Héritage obligatoire de la tâche parente
+        updateField('parent_id', parentTask.id);
+        updateField('project_id', parentTask.project_id || undefined);
+        updateField('department_id', parentTask.department_id || undefined);
+        
+        // Héritage de l'assignation si la tâche parente est assignée
+        // L'utilisateur peut changer l'assignation, mais par défaut elle hérite
+        if (parentTask.assignee_id) {
+          updateField('assignee_id', parentTask.assignee_id);
+        }
+        
+        // Contraindre les dates dans la plage de la tâche parent
+        if (parentTask.start_date && parentTask.due_date) {
+          updateField('start_date', parentTask.start_date);
+          updateField('due_date', parentTask.due_date);
+        }
+      } else {
+        resetForm();
+      }
     }
-  }, [editTask, parentTask, open]);
+  }, [editTask, parentTask, open, clearAllErrors, clearErrors, updateField, resetForm]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsSubmitting(true);
+    
     try {
+      // Validation du formulaire
+      if (!validateForm()) {
+        setIsSubmitting(false);
+        return;
+      }
+
+      // Validation spéciale des dates si c'est une sous-tâche
+      if (parentTask) {
+        const dateError = validateDateRange(
+          'start_date',
+          'due_date',
+          parentTask.start_date,
+          parentTask.due_date,
+          parentTask.title
+        );
+        if (dateError) {
+          setIsSubmitting(false);
+          return;
+        }
+      }
+
+      // Validation des dates de base
+      const startDate = new Date(formData.start_date);
+      const endDate = new Date(formData.due_date);
+      if (endDate <= startDate) {
+        const dateError = validateDateRange('start_date', 'due_date');
+        if (dateError) {
+          setIsSubmitting(false);
+          return;
+        }
+      }
+
+      // Soumission du formulaire
       if (editTask) {
-        await updateTask({ id: editTask.id, ...formData });
+        await updateTask(editTask.id, formData);
       } else {
         await createTask(formData);
       }
+      
       onSuccess();
       onOpenChange(false);
-    } catch (error) {
+      
+    } catch (error: any) {
       console.error('Error saving task:', error);
+      // L'erreur sera gérée par le hook useErrorHandler dans useTaskCRUD
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -166,6 +283,17 @@ export const TaskCreationDialog: React.FC<TaskCreationDialogProps> = ({
           </DialogDescription>
         </DialogHeader>
 
+        {/* Affichage des erreurs globales */}
+        {(errors.length > 0 || hasBlockingErrors) && (
+          <div className="mb-4">
+            <ErrorList
+              errors={errors}
+              onDismiss={(index) => clearErrors()}
+              maxVisible={3}
+            />
+          </div>
+        )}
+
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="md:col-span-2">
@@ -173,18 +301,23 @@ export const TaskCreationDialog: React.FC<TaskCreationDialogProps> = ({
               <Input
                 id="title"
                 value={formData.title}
-                onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+                onChange={(e) => updateField('title', e.target.value)}
+                onBlur={() => handleBlur('title')}
                 required
                 placeholder="Nom de la tâche..."
+                className={hasFieldError('title') ? 'border-red-500' : ''}
               />
+              <InlineError error={getFieldError('title')} />
             </div>
 
             <div>
-              <Label htmlFor="assignee">Assigné à</Label>
+              <Label htmlFor="assignee">
+                Assigné à {parentTask && parentTask.assignee_id && <span className="text-xs text-muted-foreground">(hérité du parent par défaut)</span>}
+              </Label>
               <div className="space-y-2">
                 <Select
                   value={formData.assignee_id || ''}
-                  onValueChange={(value) => setFormData(prev => ({ ...prev, assignee_id: value }))}
+                  onValueChange={(value) => updateField('assignee_id', value)}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Sélectionner un employé" />
@@ -194,10 +327,16 @@ export const TaskCreationDialog: React.FC<TaskCreationDialogProps> = ({
                     {employees.map((employee) => (
                       <SelectItem key={employee.id} value={employee.id}>
                         {employee.full_name}
+                        {parentTask && parentTask.assignee_id === employee.id && ' (parent)'}
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
+                {parentTask && parentTask.assignee_id && (
+                  <p className="text-xs text-muted-foreground">
+                    👤 Assigné par défaut : {employees.find(e => e.id === parentTask.assignee_id)?.full_name || 'Inconnu'}
+                  </p>
+                )}
                 <Button
                   type="button"
                   variant="outline"
@@ -211,12 +350,15 @@ export const TaskCreationDialog: React.FC<TaskCreationDialogProps> = ({
             </div>
 
             <div>
-              <Label htmlFor="project">Projet</Label>
+              <Label htmlFor="project">
+                Projet {parentTask && <span className="text-xs text-muted-foreground">(hérité du parent)</span>}
+              </Label>
               <Select
                 value={formData.project_id || ''}
-                onValueChange={(value) => setFormData(prev => ({ ...prev, project_id: value }))}
+                onValueChange={(value) => updateField('project_id', value)}
+                disabled={!!parentTask}
               >
-                <SelectTrigger>
+                <SelectTrigger className={parentTask ? 'bg-muted cursor-not-allowed' : ''}>
                   <SelectValue placeholder="Sélectionner un projet" />
                 </SelectTrigger>
                 <SelectContent>
@@ -228,15 +370,23 @@ export const TaskCreationDialog: React.FC<TaskCreationDialogProps> = ({
                   ))}
                 </SelectContent>
               </Select>
+              {parentTask && (
+                <p className="text-xs text-muted-foreground mt-1">
+                  📁 Projet : {projects.find(p => p.id === formData.project_id)?.name || 'Aucun'}
+                </p>
+              )}
             </div>
 
             <div>
-              <Label htmlFor="department">Département</Label>
+              <Label htmlFor="department">
+                Département {parentTask && <span className="text-xs text-muted-foreground">(hérité du parent)</span>}
+              </Label>
               <Select
                 value={formData.department_id || ''}
-                onValueChange={(value) => setFormData(prev => ({ ...prev, department_id: value }))}
+                onValueChange={(value) => updateField('department_id', value)}
+                disabled={!!parentTask}
               >
-                <SelectTrigger>
+                <SelectTrigger className={parentTask ? 'bg-muted cursor-not-allowed' : ''}>
                   <SelectValue placeholder="Sélectionner un département" />
                 </SelectTrigger>
                 <SelectContent>
@@ -248,6 +398,11 @@ export const TaskCreationDialog: React.FC<TaskCreationDialogProps> = ({
                   ))}
                 </SelectContent>
               </Select>
+              {parentTask && (
+                <p className="text-xs text-muted-foreground mt-1">
+                  🏢 Département : {departments.find(d => d.id === formData.department_id)?.name || 'Aucun'}
+                </p>
+              )}
             </div>
 
             <div>
@@ -256,9 +411,31 @@ export const TaskCreationDialog: React.FC<TaskCreationDialogProps> = ({
                 id="start_date"
                 type="date"
                 value={formData.start_date}
-                onChange={(e) => setFormData(prev => ({ ...prev, start_date: e.target.value }))}
+                onChange={(e) => {
+                  updateField('start_date', e.target.value);
+                  // Revalider la plage de dates si nécessaire
+                  if (parentTask && formData.due_date) {
+                    validateDateRange(
+                      'start_date',
+                      'due_date',
+                      parentTask.start_date,
+                      parentTask.due_date,
+                      parentTask.title
+                    );
+                  }
+                }}
+                onBlur={() => handleBlur('start_date')}
                 required
+                className={hasFieldError('start_date') ? 'border-red-500' : ''}
+                min={parentTask?.start_date}
+                max={parentTask?.due_date}
               />
+              <InlineError error={getFieldError('start_date')} />
+              {parentTask && (
+                <p className="text-xs text-muted-foreground mt-1">
+                  Période autorisée : {new Date(parentTask.start_date).toLocaleDateString()} - {new Date(parentTask.due_date).toLocaleDateString()}
+                </p>
+              )}
             </div>
 
             <div>
@@ -267,16 +444,33 @@ export const TaskCreationDialog: React.FC<TaskCreationDialogProps> = ({
                 id="due_date"
                 type="date"
                 value={formData.due_date}
-                onChange={(e) => setFormData(prev => ({ ...prev, due_date: e.target.value }))}
+                onChange={(e) => {
+                  updateField('due_date', e.target.value);
+                  // Revalider la plage de dates si nécessaire
+                  if (parentTask && formData.start_date) {
+                    validateDateRange(
+                      'start_date',
+                      'due_date',
+                      parentTask.start_date,
+                      parentTask.due_date,
+                      parentTask.title
+                    );
+                  }
+                }}
+                onBlur={() => handleBlur('due_date')}
                 required
+                className={hasFieldError('due_date') ? 'border-red-500' : ''}
+                min={formData.start_date > (parentTask?.start_date || formData.start_date) ? formData.start_date : (parentTask?.start_date || formData.start_date)}
+                max={parentTask?.due_date}
               />
+              <InlineError error={getFieldError('due_date')} />
             </div>
 
             <div>
               <Label htmlFor="priority">Priorité</Label>
               <Select
                 value={formData.priority}
-                onValueChange={(value: any) => setFormData(prev => ({ ...prev, priority: value }))}
+                onValueChange={(value: any) => updateField('priority', value)}
               >
                 <SelectTrigger>
                   <SelectValue />
@@ -314,7 +508,7 @@ export const TaskCreationDialog: React.FC<TaskCreationDialogProps> = ({
               <Label htmlFor="status">Statut</Label>
               <Select
                 value={formData.status}
-                onValueChange={(value: any) => setFormData(prev => ({ ...prev, status: value }))}
+                onValueChange={(value: any) => updateField('status', value)}
               >
                 <SelectTrigger>
                   <SelectValue />
@@ -356,9 +550,12 @@ export const TaskCreationDialog: React.FC<TaskCreationDialogProps> = ({
                 min="0.5"
                 step="0.5"
                 value={formData.effort_estimate_h}
-                onChange={(e) => setFormData(prev => ({ ...prev, effort_estimate_h: parseFloat(e.target.value) || 1 }))}
+                onChange={(e) => updateField('effort_estimate_h', parseFloat(e.target.value) || 1)}
+                onBlur={() => handleBlur('effort_estimate_h')}
                 required
+                className={hasFieldError('effort_estimate_h') ? 'border-red-500' : ''}
               />
+              <InlineError error={getFieldError('effort_estimate_h')} />
             </div>
 
             <div className="md:col-span-2">
@@ -366,20 +563,43 @@ export const TaskCreationDialog: React.FC<TaskCreationDialogProps> = ({
               <Textarea
                 id="description"
                 value={formData.description}
-                onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                onChange={(e) => updateField('description', e.target.value)}
                 placeholder="Description détaillée de la tâche..."
                 rows={3}
               />
             </div>
           </div>
 
-          <div className="flex justify-end gap-2 pt-4">
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-              Annuler
-            </Button>
-            <Button type="submit" disabled={loading}>
-              {loading ? 'Enregistrement...' : editTask ? 'Modifier' : 'Créer'}
-            </Button>
+          <div className="flex justify-between items-center pt-4">
+            <div className="flex items-center gap-2">
+              {hasBlockingErrors && (
+                <div className="flex items-center gap-2 text-red-600">
+                  <AlertTriangle className="h-4 w-4" />
+                  <span className="text-sm">Veuillez corriger les erreurs avant de continuer</span>
+                </div>
+              )}
+            </div>
+            
+            <div className="flex gap-2">
+              <Button 
+                type="button" 
+                variant="outline" 
+                onClick={() => {
+                  if (!hasBlockingErrors) {
+                    onOpenChange(false);
+                  }
+                }}
+                disabled={isSubmitting}
+              >
+                Annuler
+              </Button>
+              <Button 
+                type="submit" 
+                disabled={loading || isSubmitting || hasBlockingErrors || !isValid}
+              >
+                {isSubmitting ? 'Enregistrement...' : editTask ? 'Modifier' : 'Créer'}
+              </Button>
+            </div>
           </div>
         </form>
 
@@ -388,7 +608,7 @@ export const TaskCreationDialog: React.FC<TaskCreationDialogProps> = ({
           onOpenChange={setShowSmartAssignee}
           currentAssignee={formData.assignee_id}
           onAssigneeSelect={(employeeId) => {
-            setFormData(prev => ({ ...prev, assignee_id: employeeId }));
+            updateField('assignee_id', employeeId);
           }}
           taskStartDate={formData.start_date}
           taskEndDate={formData.due_date}

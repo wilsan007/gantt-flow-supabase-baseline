@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useHR } from '@/hooks/useHR';
+import { useHRMinimal } from '@/hooks/useHRMinimal';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -14,7 +14,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
 export const AbsenceTypeManagement = () => {
-  const { absenceTypes, loading, refetch } = useHR();
+  const { absenceTypes, loading, refetch } = useHRMinimal();
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [editingType, setEditingType] = useState<any>(null);
   const isMobile = useIsMobile();

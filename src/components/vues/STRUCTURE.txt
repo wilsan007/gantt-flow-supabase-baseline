@@ -1,0 +1,65 @@
+vues/
+├── contexts/
+│   ├── ViewModeContext.tsx
+│   └── TenantContext.tsx
+├── dialogs/
+│   ├── TaskCreationDialog.tsx
+│   ├── TaskEditDialog.tsx
+│   ├── TaskDetailsDialog.tsx
+│   ├── TaskSelectionDialog.tsx
+│   └── EnhancedTaskDetailsDialog.tsx
+├── gantt/
+│   ├── GanttChart.tsx
+│   ├── GanttHeader.tsx
+│   ├── GanttStates.tsx
+│   ├── GanttTaskBar.tsx
+│   ├── GanttTaskList.tsx
+│   └── GanttTimeline.tsx
+├── hooks/
+│   ├── useTasks.ts
+│   ├── useTaskDatabase.ts
+│   ├── useTaskActions.ts
+│   ├── useTaskCRUD.ts
+│   ├── useProjects.ts
+│   ├── useEmployees.ts
+│   ├── use-mobile.tsx
+│   ├── useGanttDrag.ts
+│   ├── useTaskDetails.ts
+│   ├── useTaskHistory.ts
+│   └── useTaskAuditLogs.ts
+├── kanban/
+│   └── KanbanBoard.tsx
+├── lib/
+│   └── ganttHelpers.ts
+├── projects/
+│   └── ProjectTableView.tsx
+├── responsive/
+│   ├── ResponsiveLayout.tsx
+│   ├── MobileGanttChart.tsx
+│   ├── MobileKanbanBoard.tsx
+│   └── MobileDynamicTable.tsx
+├── table/
+│   ├── DynamicTable.tsx
+│   ├── TaskTableHeader.tsx
+│   ├── TaskFixedColumns.tsx
+│   ├── TaskActionColumns.tsx
+│   ├── TaskTableBody.tsx
+│   ├── TaskRow.tsx
+│   ├── SubTaskRow.tsx
+│   ├── TaskRowActions.tsx
+│   ├── AssigneeSelect.tsx
+│   ├── DocumentCellColumn.tsx
+│   ├── CommentCellColumn.tsx
+│   ├── DocumentsColumn.tsx
+│   ├── CommentsColumn.tsx
+│   ├── TaskDialogManager.tsx
+│   ├── ActionCreationDialog.tsx
+│   ├── SubtaskCreationDialog.tsx
+│   ├── LoadingState.tsx
+│   └── ErrorState.tsx
+├── Index.tsx
+├── README.md
+├── INDEX_FICHIERS.md
+└── STRUCTURE.txt
+
+Total: 49 fichiers TypeScript/React + 3 fichiers documentation

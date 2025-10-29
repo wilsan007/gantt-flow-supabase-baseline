@@ -39,7 +39,7 @@ All colors MUST be HSL for consistency.
 
     --radius: 0.75rem;
 
-    /* Enhanced tech colors with better contrast */
+    /* Enhanced tech colors with better contrast - Linear/Monday.com inspired */
     --tech-blue: 214 100% 50%;
     --tech-purple: 262 100% 58%;
     --tech-cyan: 176 85% 45%;
@@ -51,11 +51,29 @@ All colors MUST be HSL for consistency.
     --danger: 0 84% 55%;
     --info: 214 100% 50%;
     
-    /* Priority colors for emphasis */
+    /* Priority colors for emphasis - High contrast */
     --priority-high: 0 84% 55%;
     --priority-medium: 43 96% 56%;
     --priority-low: 142 76% 36%;
     --priority-critical: 340 82% 52%;
+    
+    /* Status colors - Monday.com/Linear inspired */
+    --status-todo: 220 15% 65%;
+    --status-doing: 214 100% 50%;
+    --status-blocked: 0 84% 55%;
+    --status-done: 142 76% 36%;
+    --status-review: 43 96% 56%;
+    --status-backlog: 220 15% 75%;
+    
+    /* Badge colors - Notion inspired */
+    --badge-blue: 214 100% 50%;
+    --badge-purple: 262 100% 58%;
+    --badge-pink: 340 82% 52%;
+    --badge-green: 142 76% 36%;
+    --badge-yellow: 43 96% 56%;
+    --badge-orange: 25 95% 50%;
+    --badge-red: 0 84% 55%;
+    --badge-gray: 220 15% 65%;
     
     /* Enhanced Gantt colors */
     --gantt-grid: 220 13% 75%;
@@ -131,6 +149,24 @@ All colors MUST be HSL for consistency.
     --priority-medium: 43 100% 75%;
     --priority-low: 142 84% 65%;
     --priority-critical: 340 100% 75%;
+    
+    /* Status colors - Dark theme */
+    --status-todo: 220 15% 70%;
+    --status-doing: 214 100% 80%;
+    --status-blocked: 0 84% 75%;
+    --status-done: 142 84% 65%;
+    --status-review: 43 100% 75%;
+    --status-backlog: 220 15% 60%;
+    
+    /* Badge colors - Dark theme */
+    --badge-blue: 214 100% 80%;
+    --badge-purple: 262 100% 80%;
+    --badge-pink: 340 100% 75%;
+    --badge-green: 142 84% 65%;
+    --badge-yellow: 43 100% 75%;
+    --badge-orange: 25 100% 75%;
+    --badge-red: 0 84% 75%;
+    --badge-gray: 220 15% 70%;
     
     /* Enhanced Gantt colors for dark */
     --gantt-grid: 220 27% 25%;
@@ -254,5 +290,41 @@ All colors MUST be HSL for consistency.
   .dark .hover-glow:hover {
     box-shadow: 0 0 80px hsl(var(--primary) / 0.3);
     transform: translateY(-2px);
+  }
+
+  /* Scrollbar personnalisée pour le Gantt */
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(var(--muted-foreground) / 0.3) transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background: hsl(var(--muted-foreground) / 0.3);
+    border-radius: 4px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--muted-foreground) / 0.5);
+  }
+
+  .dark .scrollbar-thin {
+    scrollbar-color: hsl(var(--muted-foreground) / 0.4) transparent;
+  }
+
+  .dark .scrollbar-thin::-webkit-scrollbar-thumb {
+    background: hsl(var(--muted-foreground) / 0.4);
+  }
+
+  .dark .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--muted-foreground) / 0.6);
   }
 }

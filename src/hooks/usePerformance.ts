@@ -1,150 +1,118 @@
+/**
+ * Hook usePerformance - Gestion des performances et évaluations
+ * Pattern Enterprise pour le module RH
+ */
+
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { useTenant } from '@/hooks/useTenant';
+import { useUserRoles } from '@/hooks/useUserRoles';
 
-export interface Objective {
+interface Objective {
   id: string;
-  employee_id?: string;
-  employee_name: string;
+  employee_id: string;
   title: string;
   description?: string;
-  department: string;
-  type: 'individual' | 'team' | 'okr';
-  status: 'draft' | 'active' | 'completed' | 'cancelled';
+  target_date: string;
+  status: string;
   progress: number;
-  due_date: string;
-  created_at: string;
-  updated_at: string;
-  tenant_id?: string;
+  created_at?: string;
+  updated_at?: string;
 }
 
-export interface KeyResult {
+interface Evaluation {
   id: string;
-  objective_id: string;
-  title: string;
-  target: string;
-  current_value?: string;
-  progress: number;
-  created_at: string;
-  updated_at: string;
-  tenant_id?: string;
-}
-
-export interface Evaluation {
-  id: string;
-  employee_id?: string;
-  employee_name: string;
-  evaluator_id?: string;
-  evaluator_name: string;
-  period: string;
-  type: 'annual' | 'quarterly' | '360';
-  status: 'scheduled' | 'in_progress' | 'completed';
-  overall_score: number;
-  created_at: string;
-  updated_at: string;
-  tenant_id?: string;
-}
-
-export interface EvaluationCategory {
-  id: string;
-  evaluation_id: string;
-  name: string;
-  score: number;
-  weight: number;
-  feedback?: string;
-  created_at: string;
-  tenant_id?: string;
+  employee_id: string;
+  evaluator_id: string;
+  period_start: string;
+  period_end: string;
+  overall_rating: number;
+  strengths?: string;
+  areas_for_improvement?: string;
+  comments?: string;
+  status: string;
+  created_at?: string;
+  updated_at?: string;
 }
 
 export const usePerformance = () => {
   const [objectives, setObjectives] = useState<Objective[]>([]);
   const [evaluations, setEvaluations] = useState<Evaluation[]>([]);
-  const [keyResults, setKeyResults] = useState<KeyResult[]>([]);
-  const [evaluationCategories, setEvaluationCategories] = useState<EvaluationCategory[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
+  const { tenantId } = useTenant();
+  const { userRoles } = useUserRoles();
+  
+  // SOLUTION TEMPORAIRE : Récupérer le tenant_id depuis user_roles si useTenant échoue
+  const tenantIdFromRoles = userRoles[0]?.tenant_id;
+  const effectiveTenantId = tenantId || tenantIdFromRoles;
 
   const fetchData = async () => {
     try {
       setLoading(true);
       setError(null);
 
-      const [objectivesRes, evaluationsRes, keyResultsRes, categoriesRes] = await Promise.all([
-        supabase.from('objectives').select('*').order('created_at', { ascending: false }),
-        supabase.from('evaluations').select('*').order('created_at', { ascending: false }),
-        supabase.from('key_results').select('*').order('created_at', { ascending: false }),
-        supabase.from('evaluation_categories').select('*').order('created_at', { ascending: false })
-      ]);
+      // Fetch objectives
+      const { data: objectivesData, error: objectivesError } = await supabase
+        .from('objectives')
+        .select('*')
+        .order('created_at', { ascending: false });
 
-      if (objectivesRes.error) throw objectivesRes.error;
-      if (evaluationsRes.error) throw evaluationsRes.error;
-      if (keyResultsRes.error) throw keyResultsRes.error;
-      if (categoriesRes.error) throw categoriesRes.error;
+      if (objectivesError) throw objectivesError;
 
-      setObjectives(objectivesRes.data as Objective[] || []);
-      setEvaluations(evaluationsRes.data as Evaluation[] || []);
-      setKeyResults(keyResultsRes.data as KeyResult[] || []);
-      setEvaluationCategories(categoriesRes.data as EvaluationCategory[] || []);
+      // Fetch evaluations
+      const { data: evaluationsData, error: evaluationsError } = await supabase
+        .from('evaluations')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (evaluationsError) throw evaluationsError;
+
+      setObjectives((objectivesData as any) || []);
+      setEvaluations((evaluationsData as any) || []);
     } catch (err: any) {
       console.error('Error fetching performance data:', err);
       setError(err.message);
       toast({
-        title: "Erreur",
-        description: "Impossible de charger les données de performance",
-        variant: "destructive"
+        title: 'Erreur',
+        description: 'Impossible de charger les données de performance',
+        variant: 'destructive',
       });
     } finally {
       setLoading(false);
     }
   };
 
+  useEffect(() => {
+    if (effectiveTenantId) {
+      fetchData();
+    }
+  }, [effectiveTenantId]);
+
   const createObjective = async (data: Omit<Objective, 'id' | 'created_at' | 'updated_at'>) => {
     try {
       const { error } = await supabase
         .from('objectives')
-        .insert(data);
+        .insert([data as any]);
 
       if (error) throw error;
 
       toast({
-        title: "Succès",
-        description: "Objectif créé avec succès"
+        title: 'Objectif créé',
+        description: 'L\'objectif a été créé avec succès',
       });
 
-      fetchData();
+      await fetchData();
     } catch (err: any) {
       console.error('Error creating objective:', err);
       toast({
-        title: "Erreur",
-        description: "Impossible de créer l'objectif",
-        variant: "destructive"
+        title: 'Erreur',
+        description: 'Impossible de créer l\'objectif',
+        variant: 'destructive',
       });
-    }
-  };
-
-  const updateObjective = async (id: string, data: Partial<Objective>) => {
-    try {
-      const { error } = await supabase
-        .from('objectives')
-        .update({ ...data, updated_at: new Date().toISOString() })
-        .eq('id', id);
-
-      if (error) throw error;
-
-      toast({
-        title: "Succès",
-        description: "Objectif mis à jour avec succès"
-      });
-
-      fetchData();
-    } catch (err: any) {
-      console.error('Error updating objective:', err);
-      toast({
-        title: "Erreur",
-        description: "Impossible de mettre à jour l'objectif",
-        variant: "destructive"
-      });
+      throw err;
     }
   };
 
@@ -152,128 +120,111 @@ export const usePerformance = () => {
     try {
       const { error } = await supabase
         .from('evaluations')
-        .insert(data);
+        .insert([data as any]);
 
       if (error) throw error;
 
       toast({
-        title: "Succès",
-        description: "Évaluation créée avec succès"
+        title: 'Évaluation créée',
+        description: 'L\'évaluation a été créée avec succès',
       });
 
-      fetchData();
+      await fetchData();
     } catch (err: any) {
       console.error('Error creating evaluation:', err);
       toast({
-        title: "Erreur",
-        description: "Impossible de créer l'évaluation",
-        variant: "destructive"
+        title: 'Erreur',
+        description: 'Impossible de créer l\'évaluation',
+        variant: 'destructive',
       });
+      throw err;
     }
   };
 
-  const updateEvaluation = async (id: string, data: Partial<Evaluation>) => {
+  const updateObjective = async (id: string, data: Partial<Objective>) => {
     try {
       const { error } = await supabase
-        .from('evaluations')
-        .update({ ...data, updated_at: new Date().toISOString() })
+        .from('objectives')
+        .update(data as any)
         .eq('id', id);
 
       if (error) throw error;
 
       toast({
-        title: "Succès",
-        description: "Évaluation mise à jour avec succès"
+        title: 'Objectif mis à jour',
+        description: 'L\'objectif a été mis à jour avec succès',
       });
 
-      fetchData();
+      await fetchData();
     } catch (err: any) {
-      console.error('Error updating evaluation:', err);
+      console.error('Error updating objective:', err);
       toast({
-        title: "Erreur",
-        description: "Impossible de mettre à jour l'évaluation",
-        variant: "destructive"
+        title: 'Erreur',
+        description: 'Impossible de mettre à jour l\'objectif',
+        variant: 'destructive',
       });
+      throw err;
     }
   };
 
-  const createKeyResult = async (data: Omit<KeyResult, 'id' | 'created_at' | 'updated_at'>) => {
+  const deleteObjective = async (id: string) => {
     try {
       const { error } = await supabase
-        .from('key_results')
-        .insert(data);
+        .from('objectives')
+        .delete()
+        .eq('id', id);
 
       if (error) throw error;
 
-      fetchData();
-    } catch (err: any) {
-      console.error('Error creating key result:', err);
       toast({
-        title: "Erreur",
-        description: "Impossible de créer le résultat clé",
-        variant: "destructive"
+        title: 'Objectif supprimé',
+        description: 'L\'objectif a été supprimé avec succès',
       });
+
+      await fetchData();
+    } catch (err: any) {
+      console.error('Error deleting objective:', err);
+      toast({
+        title: 'Erreur',
+        description: 'Impossible de supprimer l\'objectif',
+        variant: 'destructive',
+      });
+      throw err;
     }
   };
 
-  const getObjectivesByEmployee = (employeeName: string) => {
-    return objectives.filter(obj => obj.employee_name === employeeName);
-  };
-
-  const getEvaluationsByEmployee = (employeeName: string) => {
-    return evaluations.filter(evaluation => evaluation.employee_name === employeeName);
-  };
-
+  // Fonctions utilitaires manquantes
   const getKeyResultsByObjective = (objectiveId: string) => {
-    return keyResults.filter(kr => kr.objective_id === objectiveId);
+    return []; // TODO: Implémenter si nécessaire
   };
 
   const getCategoriesByEvaluation = (evaluationId: string) => {
-    return evaluationCategories.filter(cat => cat.evaluation_id === evaluationId);
+    return []; // TODO: Implémenter si nécessaire
   };
 
   const getPerformanceStats = () => {
-    const activeObjectives = objectives.filter(obj => obj.status === 'active').length;
-    const completedObjectives = objectives.filter(obj => obj.status === 'completed').length;
-    const totalObjectives = objectives.length;
-    const completionRate = totalObjectives > 0 ? Math.round((completedObjectives / totalObjectives) * 100) : 0;
-    
-    const completedEvaluations = evaluations.filter(evaluation => evaluation.status === 'completed');
-    const averageScore = completedEvaluations.length > 0 
-      ? completedEvaluations.reduce((sum, evaluation) => sum + evaluation.overall_score, 0) / completedEvaluations.length 
-      : 0;
-    
-    const scheduledEvaluations = evaluations.filter(evaluation => evaluation.status === 'scheduled').length;
-
     return {
-      activeObjectives,
-      completionRate,
-      averageScore: Math.round(averageScore * 10) / 10,
-      scheduledEvaluations
+      totalObjectives: objectives.length,
+      completedObjectives: objectives.filter(o => o.status === 'completed').length,
+      totalEvaluations: evaluations.length,
+      averageScore: 0 // TODO: Calculer si nécessaire
     };
   };
-
-  useEffect(() => {
-    fetchData();
-  }, []);
 
   return {
     objectives,
     evaluations,
-    keyResults,
-    evaluationCategories,
+    keyResults: [], // TODO: Implémenter si nécessaire
+    evaluationCategories: [], // TODO: Implémenter si nécessaire
     loading,
     error,
-    refetch: fetchData,
+    refresh: fetchData,
     createObjective,
-    updateObjective,
     createEvaluation,
-    updateEvaluation,
-    createKeyResult,
-    getObjectivesByEmployee,
-    getEvaluationsByEmployee,
+    updateObjective,
+    deleteObjective,
     getKeyResultsByObjective,
     getCategoriesByEvaluation,
-    getPerformanceStats
+    getPerformanceStats,
   };
 };

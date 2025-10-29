@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Hauteur En-tête +25%</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #f5f5f5;
+        }
+
+        .comparison-container {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .table-demo {
+            flex: 1;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+            background: white;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        /* En-tête normal (48px) */
+        .normal-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-bottom: 2px solid rgba(102, 126, 234, 0.3);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+        }
+
+        .normal-header table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .normal-header th {
+            color: #ffffff;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+            font-weight: 700;
+            padding: 12px;
+            border-right: 1px solid rgba(255, 255, 255, 0.2);
+            text-align: left;
+            height: 48px;
+            min-height: 48px;
+        }
+
+        /* En-tête augmenté de 25% (60px) */
+        .increased-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-bottom: 2px solid rgba(102, 126, 234, 0.3);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+        }
+
+        .increased-header table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .increased-header th {
+            color: #ffffff;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+            font-weight: 700;
+            padding: 15px 12px;
+            border-right: 1px solid rgba(255, 255, 255, 0.2);
+            text-align: left;
+            height: 60px;
+            min-height: 60px;
+            vertical-align: middle;
+        }
+
+        .table-body {
+            height: 200px;
+            overflow: auto;
+            padding: 20px;
+            text-align: center;
+            color: #666;
+        }
+
+        .info-box {
+            background: #e3f2fd;
+            border: 1px solid #2196f3;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .measurement {
+            background: #fff3e0;
+            border: 1px solid #ff9800;
+            border-radius: 6px;
+            padding: 10px;
+            margin: 10px 0;
+            text-align: center;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <h1>📏 Test Hauteur En-tête +25%</h1>
+    
+    <div class="comparison-container">
+        <div class="table-demo">
+            <div class="normal-header">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Tâche</th>
+                            <th>Responsable</th>
+                            <th>Début</th>
+                            <th>Échéance</th>
+                            <th>Statut</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+            <div class="table-body">
+                <h3>En-tête Normal</h3>
+                <div class="measurement">Hauteur: 48px</div>
+                <p>Hauteur standard de l'en-tête</p>
+            </div>
+        </div>
+
+        <div class="table-demo">
+            <div class="increased-header">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Tâche</th>
+                            <th>Responsable</th>
+                            <th>Début</th>
+                            <th>Échéance</th>
+                            <th>Statut</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+            <div class="table-body">
+                <h3>En-tête +25%</h3>
+                <div class="measurement">Hauteur: 60px</div>
+                <p>Hauteur augmentée de 25%</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="info-box">
+        <h3>📊 Comparaison des Hauteurs :</h3>
+        <ul>
+            <li><strong>Hauteur normale :</strong> 48px (h-12 en Tailwind)</li>
+            <li><strong>Hauteur augmentée :</strong> 60px (+25%)</li>
+            <li><strong>Calcul :</strong> 48px × 1.25 = 60px</li>
+            <li><strong>Padding ajusté :</strong> 15px au lieu de 12px</li>
+            <li><strong>Alignement :</strong> vertical-align: middle</li>
+        </ul>
+
+        <h3>✅ Modifications Appliquées :</h3>
+        <ul>
+            <li>✅ <strong>TableRow :</strong> height: 60px</li>
+            <li>✅ <strong>TableHead :</strong> height: 60px + padding: 15px 12px</li>
+            <li>✅ <strong>CSS spécifique :</strong> .fixed-table-header uniquement</li>
+            <li>✅ <strong>Alignement vertical :</strong> Centré dans la cellule</li>
+        </ul>
+
+        <h3>🎯 Résultat :</h3>
+        <p>L'en-tête de la partie tâche a maintenant une hauteur de 60px (25% de plus que les 48px standard), avec un meilleur espacement vertical et un alignement centré du texte.</p>
+    </div>
+</body>
+</html>

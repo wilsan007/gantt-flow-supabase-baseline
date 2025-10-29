@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test En-tête Fixe Séparé</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #f5f5f5;
+        }
+
+        .table-with-fixed-header {
+            display: flex;
+            flex-direction: column;
+            height: 400px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+            background: white;
+        }
+
+        .fixed-table-header {
+            flex-shrink: 0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(8px);
+            border-bottom: 2px solid rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+        }
+
+        .table-body-container {
+            flex: 1;
+            overflow: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-right: 1px solid #eee;
+        }
+
+        th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #333;
+        }
+
+        td {
+            border-bottom: 1px solid #eee;
+        }
+
+        tr:hover td {
+            background: #f8f9fa;
+        }
+
+        .col-1 { width: 200px; }
+        .col-2 { width: 150px; }
+        .col-3 { width: 100px; }
+        .col-4 { width: 100px; }
+        .col-5 { width: 80px; }
+    </style>
+</head>
+<body>
+    <h1>🧪 Test En-tête Fixe Séparé</h1>
+    <p>Faites défiler le tableau vers le bas - l'en-tête doit rester visible !</p>
+
+    <div class="table-with-fixed-header">
+        <!-- En-tête fixe séparé -->
+        <div class="fixed-table-header">
+            <table>
+                <thead>
+                    <tr>
+                        <th class="col-1">Tâche</th>
+                        <th class="col-2">Responsable</th>
+                        <th class="col-3">Début</th>
+                        <th class="col-4">Échéance</th>
+                        <th class="col-5">Statut</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+
+        <!-- Corps avec défilement -->
+        <div class="table-body-container">
+            <table>
+                <tbody>
+                    <tr><td class="col-1">Tâche 1</td><td class="col-2">Alice</td><td class="col-3">01/01</td><td class="col-4">15/01</td><td class="col-5">En cours</td></tr>
+                    <tr><td class="col-1">Tâche 2</td><td class="col-2">Bob</td><td class="col-3">02/01</td><td class="col-4">16/01</td><td class="col-5">À faire</td></tr>
+                    <tr><td class="col-1">Tâche 3</td><td class="col-2">Charlie</td><td class="col-3">03/01</td><td class="col-4">17/01</td><td class="col-5">Terminé</td></tr>
+                    <tr><td class="col-1">Tâche 4</td><td class="col-2">Diana</td><td class="col-3">04/01</td><td class="col-4">18/01</td><td class="col-5">En cours</td></tr>
+                    <tr><td class="col-1">Tâche 5</td><td class="col-2">Eve</td><td class="col-3">05/01</td><td class="col-4">19/01</td><td class="col-5">À faire</td></tr>
+                    <tr><td class="col-1">Tâche 6</td><td class="col-2">Frank</td><td class="col-3">06/01</td><td class="col-4">20/01</td><td class="col-5">En cours</td></tr>
+                    <tr><td class="col-1">Tâche 7</td><td class="col-2">Grace</td><td class="col-3">07/01</td><td class="col-4">21/01</td><td class="col-5">Terminé</td></tr>
+                    <tr><td class="col-1">Tâche 8</td><td class="col-2">Henry</td><td class="col-3">08/01</td><td class="col-4">22/01</td><td class="col-5">À faire</td></tr>
+                    <tr><td class="col-1">Tâche 9</td><td class="col-2">Iris</td><td class="col-3">09/01</td><td class="col-4">23/01</td><td class="col-5">En cours</td></tr>
+                    <tr><td class="col-1">Tâche 10</td><td class="col-2">Jack</td><td class="col-3">10/01</td><td class="col-4">24/01</td><td class="col-5">Terminé</td></tr>
+                    <tr><td class="col-1">Tâche 11</td><td class="col-2">Kate</td><td class="col-3">11/01</td><td class="col-4">25/01</td><td class="col-5">À faire</td></tr>
+                    <tr><td class="col-1">Tâche 12</td><td class="col-2">Liam</td><td class="col-3">12/01</td><td class="col-4">26/01</td><td class="col-5">En cours</td></tr>
+                    <tr><td class="col-1">Tâche 13</td><td class="col-2">Mia</td><td class="col-3">13/01</td><td class="col-4">27/01</td><td class="col-5">Terminé</td></tr>
+                    <tr><td class="col-1">Tâche 14</td><td class="col-2">Noah</td><td class="col-3">14/01</td><td class="col-4">28/01</td><td class="col-5">À faire</td></tr>
+                    <tr><td class="col-1">Tâche 15</td><td class="col-2">Olivia</td><td class="col-3">15/01</td><td class="col-4">29/01</td><td class="col-5">En cours</td></tr>
+                    <tr><td class="col-1">Tâche 16</td><td class="col-2">Paul</td><td class="col-3">16/01</td><td class="col-4">30/01</td><td class="col-5">Terminé</td></tr>
+                    <tr><td class="col-1">Tâche 17</td><td class="col-2">Quinn</td><td class="col-3">17/01</td><td class="col-4">31/01</td><td class="col-5">À faire</td></tr>
+                    <tr><td class="col-1">Tâche 18</td><td class="col-2">Ruby</td><td class="col-3">18/01</td><td class="col-4">01/02</td><td class="col-5">En cours</td></tr>
+                    <tr><td class="col-1">Tâche 19</td><td class="col-2">Sam</td><td class="col-3">19/01</td><td class="col-4">02/02</td><td class="col-5">Terminé</td></tr>
+                    <tr><td class="col-1">Tâche 20</td><td class="col-2">Tina</td><td class="col-3">20/01</td><td class="col-4">03/02</td><td class="col-5">À faire</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div style="margin-top: 20px; padding: 15px; background: #e3f2fd; border-radius: 8px;">
+        <h3>✅ Test Réussi Si :</h3>
+        <ul>
+            <li>L'en-tête reste visible lors du défilement</li>
+            <li>Les colonnes sont alignées entre l'en-tête et le corps</li>
+            <li>Le défilement est fluide</li>
+            <li>L'effet de flou et l'ombre sont visibles</li>
+        </ul>
+    </div>
+</body>
+</html>

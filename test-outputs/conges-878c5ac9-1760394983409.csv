@@ -1,0 +1,7 @@
+﻿Employé,Date début,Date fin,Nombre jours,Statut,Raison
+Admin User,15/09/2025,27/09/2025,10,Approuvée,Congés annuels
+Lucas Moreau,20/09/2025,29/10/2025,28,Rejetée,Congés annuels
+Pierre Moreau,10/09/2025,21/09/2025,8,Rejetée,Congés annuels
+Sophie Bernard,05/10/2025,27/10/2025,16,En attente,Congés annuels
+Marie Dupont,25/09/2025,30/09/2025,4,En attente,Congés annuels
+Jean Martin,25/09/2025,27/09/2025,2,Approuvée,Congés annuels

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useHR } from '@/hooks/useHR';
+import { useHRMinimal } from '@/hooks/useHRMinimal';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -11,9 +11,12 @@ import { Label } from '@/components/ui/label';
 import { Calendar, Plus, Check, X } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useForm } from 'react-hook-form';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
 
 export const LeaveManagement = () => {
-  const { leaveRequests, absenceTypes, employees, updateLeaveRequestStatus, createLeaveRequest, loading } = useHR();
+  const { leaveRequests, absenceTypes, employees, loading, refresh } = useHRMinimal();
+  const { toast } = useToast();
   const [selectedStatus, setSelectedStatus] = useState<string>('all');
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [rejectionReason, setRejectionReason] = useState('');
@@ -22,10 +25,44 @@ export const LeaveManagement = () => {
 
   const { register, handleSubmit, reset, setValue, watch } = useForm();
 
+  // Fonctions CRUD pour les demandes de congés
+  const createLeaveRequest = async (data: any) => {
+    const { error } = await supabase
+      .from('leave_requests')
+      .insert([data]);
+    
+    if (error) throw error;
+    
+    toast({
+      title: 'Succès',
+      description: 'Demande de congé créée avec succès'
+    });
+    
+    refresh();
+  };
+
+  const updateLeaveRequestStatus = async (requestId: string, status: string, reason?: string) => {
+    const { error } = await supabase
+      .from('leave_requests')
+      .update({ status, rejection_reason: reason })
+      .eq('id', requestId);
+    
+    if (error) throw error;
+    
+    toast({
+      title: 'Succès',
+      description: `Demande ${status === 'approved' ? 'approuvée' : 'rejetée'} avec succès`
+    });
+    
+    refresh();
+  };
+
+  // Filtres
   const filteredRequests = leaveRequests.filter(request => 
     selectedStatus === 'all' || request.status === selectedStatus
   );
 
+  // Handlers
   const onSubmit = async (data: any) => {
     try {
       // Calculate total days (simplified calculation)
@@ -47,18 +84,31 @@ export const LeaveManagement = () => {
       setIsCreateDialogOpen(false);
     } catch (error) {
       console.error('Error creating leave request:', error);
+      toast({
+        title: 'Erreur',
+        description: 'Impossible de créer la demande',
+        variant: 'destructive'
+      });
     }
   };
 
-  const handleApprove = (requestId: string) => {
-    updateLeaveRequestStatus(requestId, 'approved');
+  const handleApprove = async (requestId: string) => {
+    try {
+      await updateLeaveRequestStatus(requestId, 'approved');
+    } catch (error) {
+      console.error('Error approving request:', error);
+    }
   };
 
-  const handleReject = (requestId: string) => {
+  const handleReject = async (requestId: string) => {
     if (rejectionReason.trim()) {
-      updateLeaveRequestStatus(requestId, 'rejected', rejectionReason);
-      setRejectionReason('');
-      setSelectedRequestId(null);
+      try {
+        await updateLeaveRequestStatus(requestId, 'rejected', rejectionReason);
+        setRejectionReason('');
+        setSelectedRequestId(null);
+      } catch (error) {
+        console.error('Error rejecting request:', error);
+      }
     }
   };
 
@@ -186,7 +236,7 @@ export const LeaveManagement = () => {
           </Card>
         ) : (
           filteredRequests.map((request) => {
-            const employee = employees.find(emp => emp.id === request.employee_id);
+            const employee = employees.find(emp => emp.user_id === request.employee_id);
             const absenceType = absenceTypes.find(type => type.id === request.absence_type_id);
             
             return (

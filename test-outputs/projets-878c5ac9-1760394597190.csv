@@ -1,0 +1,6 @@
+﻿Nom,Description,Statut,Priorité,Date début,Date fin,Progression,Budget
+Projet Test Admin,Projet de test pour valider les permissions admin,active,high,17/09/2025,11/02/2026,50,
+Application SaaS Mobile,Développement application SaaS multitenant iOS/Android,active,high,11/08/2025,09/12/2025,32,"50 000,00"
+Refonte Site Web,Refonte complète du site web corporate,active,high,11/08/2025,09/12/2025,63,"50 000,00"
+Application Mobile,Développement application mobile iOS/Android,active,high,11/08/2025,09/12/2025,25,"50 000,00"
+Migration Cloud,Migration des serveurs vers le cloud,active,high,11/08/2025,09/12/2025,23,"50 000,00"

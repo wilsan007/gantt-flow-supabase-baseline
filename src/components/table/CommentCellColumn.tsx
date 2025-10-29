@@ -8,6 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
+import { LimitedTextArea } from "@/components/ui/limited-text-area";
 
 interface Task {
   id: string;
@@ -128,12 +129,12 @@ export const CommentCellColumn = ({ task, isSubtask }: CommentCellProps) => {
             </div>
           </ScrollArea>
 
-          <div className="border-t pt-3">
-            <Textarea
+          <div className="border-t pt-3 flex flex-col items-center">
+            <LimitedTextArea
               placeholder="Ajouter un commentaire..."
               value={newComment}
-              onChange={(e) => setNewComment(e.target.value)}
-              className="mb-2 min-h-[60px] resize-none"
+              onChange={setNewComment}
+              className="mb-2"
               disabled={posting}
             />
             <Button

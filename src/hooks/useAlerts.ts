@@ -211,7 +211,7 @@ export const useAlerts = () => {
         .limit(1);
 
       if (existingTypes && existingTypes.length > 0) {
-        console.log('Alert data already initialized');
+        // console.log('Alert data already initialized');
         return;
       }
 

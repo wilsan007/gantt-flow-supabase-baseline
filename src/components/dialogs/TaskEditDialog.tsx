@@ -11,7 +11,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Edit, Save, X } from 'lucide-react';
-import { Task } from '@/hooks/useTasks';
+import { Task , type Task } from '@/hooks/useTasksEnterprise';
 
 interface TaskEditDialogProps {
   open: boolean;
@@ -27,9 +27,9 @@ export const TaskEditDialog: React.FC<TaskEditDialogProps> = ({
   onSave
 }) => {
   const [title, setTitle] = useState('');
-  const [assignee, setAssignee] = useState('');
-  const [priority, setPriority] = useState<'low' | 'medium' | 'high' | 'urgent'>('medium');
-  const [status, setStatus] = useState<'todo' | 'doing' | 'blocked' | 'done'>('todo');
+  const [assignee, setAssignee] = useState<string>('');
+  const [priority, setPriority] = useState<string>('medium');
+  const [status, setStatus] = useState<string>('todo');
   const [loading, setLoading] = useState(false);
 
   const availableAssignees = [
@@ -40,11 +40,10 @@ export const TaskEditDialog: React.FC<TaskEditDialogProps> = ({
   useEffect(() => {
     if (task && open) {
       setTitle(task.title || '');
-      setAssignee(
-        task.assignee && task.assignee !== 'Non assigné' 
-          ? task.assignee 
-          : 'Ahmed Waleh' // Valeur par défaut si non assigné
-      );
+      const assigneeName = typeof task.assignee === 'object' && task.assignee?.full_name 
+        ? task.assignee.full_name 
+        : task.assigned_name || 'Ahmed Waleh';
+      setAssignee(assigneeName);
       setPriority(task.priority || 'medium');
       setStatus(task.status || 'todo');
     }

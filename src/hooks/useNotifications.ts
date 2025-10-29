@@ -11,6 +11,8 @@ export interface Notification {
   entity_id?: string;
   priority: 'low' | 'medium' | 'high' | 'urgent';
   read_at?: string;
+  viewed_at?: string; // Nouvelle propriété pour "vu"
+  dismissed_at?: string; // Nouvelle propriété pour "fermé"
   created_at: string;
   metadata?: any;
   sender_id?: string;
@@ -29,20 +31,39 @@ export const useNotifications = () => {
   const [preferences, setPreferences] = useState<NotificationPreference[]>([]);
   const [loading, setLoading] = useState(true);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [unviewedCount, setUnviewedCount] = useState(0); // Nouvelles notifications non vues
+  const [lastViewedAt, setLastViewedAt] = useState<string | null>(null); // Dernière consultation
   const { toast } = useToast();
 
   const fetchNotifications = async () => {
     try {
+      const { data: user } = await supabase.auth.getUser();
+      if (!user.user) return;
+
       const { data, error } = await supabase
         .from('notifications')
         .select('*')
+        .eq('recipient_id', user.user.id)
         .order('created_at', { ascending: false })
         .limit(50);
 
       if (error) throw error;
       
-      setNotifications((data || []) as Notification[]);
-      setUnreadCount((data || []).filter(n => !n.read_at).length);
+      const notificationData = (data || []) as Notification[];
+      setNotifications(notificationData);
+      setUnreadCount(notificationData.filter(n => !n.read_at).length);
+      
+      // Calculer les notifications non vues (nouvelles depuis la dernière consultation)
+      const storedLastViewed = localStorage.getItem('notifications_last_viewed');
+      if (storedLastViewed) {
+        setLastViewedAt(storedLastViewed);
+        const lastViewedDate = new Date(storedLastViewed);
+        setUnviewedCount(notificationData.filter(n => 
+          new Date(n.created_at) > lastViewedDate && !n.dismissed_at
+        ).length);
+      } else {
+        setUnviewedCount(notificationData.filter(n => !n.dismissed_at).length);
+      }
     } catch (error: any) {
       console.error('Error fetching notifications:', error);
       toast({
@@ -98,6 +119,74 @@ export const useNotifications = () => {
     const unreadIds = notifications.filter(n => !n.read_at).map(n => n.id);
     if (unreadIds.length > 0) {
       await markAsRead(unreadIds);
+    }
+  };
+
+  // Marquer les notifications comme vues (lors de l'ouverture du popup)
+  const markAsViewed = async () => {
+    const now = new Date().toISOString();
+    localStorage.setItem('notifications_last_viewed', now);
+    setLastViewedAt(now);
+    setUnviewedCount(0);
+    
+    // Mettre à jour en base de données avec une requête directe
+    try {
+      const unviewedIds = notifications.filter(n => 
+        !lastViewedAt || new Date(n.created_at) > new Date(lastViewedAt)
+      ).map(n => n.id);
+      
+      if (unviewedIds.length > 0) {
+        const { error } = await supabase
+          .from('notifications')
+          .update({ viewed_at: now } as any)
+          .in('id', unviewedIds);
+        
+        if (error) throw error;
+      }
+    } catch (error) {
+      console.error('Error marking notifications as viewed:', error);
+    }
+  };
+
+  // Marquer des notifications comme fermées/ignorées
+  const markAsDismissed = async (notificationIds: string[]) => {
+    try {
+      const now = new Date().toISOString();
+      
+      const { error } = await supabase
+        .from('notifications')
+        .update({ dismissed_at: now } as any)
+        .in('id', notificationIds);
+
+      if (error) throw error;
+
+      // Mettre à jour l'état local
+      setNotifications(prev => 
+        prev.map(n => 
+          notificationIds.includes(n.id) 
+            ? { ...n, dismissed_at: now }
+            : n
+        )
+      );
+      
+      // Recalculer les compteurs
+      localStorage.setItem('notifications_last_viewed', now);
+      setLastViewedAt(now);
+      setUnviewedCount(0);
+
+      toast({
+        title: '✅ Notifications fermées',
+        description: 'Les notifications ont été marquées comme vues.',
+        variant: 'default'
+      });
+
+    } catch (error: any) {
+      console.error('Error dismissing notifications:', error);
+      toast({
+        title: 'Erreur',
+        description: 'Impossible de fermer les notifications',
+        variant: 'destructive'
+      });
     }
   };
 
@@ -164,6 +253,22 @@ export const useNotifications = () => {
     return notifications.filter(n => !n.read_at);
   };
 
+  // Nouvelles notifications depuis la dernière consultation
+  const getUnviewedNotifications = () => {
+    if (!lastViewedAt) {
+      return notifications.filter(n => !n.dismissed_at);
+    }
+    const lastViewedDate = new Date(lastViewedAt);
+    return notifications.filter(n => 
+      new Date(n.created_at) > lastViewedDate && !n.dismissed_at
+    );
+  };
+
+  // Notifications non fermées (à afficher dans le popup)
+  const getActiveNotifications = () => {
+    return notifications.filter(n => !n.dismissed_at);
+  };
+
   const getPriorityNotifications = () => {
     return notifications.filter(n => n.priority === 'urgent' || n.priority === 'high');
   };
@@ -173,39 +278,52 @@ export const useNotifications = () => {
     fetchNotifications();
     fetchPreferences();
 
-    // Subscribe to new notifications
-    const channel = supabase
-      .channel('notifications_changes')
-      .on(
-        'postgres_changes',
-        {
-          event: 'INSERT',
-          schema: 'public',
-          table: 'notifications'
-        },
-        (payload) => {
-          console.log('New notification received:', payload);
-          const newNotification = payload.new as Notification;
-          
-          setNotifications(prev => [newNotification, ...prev]);
-          setUnreadCount(prev => prev + 1);
+    let channel: any = null;
 
-          // Show toast for high priority notifications
-          if (newNotification.priority === 'urgent' || newNotification.priority === 'high') {
-            toast({
-              title: newNotification.title,
-              description: newNotification.message,
-              variant: newNotification.priority === 'urgent' ? 'destructive' : 'default'
-            });
+    // Subscribe to new notifications for current user
+    const setupSubscription = async () => {
+      const { data: user } = await supabase.auth.getUser();
+      if (!user.user) return;
+
+      channel = supabase
+        .channel('notifications_changes')
+        .on(
+          'postgres_changes',
+          {
+            event: 'INSERT',
+            schema: 'public',
+            table: 'notifications',
+            filter: `recipient_id=eq.${user.user.id}`
+          },
+          (payload) => {
+            // console.log('New notification received:', payload);
+            const newNotification = payload.new as Notification;
+            
+            setNotifications(prev => [newNotification, ...prev]);
+            setUnreadCount(prev => prev + 1);
+            setUnviewedCount(prev => prev + 1); // Nouvelle notification = non vue
+
+            // Show toast for high priority notifications
+            if (newNotification.priority === 'urgent' || newNotification.priority === 'high') {
+              toast({
+                title: newNotification.title,
+                description: newNotification.message,
+                variant: newNotification.priority === 'urgent' ? 'destructive' : 'default'
+              });
+            }
           }
-        }
-      )
-      .subscribe();
+        )
+        .subscribe();
+    };
 
+    setupSubscription();
     setLoading(false);
 
+    // Cleanup function
     return () => {
-      supabase.removeChannel(channel);
+      if (channel) {
+        supabase.removeChannel(channel);
+      }
     };
   }, []);
 
@@ -214,12 +332,18 @@ export const useNotifications = () => {
     preferences,
     loading,
     unreadCount,
+    unviewedCount, // Nouvelles notifications non vues
+    lastViewedAt,
     fetchNotifications,
     markAsRead,
     markAllAsRead,
+    markAsViewed, // Marquer comme vu lors de l'ouverture
+    markAsDismissed, // Marquer comme fermé
     updatePreference,
     getNotificationsByType,
     getUnreadNotifications,
+    getUnviewedNotifications, // Nouvelles notifications
+    getActiveNotifications, // Notifications non fermées
     getPriorityNotifications
   };
 };

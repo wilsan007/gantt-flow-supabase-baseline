@@ -1,0 +1,441 @@
+﻿# PROMPT COMPLET — Module “Tâches récurrentes & opérations” (non liées aux projets)
+*Destinataire : IA de coding*  
+*But :* livrer un module complet, prêt à l’emploi, pour gérer *les tâches récurrentes* (hebdo/quotidien/mensuel…) et *les tâches opérationnelles uniques* *hors projet, intégrées à une app **React SPA (Vite, React Router, TS, Tailwind, shadcn/ui)* avec *Supabase* (Postgres + Auth + RLS + Edge Functions).
+
+> ⚠️ Important : certaines tables (ex. tasks) existent déjà. *N’invente pas de doublon. Adapte **les noms de tables/colonnes* si elles diffèrent (via introspection information_schema) puis substitue-les.
+
+---
+
+## 0) Exigences globales
+- *Architecture* :  
+  - “Modèle” (définition) d’une activité récurrente/ponctuelle *séparé* de l’“exécution” (les *vraies tâches* que les vues Kanban/Gantt/Calendrier affichent).  
+  - Instances d’occurrence = *vraies lignes dans tasks*, pour réutiliser les écrans existants.
+- *Sécurité* : *RLS multi-tenant* stricte (colonne tenant_id sur toutes les nouvelles tables).  
+- *Idempotence* : aucune double création d’occurrence pour le même jour.  
+- *Perf* : génération par *fenêtre roulante* (ex. 30 jours), index obligatoires, pagination sur les listes.
+- *DX* : Edge Function *planifiée* 1×/jour pour instancier (Supabase Scheduler/cron), RPC transactionnelles.
+
+---
+
+## 1) Dictionnaire métier minimal
+- *Activité* (modèle) : définition de “ce qu’on fait” (ex : “Réunion d’équipe hebdo”).  
+- *Planification* : description de la récurrence (RRULE ou fréquence simple) + timezone.  
+- *Actions (template)* : checklist par défaut à cloner dans chaque occurrence.  
+- *Occurrence* : *une vraie tâche* dans tasks, générée d’après l’activité + planification.  
+- *Ponctuelle (one_off)* : activité *sans récurrence* qui génère *une seule* tâche.
+
+---
+
+## 2) Schéma SQL à créer (adapter noms si besoin)
+> *Prefix conseillé* : operational_* pour éviter les collisions avec vos “tasks” existantes.
+
+```sql
+-- 2.1 Activités (modèles) : "quoi"
+create table if not exists public.operational_activities (
+  id uuid primary key default gen_random_uuid(),
+  tenant_id uuid not null,
+  name text not null,
+  description text,
+  kind text not null check (kind in ('recurring','one_off')) default 'recurring',
+  scope text not null check (scope in ('org','department','team','person')) default 'org',
+  department_id uuid,
+  owner_id uuid,            -- responsable par défaut (user_id)
+  project_id uuid,          -- optionnel: si on veut rattacher au projet; sinon null (opération hors projet)
+  task_title_template text, -- ex: "Réunion hebdo - Semaine {{isoWeek}}"
+  is_active boolean not null default true,
+  created_at timestamptz not null default now()
+);
+
+-- 2.2 Planification (récurrence)
+create table if not exists public.operational_schedules (
+  id uuid primary key default gen_random_uuid(),
+  tenant_id uuid not null,
+  activity_id uuid not null references public.operational_activities(id) on delete cascade,
+  timezone text not null default 'Africa/Djibouti',
+  -- RRULE standard (ex: FREQ=WEEKLY;BYDAY=MO), ou utiliser des colonnes simples si vous préférez
+  rrule text,        
+  start_date date not null,
+  until date,       
+  generate_window_days int not null default 30,  -- horizon de génération (ex: J+30)
+  created_at timestamptz not null default now()
+);
+
+-- 2.3 Templates d’actions (checklist à cloner sur occurrence)
+create table if not exists public.operational_action_templates (
+  id uuid primary key default gen_random_uuid(),
+  tenant_id uuid not null,
+  activity_id uuid not null references public.operational_activities(id) on delete cascade,
+  title text not null,
+  position int not null default 0
+);
+
+-- 2.4 Lien entre une "task" (occurrence réelle) et l’activité/planification
+-- ⚠️ Ne pas recréer 'tasks' si elle existe déjà !
+-- Ajoute des colonnes si elles n'existent pas encore
+alter table public.tasks
+  add column if not exists activity_id uuid references public.operational_activities(id) on delete set null,
+  add column if not exists is_operational boolean not null default false;
+
+-- 2.5 Idempotence: une occurrence par (activity_id, due_date)
+create unique index if not exists uq_tasks_activity_occurrence
+  on public.tasks (tenant_id, activity_id, due_date)
+  where activity_id is not null;
+
+RLS (exemples) :
+
+-- Activer RLS
+alter table public.operational_activities enable row level security;
+alter table public.operational_schedules enable row level security;
+alter table public.operational_action_templates enable row level security;
+
+-- Lecture/écriture: isoler par tenant
+create policy op_activities_all on public.operational_activities
+for all using (tenant_id = (auth.jwt()->>'tenant_id')::uuid)
+with check (tenant_id = (auth.jwt()->>'tenant_id')::uuid);
+
+create policy op_schedules_all on public.operational_schedules
+for all using (tenant_id = (auth.jwt()->>'tenant_id')::uuid)
+with check (tenant_id = (auth.jwt()->>'tenant_id')::uuid);
+
+create policy op_act_templates_all on public.operational_action_templates
+for all using (tenant_id = (auth.jwt()->>'tenant_id')::uuid)
+with check (tenant_id = (auth.jwt()->>'tenant_id')::uuid);
+
+Index perf complémentaires :
+
+create index if not exists idx_op_activities_tenant on public.operational_activities(tenant_id);
+create index if not exists idx_op_schedules_tenant on public.operational_schedules(tenant_id);
+create index if not exists idx_op_schedules_activity on public.operational_schedules(activity_id);
+create index if not exists idx_op_act_templates_activity on public.operational_action_templates(activity_id);
+
+-- Sur tasks (si pas déjà faits)
+create index if not exists idx_tasks_tenant on public.tasks(tenant_id);
+create index if not exists idx_tasks_dates on public.tasks(tenant_id, start_date, due_date);
+create index if not exists idx_tasks_project on public.tasks(project_id);
+
+
+---
+
+3) RPC SQL — clonage des actions (template → occurrence)
+
+create or replace function public.clone_operational_actions_to_task(p_activity uuid, p_task uuid)
+returns void language sql as $$
+  insert into public.task_actions (tenant_id, task_id, title, position)
+  select a.tenant_id, p_task, t.title, t.position
+  from public.operational_activities a
+  join public.operational_action_templates t on t.activity_id = a.id
+  where a.id = p_activity;
+$$;
+
+> ⚠️ Adapte public.task_actions si le nom diffère dans ta base.
+
+
+
+
+---
+
+4) Edge Function — operational-instantiator
+
+Rôle : chaque jour, instancier les occurrences à venir dans la fenêtre (ex. J→J+30), idempotent.
+
+Entrée : rien (planification quotidienne via Supabase Scheduler).
+
+Étapes :
+
+1. Lister operational_schedules actives (activité is_active=true + start_date ≤ aujourd’hui).
+
+
+2. Calculer les dates d’occurrence dans [today, today + generate_window_days] selon rrule.
+
+
+3. Pour chaque date, upsert une task avec (tenant_id, activity_id, due_date) unique.
+
+
+4. Cloner les actions templates via RPC clone_operational_actions_to_task.
+
+
+5. Logguer le tout.
+
+
+
+
+Code (TypeScript Deno) :
+
+// supabase/functions/operational-instantiator/index.ts
+import { createClient } from "https://esm.sh/@supabase/supabase-js";
+// Vous pouvez utiliser un parser RRULE compatible (petite lib ESM) ou implémenter une logique simple
+// Si pas de lib, commencez avec heuristiques (WEEKLY BYDAY, DAILY) et étendez ensuite.
+
+const supabase = createClient(
+  Deno.env.get("SUPABASE_URL")!,
+  Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
+);
+
+// Helpers simples (à compléter selon vos besoins)
+function expandWeeklyByDay(start: Date, end: Date, byDays: string[]): Date[] {
+  const out: Date[] = [];
+  const dayMap: Record<string, number> = { MO:1, TU:2, WE:3, TH:4, FR:5, SA:6, SU:0 };
+  const set = new Set(byDays.map(s => dayMap[s]));
+  const d = new Date(start);
+  while (d <= end) {
+    if (set.has(d.getUTCDay())) out.push(new Date(d));
+    d.setUTCDate(d.getUTCDate() + 1);
+  }
+  return out;
+}
+
+export default async function handler(_req: Request) {
+  const today = new Date();
+  const iso = today.toISOString().slice(0,10);
+
+  // 1) charger les schedules actives
+  const { data: schedules, error } = await supabase
+    .from("operational_schedules")
+    .select("id, tenant_id, activity_id, rrule, start_date, until, generate_window_days, operational_activities!inner(is_active, task_title_template, owner_id, project_id)")
+    .gt("start_date", "1900-01-01");
+  if (error) return new Response(error.message, { status: 500 });
+
+  for (const s of schedules ?? []) {
+    if (!s.operational_activities?.is_active) continue;
+
+    const windowDays = s.generate_window_days ?? 30;
+    const start = new Date(iso);
+    const end = new Date(start);
+    end.setUTCDate(end.getUTCDate() + windowDays);
+
+    // 2) expand RRULE (simplifié: support FREQ=WEEKLY;BYDAY=MO,TU... et FREQ=DAILY)
+    let dates: Date[] = [];
+    if (s.rrule?.startsWith("FREQ=WEEKLY")) {
+      const byday = (s.rrule.match(/BYDAY=([A-Z,]+)/)?.[1] ?? "MO").split(",");
+      dates = expandWeeklyByDay(start, end, byday);
+    } else if (s.rrule?.startsWith("FREQ=DAILY")) {
+      const d = new Date(start);
+      while (d <= end) { dates.push(new Date(d)); d.setUTCDate(d.getUTCDate()+1); }
+    } else {
+      // fallback: une seule date = start_date si dans la fenêtre
+      const d0 = new Date(s.start_date);
+      if (d0 >= start && d0 <= end) dates = [d0];
+    }
+
+    // Respecter until
+    const until = s.until ? new Date(s.until) : null;
+    dates = dates.filter(d => !until || d <= until);
+
+    // 3) upsert tasks (idempotent via index unique (tenant_id, activity_id, due_date))
+    for (const d of dates) {
+      const due = d.toISOString().slice(0,10);
+
+      // créer un titre (ex: injection semaine)
+      const title = (s.operational_activities.task_title_template ?? "Opération")
+        .replace("{{isoWeek}}", String(getIsoWeek(d)));
+
+      const { data: task, error: taskErr } = await supabase
+        .from("tasks")
+        .insert({
+          tenant_id: s.tenant_id,
+          activity_id: s.activity_id,
+          is_operational: true,
+          title,
+          start_date: due,
+          due_date: due,
+          assignee_id: s.operational_activities.owner_id ?? null,
+          project_id: s.operational_activities.project_id ?? null,
+          status: "todo"
+        })
+        .select("id")
+        .single();
+
+      if (taskErr) {
+        // Conflit = déjà existante → ignorer
+        if (!String(taskErr.message).toLowerCase().includes("duplicate")) {
+          console.log("Insert task error", taskErr.message);
+        }
+        continue;
+      }
+
+      // 4) cloner les actions templates
+      const { error: cloneErr } = await supabase.rpc("clone_operational_actions_to_task", {
+        p_activity: s.activity_id,
+        p_task: task.id
+      });
+      if (cloneErr) console.log("Clone actions error", cloneErr.message);
+    }
+  }
+
+  return new Response("ok", { status: 200 });
+}
+
+function getIsoWeek(date: Date): number {
+  const d = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
+  const dayNum = d.getUTCDay() || 7;
+  d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+  const yearStart = new Date(Date.UTC(d.getUTCFullYear(),0,1));
+  return Math.ceil((((d as any) - (yearStart as any)) / 86400000 + 1)/7);
+}
+
+Déploiement & planification
+
+supabase functions deploy operational-instantiator
+# Planifier 1x/jour (Supabase Scheduler) pour appeler /functions/v1/operational-instantiator
+
+
+---
+
+5) Endpoints / RPC complémentaires
+
+5.1 Créer une activité ponctuelle (génère 1 tâche immédiatement)
+
+create or replace function public.instantiate_one_off_activity(
+  p_activity_id uuid, p_due date, p_title text
+) returns uuid
+language plpgsql
+security definer
+as $$
+declare v_task_id uuid; v_tenant_id uuid;
+begin
+  select tenant_id into v_tenant_id from public.operational_activities where id = p_activity_id;
+  if v_tenant_id is null then raise exception 'activity_not_found'; end if;
+
+  insert into public.tasks (tenant_id, activity_id, is_operational, title, start_date, due_date, status)
+  select v_tenant_id, p_activity_id, true, coalesce(p_title, a.task_title_template), p_due, p_due, 'todo'
+  from public.operational_activities a where a.id = p_activity_id
+  returning id into v_task_id;
+
+  perform public.clone_operational_actions_to_task(p_activity_id, v_task_id);
+
+  return v_task_id;
+end; $$;
+
+5.2 Pause/Reprise d’une activité
+
+create or replace function public.pause_activity(p_activity_id uuid, p_state boolean)
+returns void language sql security definer as $$
+  update public.operational_activities set is_active = p_state where id = p_activity_id;
+$$;
+
+
+---
+
+6) Intégration UI (React SPA)
+
+6.1 Nouvelles pages
+
+/operations : liste des activités (filtres : actif, scope, owner, dept).
+
+/operations/:id : détail de l’activité (info + templates d’actions + planification + bouton “Instancier maintenant”).
+
+/tasks : les occurrences (déjà chez vous) → ajouter filtres “Opérationnelles” (is_operational=true) + par activité.
+
+
+6.2 Composants (shadcn/ui + Tailwind)
+
+ActivityForm : name, kind (recurring/one_off), scope, owner, project, task_title_template.
+
+ScheduleForm : type (Daily/Weekly), BYDAY (checkbox MO..SU), start_date, until, timezone, window.
+
+ActionTemplateList : table réordonnable (drag) des operational_action_templates.
+
+OccurrenceList : reuse votre liste de tasks avec filtre activity_id.
+
+Switch “Afficher opérations” dans les vues Kanban / Calendrier / Gantt / Timeline (filtre is_operational).
+
+
+6.3 Raccourcis UX
+
+Bouton “Créer activité récurrente” depuis Calendrier → préremplir start_date + RRULE.
+
+Sur une occurrence, afficher breadcrumb : Activité → Occurrence (et bouton “Voir l’activité”).
+
+Skip occurrence : un menu contextual “Ignorer cette occurrence” qui archive la tâche (ne supprime pas l’activité).
+
+
+
+---
+
+7) RLS et permissions (rappels rapides)
+
+Toutes les nouvelles tables RLS par tenant (policies dans §2).
+
+Création/édition activité/schedule/template :
+
+tenant_admin & manager : autorisés.
+
+employee : lecture seule.
+
+
+Les occurrences (tasks) héritent de vos policies existantes (filtrage par tenant_id, scope d’accès par rôle).
+
+
+(Si vous utilisez un RBAC fin (roles, permissions, role_permissions, user_roles), créez des permissions logiques : operations.read, operations.write et filtrez via la vue v_user_effective_permissions.)
+
+
+---
+
+8) Tests (à produire)
+
+Unitaires DB :
+
+clone_operational_actions_to_task clone bien.
+
+instantiate_one_off_activity crée 1 tâche + actions.
+
+
+Intégration Edge :
+
+operational-instantiator génère uniquement ce qui manque (idempotence : unique index).
+
+RRULE WEEKLY BYDAY : bonnes dates, respect until.
+
+
+E2E :
+
+Créer “Réunion hebdo” → planifier Lundi → attendre planif → voir les occurrences (tasks) sur le calendrier.
+
+Changer is_active=false → plus d’occurrences futures.
+
+One-off : “Audit sécurité du 30/01” → 1 tâche créée, actions clonées.
+
+
+
+
+---
+
+9) Definition of Done
+
+Activité récurrente instanciée automatiquement dans la fenêtre.
+
+Activité ponctuelle instanciée immédiatement via RPC.
+
+Aucune double occurrence (index unique OK).
+
+RLS : isolation par tenant OK.
+
+Vues existantes (Kanban, Calendrier, Gantt, Timeline) affichent correctement les opérations (via is_operational/activity_id).
+
+UI : créer/éditer/pause/supprimer activité + planification + templates.
+
+Tests unitaires/intégration/E2E verts.
+
+
+
+---
+
+10) Notes d’adaptation (si vos tables diffèrent)
+
+Si tasks utilise des champs différents (title → name, due_date → deadline, etc.), adapte bien les insert/select.
+
+Si la “checklist” n’est pas task_actions, remplace par votre table réelle.
+
+Si vous ne voulez pas de RRULE, implémentez des colonnes simples (freq, byday, interval) et adaptez l’expansion dans l’Edge Function.
+
+
+
+---
+
+Exécute exactement ce prompt.
+
+Commence par introspecter information_schema pour confirmer les noms de tables/colonnes existants et substituer dans tous les SQL/TypeScript ci-dessus.
+
+Respecte RLS, idempotence, fenêtre de génération, intégration avec tasks (pas de table parallèle d’exécution).
+
+Livre un module opérationnel, performant, et cohérent avec les vues existantes.

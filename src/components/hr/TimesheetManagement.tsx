@@ -338,7 +338,7 @@ export const TimesheetManagement = () => {
           </Card>
         ) : (
           filteredTimesheets.map((timesheet) => {
-            const employee = employees.find(emp => emp.id === timesheet.employee_id);
+            const employee = employees.find(emp => emp.user_id === timesheet.employee_id);
             
             return (
               <Card key={timesheet.id} className="modern-card hover-glow">

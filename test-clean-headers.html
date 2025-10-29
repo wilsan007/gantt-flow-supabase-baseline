@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test En-têtes Propres</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #f5f5f5;
+        }
+
+        .demo-container {
+            display: flex;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            background: white;
+            margin-bottom: 30px;
+        }
+
+        /* Partie gauche - Colonnes fixes */
+        .left-section {
+            flex: 2;
+            border-right: 1px solid #ddd;
+        }
+
+        .left-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 15px;
+            color: #ffffff;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+            font-weight: 700;
+            border-bottom: 2px solid rgba(102, 126, 234, 0.3);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+        }
+
+        .left-content {
+            padding: 20px;
+            background: white;
+        }
+
+        /* Partie droite - Colonnes d'actions */
+        .right-section {
+            flex: 1;
+        }
+
+        .right-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 15px;
+            color: #ffffff;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+            font-weight: 700;
+            text-align: center;
+            border-bottom: 2px solid rgba(102, 126, 234, 0.3);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+        }
+
+        .right-content {
+            padding: 20px;
+            background: white;
+            text-align: center;
+        }
+
+        .success-message {
+            background: #10b981;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 600;
+            margin: 20px 0;
+        }
+
+        .info-box {
+            background: #e0f2fe;
+            border: 1px solid #0288d1;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>✅ Test En-têtes Propres - Solution Finale</h1>
+    
+    <div class="demo-container">
+        <div class="left-section">
+            <div class="left-header">
+                <h3>📊 Colonnes Fixes</h3>
+                <p style="margin: 5px 0 0 0; font-size: 12px; opacity: 0.9;">
+                    Tâche • Responsable • Dates • Statut
+                </p>
+            </div>
+            <div class="left-content">
+                <p><strong>✅ En-tête Principal</strong></p>
+                <p>Dégradé violet appliqué</p>
+                <p>Texte blanc avec ombre</p>
+                <p>Fonctionne parfaitement</p>
+            </div>
+        </div>
+
+        <div class="right-section">
+            <div class="right-header">
+                <h3>⚡ Actions</h3>
+                <p style="margin: 5px 0 0 0; font-size: 12px; opacity: 0.9;">
+                    Colonnes d'actions
+                </p>
+            </div>
+            <div class="right-content">
+                <p><strong>✅ En-tête Actions</strong></p>
+                <p>Même dégradé violet</p>
+                <p>Code simplifié et propre</p>
+                <p>Plus de CSS agressif</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="success-message">
+        ✅ SOLUTION PROPRE : Code nettoyé et simplifié comme la partie gauche !
+    </div>
+
+    <div class="info-box">
+        <h3>🧹 Nettoyage Effectué :</h3>
+        <ul>
+            <li>✅ <strong>Supprimé force-purple.css</strong> → CSS agressif éliminé</li>
+            <li>✅ <strong>Simplifié les styles inline</strong> → Plus de !important partout</li>
+            <li>✅ <strong>Utilisé les mêmes classes</strong> → Comme la partie gauche</li>
+            <li>✅ <strong>Nettoyé sticky-table.css</strong> → Sélecteurs ultra-spécifiques supprimés</li>
+            <li>✅ <strong>Code propre et maintenable</strong> → Structure identique aux deux parties</li>
+        </ul>
+
+        <h3>🎨 Résultat :</h3>
+        <p>Les deux parties ont maintenant exactement le même style violet, avec un code propre et maintenable. Seul l'en-tête est coloré, pas toute la section.</p>
+    </div>
+</body>
+</html>

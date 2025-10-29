@@ -21,7 +21,7 @@ import { SkillsTraining } from "@/components/hr/SkillsTraining";
 import { ExpenseManagement } from "@/components/hr/ExpenseManagement";
 import { PayrollManagement } from "@/components/hr/PayrollManagement";
 import { HealthSafety } from "@/components/hr/HealthSafety";
-import { AdvancedHRDashboard } from "@/components/hr/AdvancedHRDashboard";
+// AdvancedHRDashboard supprimé - composant obsolète
 
 const HRPage = () => {
   const [activeTab, setActiveTab] = useState("dashboard");
@@ -64,14 +64,10 @@ const HRPage = () => {
       </div>
       
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className={`grid w-full modern-card glow-primary bg-gradient-to-r from-primary/10 via-accent/10 to-tech-purple/10 border-2 ${isMobile ? 'grid-cols-3 gap-2 p-2 mb-4' : 'grid-cols-7 gap-2 p-3 mb-8'}`}>
+        <TabsList className={`grid w-full modern-card glow-primary bg-gradient-to-r from-primary/10 via-accent/10 to-tech-purple/10 border-2 ${isMobile ? 'grid-cols-3 gap-2 p-2 mb-4' : 'grid-cols-6 gap-2 p-3 mb-8'}`}>
           <TabsTrigger value="dashboard" className="flex items-center gap-2">
             <Building className="h-4 w-4" />
             {!isMobile && 'Dashboard'}
-          </TabsTrigger>
-          <TabsTrigger value="advanced" className="flex items-center gap-2">
-            <TrendingUp className="h-4 w-4" />
-            {!isMobile && 'Avancé'}
           </TabsTrigger>
           <TabsTrigger value="personnel" className="flex items-center gap-2">
             <Users className="h-4 w-4" />
@@ -98,12 +94,6 @@ const HRPage = () => {
         <TabsContent value="dashboard" className={isMobile ? 'mt-2' : 'mt-6'}>
           <div className="modern-card rounded-xl transition-smooth hover-glow">
             <HRDashboard />
-          </div>
-        </TabsContent>
-
-        <TabsContent value="advanced" className={isMobile ? 'mt-2' : 'mt-6'}>
-          <div className="modern-card rounded-xl transition-smooth hover-glow">
-            <AdvancedHRDashboard />
           </div>
         </TabsContent>
         

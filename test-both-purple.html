@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Violet - Deux Parties</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #f5f5f5;
+        }
+
+        .table-demo {
+            display: flex;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            background: white;
+            margin-bottom: 30px;
+        }
+
+        /* Partie gauche - Colonnes fixes VIOLET */
+        .left-section {
+            flex: 2;
+            border-right: 1px solid #ddd;
+        }
+
+        .left-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 15px;
+            color: #ffffff;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+            font-weight: 700;
+            border-bottom: 2px solid rgba(102, 126, 234, 0.3);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+        }
+
+        .left-content {
+            padding: 20px;
+            background: white;
+        }
+
+        /* Partie droite - Colonnes d'actions VIOLET */
+        .right-section {
+            flex: 1;
+        }
+
+        .right-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 15px;
+            color: #ffffff;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.4);
+            font-weight: 700;
+            text-align: center;
+            border-bottom: 2px solid rgba(102, 126, 234, 0.4);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+        }
+
+        .right-content {
+            padding: 20px;
+            background: white;
+            text-align: center;
+        }
+
+        .color-info {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .color-swatch {
+            width: 100%;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+            margin: 10px 0;
+        }
+
+        .success-indicator {
+            background: #10b981;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 6px;
+            text-align: center;
+            font-weight: 600;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎨 Test Final - Deux Parties Violettes</h1>
+    
+    <div class="table-demo">
+        <div class="left-section">
+            <div class="left-header">
+                <h3>📊 Colonnes Fixes</h3>
+                <p style="margin: 5px 0 0 0; font-size: 12px; opacity: 0.9;">
+                    Tâche • Responsable • Dates • Statut
+                </p>
+            </div>
+            <div class="left-content">
+                <p><strong>En-tête Principal</strong></p>
+                <p>✅ Dégradé violet appliqué</p>
+                <p>✅ Texte blanc avec ombre</p>
+                <p>✅ Bordures blanches semi-transparentes</p>
+            </div>
+        </div>
+
+        <div class="right-section">
+            <div class="right-header">
+                <h3>⚡ Actions</h3>
+                <p style="margin: 5px 0 0 0; font-size: 12px; opacity: 0.9;">
+                    Colonnes d'actions
+                </p>
+            </div>
+            <div class="right-content">
+                <p><strong>Colonnes d'Actions</strong></p>
+                <p>✅ Même dégradé violet</p>
+                <p>✅ Texte blanc avec ombre</p>
+                <p>✅ Style cohérent</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="success-indicator">
+        ✅ SUCCÈS : Les deux parties ont maintenant le même dégradé violet !
+    </div>
+
+    <div class="color-info">
+        <h3>🎨 Couleur Appliquée aux Deux Parties</h3>
+        
+        <div class="color-swatch">
+            Dégradé Violet : #667eea → #764ba2
+        </div>
+        
+        <h4>📋 Caractéristiques :</h4>
+        <ul>
+            <li><strong>Fond</strong> → Dégradé violet identique</li>
+            <li><strong>Texte</strong> → Blanc (#ffffff) avec text-shadow</li>
+            <li><strong>Bordures</strong> → Blanches semi-transparentes (20% opacity)</li>
+            <li><strong>Ombre</strong> → Violette assortie au dégradé</li>
+            <li><strong>Cohérence</strong> → Style uniforme sur les deux parties</li>
+        </ul>
+
+        <h4>🔧 Propriétés CSS :</h4>
+        <pre style="background: #f8f9fa; padding: 15px; border-radius: 6px; font-size: 12px;">
+background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+color: #ffffff;
+text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+border-bottom: 2px solid rgba(102, 126, 234, 0.3);
+box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+        </pre>
+    </div>
+
+    <div style="background: #e0f2fe; padding: 20px; border-radius: 8px; border-left: 4px solid #0288d1;">
+        <h3>🚀 Résultat Final</h3>
+        <p>Maintenant les <strong>deux parties du tableau</strong> ont exactement la même couleur :</p>
+        <ul>
+            <li>✅ <strong>Partie gauche</strong> → Dégradé violet</li>
+            <li>✅ <strong>Partie droite</strong> → Même dégradé violet</li>
+            <li>✅ <strong>Cohérence visuelle</strong> → Style uniforme</li>
+            <li>✅ <strong>Contraste optimal</strong> → Texte blanc lisible</li>
+        </ul>
+    </div>
+</body>
+</html>

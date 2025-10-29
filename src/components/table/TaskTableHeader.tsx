@@ -1,76 +1,44 @@
-import { CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Plus, Target } from 'lucide-react';
-import { ActionCreationDialog } from './ActionCreationDialog';
+/**
+ * TaskTableHeader - En-tête du tableau de tâches
+ * Pattern: Sticky header (Notion/Airtable)
+ */
+
+import React from 'react';
 
 interface TaskTableHeaderProps {
-  newActionTitle: string;
-  setNewActionTitle: (value: string) => void;
-  onAddActionColumn: () => void;
-  onCreateDetailedAction: (actionData: {
-    title: string;
-    weight_percentage: number;
-    due_date?: string;
-    notes?: string;
-  }) => void;
-  selectedTaskId?: string;
-  isActionButtonEnabled: boolean;
-  onCreateTask?: () => void;
+  actionColumns?: Array<{ id: string; title: string }>;
 }
 
-export const TaskTableHeader = ({ 
-  newActionTitle, 
-  setNewActionTitle, 
-  onAddActionColumn,
-  onCreateDetailedAction,
-  selectedTaskId,
-  isActionButtonEnabled,
-  onCreateTask
-}: TaskTableHeaderProps) => (
-  <CardHeader>
-    <div className="flex justify-between items-center">
-      <CardTitle className="flex items-center gap-2">
-        <Target className="h-5 w-5" />
-        Tableau Dynamique d'Exécution
-      </CardTitle>
-      <div className="flex gap-2">
-        {onCreateTask && (
-          <Button 
-            onClick={onCreateTask} 
-            size="sm"
-            variant="default"
-            className="bg-primary hover:bg-primary/90"
-          >
-            <Plus className="h-4 w-4 mr-2" />
-            Nouvelle Tâche
-          </Button>
-        )}
-        {selectedTaskId && (
-          <div className="text-sm text-muted-foreground self-center">
-            Tâche sélectionnée
+export const TaskTableHeader: React.FC<TaskTableHeaderProps> = ({ actionColumns = [] }) => {
+  return (
+    <div className="sticky top-0 z-10 bg-background border-b">
+      <div className="flex">
+        {/* Colonnes fixes */}
+        <div className="flex-shrink-0 flex border-r">
+          <div className="w-12 px-2 py-3 text-xs font-medium text-muted-foreground border-r">#</div>
+          <div className="w-64 px-4 py-3 text-xs font-medium text-muted-foreground border-r">Tâche</div>
+          <div className="w-32 px-4 py-3 text-xs font-medium text-muted-foreground border-r">Assigné à</div>
+          <div className="w-32 px-4 py-3 text-xs font-medium text-muted-foreground border-r">Statut</div>
+          <div className="w-24 px-4 py-3 text-xs font-medium text-muted-foreground border-r">Priorité</div>
+          <div className="w-32 px-4 py-3 text-xs font-medium text-muted-foreground border-r">Échéance</div>
+          <div className="w-24 px-4 py-3 text-xs font-medium text-muted-foreground border-r">Effort (h)</div>
+          <div className="w-24 px-4 py-3 text-xs font-medium text-muted-foreground">Actions</div>
+        </div>
+
+        {/* Colonnes d'actions dynamiques */}
+        {actionColumns.length > 0 && (
+          <div className="flex">
+            {actionColumns.map((column) => (
+              <div
+                key={column.id}
+                className="w-48 px-4 py-3 text-xs font-medium text-muted-foreground border-r"
+              >
+                {column.title}
+              </div>
+            ))}
           </div>
         )}
-        <Input 
-          placeholder="Action rapide..." 
-          value={newActionTitle}
-          onChange={(e) => setNewActionTitle(e.target.value)}
-          onKeyPress={(e) => e.key === 'Enter' && isActionButtonEnabled && onAddActionColumn()}
-          className="w-40"
-        />
-        <Button 
-          onClick={onAddActionColumn} 
-          size="sm"
-          disabled={!isActionButtonEnabled}
-          title={!selectedTaskId ? "Sélectionnez d'abord une tâche" : !newActionTitle.trim() ? "Entrez un nom pour l'action" : ""}
-        >
-          <Plus className="h-4 w-4" />
-        </Button>
-        <ActionCreationDialog 
-          onCreateAction={onCreateDetailedAction}
-          selectedTaskId={selectedTaskId}
-        />
       </div>
     </div>
-  </CardHeader>
-);
+  );
+};

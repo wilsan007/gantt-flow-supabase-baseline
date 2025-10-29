@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { ProjectDashboard } from '@/components/project/ProjectDashboard';
+import { ProjectDashboardEnterprise } from '@/components/projects/ProjectDashboardEnterprise';
 import { useNavigate } from 'react-router-dom';
 import { 
   BarChart3, 
@@ -97,7 +97,7 @@ export default function ProjectPage() {
         </div>
 
         {/* Dashboard Principal */}
-        <ProjectDashboard />
+        <ProjectDashboardEnterprise />
       </div>
     </div>
   );

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useHR } from '@/hooks/useHR';
+import { useHRMinimal } from '@/hooks/useHRMinimal';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -12,7 +12,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { useForm } from 'react-hook-form';
 
 export const AttendanceManagement = () => {
-  const { attendances, employees, createAttendance, loading } = useHR();
+  const { attendances, employees, createAttendance, loading } = useHRMinimal();
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const isMobile = useIsMobile();
@@ -215,7 +215,7 @@ export const AttendanceManagement = () => {
           </Card>
         ) : (
           filteredAttendances.map((attendance) => {
-            const employee = employees.find(emp => emp.id === attendance.employee_id);
+            const employee = employees.find(emp => emp.user_id === attendance.employee_id);
             
             return (
               <Card key={attendance.id} className="modern-card hover-glow">

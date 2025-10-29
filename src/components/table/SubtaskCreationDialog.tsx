@@ -10,6 +10,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { LimitedTextArea } from '@/components/ui/limited-text-area';
+import { FormattedActionText } from '@/components/ui/formatted-action-text';
 import { Slider } from '@/components/ui/slider';
 import { Textarea } from '@/components/ui/textarea';
 import { Separator } from '@/components/ui/separator';
@@ -17,7 +19,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { CalendarIcon, Plus, Trash2, Target, Link, User } from 'lucide-react';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
-import { Task } from '@/hooks/useTasks';
+import { type Task } from '@/hooks/useTasksWithActions';
 
 interface ActionData {
   id: string;
@@ -59,8 +61,8 @@ export const SubtaskCreationDialog = ({
   const [dueDate, setDueDate] = useState<Date>(new Date(parentTask.due_date));
   const [effort, setEffort] = useState(1);
   const [assignee, setAssignee] = useState(
-    parentTask.assignee && parentTask.assignee !== 'Non assigné' 
-      ? parentTask.assignee 
+    parentTask.assigned_name && parentTask.assigned_name !== 'Non assigné' 
+      ? parentTask.assigned_name 
       : 'Ahmed Waleh' // Valeur par défaut si parent non assigné
   );
   const [selectedActionId, setSelectedActionId] = useState<string>('none');
@@ -188,7 +190,7 @@ export const SubtaskCreationDialog = ({
     setStartDate(new Date(parentTask.start_date));
     setDueDate(new Date(parentTask.due_date));
     setEffort(1);
-    setAssignee(parentTask.assignee || '');
+    setAssignee(parentTask.assigned_name || '');
     setSelectedActionId('none');
     
     // Reset actions
@@ -219,16 +221,14 @@ export const SubtaskCreationDialog = ({
           {/* Titre */}
           <div className="grid gap-2">
             <Label htmlFor="title">Titre de la sous-tâche *</Label>
-            <Input
-              id="title"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="Nom de la sous-tâche..."
-              maxLength={80}
-            />
-            <p className="text-xs text-muted-foreground">
-              {title.length}/80 caractères (limite pour préserver la mise en page)
-            </p>
+            <div className="flex justify-center">
+              <LimitedTextArea
+                value={title}
+                onChange={setTitle}
+                placeholder="Ex: Développement module..."
+                disabled={false}
+              />
+            </div>
           </div>
 
           {/* Dates */}
@@ -329,7 +329,10 @@ export const SubtaskCreationDialog = ({
                   <SelectItem value="none">Aucune liaison</SelectItem>
                   {parentTask.task_actions.map((action) => (
                     <SelectItem key={action.id} value={action.id}>
-                      {action.title} ({action.weight_percentage}%)
+                      <div className="flex items-center gap-2">
+                        <FormattedActionText text={action.title} />
+                        <span>({action.weight_percentage}%)</span>
+                      </div>
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -348,7 +351,7 @@ export const SubtaskCreationDialog = ({
               <strong>Tâche parent:</strong> {parentTask.title}
             </p>
             <p className="text-sm text-muted-foreground">
-              <strong>Responsable hérité:</strong> {parentTask.assignee}
+              <strong>Responsable hérité:</strong> {parentTask.assigned_name || 'Non assigné'}
             </p>
           </div>
 
@@ -381,7 +384,10 @@ export const SubtaskCreationDialog = ({
                   <div key={action.id} className="flex items-center justify-between p-2 bg-muted/50 rounded-md">
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
-                        <span className="font-medium text-sm">{action.title}</span>
+                        <FormattedActionText 
+                          text={action.title} 
+                          className="font-medium text-sm"
+                        />
                         <span className="text-xs bg-primary/20 text-primary px-2 py-1 rounded">
                           {action.weight_percentage}%
                         </span>
@@ -435,17 +441,14 @@ export const SubtaskCreationDialog = ({
                 {/* Titre de l'action */}
                 <div className="grid gap-1">
                   <Label className="text-xs">Nom de l'action *</Label>
-                  <Input
-                    placeholder="Ex: Recherche, Développement, Tests..."
-                    value={newActionTitle}
-                    onChange={(e) => setNewActionTitle(e.target.value)}
-                    onKeyPress={(e) => e.key === 'Enter' && newActionTitle.trim() && addAction()}
-                    className="text-sm"
-                    maxLength={50}
-                  />
-                  <p className="text-xs text-muted-foreground">
-                    {newActionTitle.length}/50 caractères
-                  </p>
+                  <div className="flex justify-center">
+                    <LimitedTextArea
+                      placeholder="Ex: Recherche, Tests..."
+                      value={newActionTitle}
+                      onChange={setNewActionTitle}
+                      disabled={false}
+                    />
+                  </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
@@ -567,3 +570,4 @@ export const SubtaskCreationDialog = ({
     </Dialog>
   );
 };
+

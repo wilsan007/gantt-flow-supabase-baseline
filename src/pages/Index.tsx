@@ -6,13 +6,14 @@ import { Users } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { ResponsiveLayout } from "@/components/responsive/ResponsiveLayout";
-import GanttChart from "../components/GanttChart";
-import DynamicTable from "../components/DynamicTable";
-import KanbanBoard from "../components/KanbanBoard";
+// Utilisation exclusive des composants vues/ modernisés
+import GanttChart from "@/components/vues/gantt/GanttChart";
+import DynamicTable from "@/components/vues/table/DynamicTable";
+import KanbanBoard from "@/components/vues/kanban/KanbanBoard";
 // import { HRDashboard } from "@/components/hr/HRDashboard"; // Temporarily commented out
 
 const Index = () => {
-  const [activeTab, setActiveTab] = useState("gantt");
+  const [activeTab, setActiveTab] = useState("table");
   const isMobile = useIsMobile();
   const navigate = useNavigate();
 
@@ -76,10 +77,8 @@ const Index = () => {
             */}
           </TabsList>
           
-          <TabsContent value="gantt" className={isMobile ? 'mt-2' : 'mt-6'}>
-            <div className="modern-card rounded-xl transition-smooth hover-glow">
-              <GanttChart />
-            </div>
+          <TabsContent value="table" className={isMobile ? 'mt-2' : 'mt-6'}>
+            <DynamicTable />
           </TabsContent>
           
           <TabsContent value="kanban" className={isMobile ? 'mt-2' : 'mt-6'}>
@@ -88,9 +87,9 @@ const Index = () => {
             </div>
           </TabsContent>
           
-          <TabsContent value="table" className={isMobile ? 'mt-2' : 'mt-6'}>
+          <TabsContent value="gantt" className={isMobile ? 'mt-2' : 'mt-6'}>
             <div className="modern-card rounded-xl transition-smooth hover-glow">
-              <DynamicTable />
+              <GanttChart />
             </div>
           </TabsContent>
           

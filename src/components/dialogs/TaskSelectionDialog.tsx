@@ -1,7 +1,7 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Task } from '@/hooks/useTasks';
+import { Task , type Task } from '@/hooks/useTasksEnterprise';
 import { priorityColors, statusColors } from '@/lib/taskHelpers';
 
 interface TaskSelectionDialogProps {

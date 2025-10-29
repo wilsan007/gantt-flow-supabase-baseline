@@ -203,7 +203,7 @@ export const useTaskHistory = (taskId?: string) => {
           filter: `task_id=eq.${taskId}`
         },
         (payload) => {
-          console.log('Task history change detected:', payload);
+          // console.log('Task history change detected:', payload);
           // Rafraîchir l'historique
           fetchTaskHistory(taskId);
         }
@@ -267,7 +267,7 @@ export const useRecentActivities = (limit: number = 50) => {
           table: 'task_history'
         },
         (payload) => {
-          console.log('New activity detected:', payload);
+          // console.log('New activity detected:', payload);
           // Rafraîchir les activités
           fetchActivities();
         }

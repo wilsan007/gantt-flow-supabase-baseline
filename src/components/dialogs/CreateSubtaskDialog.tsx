@@ -7,7 +7,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { CalendarIcon } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
-import { Task } from '@/hooks/useTasks';
+import { Task , type Task } from '@/hooks/useTasksEnterprise';
 import { useState } from 'react';
 
 interface CreateSubtaskDialogProps {

@@ -1,12 +1,14 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { TaskAction } from '@/hooks/useTasks';
+import { FormattedActionText } from '@/components/ui/formatted-action-text';
+import { type Task, type TaskAction } from '@/hooks/useTasksEnterprise';
 
 interface ActionSelectionDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   actions: TaskAction[];
+  task: Task;
   onSelectAction: (actionId: string) => void;
   taskTitle: string;
 }
@@ -45,7 +47,10 @@ export const ActionSelectionDialog = ({
                 }}
               >
                 <div className="flex flex-col items-start">
-                  <span className="font-medium">{action.title}</span>
+                  <FormattedActionText 
+                    text={action.title} 
+                    className="font-medium"
+                  />
                   <div className="flex items-center gap-2 mt-1">
                     <Badge variant="secondary" className="text-xs">
                       {action.weight_percentage}%

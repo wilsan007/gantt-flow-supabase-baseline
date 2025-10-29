@@ -38,7 +38,14 @@ export const NotificationPopup: React.FC<NotificationPopupProps> = ({
   open,
   onOpenChange
 }) => {
-  const { getUnreadNotifications, markAsRead } = useNotifications();
+  const { 
+    getUnviewedNotifications, 
+    getActiveNotifications,
+    markAsRead, 
+    markAsViewed, 
+    markAsDismissed,
+    unviewedCount 
+  } = useNotifications();
   const { 
     channels, 
     loading, 
@@ -53,17 +60,24 @@ export const NotificationPopup: React.FC<NotificationPopupProps> = ({
   const [teamsWebhook, setTeamsWebhook] = useState('');
   const [selectedNotifications, setSelectedNotifications] = useState<string[]>([]);
 
-  const unreadNotifications = getUnreadNotifications();
+  // Utiliser les nouvelles notifications non vues au lieu des non lues
+  const unviewedNotifications = getUnviewedNotifications();
+  const activeNotifications = getActiveNotifications(); // Toutes les notifications non fermées
 
   useEffect(() => {
-    if (open && unreadNotifications.length > 0) {
-      // Auto-select high priority notifications
-      const highPriorityIds = unreadNotifications
-        .filter(n => n.priority === 'urgent' || n.priority === 'high')
-        .map(n => n.id);
-      setSelectedNotifications(highPriorityIds);
+    if (open) {
+      // Marquer comme vu dès l'ouverture du popup
+      markAsViewed();
+      
+      // Auto-select high priority notifications parmi les nouvelles
+      if (unviewedNotifications.length > 0) {
+        const highPriorityIds = unviewedNotifications
+          .filter(n => n.priority === 'urgent' || n.priority === 'high')
+          .map(n => n.id);
+        setSelectedNotifications(highPriorityIds);
+      }
     }
-  }, [open, unreadNotifications]);
+  }, [open, unviewedNotifications.length, markAsViewed]);
 
   const handleSendEmails = async () => {
     if (selectedNotifications.length === 0) return;
@@ -82,7 +96,7 @@ export const NotificationPopup: React.FC<NotificationPopupProps> = ({
   };
 
   const handleSendBrowserNotifications = async () => {
-    for (const notification of unreadNotifications.filter(n => selectedNotifications.includes(n.id))) {
+    for (const notification of activeNotifications.filter(n => selectedNotifications.includes(n.id))) {
       await sendWebPushNotification(
         notification.title,
         notification.message,
@@ -93,6 +107,14 @@ export const NotificationPopup: React.FC<NotificationPopupProps> = ({
         }
       );
     }
+  };
+
+  // Nouvelle fonction pour fermer les notifications
+  const handleDismissNotifications = async () => {
+    if (selectedNotifications.length === 0) return;
+    await markAsDismissed(selectedNotifications);
+    setSelectedNotifications([]);
+    onOpenChange(false); // Fermer le popup
   };
 
   const getChannelIcon = (type: string) => {
@@ -121,15 +143,20 @@ export const NotificationPopup: React.FC<NotificationPopupProps> = ({
       <DialogContent className="max-w-6xl max-h-[90vh] overflow-hidden flex flex-col">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            📢 Notifications non lues
-            <Badge variant="destructive">{unreadNotifications.length}</Badge>
+            📢 Nouvelles notifications
+            <Badge variant="destructive">{unviewedNotifications.length}</Badge>
+            {activeNotifications.length > unviewedNotifications.length && (
+              <Badge variant="outline">
+                {activeNotifications.length - unviewedNotifications.length} anciennes
+              </Badge>
+            )}
           </DialogTitle>
         </DialogHeader>
 
         <Tabs defaultValue="notifications" className="flex-1 flex flex-col overflow-hidden">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="notifications">
-              Notifications ({unreadNotifications.length})
+              Notifications ({activeNotifications.length})
             </TabsTrigger>
             <TabsTrigger value="channels">
               Canaux de diffusion
@@ -137,7 +164,7 @@ export const NotificationPopup: React.FC<NotificationPopupProps> = ({
           </TabsList>
 
           <TabsContent value="notifications" className="flex-1 flex flex-col overflow-hidden">
-            {unreadNotifications.length === 0 ? (
+            {activeNotifications.length === 0 ? (
               <div className="flex-1 flex items-center justify-center text-muted-foreground">
                 <div className="text-center">
                   <Check className="h-12 w-12 mx-auto mb-4 text-green-500" />
@@ -150,32 +177,51 @@ export const NotificationPopup: React.FC<NotificationPopupProps> = ({
                 {/* Liste des notifications */}
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
-                    <h3 className="font-medium">Notifications récentes</h3>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => {
-                        if (selectedNotifications.length === unreadNotifications.length) {
-                          setSelectedNotifications([]);
-                        } else {
-                          setSelectedNotifications(unreadNotifications.map(n => n.id));
-                        }
-                      }}
-                    >
-                      {selectedNotifications.length === unreadNotifications.length ? 'Désélectionner tout' : 'Sélectionner tout'}
-                    </Button>
+                    <h3 className="font-medium">
+                      Notifications 
+                      {unviewedNotifications.length > 0 && (
+                        <Badge variant="destructive" className="ml-2">
+                          {unviewedNotifications.length} nouvelles
+                        </Badge>
+                      )}
+                    </h3>
+                    <div className="flex gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          if (selectedNotifications.length === activeNotifications.length) {
+                            setSelectedNotifications([]);
+                          } else {
+                            setSelectedNotifications(activeNotifications.map(n => n.id));
+                          }
+                        }}
+                      >
+                        {selectedNotifications.length === activeNotifications.length ? 'Désélectionner tout' : 'Sélectionner tout'}
+                      </Button>
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        onClick={handleDismissNotifications}
+                        disabled={selectedNotifications.length === 0}
+                      >
+                        Fermer ({selectedNotifications.length})
+                      </Button>
+                    </div>
                   </div>
 
                   <ScrollArea className="h-[400px]">
                     <div className="space-y-2">
-                      {unreadNotifications.map((notification) => (
+                      {activeNotifications.map((notification) => {
+                        const isNew = unviewedNotifications.some(n => n.id === notification.id);
+                        return (
                         <Card 
                           key={notification.id} 
                           className={`cursor-pointer transition-all ${
                             selectedNotifications.includes(notification.id) 
                               ? 'ring-2 ring-primary bg-accent/50' 
                               : 'hover:bg-accent/30'
-                          }`}
+                          } ${isNew ? 'border-l-4 border-l-blue-500' : ''}`}
                           onClick={() => {
                             setSelectedNotifications(prev => 
                               prev.includes(notification.id)
@@ -187,7 +233,10 @@ export const NotificationPopup: React.FC<NotificationPopupProps> = ({
                           <CardHeader className="pb-2">
                             <div className="flex items-center gap-2">
                               <div className={`w-3 h-3 rounded-full ${getPriorityColor(notification.priority)}`} />
-                              <CardTitle className="text-sm">{notification.title}</CardTitle>
+                              <CardTitle className="text-sm flex items-center gap-2">
+                                {notification.title}
+                                {isNew && <Badge variant="secondary" className="text-xs">Nouveau</Badge>}
+                              </CardTitle>
                               <Badge variant="outline" className="text-xs ml-auto">
                                 {notification.priority}
                               </Badge>
@@ -205,7 +254,8 @@ export const NotificationPopup: React.FC<NotificationPopupProps> = ({
                             </div>
                           </CardContent>
                         </Card>
-                      ))}
+                        );
+                      })}
                     </div>
                   </ScrollArea>
                 </div>

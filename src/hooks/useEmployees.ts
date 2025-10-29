@@ -50,10 +50,10 @@ export const useEmployees = () => {
       
       // Log de l'utilisateur connecté
       const { data: { session } } = await supabase.auth.getSession();
-      console.log('👥 Fetch employees - Utilisateur:', session?.user ? {
-        id: session.user.id,
-        email: session.user.email
-      } : 'Non connecté');
+      // console.log('👥 Fetch employees - Utilisateur:', session?.user ? {
+      //   id: session.user.id,
+      //   email: session.user.email
+      // } : 'Non connecté');
       
 
       // Fetch employees from profiles table (they now have user_id)
@@ -62,11 +62,11 @@ export const useEmployees = () => {
         .select('*')
         .order('full_name');
 
-      console.log('👥 Employees query result:', {
-        error: employeesError?.message,
-        count: employeesData?.length || 0,
-        data: employeesData?.slice(0, 2) // Afficher les 2 premiers pour debug
-      });
+      // console.log('👥 Employees query result:', {
+      //   error: employeesError?.message,
+      //   count: employeesData?.length || 0,
+      //   data: employeesData?.slice(0, 2) // Afficher les 2 premiers pour debug
+      // });
 
       if (employeesError) throw employeesError;
 
@@ -100,7 +100,7 @@ export const useEmployees = () => {
   const createEmployee = async (employeeData: Omit<Employee, 'id' | 'created_at' | 'updated_at'>) => {
     try {
       // Create auth user first, then create profile
-      console.log('Creating employee with data:', employeeData);
+      // console.log('Creating employee with data:', employeeData);
       // For now, just create in profiles table
       const { data, error } = await supabase
         .from('profiles')

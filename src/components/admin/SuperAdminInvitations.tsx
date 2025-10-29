@@ -7,6 +7,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Loader2, Send, UserPlus } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { useMultiplePlaceholderHandler } from '@/hooks/usePlaceholderHandler';
 
 interface InvitationForm {
   email: string;
@@ -18,6 +19,13 @@ export const SuperAdminInvitations: React.FC = () => {
     email: '',
     fullName: ''
   });
+  
+  // Gestion des placeholders
+  const { handleFocus, getPlaceholder } = useMultiplePlaceholderHandler({
+    email: 'tenant.owner@exemple.com',
+    fullName: 'Jean Dupont'
+  });
+  
   const [isLoading, setIsLoading] = useState(false);
   const [lastInvitation, setLastInvitation] = useState<any>(null);
   const { toast } = useToast();
@@ -72,7 +80,7 @@ export const SuperAdminInvitations: React.FC = () => {
 
       // Appeler la Edge Function
       const response = await fetch(
-        `${supabase.supabaseUrl}/functions/v1/send-invitation`,
+        `https://qliinxtanjdnwxlvnxji.supabase.co/functions/v1/send-invitation`,
         {
           method: 'POST',
           headers: {
@@ -97,12 +105,12 @@ export const SuperAdminInvitations: React.FC = () => {
       // Succès
       setLastInvitation({
         email: form.email,
-        fullName: form.fullName,
         tenantId: result.tenant_id,
         invitationId: result.invitation_id,
         sentAt: new Date().toISOString()
       });
 
+      // Réinitialiser le formulaire
       setForm({ email: '', fullName: '' });
 
       toast({
@@ -113,9 +121,44 @@ export const SuperAdminInvitations: React.FC = () => {
 
     } catch (error: any) {
       console.error('Erreur envoi invitation:', error);
+      
+      // Gestion d'erreurs moderne basée sur les meilleures pratiques
+      let errorTitle = "❌ Erreur d'invitation";
+      let errorMessage = error.message || 'Erreur lors de l\'envoi de l\'invitation';
+      
+      // Email déjà utilisé (inspiré de Stripe, Notion, Linear)
+      if (error.message?.toLowerCase().includes('email') && 
+          (error.message?.toLowerCase().includes('already') || 
+           error.message?.toLowerCase().includes('exists') || 
+           error.message?.toLowerCase().includes('taken'))) {
+        errorTitle = "📧 Email déjà utilisé";
+        errorMessage = "Cette adresse email est déjà utilisée. Veuillez en choisir une autre.";
+      }
+      
+      // Erreur de validation
+      else if (error.message?.toLowerCase().includes('invalid') && 
+               error.message?.toLowerCase().includes('email')) {
+        errorTitle = "📧 Format d'email invalide";
+        errorMessage = "L'adresse email saisie n'est pas dans un format valide.";
+      }
+      
+      // Erreur de permissions
+      else if (error.message?.toLowerCase().includes('permission') || 
+               error.message?.toLowerCase().includes('unauthorized')) {
+        errorTitle = "🔒 Permissions insuffisantes";
+        errorMessage = "Vous n'avez pas les permissions nécessaires pour envoyer des invitations.";
+      }
+      
+      // Erreur réseau
+      else if (error.message?.toLowerCase().includes('network') || 
+               error.message?.toLowerCase().includes('fetch')) {
+        errorTitle = "🌐 Problème de connexion";
+        errorMessage = "Impossible de se connecter au serveur. Vérifiez votre connexion internet.";
+      }
+
       toast({
-        title: "❌ Erreur",
-        description: error.message || 'Erreur lors de l\'envoi de l\'invitation',
+        title: errorTitle,
+        description: errorMessage,
         variant: "destructive"
       });
     } finally {
@@ -142,9 +185,10 @@ export const SuperAdminInvitations: React.FC = () => {
               <Input
                 id="email"
                 type="email"
-                placeholder="tenant.owner@exemple.com"
+                placeholder={getPlaceholder('email', form.email)}
                 value={form.email}
                 onChange={(e) => handleInputChange('email', e.target.value)}
+                onFocus={() => handleFocus('email')}
                 disabled={isLoading}
               />
             </div>
@@ -153,9 +197,10 @@ export const SuperAdminInvitations: React.FC = () => {
               <Input
                 id="fullName"
                 type="text"
-                placeholder="Jean Dupont"
+                placeholder={getPlaceholder('fullName', form.fullName)}
                 value={form.fullName}
                 onChange={(e) => handleInputChange('fullName', e.target.value)}
+                onFocus={() => handleFocus('fullName')}
                 disabled={isLoading}
               />
             </div>

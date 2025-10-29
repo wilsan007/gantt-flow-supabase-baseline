@@ -52,7 +52,23 @@ export const useSessionManager = () => {
   // Initialiser la session
   const initializeSession = useCallback(async () => {
     try {
-      const { data: { session } } = await supabase.auth.getSession();
+      const { data: { session }, error } = await supabase.auth.getSession();
+      
+      // Gérer les erreurs de refresh token
+      if (error) {
+        console.error('❌ Erreur lors de la récupération de la session:', error.message);
+        
+        // Si le refresh token est invalide, nettoyer complètement
+        if (error.message.includes('refresh') || error.message.includes('Invalid')) {
+          console.log('🧹 Nettoyage du localStorage suite à un refresh token invalide');
+          await supabase.auth.signOut();
+          localStorage.clear(); // Nettoyer tout le localStorage
+          setUser(null);
+          setSession(null);
+          setLoading(false);
+          return;
+        }
+      }
       
       if (session && !isSessionExpired()) {
         setUser(session.user);
@@ -62,12 +78,22 @@ export const useSessionManager = () => {
         localStorage.removeItem(MANUAL_LOGOUT_KEY);
       } else if (session && isSessionExpired()) {
         // Session expirée, forcer la déconnexion
+        console.log('⏰ Session expirée - Déconnexion automatique');
         await supabase.auth.signOut();
         localStorage.removeItem(LAST_ACTIVITY_KEY);
         localStorage.removeItem(MANUAL_LOGOUT_KEY);
+      } else if (!session) {
+        // Pas de session, s'assurer que tout est nettoyé
+        setUser(null);
+        setSession(null);
       }
     } catch (error) {
       console.error('Erreur lors de l\'initialisation de la session:', error);
+      // En cas d'erreur critique, nettoyer et forcer la déconnexion
+      await supabase.auth.signOut();
+      localStorage.clear();
+      setUser(null);
+      setSession(null);
     } finally {
       setLoading(false);
     }
@@ -121,10 +147,49 @@ export const useSessionManager = () => {
     return () => clearInterval(interval);
   }, [user, isSessionExpired, signOut]);
 
-  // Initialiser au montage
+  // Écouter les changements d'authentification Supabase
   useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        console.log('🔄 Session Manager - Auth state changed:', event);
+        
+        // Gérer les erreurs de token
+        if (event === 'TOKEN_REFRESHED' && !session) {
+          console.error('❌ Échec du rafraîchissement du token');
+          await supabase.auth.signOut();
+          localStorage.clear();
+          setUser(null);
+          setSession(null);
+          setLoading(false);
+          return;
+        }
+        
+        if (event === 'SIGNED_OUT') {
+          console.log('🔒 Déconnexion détectée');
+          setUser(null);
+          setSession(null);
+          setLoading(false);
+          return;
+        }
+        
+        if (session?.user) {
+          setUser(session.user);
+          setSession(session);
+          updateActivity();
+          localStorage.removeItem(MANUAL_LOGOUT_KEY);
+        } else {
+          setUser(null);
+          setSession(null);
+        }
+        setLoading(false);
+      }
+    );
+
+    // Initialiser la session au montage
     initializeSession();
-  }, [initializeSession]);
+
+    return () => subscription.unsubscribe();
+  }, [initializeSession, updateActivity]);
 
   return {
     user,

@@ -1,8 +1,6 @@
 import { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ThemeToggle } from "@/components/ThemeToggle";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { ResponsiveLayout } from "@/components/responsive/ResponsiveLayout";
 // 🎨 Utilisation des vues ORIGINALES avec design complet + performance Enterprise
 import DynamicTable from "@/components/vues/table/DynamicTable";
 import KanbanBoard from "@/components/vues/kanban/KanbanBoard";
@@ -25,17 +23,9 @@ const Index = () => {
   }, [isMobile]);
 
   return (
-    <ResponsiveLayout>
-        {/* Header compact avec titre moderne */}
-        <div className="flex justify-between items-center mb-4">
-          <h1 className={`font-bold bg-gradient-to-r from-primary via-accent to-tech-purple bg-clip-text text-transparent ${isMobile ? 'text-xl' : 'text-3xl'}`}>
-            Tableau de Bord Projet
-          </h1>
-          <ThemeToggle />
-        </div>
-        
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full max-w-full">
-          <TabsList className={`grid w-full modern-card glow-primary bg-gradient-to-r from-primary/10 via-accent/10 to-tech-purple/10 border-2 ${isMobile ? 'grid-cols-3 gap-1 p-1 mb-2' : 'grid-cols-3 p-2 mb-4'}`}>
+    <div className="h-full w-full">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="h-full w-full flex flex-col">
+          <TabsList className={`grid w-full modern-card glow-primary bg-gradient-to-r from-primary/10 via-accent/10 to-tech-purple/10 border-2 ${isMobile ? 'grid-cols-3 gap-1 p-1' : 'grid-cols-3 p-2'}`}>
             <TabsTrigger 
               value="gantt" 
               className={`transition-smooth hover-glow data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-accent data-[state=active]:text-white font-semibold ${isMobile ? 'text-sm py-2' : ''}`}
@@ -65,21 +55,21 @@ const Index = () => {
           </TabsList>
           
           {/* Table content - Full width with landscape optimization on mobile */}
-          <TabsContent value="table" className="mt-0">
+          <TabsContent value="table" className="mt-0 flex-1 overflow-auto">
             <div className={isMobile ? 'landscape-optimized' : ''}>
               <DynamicTable />
             </div>
           </TabsContent>
           
           {/* Kanban content - Full width */}
-          <TabsContent value="kanban" className="mt-0">
+          <TabsContent value="kanban" className="mt-0 flex-1 overflow-auto">
             <div className={`modern-card rounded-xl transition-smooth hover-glow ${isMobile ? 'landscape-optimized' : ''}`}>
               <KanbanBoard />
             </div>
           </TabsContent>
           
           {/* Gantt content - Full width */}
-          <TabsContent value="gantt" className="mt-0">
+          <TabsContent value="gantt" className="mt-0 flex-1 overflow-auto">
             <div className={`modern-card rounded-xl transition-smooth hover-glow ${isMobile ? 'landscape-optimized' : ''}`}>
               <GanttChart />
             </div>
@@ -92,8 +82,8 @@ const Index = () => {
             </div>
           </TabsContent>
           */}
-        </Tabs>
-    </ResponsiveLayout>
+      </Tabs>
+    </div>
   );
 };
 

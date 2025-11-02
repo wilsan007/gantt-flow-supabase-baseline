@@ -140,19 +140,17 @@ export const AppLayoutWithSidebar: React.FC<AppLayoutWithSidebarProps> = ({
 
         {/* Header Desktop (optionnel - pour actions supplémentaires) */}
         <header className="hidden lg:block sticky top-0 z-30 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-          <div className="flex items-center justify-between px-6 py-3">
-            {/* Breadcrumb ou titre de page */}
-            <div className="flex items-center gap-2">
-              <h1 className="text-lg font-semibold">
-                {/* Titre dynamique basé sur la route */}
-              </h1>
-            </div>
+          <div className="flex items-center justify-between px-6 py-2.5">
+            {/* Titre de page */}
+            <h1 className="text-lg font-bold bg-gradient-to-r from-primary via-accent to-tech-purple bg-clip-text text-transparent">
+              Tableau de Bord Projet
+            </h1>
 
             {/* Actions Desktop */}
             <div className="flex items-center gap-2">
               {showWarning && (
                 <div className="flex items-center gap-2 px-3 py-1.5 bg-orange-100 dark:bg-orange-900 text-orange-800 dark:text-orange-200 rounded-md text-sm font-medium">
-                  ⏰ Déconnexion dans {timeLeftFormatted}
+                  ⏰ {timeLeftFormatted}
                 </div>
               )}
 
@@ -165,10 +163,8 @@ export const AppLayoutWithSidebar: React.FC<AppLayoutWithSidebarProps> = ({
         </header>
 
         {/* Page Content with Scroll */}
-        <main className="flex-1 overflow-y-auto bg-muted/30">
-          <div className="container mx-auto p-4 lg:p-6">
-            {children}
-          </div>
+        <main className="flex-1 overflow-hidden bg-muted/30">
+          {children}
         </main>
       </div>
     </div>

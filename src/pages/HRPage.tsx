@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { ResponsiveLayout } from "@/components/responsive/ResponsiveLayout";
-import { HRDashboard } from "@/components/hr/HRDashboard";
+import { HRDashboardMinimal as HRDashboard } from "@/components/hr/HRDashboardMinimal";
 import { LeaveManagement } from "@/components/hr/LeaveManagement";
 import { AttendanceManagement } from "@/components/hr/AttendanceManagement";
 import { EnhancedEmployeeManagement } from "@/components/hr/EnhancedEmployeeManagement";

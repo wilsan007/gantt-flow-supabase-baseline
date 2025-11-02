@@ -36,4 +36,49 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          // Vendor chunks - bibliothèques principales
+          'vendor-react': ['react', 'react-dom', 'react-router-dom'],
+          'vendor-query': ['@tanstack/react-query'],
+          
+          // UI Components - Radix UI
+          'ui-radix': [
+            '@radix-ui/react-dialog',
+            '@radix-ui/react-dropdown-menu',
+            '@radix-ui/react-select',
+            '@radix-ui/react-tabs',
+            '@radix-ui/react-tooltip',
+            '@radix-ui/react-popover',
+            '@radix-ui/react-avatar',
+            '@radix-ui/react-checkbox',
+            '@radix-ui/react-label',
+            '@radix-ui/react-slot',
+          ],
+          
+          // DnD - Drag and Drop
+          'vendor-dnd': [
+            '@dnd-kit/core',
+            '@dnd-kit/sortable',
+            '@dnd-kit/utilities',
+            '@hello-pangea/dnd',
+          ],
+          
+          // Charts et visualisation
+          'vendor-charts': ['recharts'],
+          
+          // Supabase
+          'vendor-supabase': ['@supabase/supabase-js'],
+          
+          // Utilitaires
+          'vendor-utils': ['date-fns', 'clsx', 'tailwind-merge'],
+        },
+      },
+    },
+    // Optimisations supplémentaires
+    chunkSizeWarningLimit: 1000,
+    sourcemap: mode === 'development',
+  },
 }));

@@ -3,7 +3,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate, Link } from "react-router-dom";
-import { useRef, useMemo, memo, useCallback, useState } from "react";
+import { useRef, useMemo, memo, useCallback, useState, lazy, Suspense } from "react";
 import { useStableCallback } from "@/hooks/useStableCallback";
 // import { usePerformanceOptimizer, useRenderOptimizer } from "@/hooks/usePerformanceOptimizer";
 import { Auth } from "@/components/Auth";
@@ -13,7 +13,23 @@ import { SessionErrorBoundary } from "@/components/SessionErrorBoundary";
 import { TenantProvider } from "./contexts/TenantContext";
 import { ViewModeProvider } from "./contexts/ViewModeContext";
 import { RolesProvider } from "./contexts/RolesContext";
+// Pages chargées immédiatement (critiques)
 import Index from "./pages/Index";
+
+// Lazy loading des pages (optimisation performance)
+const HRPage = lazy(() => import("./pages/HRPage"));
+const HRPageWithCollaboratorInvitation = lazy(() => import("./pages/HRPageWithCollaboratorInvitation"));
+const ProjectPage = lazy(() => import("./pages/ProjectPage"));
+const TaskManagementPage = lazy(() => import("./pages/TaskManagementPage"));
+const SuperAdminPage = lazy(() => import("./pages/SuperAdminPage"));
+const TenantOwnerSignup = lazy(() => import("./pages/TenantOwnerSignup"));
+const AuthCallback = lazy(() => import("./pages/AuthCallback"));
+const SetupAccount = lazy(() => import("./pages/SetupAccount"));
+const InvitePage = lazy(() => import("./pages/InvitePage"));
+const NotFound = lazy(() => import("./pages/NotFound"));
+const OperationsPage = lazy(() => import("./components/operations").then(m => ({ default: m.OperationsPage })));
+const PerformanceMonitor = lazy(() => import("./components/dev/PerformanceMonitor"));
+
 import { useUserRoles } from "@/hooks/useUserRoles";
 import { useInactivityTimer } from "@/hooks/useInactivityTimer";
 import { useSessionManager } from "@/hooks/useSessionManager";
@@ -22,24 +38,20 @@ import { useRoleBasedAccess } from "@/hooks/useRoleBasedAccess";
 import { cacheManager } from "@/lib/cacheManager";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { RoleIndicator } from "@/components/auth/RoleIndicator";
-import HRPage from "./pages/HRPage";
-import HRPageWithCollaboratorInvitation from "./pages/HRPageWithCollaboratorInvitation";
-import ProjectPage from "./pages/ProjectPage";
-import TaskManagementPage from "./pages/TaskManagementPage";
-import SuperAdminPage from "./pages/SuperAdminPage";
-import TenantOwnerSignup from "./pages/TenantOwnerSignup";
-import AuthCallback from "./pages/AuthCallback";
-import SetupAccount from "./pages/SetupAccount";
-import InvitePage from "./pages/InvitePage";
-import NotFound from "./pages/NotFound";
-import PerformanceMonitor from "./components/dev/PerformanceMonitor";
-import { OperationsPage } from "./components/operations";
 
 const queryClient = new QueryClient();
 
+// Loading component pour Suspense
+const PageLoader = () => (
+  <div className="flex items-center justify-center min-h-screen">
+    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+  </div>
+);
+
 // Composant Routes memoizé pour éviter les re-renders
 const MemoizedRoutes = memo(() => (
-  <Routes>
+  <Suspense fallback={<PageLoader />}>
+    <Routes>
     <Route path="/" element={<Index />} />
     
     {/* Route dashboard - redirige vers la page d'accueil */}
@@ -104,7 +116,8 @@ const MemoizedRoutes = memo(() => (
     
     {/* Catch-all route */}
     <Route path="*" element={<NotFound />} />
-  </Routes>
+    </Routes>
+  </Suspense>
 ));
 
 MemoizedRoutes.displayName = 'MemoizedRoutes';

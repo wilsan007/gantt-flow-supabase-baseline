@@ -1,0 +1,74 @@
+/* ========================================
+   SIDEBAR OVERLAY OPTIMIZATION
+   Le sidebar se superpose au contenu sans réduire l'espace
+   ======================================== */
+
+/* Force le main content à prendre toute la largeur */
+main {
+  width: 100% !important;
+  max-width: 100% !important;
+  margin-left: 0 !important;
+  transition: none !important;
+}
+
+/* Sidebar en position fixe overlay */
+aside[data-sidebar="true"],
+[data-sidebar],
+.sidebar {
+  position: fixed !important;
+  z-index: 50 !important;
+  height: 100vh !important;
+  transition: transform 0.3s ease-in-out !important;
+}
+
+/* Sidebar fermé - caché à gauche */
+aside[data-state="collapsed"],
+.sidebar[data-state="collapsed"] {
+  transform: translateX(-100%) !important;
+}
+
+/* Sidebar ouvert - visible en overlay */
+aside[data-state="expanded"],
+.sidebar[data-state="expanded"] {
+  transform: translateX(0) !important;
+  box-shadow: 4px 0 24px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Overlay sombre quand sidebar ouvert sur mobile */
+@media (max-width: 768px) {
+  .sidebar-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 40;
+    backdrop-filter: blur(2px);
+    animation: fadeIn 0.3s ease;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+}
+
+/* Optimisation largeur tableau */
+.table-container,
+[role="table"],
+table {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+/* Tabs pleine largeur */
+[role="tabpanel"] {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+/* Container pleine largeur */
+.container-full-width {
+  width: 100vw !important;
+  max-width: 100vw !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}

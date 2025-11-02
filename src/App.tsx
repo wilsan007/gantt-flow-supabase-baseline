@@ -3,6 +3,8 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate, Link } from "react-router-dom";
+import "@/styles/landscape-optimization.css";
+import "@/styles/sidebar-overlay.css";
 import { useRef, useMemo, memo, useCallback, useState, lazy, Suspense } from "react";
 import { useStableCallback } from "@/hooks/useStableCallback";
 // import { usePerformanceOptimizer, useRenderOptimizer } from "@/hooks/usePerformanceOptimizer";

@@ -11,8 +11,8 @@ export function ResponsiveLayout({ children, className = '' }: ResponsiveLayoutP
 
   return (
     <div className={`
-      ${isMobile ? 'px-4 py-4' : 'px-6 py-6'} 
-      min-h-screen relative overflow-hidden
+      ${isMobile ? 'px-2 py-2' : 'px-4 py-4'} 
+      min-h-screen relative overflow-x-hidden w-full
       ${className}
     `}>
       {/* Animated background elements - smaller on mobile */}
@@ -31,7 +31,8 @@ export function ResponsiveLayout({ children, className = '' }: ResponsiveLayoutP
         `} style={{animationDelay: '4s'}}></div>
       </div>
 
-      <div className={`mx-auto relative z-10 ${isMobile ? 'max-w-full' : 'max-w-7xl'}`}>
+      {/* Contenu pleine largeur pour optimiser l'espace tableau */}
+      <div className="w-full max-w-full relative z-10">
         {children}
       </div>
     </div>

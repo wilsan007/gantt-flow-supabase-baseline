@@ -1,9 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/ThemeToggle";
-import { Users } from "lucide-react";
-import { useNavigate } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { ResponsiveLayout } from "@/components/responsive/ResponsiveLayout";
 // 🎨 Utilisation des vues ORIGINALES avec design complet + performance Enterprise
@@ -15,40 +12,30 @@ import GanttChart from "@/components/vues/gantt/GanttChart";
 const Index = () => {
   const [activeTab, setActiveTab] = useState("table");
   const isMobile = useIsMobile();
-  const navigate = useNavigate();
+
+  // Force landscape orientation on mobile for better table viewing
+  useEffect(() => {
+    if (isMobile && 'screen' in window && 'orientation' in window.screen) {
+      // Add landscape lock hint for mobile devices
+      const meta = document.querySelector('meta[name="viewport"]');
+      if (meta) {
+        meta.setAttribute('content', 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no');
+      }
+    }
+  }, [isMobile]);
 
   return (
     <ResponsiveLayout>
-        {/* Header avec bouton de thème - responsive */}
-        <div className={`flex justify-between items-start mb-6 ${isMobile ? 'mb-4' : 'mb-8'}`}>
-          <div className="flex-1 text-center">
-            <h1 className={`font-bold bg-gradient-to-r from-primary via-accent to-tech-purple bg-clip-text text-transparent mb-4 drop-shadow-sm ${isMobile ? 'text-2xl' : 'text-4xl'}`}>
-              Gestion de Projets SaaS
-            </h1>
-            <p className={`text-muted-foreground font-medium ${isMobile ? 'text-sm' : 'text-lg'}`}>
-              Diagramme de Gantt et tableau dynamique d'exécution des tâches
-            </p>
-            <div className={`bg-gradient-to-r from-primary via-accent to-tech-purple mx-auto mt-4 rounded-full shadow-lg ${isMobile ? 'w-16 h-1' : 'w-24 h-2'}`}></div>
-            
-            {/* Quick access to HR module */}
-            <div className="mt-6">
-              <Button
-                onClick={() => navigate("/hr")}
-                className="hover-glow bg-gradient-to-r from-primary to-accent"
-                size={isMobile ? "sm" : "default"}
-              >
-                <Users className={`${isMobile ? 'h-3 w-3' : 'h-4 w-4'} mr-2`} />
-                {isMobile ? 'RH' : 'Module RH'}
-              </Button>
-            </div>
-          </div>
-          <div className={isMobile ? 'ml-2' : 'ml-4'}>
-            <ThemeToggle />
-          </div>
+        {/* Header compact avec titre moderne */}
+        <div className="flex justify-between items-center mb-4">
+          <h1 className={`font-bold bg-gradient-to-r from-primary via-accent to-tech-purple bg-clip-text text-transparent ${isMobile ? 'text-xl' : 'text-3xl'}`}>
+            Tableau de Bord Projet
+          </h1>
+          <ThemeToggle />
         </div>
         
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className={`grid w-full modern-card glow-primary bg-gradient-to-r from-primary/10 via-accent/10 to-tech-purple/10 border-2 ${isMobile ? 'grid-cols-1 gap-1 p-1 mb-4' : 'grid-cols-3 p-2 mb-8'}`}>
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full max-w-full">
+          <TabsList className={`grid w-full modern-card glow-primary bg-gradient-to-r from-primary/10 via-accent/10 to-tech-purple/10 border-2 ${isMobile ? 'grid-cols-3 gap-1 p-1 mb-2' : 'grid-cols-3 p-2 mb-4'}`}>
             <TabsTrigger 
               value="gantt" 
               className={`transition-smooth hover-glow data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-accent data-[state=active]:text-white font-semibold ${isMobile ? 'text-sm py-2' : ''}`}
@@ -77,18 +64,23 @@ const Index = () => {
             */}
           </TabsList>
           
-          <TabsContent value="table" className={isMobile ? 'mt-2' : 'mt-6'}>
-            <DynamicTable />
+          {/* Table content - Full width with landscape optimization on mobile */}
+          <TabsContent value="table" className="mt-0">
+            <div className={isMobile ? 'landscape-optimized' : ''}>
+              <DynamicTable />
+            </div>
           </TabsContent>
           
-          <TabsContent value="kanban" className={isMobile ? 'mt-2' : 'mt-6'}>
-            <div className="modern-card rounded-xl transition-smooth hover-glow">
+          {/* Kanban content - Full width */}
+          <TabsContent value="kanban" className="mt-0">
+            <div className={`modern-card rounded-xl transition-smooth hover-glow ${isMobile ? 'landscape-optimized' : ''}`}>
               <KanbanBoard />
             </div>
           </TabsContent>
           
-          <TabsContent value="gantt" className={isMobile ? 'mt-2' : 'mt-6'}>
-            <div className="modern-card rounded-xl transition-smooth hover-glow">
+          {/* Gantt content - Full width */}
+          <TabsContent value="gantt" className="mt-0">
+            <div className={`modern-card rounded-xl transition-smooth hover-glow ${isMobile ? 'landscape-optimized' : ''}`}>
               <GanttChart />
             </div>
           </TabsContent>

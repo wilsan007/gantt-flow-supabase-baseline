@@ -1,7 +1,5 @@
 import { useState } from 'react';
 import { type Task } from '@/hooks/optimized';
-// import { ActionSelectionDialog } from '../dialogs/ActionSelectionDialog'; // TODO: Fichier à créer
-// import { CreateSubtaskDialog } from '../dialogs/CreateSubtaskDialog'; // TODO: Fichier à créer
 import { TaskDetailsDialog } from '../dialogs/TaskDetailsDialog';
 
 interface TaskDialogManagerProps {

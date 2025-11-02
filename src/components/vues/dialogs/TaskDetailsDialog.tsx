@@ -27,7 +27,6 @@ import {
   History
 } from 'lucide-react';
 import { type Task } from '@/hooks/optimized';
-// import { useTaskDetails } from '@/hooks/useTaskDetails'; // TODO: Hook à créer si nécessaire
 import { TaskHistorySection } from '@/components/task/TaskHistorySection';
 import { priorityColors, statusColors, formatDate } from '@/lib/taskHelpers';
 

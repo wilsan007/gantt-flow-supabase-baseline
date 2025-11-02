@@ -1,0 +1,388 @@
+🔍 ANALYSE AUTOMATIQUE DES DOUBLONS
+===================================
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📄 Analyse: TaskCreationDialog
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📂 Fichiers trouvés:
+   src/components/vues/dialogs/TaskCreationDialog.tsx (222 lignes)
+   src/components/dialogs/TaskCreationDialog.tsx (222 lignes)
+   src/components/tasks/TaskCreationDialog.tsx (651 lignes)
+
+📥 Imports trouvés:
+   → src/components/vues/table/DynamicTable.tsx
+     import { TaskCreationDialog } from '../dialogs/TaskCreationDialog';
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📄 Analyse: TaskDetailsDialog
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📂 Fichiers trouvés:
+   src/components/vues/dialogs/TaskDetailsDialog.tsx (372 lignes)
+   src/components/dialogs/TaskDetailsDialog.tsx (366 lignes)
+
+📥 Imports trouvés:
+   → src/components/vues/table/TaskDialogManager.tsx
+     import { TaskDetailsDialog } from '../dialogs/TaskDetailsDialog';
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📄 Analyse: TaskEditDialog
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📂 Fichiers trouvés:
+   src/components/vues/dialogs/TaskEditDialog.tsx (160 lignes)
+   src/components/dialogs/TaskEditDialog.tsx (187 lignes)
+
+📥 Imports trouvés:
+   → src/components/vues/table/DynamicTable.tsx
+     import { TaskEditDialog } from '../dialogs/TaskEditDialog';
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📄 Analyse: TaskSelectionDialog
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📂 Fichiers trouvés:
+   src/components/vues/dialogs/TaskSelectionDialog.tsx (75 lignes)
+   src/components/dialogs/TaskSelectionDialog.tsx (75 lignes)
+
+📥 Imports trouvés:
+   ⚠️  AUCUN IMPORT TROUVÉ
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📄 Analyse: ResponsiveLayout
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📂 Fichiers trouvés:
+   src/components/vues/responsive/ResponsiveLayout.tsx (38 lignes)
+   src/components/responsive/ResponsiveLayout.tsx (38 lignes)
+   src/components/layouts/ResponsiveLayout.tsx (39 lignes)
+
+📥 Imports trouvés:
+   → src/components/vues/Index.tsx
+     import { ResponsiveLayout } from "@/components/responsive/ResponsiveLayout";
+   → src/pages/HRPage.tsx
+     import { ResponsiveLayout } from "@/components/responsive/ResponsiveLayout";
+   → src/pages/Index.tsx
+     import { ResponsiveLayout } from "@/components/responsive/ResponsiveLayout";
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📄 Analyse: ViewModeContext
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📂 Fichiers trouvés:
+   src/components/vues/contexts/ViewModeContext.tsx (39 lignes)
+   src/contexts/ViewModeContext.tsx (39 lignes)
+
+📥 Imports trouvés:
+   → src/App.tsx
+     import { ViewModeProvider } from "./contexts/ViewModeContext";
+   → src/components/vues/Index.tsx
+     import { ViewModeProvider } from "@/contexts/ViewModeContext";
+   → src/components/vues/table/DynamicTable.tsx
+     import { useViewMode } from '@/contexts/ViewModeContext';
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📄 Analyse: MobileDynamicTable
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📂 Fichiers trouvés:
+   src/components/vues/responsive/MobileDynamicTable.tsx (349 lignes)
+   src/components/responsive/MobileDynamicTable.tsx (0 lignes)
+
+📥 Imports trouvés:
+   → src/components/vues/table/DynamicTable.tsx
+     import { MobileDynamicTable } from '../responsive/MobileDynamicTable';
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📄 Analyse: MobileKanbanBoard
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📂 Fichiers trouvés:
+   src/components/vues/responsive/MobileKanbanBoard.tsx (235 lignes)
+   src/components/responsive/MobileKanbanBoard.tsx (0 lignes)
+
+📥 Imports trouvés:
+   → src/components/vues/kanban/KanbanBoard.tsx
+     import { MobileKanbanBoard } from '../responsive/MobileKanbanBoard';
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📄 Analyse: GanttHeader
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📂 Fichiers trouvés:
+   src/components/vues/gantt/GanttHeader.tsx (48 lignes)
+   src/components/gantt/GanttHeader.tsx (48 lignes)
+
+📥 Imports trouvés:
+   → src/components/vues/gantt/GanttChart.tsx
+     import { GanttHeader } from '../gantt/GanttHeader';
+   → src/components/vues/responsive/MobileGanttChart.tsx
+     import { GanttHeader } from '../gantt/GanttHeader';
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📄 Analyse: GanttStates
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📂 Fichiers trouvés:
+   src/components/vues/gantt/GanttStates.tsx (21 lignes)
+   src/components/gantt/GanttStates.tsx (21 lignes)
+
+📥 Imports trouvés:
+   → src/components/vues/gantt/GanttChart.tsx
+     import { GanttLoadingState, GanttErrorState } from '../gantt/GanttStates';
+   → src/components/vues/responsive/MobileGanttChart.tsx
+     import { GanttLoadingState, GanttErrorState } from '../gantt/GanttStates';
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📄 Analyse: GanttTaskBar
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📂 Fichiers trouvés:
+   src/components/vues/gantt/GanttTaskBar.tsx (99 lignes)
+   src/components/gantt/GanttTaskBar.tsx (93 lignes)
+
+📥 Imports trouvés:
+   → src/components/gantt/GanttTimeline.tsx
+     import { GanttTaskBar } from './GanttTaskBar';
+   → src/components/vues/gantt/GanttTimeline.tsx
+     import { GanttTaskBar } from './GanttTaskBar';
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📄 Analyse: GanttTaskList
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📂 Fichiers trouvés:
+   src/components/vues/gantt/GanttTaskList.tsx (120 lignes)
+   src/components/gantt/GanttTaskList.tsx (96 lignes)
+
+📥 Imports trouvés:
+   ⚠️  AUCUN IMPORT TROUVÉ
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📄 Analyse: GanttTimeline
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📂 Fichiers trouvés:
+   src/components/vues/gantt/GanttTimeline.tsx (152 lignes)
+   src/components/gantt/GanttTimeline.tsx (106 lignes)
+
+📥 Imports trouvés:
+   → src/components/vues/gantt/GanttChart.tsx
+     import { GanttTimeline } from '../gantt/GanttTimeline';
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📄 Analyse: EnhancedTaskDetailsDialog
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📂 Fichiers trouvés:
+   src/components/vues/dialogs/EnhancedTaskDetailsDialog.tsx (372 lignes)
+   src/components/dialogs/EnhancedTaskDetailsDialog.tsx (372 lignes)
+
+📥 Imports trouvés:
+   ⚠️  AUCUN IMPORT TROUVÉ
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📄 Analyse: ProjectTableView
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📂 Fichiers trouvés:
+   src/components/vues/projects/ProjectTableView.tsx (267 lignes)
+   src/components/projects/ProjectTableView.tsx (174 lignes)
+
+📥 Imports trouvés:
+   → src/components/vues/table/DynamicTable.tsx
+     import { ProjectTableView } from '../projects/ProjectTableView';
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📄 Analyse: TenantContext
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📂 Fichiers trouvés:
+   src/components/vues/contexts/TenantContext.tsx (151 lignes)
+   src/contexts/TenantContext.tsx (151 lignes)
+
+📥 Imports trouvés:
+   → src/App.tsx
+     import { TenantProvider } from "./contexts/TenantContext";
+   → src/components/operations/ActionAttachmentUpload.tsx
+     import { useTenant } from '@/contexts/TenantContext';
+   → src/components/operations/ActionTemplateListEnhanced.tsx
+     import { useTenant } from '@/contexts/TenantContext';
+   → src/components/tasks/TaskAttachmentUpload.tsx
+     import { useTenant } from '@/contexts/TenantContext';
+   → src/components/vues/table/DocumentCellColumn.tsx
+     import { useTenant } from "@/contexts/TenantContext";
+   → src/components/vues/table/TaskActionColumns.tsx
+     import { useTenant } from '@/contexts/TenantContext';
+   → src/hooks/useActionAttachments.ts
+     import { useTenant } from '@/contexts/TenantContext';
+   → src/hooks/useOperationalActionTemplates.ts
+     import { useTenant } from '@/contexts/TenantContext';
+   → src/hooks/useOperationalActivities.ts
+     import { useTenant } from '@/contexts/TenantContext';
+   → src/hooks/useOperationalSchedules.ts
+     import { useTenant } from '@/contexts/TenantContext';
+   → src/hooks/useTasksWithActions.ts
+     import { useTenant } from '@/contexts/TenantContext';
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📄 Analyse: ganttHelpers
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📂 Fichiers trouvés:
+   src/lib/ganttHelpers.ts (83 lignes)
+   src/components/vues/lib/ganttHelpers.ts (75 lignes)
+
+📥 Imports trouvés:
+   → src/components/gantt/GanttTaskBar.tsx
+     import { GanttTask, ViewConfig, getUnitPosition, getTaskWidth } from '@/lib/ganttHelpers';
+   → src/components/gantt/GanttTaskList.tsx
+     import { GanttTask } from '@/lib/ganttHelpers';
+   → src/components/gantt/GanttTimeline.tsx
+     import { GanttTask, ViewConfig, getTotalUnits } from '@/lib/ganttHelpers';
+   → src/components/vues/gantt/GanttChart.tsx
+     } from '@/lib/ganttHelpers';
+   → src/components/vues/gantt/GanttTaskBar.tsx
+     import { GanttTask, ViewConfig, getUnitPosition, getTaskWidth } from '@/lib/ganttHelpers';
+   → src/components/vues/gantt/GanttTaskList.tsx
+     import { GanttTask } from '@/lib/ganttHelpers';
+   → src/components/vues/gantt/GanttTimeline.tsx
+     import { GanttTask, ViewConfig, getTotalUnits } from '@/lib/ganttHelpers';
+   → src/components/vues/responsive/MobileGanttChart.tsx
+     import { ViewMode, statusColors } from '@/lib/ganttHelpers';
+   → src/hooks/useGanttDrag.ts
+     import { ViewConfig, GanttTask } from '@/lib/ganttHelpers';
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📄 Analyse: use-toast
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📂 Fichiers trouvés:
+   src/hooks/use-toast.ts (186 lignes)
+   src/components/ui/use-toast.ts (3 lignes)
+
+📥 Imports trouvés:
+   → src/components/admin/SuperAdminInvitations.tsx
+     import { useToast } from '@/hooks/use-toast';
+   → src/components/admin/SuperAdminTestPanel.tsx
+     import { useToast } from '@/hooks/use-toast';
+   → src/components/auth/MFASetup.tsx
+     import { useToast } from '@/hooks/use-toast';
+   → src/components/auth/SocialAuth.tsx
+     import { useToast } from '@/hooks/use-toast';
+   → src/components/auth/TenantOwnerWelcome.tsx
+     import { useToast } from '@/hooks/use-toast';
+   → src/components/Auth.tsx
+     import { useToast } from '@/hooks/use-toast';
+   → src/components/dialogs/TaskEditDialog.tsx
+     import { useToast } from '@/hooks/use-toast';
+   → src/components/hr/AbsenceTypeManagement.tsx
+     import { useToast } from '@/hooks/use-toast';
+   → src/components/hr/AlertDetailDialog.tsx
+     import { useToast } from '@/hooks/use-toast';
+   → src/components/hr/CollaboratorInvitation.tsx
+     import { useToast } from '@/hooks/use-toast';
+   → src/components/hr/DepartmentManagement.tsx
+     import { useToast } from '@/hooks/use-toast';
+   → src/components/hr/EnhancedEmployeeManagement.tsx
+     import { useToast } from '@/hooks/use-toast';
+   → src/components/hr/LeaveBalanceManagement.tsx
+     import { useToast } from '@/hooks/use-toast';
+   → src/components/hr/LeaveManagement.tsx
+     import { useToast } from '@/hooks/use-toast';
+   → src/components/hr/TimesheetManagement.tsx
+     import { useToast } from '@/hooks/use-toast';
+   → src/components/LogoutButton.tsx
+     import { useToast } from '@/hooks/use-toast';
+   → src/components/notifications/NotificationTestPanel.tsx
+     import { useToast } from '@/hooks/use-toast';
+   → src/components/operations/ActionTemplateForm.tsx
+     import { useToast } from '@/hooks/use-toast';
+   → src/components/projects/ProjectCreationDialog.tsx
+     import { useToast } from '@/hooks/use-toast';
+   → src/components/projects/ProjectDashboardAnalytics.tsx
+     import { useToast } from '@/hooks/use-toast';
+   → src/components/projects/ProjectDashboardEnterprise.tsx
+     import { useToast } from '@/hooks/use-toast';
+   → src/components/settings/SecuritySettings.tsx
+     import { useToast } from '@/hooks/use-toast';
+   → src/components/tasks/QuickInviteCollaborator.tsx
+     import { useToast } from '@/hooks/use-toast';
+   → src/components/tasks/TaskAssignmentManager.tsx
+     import { useToast } from '@/hooks/use-toast';
+   → src/components/tasks/TaskCreationDialog.tsx
+     import { useToast } from '@/hooks/use-toast';
+   → src/components/ui/error-toast.tsx
+     import { useToast } from '@/hooks/use-toast';
+   → src/components/ui/toaster.tsx
+     import { useToast } from "@/hooks/use-toast";
+   → src/components/ui/use-toast.ts
+     import { useToast, toast } from "@/hooks/use-toast";
+   → src/components/vues/gantt/GanttChart.tsx
+     import { useToast } from '@/hooks/use-toast';
+   → src/components/vues/table/CommentCellColumn.tsx
+     import { useToast } from "@/hooks/use-toast";
+   → src/components/vues/table/CommentsColumn.tsx
+     import { useToast } from "@/hooks/use-toast";
+   → src/components/vues/table/DocumentCellColumn.tsx
+     import { useToast } from "@/hooks/use-toast";
+   → src/components/vues/table/DocumentsColumn.tsx
+     import { useToast } from "@/hooks/use-toast";
+   → src/hooks/optimized/index.ts
+     import { useToast } from '@/hooks/use-toast';
+   → src/hooks/useCollaboratorInvitation.ts
+     import { useToast } from '@/hooks/use-toast';
+   → src/hooks/useErrorHandler.ts
+     import { useToast } from '@/hooks/use-toast';
+   → src/hooks/useExpenseManagement.ts
+     import { useToast } from '@/hooks/use-toast';
+   → src/hooks/useHRMinimal.ts
+     import { useToast } from '@/hooks/use-toast';
+   → src/hooks/useInactivityTimer.ts
+     import { useToast } from '@/hooks/use-toast';
+   → src/hooks/useNotificationChannels.ts
+     import { useToast } from '@/hooks/use-toast';
+   → src/hooks/useNotifications.ts
+     import { useToast } from '@/hooks/use-toast';
+   → src/hooks/useOnboardingOffboarding.ts
+     import { useToast } from '@/hooks/use-toast';
+   → src/hooks/useOptimizedData.ts
+     import { useToast } from '@/hooks/use-toast';
+   → src/hooks/usePerformance.ts
+     import { useToast } from '@/hooks/use-toast';
+   → src/hooks/useProjectsEnterprise.ts
+     import { useToast } from '@/hooks/use-toast';
+   → src/hooks/useRoleManagement.ts
+     import { useToast } from '@/hooks/use-toast';
+   → src/hooks/useSkillsTraining.ts
+     import { useToast } from '@/hooks/use-toast';
+   → src/hooks/useTasksEnterprise.ts
+     import { useToast } from '@/hooks/use-toast';
+   → src/hooks/useTasksWithActions.ts
+     import { useToast } from '@/hooks/use-toast';
+   → src/hooks/useUserRoles.ts
+     import { useToast } from '@/hooks/use-toast';
+   → src/pages/TenantOwnerLogin.tsx
+     import { useToast } from '@/hooks/use-toast';
+   → src/pages/TenantOwnerSignup.tsx
+     import { useToast } from '@/hooks/use-toast';
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📄 Analyse: Index
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📂 Fichiers trouvés:
+   src/pages/Index.tsx (108 lignes)
+   src/components/vues/Index.tsx (114 lignes)
+
+📥 Imports trouvés:
+   → src/App.tsx
+     import Index from "./pages/Index";
+
+
+✅ Analyse terminée
+
+📊 Résumé:
+   - Fichiers analysés: 19
+   - Voir détails ci-dessus

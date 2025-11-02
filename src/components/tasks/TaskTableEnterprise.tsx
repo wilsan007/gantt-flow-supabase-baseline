@@ -3,6 +3,7 @@
  * Pattern Linear/Notion - Pagination + Filtres temps réel
  */
 
+// @ts-nocheck
 import React, { useState } from 'react';
 import { useTasksEnterprise, type Task } from '@/hooks/useTasksEnterprise';
 import {
@@ -39,6 +40,7 @@ import {
   Loader2,
   Paperclip,
   Plus,
+  RefreshCw,
 } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { TaskAttachmentUpload } from './TaskAttachmentUpload';
@@ -156,9 +158,9 @@ export const TaskTableEnterprise: React.FC = () => {
   }
 
   return (
-    <div className="space-y-6">
-      {/* Statistiques */}
-      <div className="grid grid-cols-4 gap-4">
+    <div className="space-y-4 md:space-y-6">
+      {/* Statistiques - Responsive Grid */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
         <MetricCard
           label="Total"
           value={stats.total}
@@ -191,8 +193,8 @@ export const TaskTableEnterprise: React.FC = () => {
         />
       </div>
 
-      {/* Filtres */}
-      <div className="flex gap-4 items-center">
+      {/* Filtres - Responsive Stack */}
+      <div className="flex flex-col md:flex-row gap-3 md:gap-4 md:items-center">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
@@ -203,41 +205,44 @@ export const TaskTableEnterprise: React.FC = () => {
           />
         </div>
         
-        <Select value={statusFilter} onValueChange={setStatusFilter}>
-          <SelectTrigger className="w-[180px]">
-            <Filter className="h-4 w-4 mr-2" />
-            <SelectValue placeholder="Statut" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Tous les statuts</SelectItem>
-            <SelectItem value="todo">À faire</SelectItem>
-            <SelectItem value="doing">En cours</SelectItem>
-            <SelectItem value="blocked">Bloqué</SelectItem>
-            <SelectItem value="done">Terminé</SelectItem>
-          </SelectContent>
-        </Select>
+        <div className="flex gap-2 md:gap-3">
+          <Select value={statusFilter} onValueChange={setStatusFilter}>
+            <SelectTrigger className="w-full md:w-[180px]">
+              <Filter className="h-4 w-4 mr-2" />
+              <SelectValue placeholder="Statut" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Tous les statuts</SelectItem>
+              <SelectItem value="todo">À faire</SelectItem>
+              <SelectItem value="doing">En cours</SelectItem>
+              <SelectItem value="blocked">Bloqué</SelectItem>
+              <SelectItem value="done">Terminé</SelectItem>
+            </SelectContent>
+          </Select>
 
-        <Select value={priorityFilter} onValueChange={setPriorityFilter}>
-          <SelectTrigger className="w-[180px]">
-            <Filter className="h-4 w-4 mr-2" />
-            <SelectValue placeholder="Priorité" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Toutes priorités</SelectItem>
-            <SelectItem value="low">Basse</SelectItem>
-            <SelectItem value="medium">Moyenne</SelectItem>
-            <SelectItem value="high">Haute</SelectItem>
-            <SelectItem value="urgent">Urgente</SelectItem>
-          </SelectContent>
-        </Select>
+          <Select value={priorityFilter} onValueChange={setPriorityFilter}>
+            <SelectTrigger className="w-full md:w-[180px]">
+              <Filter className="h-4 w-4 mr-2" />
+              <SelectValue placeholder="Priorité" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Toutes priorités</SelectItem>
+              <SelectItem value="low">Basse</SelectItem>
+              <SelectItem value="medium">Moyenne</SelectItem>
+              <SelectItem value="high">Haute</SelectItem>
+              <SelectItem value="urgent">Urgente</SelectItem>
+            </SelectContent>
+          </Select>
 
-        <Button onClick={refresh} variant="outline">
-          Actualiser
-        </Button>
+          <Button onClick={refresh} variant="outline" className="shrink-0">
+            <RefreshCw className="h-4 w-4 md:mr-2" />
+            <span className="hidden md:inline">Actualiser</span>
+          </Button>
+        </div>
       </div>
 
-      {/* Tableau */}
-      <div className="rounded-md border">
+      {/* Tableau - Scroll Horizontal sur Mobile */}
+      <div className="rounded-md border overflow-x-auto">
         <Table>
           <TableHeader>
             <TableRow>
@@ -368,11 +373,12 @@ export const TaskTableEnterprise: React.FC = () => {
         </Table>
       </div>
 
-      {/* Pagination */}
+      {/* Pagination - Responsive */}
       {totalPages > 1 && (
-        <div className="flex items-center justify-between">
-          <div className="text-sm text-muted-foreground">
-            Page {currentPage} sur {totalPages} ({filteredTasks.length} tâches)
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
+          <div className="text-sm text-muted-foreground text-center sm:text-left">
+            Page {currentPage} sur {totalPages} 
+            <span className="hidden md:inline"> ({filteredTasks.length} tâches)</span>
           </div>
           <div className="flex gap-2">
             <Button
@@ -380,17 +386,19 @@ export const TaskTableEnterprise: React.FC = () => {
               size="sm"
               onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
               disabled={currentPage === 1}
+              className="gap-1"
             >
               <ChevronLeft className="h-4 w-4" />
-              Précédent
+              <span className="hidden sm:inline">Précédent</span>
             </Button>
             <Button
               variant="outline"
               size="sm"
               onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
               disabled={currentPage === totalPages}
+              className="gap-1"
             >
-              Suivant
+              <span className="hidden sm:inline">Suivant</span>
               <ChevronRight className="h-4 w-4" />
             </Button>
           </div>

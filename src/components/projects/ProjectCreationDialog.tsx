@@ -13,6 +13,9 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Plus, Save, X } from 'lucide-react';
+import { useEmployees } from '@/hooks/useEmployees';
+import { QuickInviteCollaborator } from '@/components/tasks/QuickInviteCollaborator';
+import { useToast } from '@/hooks/use-toast';
 
 interface ProjectCreationDialogProps {
   open: boolean;
@@ -33,17 +36,19 @@ export const ProjectCreationDialog: React.FC<ProjectCreationDialogProps> = ({
   onOpenChange,
   onCreateProject
 }) => {
+  const { toast } = useToast();
+  const { employees, refetch: refetchEmployees } = useEmployees();
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
-  const [manager, setManager] = useState('Ahmed Waleh');
+  const [manager, setManager] = useState('');
   const [status, setStatus] = useState<'en_cours' | 'a_venir' | 'termine'>('a_venir');
   const [priority, setPriority] = useState<'low' | 'medium' | 'high' | 'urgent'>('medium');
   const [budget, setBudget] = useState<number | undefined>();
   const [skills, setSkills] = useState<string[]>([]);
   const [newSkill, setNewSkill] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showQuickInvite, setShowQuickInvite] = useState(false);
 
-  const availableManagers = ['Ahmed Waleh', 'Sarah Martin', 'Jean Dupont', 'Marie Dubois'];
   const commonSkills = ['React', 'TypeScript', 'Node.js', 'Python', 'Design', 'Marketing', 'DevOps'];
 
   const addSkill = () => {
@@ -78,7 +83,7 @@ export const ProjectCreationDialog: React.FC<ProjectCreationDialogProps> = ({
       // Reset form
       setName('');
       setDescription('');
-      setManager('Ahmed Waleh');
+      setManager('');
       setStatus('a_venir');
       setPriority('medium');
       setBudget(undefined);
@@ -125,17 +130,29 @@ export const ProjectCreationDialog: React.FC<ProjectCreationDialogProps> = ({
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label>Manager *</Label>
+              <Label>Manager / Chef de projet *</Label>
               <Select value={manager} onValueChange={setManager}>
                 <SelectTrigger>
-                  <SelectValue />
+                  <SelectValue placeholder="Sélectionner un manager" />
                 </SelectTrigger>
                 <SelectContent>
-                  {availableManagers.map((person) => (
-                    <SelectItem key={person} value={person}>{person}</SelectItem>
+                  <SelectItem value="">Non assigné</SelectItem>
+                  {employees.map((employee) => (
+                    <SelectItem key={employee.id} value={employee.id}>
+                      {employee.full_name}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => setShowQuickInvite(true)}
+                className="w-full text-blue-600 border-blue-300 hover:bg-blue-50"
+              >
+                ➕ Inviter un manager
+              </Button>
             </div>
 
             <div className="space-y-2">
@@ -236,6 +253,23 @@ export const ProjectCreationDialog: React.FC<ProjectCreationDialogProps> = ({
           </Button>
         </DialogFooter>
       </DialogContent>
+
+      <QuickInviteCollaborator
+        open={showQuickInvite}
+        onOpenChange={setShowQuickInvite}
+        onSuccess={(employeeId) => {
+          if (refetchEmployees) {
+            refetchEmployees();
+          }
+          if (employeeId) {
+            setManager(employeeId);
+          }
+          toast({
+            title: '✅ Manager invité',
+            description: 'La personne a été automatiquement assignée comme manager du projet.',
+          });
+        }}
+      />
     </Dialog>
   );
 };

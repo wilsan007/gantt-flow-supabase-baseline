@@ -14,7 +14,7 @@ import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useTenant } from '@/hooks/useTenant';
-import { useUserRoles } from '@/hooks/useUserRoles';
+import { useRolesCompat as useUserRoles } from '@/contexts/RolesContext';
 import { cacheManager, createCacheKey } from '@/lib/cacheManager';
 import { useRenderTracker } from '@/hooks/usePerformanceMonitor';
 

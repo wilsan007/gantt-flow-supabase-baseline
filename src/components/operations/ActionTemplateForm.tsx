@@ -7,6 +7,8 @@
 import React, { useState, useEffect } from 'react';
 import { useHRMinimal } from '@/hooks/useHRMinimal';
 import { getAvailableDays, getMaxOffsetDays, getTimelineInfo, extractFrequency, type FrequencyType } from '@/lib/scheduleUtils';
+import { QuickInviteCollaborator } from '@/components/tasks/QuickInviteCollaborator';
+import { useToast } from '@/hooks/use-toast';
 import {
   Dialog,
   DialogContent,
@@ -76,7 +78,9 @@ export const ActionTemplateForm: React.FC<ActionTemplateFormProps> = ({
   activityKind = 'recurring',
   rrule = null,
 }) => {
-  const { employees, loading: loadingEmployees } = useHRMinimal();
+  const { toast } = useToast();
+  const { employees, loading: loadingEmployees, refresh: refetchEmployees } = useHRMinimal();
+  const [showQuickInvite, setShowQuickInvite] = useState(false);
 
   const [formData, setFormData] = useState<ActionTemplateData>({
     title: '',
@@ -296,7 +300,7 @@ export const ActionTemplateForm: React.FC<ActionTemplateFormProps> = ({
 
               {/* Sélection employé si non hérité */}
               {!formData.inherit_assignee && (
-                <div>
+                <div className="space-y-2">
                   <Label htmlFor="assignee" className="required">
                     Assigné à
                   </Label>
@@ -335,6 +339,15 @@ export const ActionTemplateForm: React.FC<ActionTemplateFormProps> = ({
                       )}
                     </SelectContent>
                   </Select>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setShowQuickInvite(true)}
+                    className="w-full text-blue-600 border-blue-300 hover:bg-blue-50"
+                  >
+                    ➕ Inviter quelqu'un
+                  </Button>
                   {errors.assignee && (
                     <p className="text-sm text-red-500 mt-1 flex items-center gap-1">
                       <AlertCircle className="h-3 w-3" />
@@ -633,6 +646,23 @@ export const ActionTemplateForm: React.FC<ActionTemplateFormProps> = ({
           </form>
         </ScrollArea>
       </DialogContent>
+
+      <QuickInviteCollaborator
+        open={showQuickInvite}
+        onOpenChange={setShowQuickInvite}
+        onSuccess={(employeeId) => {
+          if (refetchEmployees) {
+            refetchEmployees();
+          }
+          if (employeeId) {
+            setFormData({ ...formData, assignee_id: employeeId });
+          }
+          toast({
+            title: '✅ Collaborateur invité',
+            description: 'La personne a été automatiquement assignée à cette action.',
+          });
+        }}
+      />
     </Dialog>
   );
 };

@@ -11,8 +11,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Plus, CheckCircle2, Circle } from 'lucide-react';
 // Hooks optimisés avec cache intelligent et métriques
 import { useTasks, type Task } from '@/hooks/optimized';
-import { LoadingState } from '../table/LoadingState';
-import { ErrorState } from '../table/ErrorState';
+import { LoadingState } from '@/components/ui/loading-state';
+import { ErrorState } from '@/components/ui/error-state';
 
 interface MobileDynamicTableProps {
   tasks?: Task[];
@@ -77,13 +77,20 @@ function MobileTaskCard({
             {task.priority}
           </Badge>
           <div className="flex items-center gap-1 ml-auto">
-            <Avatar className="h-6 w-6 ring-2 ring-primary/40">
-              <AvatarImage src="" alt={task.assignee || task.assigned_name || 'NA'} />
-              <AvatarFallback className="text-xs bg-primary/40 text-primary-foreground font-semibold">
-                {(task.assignee || task.assigned_name || 'NA').slice(0, 2).toUpperCase()}
-              </AvatarFallback>
-            </Avatar>
-            <span className="text-xs text-foreground/80">{task.assignee || task.assigned_name || 'Non assigné'}</span>
+            {(() => {
+              const assigneeStr = typeof task.assignee === 'string' ? task.assignee : (task.assignee as any)?.full_name || task.assigned_name || 'NA';
+              return (
+                <>
+                  <Avatar className="h-6 w-6 ring-2 ring-primary/40">
+                    <AvatarImage src="" alt={assigneeStr} />
+                    <AvatarFallback className="text-xs bg-primary/40 text-primary-foreground font-semibold">
+                      {assigneeStr.slice(0, 2).toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                  <span className="text-xs text-foreground/80">{assigneeStr !== 'NA' ? assigneeStr : 'Non assigné'}</span>
+                </>
+              );
+            })()}
           </div>
         </div>
       </CardHeader>

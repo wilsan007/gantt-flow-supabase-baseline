@@ -14,6 +14,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge';
 import { useEmployees } from '@/hooks/useEmployees';
 import { SmartAssigneeSelect } from './SmartAssigneeSelect';
+import { QuickInviteCollaborator } from './QuickInviteCollaborator';
 import { supabase } from '@/integrations/supabase/client';
 import type { Task, CreateTaskData } from '@/types/tasks';
 import { useFormValidation } from '@/hooks/useFormValidation';
@@ -60,10 +61,11 @@ export const TaskCreationDialog: React.FC<TaskCreationDialogProps> = ({
     const { error } = await supabase.from('tasks').update(data).eq('id', id);
     if (error) throw error;
   };
-  const { employees } = useEmployees();
+  const { employees, refetch: refetchEmployees } = useEmployees();
   const [projects, setProjects] = useState<Project[]>([]);
   const [departments, setDepartments] = useState<Department[]>([]);
   const [showSmartAssignee, setShowSmartAssignee] = useState(false);
+  const [showQuickInvite, setShowQuickInvite] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const initialFormData: CreateTaskData = {
@@ -337,15 +339,26 @@ export const TaskCreationDialog: React.FC<TaskCreationDialogProps> = ({
                     👤 Assigné par défaut : {employees.find(e => e.id === parentTask.assignee_id)?.full_name || 'Inconnu'}
                   </p>
                 )}
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setShowSmartAssignee(true)}
-                  className="w-full"
-                >
-                  🎯 Sélection intelligente
-                </Button>
+                <div className="grid grid-cols-2 gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setShowSmartAssignee(true)}
+                    className="w-full"
+                  >
+                    🎯 Sélection intelligente
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setShowQuickInvite(true)}
+                    className="w-full text-blue-600 border-blue-300 hover:bg-blue-50"
+                  >
+                    ➕ Inviter quelqu'un
+                  </Button>
+                </div>
               </div>
             </div>
 
@@ -613,6 +626,25 @@ export const TaskCreationDialog: React.FC<TaskCreationDialogProps> = ({
           taskStartDate={formData.start_date}
           taskEndDate={formData.due_date}
           taskSkills={[]} // TODO: Extract from task description or add skill selection
+        />
+
+        <QuickInviteCollaborator
+          open={showQuickInvite}
+          onOpenChange={setShowQuickInvite}
+          onSuccess={(employeeId) => {
+            // Rafraîchir la liste des employés
+            if (refetchEmployees) {
+              refetchEmployees();
+            }
+            // Assigner automatiquement le nouvel employé
+            if (employeeId) {
+              updateField('assignee_id', employeeId);
+            }
+            toast({
+              title: '✅ Collaborateur invité',
+              description: 'La personne a été automatiquement assignée à cette tâche.',
+            });
+          }}
         />
       </DialogContent>
     </Dialog>

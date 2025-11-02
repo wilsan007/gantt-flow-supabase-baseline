@@ -6,10 +6,10 @@ import { Users } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { ResponsiveLayout } from "@/components/responsive/ResponsiveLayout";
-// Utilisation exclusive des composants vues/ modernisés
-import GanttChart from "@/components/vues/gantt/GanttChart";
+// 🎨 Utilisation des vues ORIGINALES avec design complet + performance Enterprise
 import DynamicTable from "@/components/vues/table/DynamicTable";
 import KanbanBoard from "@/components/vues/kanban/KanbanBoard";
+import GanttChart from "@/components/vues/gantt/GanttChart";
 // import { HRDashboard } from "@/components/hr/HRDashboard"; // Temporarily commented out
 
 const Index = () => {

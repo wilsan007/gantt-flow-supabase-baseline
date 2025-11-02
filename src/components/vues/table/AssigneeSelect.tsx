@@ -29,13 +29,17 @@ export const AssigneeSelect = ({ assignee, onChange, taskId }: AssigneeSelectPro
     }
   };
 
-  const currentAssignees = assignee ? assignee.split(', ').filter(Boolean) : [];
+  // Gérer assignee comme string ou objet { full_name: string }
+  const assigneeStr = typeof assignee === 'string' 
+    ? assignee 
+    : (assignee as any)?.full_name || '';
+  const currentAssignees = assigneeStr ? assigneeStr.split(', ').filter(Boolean) : [];
 
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild>
         <Button variant="ghost" className="w-full justify-start text-left font-normal">
-          {assignee || 'Non assigné'}
+          {assigneeStr || 'Non assigné'}
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-80 p-0 bg-background border" align="start">

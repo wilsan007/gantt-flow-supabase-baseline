@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
-import { useUserRoles } from '@/hooks/useUserRoles';
+import { useRolesCompat as useUserRoles } from '@/contexts/RolesContext';
 import { useInactivityTimer } from '@/hooks/useInactivityTimer';
 import { useToast } from '@/hooks/use-toast';
 import { Crown, Timer, Shield, Eye, EyeOff } from 'lucide-react';

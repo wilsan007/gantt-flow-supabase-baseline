@@ -261,7 +261,7 @@ serve(async (req) => {
       const { data: newUserData, error: userError } = await supabaseClient.auth.admin.createUser({
         email: email,
         password: tempPassword,
-        email_confirm: false,
+        email_confirm: true, // ✅ Email confirmé automatiquement (créé par Tenant Admin)
         user_metadata: userMetadata
       });
 

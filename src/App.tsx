@@ -8,14 +8,11 @@ import { useStableCallback } from "@/hooks/useStableCallback";
 // import { usePerformanceOptimizer, useRenderOptimizer } from "@/hooks/usePerformanceOptimizer";
 import { Auth } from "@/components/Auth";
 import { ThemeProvider } from "next-themes";
-import { ThemeToggle } from "@/components/ThemeToggle";
-import { NotificationButton } from "@/components/notifications/NotificationButton";
-import { RoleManagementButton } from "@/components/admin/RoleManagementButton";
-import { LogoutButton } from "@/components/LogoutButton";
-import { SessionIndicator } from "@/components/SessionIndicator";
+import { AppLayoutWithSidebar } from "@/components/layout/AppLayoutWithSidebar";
 import { SessionErrorBoundary } from "@/components/SessionErrorBoundary";
 import { TenantProvider } from "./contexts/TenantContext";
 import { ViewModeProvider } from "./contexts/ViewModeContext";
+import { RolesProvider } from "./contexts/RolesContext";
 import Index from "./pages/Index";
 import { useUserRoles } from "@/hooks/useUserRoles";
 import { useInactivityTimer } from "@/hooks/useInactivityTimer";
@@ -37,94 +34,8 @@ import InvitePage from "./pages/InvitePage";
 import NotFound from "./pages/NotFound";
 import PerformanceMonitor from "./components/dev/PerformanceMonitor";
 import { OperationsPage } from "./components/operations";
-import { UserPlus } from "lucide-react";
-import { Button } from "@/components/ui/button";
 
 const queryClient = new QueryClient();
-
-// Composants memoizés STRICTEMENT pour éviter les re-renders
-const MemoizedHeader = memo(({ 
-  accessRights, 
-  showWarning, 
-  timeLeftFormatted, 
-  signOut,
-  isTenantAdmin 
-}: {
-  accessRights: any;
-  showWarning: boolean;
-  timeLeftFormatted: string;
-  signOut: () => Promise<void>;
-  isTenantAdmin: boolean;
-}) => (
-  <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-    <div className="container mx-auto px-4 py-4">
-      <div className="flex items-center justify-between">
-        <nav className="flex items-center space-x-4">
-          <Link to="/" className="text-foreground hover:text-primary transition-colors">
-            Accueil
-          </Link>
-          {accessRights.canAccessHR && (
-            <Link to="/hr" className="text-foreground hover:text-primary transition-colors">
-              RH
-            </Link>
-          )}
-          {accessRights.canAccessProjects && (
-            <Link to="/projects" className="text-foreground hover:text-primary transition-colors">
-              Projets
-            </Link>
-          )}
-          {accessRights.canAccessTasks && (
-            <Link to="/tasks" className="text-foreground hover:text-primary transition-colors">
-              Tâches
-            </Link>
-          )}
-          {accessRights.canAccessTasks && (
-            <Link to="/operations" className="text-foreground hover:text-primary transition-colors">
-              Opérations
-            </Link>
-          )}
-          {accessRights.canAccessSuperAdmin && (
-            <Link 
-              to="/super-admin" 
-              className="text-sm font-medium text-yellow-600 hover:text-yellow-500 transition-colors flex items-center gap-1"
-            >
-              👑 Super Admin
-            </Link>
-          )}
-        </nav>
-        <div className="flex items-center gap-3">
-          {isTenantAdmin && (
-            <Link to="/invite-collaborators">
-              <Button 
-                variant="default" 
-                size="sm"
-                className="flex items-center gap-2 bg-primary hover:bg-primary/90"
-              >
-                <UserPlus className="h-4 w-4" />
-                Inviter des collaborateurs
-              </Button>
-            </Link>
-          )}
-          {showWarning && (
-            <div className="flex items-center gap-2 px-3 py-1 bg-orange-100 text-orange-800 rounded-md text-sm font-medium">
-              ⏰ Déconnexion automatique dans {timeLeftFormatted}
-            </div>
-          )}
-          <div className="flex items-center space-x-2">
-            <ThemeToggle />
-            <NotificationButton />
-            {accessRights.canManageRoles && <RoleManagementButton />}
-            <RoleIndicator />
-            <SessionIndicator />
-            <LogoutButton onSignOut={signOut} />
-          </div>
-        </div>
-      </div>
-    </div>
-  </header>
-));
-
-MemoizedHeader.displayName = 'MemoizedHeader';
 
 // Composant Routes memoizé pour éviter les re-renders
 const MemoizedRoutes = memo(() => (
@@ -216,6 +127,8 @@ function App() {
   
   // Hooks avec protection anti-boucle renforcée
   const { session, loading, signOut, handleAuthStateChange } = useSessionManager();
+  // Note: useUserRoles sera appelé UNE SEULE FOIS dans RolesProvider
+  // Ici on garde juste pour la logique initiale (sera retiré progressivement)
   const { isSuperAdmin: checkIsSuperAdmin, isTenantAdmin: checkIsTenantAdmin, isLoading: superAdminLoading } = useUserRoles();
   const isSuperAdmin = checkIsSuperAdmin();
   const isTenantAdmin = checkIsTenantAdmin();
@@ -347,18 +260,16 @@ function App() {
         <SessionErrorBoundary>
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
             <TenantProvider>
-              <ViewModeProvider>
+              <RolesProvider>
+                <ViewModeProvider>
                 <Sonner />
                 <BrowserRouter>
-              <div className="min-h-screen bg-background text-foreground">
-                <MemoizedHeader {...headerProps} />
-                
-                <main className="flex-1">
-                  <MemoizedRoutes />
-                </main>
-              </div>
+              <AppLayoutWithSidebar {...headerProps}>
+                <MemoizedRoutes />
+              </AppLayoutWithSidebar>
             </BrowserRouter>
-              </ViewModeProvider>
+                </ViewModeProvider>
+              </RolesProvider>
             </TenantProvider>
           </ThemeProvider>
         </SessionErrorBoundary>

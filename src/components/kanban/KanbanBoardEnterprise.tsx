@@ -385,34 +385,25 @@ export const KanbanBoardEnterprise: React.FC<KanbanBoardEnterpriseProps> = ({
         </div>
       )}
 
-      {/* En-tête et contrôles */}
+      {/* En-tête et contrôles - Responsive */}
       <Card>
         <CardHeader>
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-            <div>
-              <CardTitle className="flex items-center gap-2">
-                Kanban Board
-                {isSuperAdmin && (
-                  <Badge variant="secondary">Super Admin</Badge>
+          <div className="flex flex-col gap-4">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+              <div>
+                <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
+                  Kanban Board
+                  {isSuperAdmin && (
+                    <Badge variant="secondary" className="text-xs">Super Admin</Badge>
+                  )}
+                </CardTitle>
+                {!compactMode && (
+                  <p className="text-xs sm:text-sm text-muted-foreground mt-1">
+                    {totalCount} tâches 
+                    <span className="hidden sm:inline"> • Cache: {metrics.cacheHit ? '✅' : '❌'}</span>
+                    {isDataStale && <span className="text-orange-600"> • Obsolète</span>}
+                  </p>
                 )}
-              </CardTitle>
-              {!compactMode && (
-                <p className="text-sm text-muted-foreground mt-1">
-                  {totalCount} tâches • Cache: {metrics.cacheHit ? '✅' : '❌'}
-                  {isDataStale && <span className="text-orange-600"> • Données obsolètes</span>}
-                </p>
-              )}
-            </div>
-            
-            <div className="flex items-center gap-2">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Rechercher..."
-                  value={searchTerm}
-                  onChange={(e) => handleSearchChange(e.target.value)}
-                  className="pl-10 w-64"
-                />
               </div>
               
               <Button
@@ -420,10 +411,22 @@ export const KanbanBoardEnterprise: React.FC<KanbanBoardEnterpriseProps> = ({
                 size="sm"
                 onClick={refresh}
                 disabled={loading}
+                className="self-start sm:self-auto"
               >
-                <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
-                Actualiser
+                <RefreshCw className={`h-4 w-4 sm:mr-2 ${loading ? 'animate-spin' : ''}`} />
+                <span className="hidden sm:inline">Actualiser</span>
               </Button>
+            </div>
+            
+            {/* Barre de recherche full width sur mobile */}
+            <div className="relative w-full">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Rechercher une tâche..."
+                value={searchTerm}
+                onChange={(e) => handleSearchChange(e.target.value)}
+                className="pl-10 w-full"
+              />
             </div>
           </div>
         </CardHeader>
@@ -449,9 +452,11 @@ export const KanbanBoardEnterprise: React.FC<KanbanBoardEnterpriseProps> = ({
         </Card>
       ) : (
         <DragDropContext onDragEnd={handleDragEnd}>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {columns.map((column) => (
-              <div key={column.id} className="space-y-4">
+          {/* Container avec scroll horizontal sur mobile */}
+          <div className="overflow-x-auto -mx-4 px-4 md:mx-0 md:px-0">
+            <div className="flex md:grid md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 min-w-max md:min-w-0">
+              {columns.map((column) => (
+                <div key={column.id} className="space-y-4 w-80 md:w-auto flex-shrink-0 md:flex-shrink">
                 {/* En-tête de colonne */}
                 <Card className={`${column.color} border-2`}>
                   <CardHeader className="pb-3">
@@ -501,6 +506,7 @@ export const KanbanBoardEnterprise: React.FC<KanbanBoardEnterpriseProps> = ({
                 </Droppable>
               </div>
             ))}
+            </div>
           </div>
         </DragDropContext>
       )}

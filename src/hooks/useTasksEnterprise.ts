@@ -17,7 +17,7 @@ import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useTenant } from '@/hooks/useTenant';
-import { useUserRoles } from '@/hooks/useUserRoles';
+import { useRolesCompat as useUserRoles } from '@/contexts/RolesContext';
 
 // Réexporter les types depuis le fichier centralisé
 export type { Task, TaskAction, CreateTaskData, UpdateTaskData, TaskFilters, TaskMetrics, TaskStats } from '@/types/tasks';
@@ -134,18 +134,21 @@ export const useTasksEnterprise = (filters?: TaskFilters) => {
   ) => {
     // Sélection optimisée avec jointures conditionnelles (Pattern Linear)
     // Note: Les relations sont basées sur les foreign keys du schema
+    // Utiliser task_actions!task_id pour spécifier la foreign key (car il y a aussi linked_action_id)
     let query = isSuper 
       ? supabase.from('tasks').select(`
           *,
           projects:project_id(name, tenant_id),
           assignee:assignee_id(full_name),
-          parent_task:parent_id(title)
+          parent_task:parent_id(title),
+          task_actions!task_id(*)
         `)
       : supabase.from('tasks').select(`
           *,
           projects:project_id(name),
           assignee:assignee_id(full_name),
-          parent_task:parent_id(title)
+          parent_task:parent_id(title),
+          task_actions!task_id(*)
         `);
     
     // Filtrage par tenant (sécurité enterprise)

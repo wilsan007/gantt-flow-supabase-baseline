@@ -366,61 +366,26 @@ export const GanttChartEnterprise: React.FC<GanttChartEnterpriseProps> = ({
         </div>
       )}
 
-      {/* Contrôles et filtres */}
+      {/* Contrôles et filtres - Responsive */}
       <Card>
         <CardHeader>
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-            <div>
-              <CardTitle className="flex items-center gap-2">
-                Diagramme de Gantt
-                {isSuperAdmin && (
-                  <Badge variant="secondary">Super Admin</Badge>
+          <div className="flex flex-col gap-4">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+              <div>
+                <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
+                  Diagramme de Gantt
+                  {isSuperAdmin && (
+                    <Badge variant="secondary" className="text-xs">Super Admin</Badge>
+                  )}
+                </CardTitle>
+                {!compactMode && (
+                  <p className="text-xs sm:text-sm text-muted-foreground mt-1">
+                    {totalCount} tâches 
+                    <span className="hidden sm:inline"> • {hierarchyStats.parentTasks} projets</span>
+                    <span className="hidden md:inline"> • Profondeur max: {hierarchyStats.maxDepth}</span>
+                    {isDataStale && <span className="text-orange-600"> • Obsolète</span>}
+                  </p>
                 )}
-              </CardTitle>
-              {!compactMode && (
-                <p className="text-sm text-muted-foreground mt-1">
-                  {totalCount} tâches • {hierarchyStats.parentTasks} projets • 
-                  Profondeur max: {hierarchyStats.maxDepth}
-                  {isDataStale && <span className="text-orange-600"> • Données obsolètes</span>}
-                </p>
-              )}
-            </div>
-            
-            <div className="flex items-center gap-2">
-              {/* Recherche */}
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Rechercher..."
-                  value={searchTerm}
-                  onChange={(e) => handleSearchChange(e.target.value)}
-                  className="pl-10 w-48"
-                />
-              </div>
-              
-              {/* Contrôles de zoom */}
-              <div className="flex items-center gap-1 border rounded">
-                <Button
-                  variant={timelineConfig.zoom === 'day' ? 'default' : 'ghost'}
-                  size="sm"
-                  onClick={() => handleZoomChange('day')}
-                >
-                  Jour
-                </Button>
-                <Button
-                  variant={timelineConfig.zoom === 'week' ? 'default' : 'ghost'}
-                  size="sm"
-                  onClick={() => handleZoomChange('week')}
-                >
-                  Semaine
-                </Button>
-                <Button
-                  variant={timelineConfig.zoom === 'month' ? 'default' : 'ghost'}
-                  size="sm"
-                  onClick={() => handleZoomChange('month')}
-                >
-                  Mois
-                </Button>
               </div>
               
               <Button
@@ -428,10 +393,56 @@ export const GanttChartEnterprise: React.FC<GanttChartEnterpriseProps> = ({
                 size="sm"
                 onClick={refresh}
                 disabled={loading}
+                className="self-start sm:self-auto"
               >
-                <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
-                Actualiser
+                <RefreshCw className={`h-4 w-4 sm:mr-2 ${loading ? 'animate-spin' : ''}`} />
+                <span className="hidden sm:inline">Actualiser</span>
               </Button>
+            </div>
+            
+            {/* Recherche full width sur mobile */}
+            <div className="relative w-full">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Rechercher une tâche..."
+                value={searchTerm}
+                onChange={(e) => handleSearchChange(e.target.value)}
+                className="pl-10 w-full"
+              />
+            </div>
+            
+            {/* Contrôles de zoom - Stack sur mobile */}
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+              <span className="text-sm font-medium text-muted-foreground">Zoom:</span>
+              <div className="flex items-center gap-1 border rounded">
+                <Button
+                  variant={timelineConfig.zoom === 'day' ? 'default' : 'ghost'}
+                  size="sm"
+                  onClick={() => handleZoomChange('day')}
+                  className="flex-1 sm:flex-none"
+                >
+                  <Calendar className="h-4 w-4 sm:mr-1" />
+                  <span className="text-xs sm:text-sm">Jour</span>
+                </Button>
+                <Button
+                  variant={timelineConfig.zoom === 'week' ? 'default' : 'ghost'}
+                  size="sm"
+                  onClick={() => handleZoomChange('week')}
+                  className="flex-1 sm:flex-none"
+                >
+                  <Calendar className="h-4 w-4 sm:mr-1" />
+                  <span className="text-xs sm:text-sm">Semaine</span>
+                </Button>
+                <Button
+                  variant={timelineConfig.zoom === 'month' ? 'default' : 'ghost'}
+                  size="sm"
+                  onClick={() => handleZoomChange('month')}
+                  className="flex-1 sm:flex-none"
+                >
+                  <Calendar className="h-4 w-4 sm:mr-1" />
+                  <span className="text-xs sm:text-sm">Mois</span>
+                </Button>
+              </div>
             </div>
           </div>
         </CardHeader>
@@ -458,10 +469,11 @@ export const GanttChartEnterprise: React.FC<GanttChartEnterpriseProps> = ({
       ) : (
         <Card>
           <CardContent className="p-0">
-            <div ref={ganttRef} className="overflow-auto">
-              <div className="flex">
-                {/* Colonne des tâches (fixe) */}
-                <div className="w-80 bg-muted/30 border-r">
+            {/* Scroll horizontal sur mobile/tablet */}
+            <div ref={ganttRef} className="overflow-x-auto overflow-y-hidden">
+              <div className="flex min-w-max">
+                {/* Colonne des tâches (responsive width) */}
+                <div className="w-64 sm:w-80 bg-muted/30 border-r flex-shrink-0">
                   {/* En-tête */}
                   <div className="h-12 border-b bg-background flex items-center px-4 font-semibold">
                     Tâches

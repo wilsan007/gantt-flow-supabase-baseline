@@ -234,26 +234,26 @@ class RoleCacheManager {
     // Vérifier le cache d'abord
     const cached = this.getCacheEntry<UserRole[]>(key);
     if (cached) {
-      console.log('🎯 Rôles récupérés depuis le cache:', userId);
+      // console.log('🎯 Rôles récupérés depuis le cache:', userId);
       return cached;
     }
 
     // Éviter les requêtes multiples simultanées
     if (this.refreshPromises.has(key)) {
-      console.log('⏳ Attente de la requête en cours pour les rôles:', userId);
+      // console.log('⏳ Attente de la requête en cours pour les rôles:', userId);
       return this.refreshPromises.get(key)!;
     }
 
     // Récupérer depuis la base de données
     const promise = this.fetchWithRetry(fetchFunction, 3)
       .then(roles => {
-        console.log('🔄 Rôles récupérés depuis la DB et mis en cache:', userId);
+        // console.log('🔄 Rôles récupérés depuis la DB et mis en cache:', userId);
         this.setCacheEntry(key, roles, CACHE_CONFIG.TTL_ROLES, userId, tenantId);
         this.refreshPromises.delete(key);
         return roles;
       })
       .catch(error => {
-        console.error('❌ Erreur lors de la récupération des rôles:', error);
+        // console.error('❌ Erreur lors de la récupération des rôles:', error);
         this.refreshPromises.delete(key);
         throw error;
       });
@@ -275,7 +275,7 @@ class RoleCacheManager {
     
     const cached = this.getCacheEntry<UserPermission[]>(key);
     if (cached) {
-      console.log('🎯 Permissions récupérées depuis le cache:', userId);
+      // console.log('🎯 Permissions récupérées depuis le cache:', userId);
       return cached;
     }
 
@@ -285,13 +285,13 @@ class RoleCacheManager {
 
     const promise = this.fetchWithRetry(fetchFunction, 3)
       .then(permissions => {
-        console.log('🔄 Permissions récupérées depuis la DB et mises en cache:', userId);
+        // console.log('🔄 Permissions récupérées depuis la DB et mises en cache:', userId);
         this.setCacheEntry(key, permissions, CACHE_CONFIG.TTL_PERMISSIONS, userId, tenantId);
         this.refreshPromises.delete(key);
         return permissions;
       })
       .catch(error => {
-        console.error('❌ Erreur lors de la récupération des permissions:', error);
+        // console.error('❌ Erreur lors de la récupération des permissions:', error);
         this.refreshPromises.delete(key);
         throw error;
       });

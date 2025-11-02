@@ -11,7 +11,10 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Edit, Save, X } from 'lucide-react';
-import { Task , type Task } from '@/hooks/useTasksEnterprise';
+import type { Task } from '@/hooks/useTasksEnterprise';
+import { useEmployees } from '@/hooks/useEmployees';
+import { QuickInviteCollaborator } from '@/components/tasks/QuickInviteCollaborator';
+import { useToast } from '@/hooks/use-toast';
 
 interface TaskEditDialogProps {
   open: boolean;
@@ -26,16 +29,14 @@ export const TaskEditDialog: React.FC<TaskEditDialogProps> = ({
   task,
   onSave
 }) => {
+  const { toast } = useToast();
+  const { employees, refetch: refetchEmployees } = useEmployees();
   const [title, setTitle] = useState('');
   const [assignee, setAssignee] = useState<string>('');
   const [priority, setPriority] = useState<string>('medium');
   const [status, setStatus] = useState<string>('todo');
   const [loading, setLoading] = useState(false);
-
-  const availableAssignees = [
-    'Ahmed Waleh', 'Sarah Martin', 
-    'Jean Dupont', 'Marie Dubois', 'Pierre Moreau'
-  ];
+  const [showQuickInvite, setShowQuickInvite] = useState(false);
 
   useEffect(() => {
     if (task && open) {
@@ -99,16 +100,26 @@ export const TaskEditDialog: React.FC<TaskEditDialogProps> = ({
               <Label>Responsable *</Label>
               <Select value={assignee} onValueChange={setAssignee}>
                 <SelectTrigger>
-                  <SelectValue />
+                  <SelectValue placeholder="Sélectionner un responsable" />
                 </SelectTrigger>
                 <SelectContent>
-                  {availableAssignees.map((person) => (
-                    <SelectItem key={person} value={person}>
-                      {person}
+                  <SelectItem value="">Non assigné</SelectItem>
+                  {employees.map((employee) => (
+                    <SelectItem key={employee.id} value={employee.id}>
+                      {employee.full_name}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => setShowQuickInvite(true)}
+                className="w-full text-blue-600 border-blue-300 hover:bg-blue-50"
+              >
+                ➕ Inviter quelqu'un
+              </Button>
             </div>
 
             <div className="space-y-2">
@@ -154,6 +165,23 @@ export const TaskEditDialog: React.FC<TaskEditDialogProps> = ({
           </Button>
         </DialogFooter>
       </DialogContent>
+
+      <QuickInviteCollaborator
+        open={showQuickInvite}
+        onOpenChange={setShowQuickInvite}
+        onSuccess={(employeeId) => {
+          if (refetchEmployees) {
+            refetchEmployees();
+          }
+          if (employeeId) {
+            setAssignee(employeeId);
+          }
+          toast({
+            title: '✅ Collaborateur invité',
+            description: 'La personne a été automatiquement assignée à cette tâche.',
+          });
+        }}
+      />
     </Dialog>
   );
 };

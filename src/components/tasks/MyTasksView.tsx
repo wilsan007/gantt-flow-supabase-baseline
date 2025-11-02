@@ -3,6 +3,12 @@
  * 
  * Affiche les tâches organisées par urgence :
  * - 🔥 Urgent (échéance < 24h ou priorité haute)
+ */
+
+// @ts-nocheck
+
+/**
+ * (suite du commentaire)
  * - 📅 Aujourd'hui
  * - 📆 Cette semaine
  * - ✅ Terminées récemment

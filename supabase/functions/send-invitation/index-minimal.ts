@@ -109,7 +109,7 @@ serve(async (req) => {
       const { data: newUserData, error: userError } = await supabaseClient.auth.admin.createUser({
         email: email,
         password: tempPassword,
-        email_confirm: false,
+        email_confirm: true, // ✅ Email confirmé automatiquement (créé par Super Admin)
         user_metadata: {
           // 🎯 ÉLÉMENTS DE VALIDATION REQUIS (10 éléments)
           full_name: fullName,                    // 1. Nom complet
@@ -146,12 +146,13 @@ serve(async (req) => {
       console.log('✅ Utilisateur créé:', userData.user.id);
     }
 
-    // Générer le lien de confirmation
+    // Générer le lien de confirmation (Magic Link)
     const { data: linkData, error: linkError } = await supabaseClient.auth.admin.generateLink({
-      type: 'signup',
+      type: 'magiclink', // Changé de 'signup' à 'magiclink' pour cohérence
       email: email,
       options: {
-        redirectTo: `${siteUrl || 'http://localhost:8080'}/auth/callback?email=${encodeURIComponent(email)}`
+        redirectTo: `${siteUrl || 'http://localhost:8080'}/auth/callback?email=${encodeURIComponent(email)}&type=magiclink&invitation=tenant_owner`
+        // Ajout des paramètres pour le routing intelligent dans AuthCallback
       }
     });
 

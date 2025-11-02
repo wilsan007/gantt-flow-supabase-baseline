@@ -28,7 +28,7 @@ export const useUserRoles = () => {
 
   // Fonctions de récupération des données (pour le cache)
   const fetchRolesFromDB = useCallback(async (userId: string) => {
-    console.log('🔍 Fetching roles for user:', userId);
+    // console.log('🔍 Fetching roles for user:', userId);
     
     const { data: rolesData, error: rolesError } = await supabase
       .from('user_roles')
@@ -44,18 +44,18 @@ export const useUserRoles = () => {
       .eq('user_id', userId)
       .eq('is_active', true);
 
-    console.log('📊 Roles query result:', { data: rolesData, error: rolesError });
+    // console.log('📊 Roles query result:', { data: rolesData, error: rolesError });
 
     if (rolesError) {
-      console.error('❌ Error fetching roles:', rolesError);
+      // console.error('❌ Error fetching roles:', rolesError);
       if (rolesError.code === '42501') {
-        console.log('ℹ️ Pas d\'accès à user_roles - Aucun rôle assigné');
+        // console.log('ℹ️ Pas d\'accès à user_roles - Aucun rôle assigné');
         return [];
       }
       throw rolesError;
     }
 
-    console.log('✅ Roles fetched successfully:', rolesData?.length || 0, 'roles');
+    // console.log('✅ Roles fetched successfully:', rolesData?.length || 0, 'roles');
     return (rolesData || []) as UserRole[];
   }, []);
 
@@ -106,8 +106,8 @@ export const useUserRoles = () => {
           () => fetchRolesFromDB(user.id)
         );
 
-        console.log('🎯 Rôles récupérés pour l\'utilisateur:', roles);
-        console.log('📋 Détail du rôle:', roles[0]?.roles?.name || 'Aucun rôle');
+        // console.log('🎯 Rôles récupérés pour l\'utilisateur:', roles);
+        // console.log('📋 Détail du rôle:', roles[0]?.roles?.name || 'Aucun rôle');
         setUserRoles(roles);
 
         // Utiliser le cache pour récupérer les permissions
@@ -132,14 +132,14 @@ export const useUserRoles = () => {
           setUserRoles([]);
           setUserPermissions([]);
         } else {
-          console.error('❌ Erreur lors de la récupération des rôles:', dbError);
+          // console.error('❌ Erreur lors de la récupération des rôles:', dbError);
           setUserRoles([]);
           setUserPermissions([]);
         }
       }
 
     } catch (error: any) {
-      console.error('❌ Erreur lors de la récupération des rôles et permissions:', error);
+      // console.error('❌ Erreur lors de la récupération des rôles et permissions:', error);
       setUserRoles([]);
       setUserPermissions([]);
     } finally {
@@ -206,7 +206,7 @@ export const useUserRoles = () => {
         await fetchUserRolesAndPermissions();
       }
     } catch (error) {
-      console.error('Erreur lors du rafraîchissement des rôles:', error);
+      // console.error('Erreur lors du rafraîchissement des rôles:', error);
     } finally {
       setIsLoading(false);
     }

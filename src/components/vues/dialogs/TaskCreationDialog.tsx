@@ -10,7 +10,10 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Plus, Save, X } from 'lucide-react';
+import { Plus, Save, X, BookTemplate, Sparkles } from 'lucide-react';
+import { useTaskTemplates } from '@/hooks/useTaskTemplates';
+import { TemplateManagementDialog } from '@/components/tasks/TemplateManagementDialog';
+import { Separator } from '@/components/ui/separator';
 
 interface TaskCreationDialogProps {
   open: boolean;
@@ -39,10 +42,28 @@ export const TaskCreationDialog: React.FC<TaskCreationDialogProps> = ({
   const [status, setStatus] = useState<'todo' | 'doing' | 'blocked' | 'done'>('todo');
   const [effortEstimate, setEffortEstimate] = useState(8);
   const [loading, setLoading] = useState(false);
+  const [selectedTemplateId, setSelectedTemplateId] = useState<string>('');
+  
+  const { templates, incrementUsage } = useTaskTemplates();
 
   const availableAssignees = ['Ahmed Waleh', 'Sarah Martin', 'Jean Dupont', 'Marie Dubois', 'Pierre Moreau'];
   const availableDepartments = ['Développement', 'Marketing', 'Ventes', 'RH', 'Finance', 'Support'];
   const availableProjects = ['Gantt Flow Next', 'Site Web Corporate', 'App Mobile', 'Migration DB', 'Formation'];
+  
+  // Appliquer un template
+  const applyTemplate = (templateId: string) => {
+    const template = templates.find(t => t.id === templateId);
+    if (!template) return;
+    
+    const data = template.template_data;
+    setTitle(data.title);
+    if (data.priority) setPriority(data.priority);
+    if (data.status) setStatus(data.status);
+    if (data.effort_estimate_h) setEffortEstimate(data.effort_estimate_h);
+    
+    // Incrémenter le compteur d'utilisation
+    incrementUsage(templateId);
+  };
 
   const handleSubmit = async () => {
     if (!title.trim()) {
@@ -95,6 +116,37 @@ export const TaskCreationDialog: React.FC<TaskCreationDialogProps> = ({
         </DialogHeader>
 
         <div className="space-y-4">
+          {/* Sélection template */}
+          {templates.length > 0 && (
+            <>
+              <div className="space-y-2">
+                <Label className="flex items-center gap-2">
+                  <Sparkles className="h-4 w-4 text-purple-500" />
+                  Utiliser un template
+                </Label>
+                <div className="flex gap-2">
+                  <Select value={selectedTemplateId} onValueChange={(value) => {
+                    setSelectedTemplateId(value);
+                    applyTemplate(value);
+                  }}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Choisir un template..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {templates.map((template) => (
+                        <SelectItem key={template.id} value={template.id}>
+                          {template.name} {template.usage_count > 0 && `(⭐ ${template.usage_count})`}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <TemplateManagementDialog />
+                </div>
+              </div>
+              <Separator />
+            </>
+          )}
+          
           {/* Titre */}
           <div className="space-y-2">
             <Label htmlFor="title">Titre de la tâche *</Label>

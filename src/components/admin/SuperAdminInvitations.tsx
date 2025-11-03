@@ -167,19 +167,19 @@ export const SuperAdminInvitations: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <UserPlus className="h-5 w-5" />
-            Inviter un Tenant Owner
+          <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+            <UserPlus className="h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0" />
+            <span className="truncate">Inviter un Tenant Owner</span>
           </CardTitle>
-          <CardDescription>
+          <CardDescription className="text-sm">
             Envoyez une invitation pour créer un nouveau tenant avec son propriétaire
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="email">Email *</Label>
               <Input
@@ -209,7 +209,7 @@ export const SuperAdminInvitations: React.FC = () => {
           <Button 
             onClick={sendInvitation}
             disabled={isLoading || !form.email.trim() || !form.fullName.trim()}
-            className="w-full md:w-auto"
+            className="w-full sm:w-auto"
           >
             {isLoading ? (
               <>

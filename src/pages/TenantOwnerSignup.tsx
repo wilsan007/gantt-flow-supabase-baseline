@@ -446,22 +446,22 @@ export const TenantOwnerSignup: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-3 sm:p-4">
       <Card className="w-full max-w-md">
-        <CardHeader className="text-center">
-          <CardTitle className="flex items-center justify-center gap-2 text-2xl">
-            <Building className="h-6 w-6" />
-            Créer votre entreprise
+        <CardHeader className="text-center space-y-2 sm:space-y-3">
+          <CardTitle className="flex items-center justify-center gap-2 text-xl sm:text-2xl">
+            <Building className="h-5 w-5 sm:h-6 sm:w-6 flex-shrink-0" />
+            <span>Créer votre entreprise</span>
           </CardTitle>
-          <CardDescription>
+          <CardDescription className="text-sm">
             Finalisez votre inscription sur Wadashaqeen
           </CardDescription>
         </CardHeader>
         
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-3 sm:space-y-4">
           <Alert>
-            <UserPlus className="h-4 w-4" />
-            <AlertDescription>
+            <UserPlus className="h-4 w-4 flex-shrink-0" />
+            <AlertDescription className="text-sm break-words">
               <strong>Invitation pour :</strong> {invitationData.full_name}<br />
               <strong>Email :</strong> {invitationData.email}
             </AlertDescription>
@@ -592,7 +592,7 @@ export const TenantOwnerSignup: React.FC = () => {
             )}
           </Button>
 
-          <div className="text-center text-sm text-muted-foreground">
+          <div className="text-center text-xs sm:text-sm text-muted-foreground pt-2">
             <p>En créant votre compte, vous acceptez nos conditions d'utilisation</p>
           </div>
         </CardContent>

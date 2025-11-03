@@ -17,6 +17,8 @@ import { TaskEditDialog } from '../dialogs/TaskEditDialog';
 import { TaskCreationDialog } from '../dialogs/TaskCreationDialog';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { ProjectTableView } from '../projects/ProjectTableView';
+import { AdvancedFilters, type TaskFilters } from '@/components/tasks/AdvancedFilters';
+import { useTaskFilters } from '@/hooks/useTaskFilters';
 
 const DynamicTable = () => {
   const { 
@@ -69,6 +71,18 @@ const DynamicTable = () => {
   const [createTaskDialogOpen, setCreateTaskDialogOpen] = useState(false);
   const [viewMode, setViewMode] = useState<'tasks' | 'projects'>(defaultDisplayMode);
   const [optimisticTasks, setOptimisticTasks] = useState<Task[]>([]);
+  const [filters, setFilters] = useState<TaskFilters>({
+    search: '',
+    status: [],
+    priority: [],
+    assignee: [],
+    project: [],
+    dateFrom: '',
+    dateTo: '',
+  });
+  
+  // Appliquer les filtres
+  const { filteredTasks, stats } = useTaskFilters(optimisticTasks, filters);
   
   // Refs pour la synchronisation du scroll
   const fixedColumnsScrollRef = useRef<HTMLDivElement>(null);
@@ -287,7 +301,7 @@ const DynamicTable = () => {
   if (isMobile) {
     return (
       <MobileDynamicTable 
-        tasks={optimisticTasks}
+        tasks={filteredTasks}
         loading={loading}
         error={error}
         duplicateTask={duplicateTask}
@@ -311,6 +325,8 @@ const DynamicTable = () => {
           selectedTaskId={selectedTaskId}
           isActionButtonEnabled={isActionButtonEnabled}
           onCreateTask={() => setCreateTaskDialogOpen(true)}
+          tasks={filteredTasks}
+          filters={filters}
         />
         
         {/* Boutons de basculement Projet/Tâches */}
@@ -329,12 +345,25 @@ const DynamicTable = () => {
             </ToggleGroupItem>
           </ToggleGroup>
         </div>
+        
+        {/* Filtres avancés - uniquement en mode Tâches */}
+        {viewMode === 'tasks' && (
+          <div className="px-6 pb-4">
+            <AdvancedFilters
+              onFiltersChange={setFilters}
+              projects={projects}
+              employees={[]}
+              totalTasks={optimisticTasks.length}
+              filteredCount={filteredTasks.length}
+            />
+          </div>
+        )}
       <CardContent className="bg-gantt-header/20 backdrop-blur-sm">
         {viewMode === 'tasks' ? (
           <ResizablePanelGroup direction="horizontal" className="border rounded-lg border-border/50 overflow-hidden">
             <ResizablePanel defaultSize={60} minSize={40} maxSize={80}>
               <TaskFixedColumns 
-                tasks={optimisticTasks}
+                tasks={filteredTasks}
                 onDuplicate={handleDuplicateTask}
                 onDelete={handleDeleteTask}
                 onEdit={handleEditTask}
@@ -352,7 +381,7 @@ const DynamicTable = () => {
 
             <ResizablePanel defaultSize={40} minSize={20} maxSize={60}>
               <TaskActionColumns 
-                tasks={optimisticTasks}
+                tasks={filteredTasks}
                 onToggleAction={handleToggleAction}
                 selectedTaskId={selectedTaskId}
                 scrollRef={actionColumnsScrollRef}

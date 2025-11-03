@@ -10,6 +10,9 @@ import { GanttLoadingState, GanttErrorState } from '../gantt/GanttStates';
 import { MobileGanttChart } from '../responsive/MobileGanttChart';
 import { useGanttDrag } from '@/hooks/useGanttDrag';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
+import { AdvancedFilters, type TaskFilters } from '@/components/tasks/AdvancedFilters';
+import { useTaskFilters } from '@/hooks/useTaskFilters';
+import { ExportButton } from '@/components/tasks/ExportButton';
 // ✅ NOUVEAUX IMPORTS POUR GESTION D'ERREUR
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
@@ -33,6 +36,15 @@ const GanttChart = () => {
   const { toast } = useToast();
   const [viewMode, setViewMode] = useState<ViewMode>('week');
   const [displayMode, setDisplayMode] = useState<'tasks' | 'projects'>('tasks');
+  const [filters, setFilters] = useState<TaskFilters>({
+    search: '',
+    status: [],
+    priority: [],
+    assignee: [],
+    project: [],
+    dateFrom: '',
+    dateTo: '',
+  });
   // ✅ État pour gérer les erreurs de mise à jour de dates
   const [dateUpdateError, setDateUpdateError] = useState<{
     message: string;
@@ -50,6 +62,9 @@ const GanttChart = () => {
   const { tasks, loading, error, updateTaskDates, refresh } = useTasks();
   const { projects, loading: projectsLoading, error: projectsError } = useProjects();
   const isMobile = useIsMobile();
+  
+  // Appliquer les filtres uniquement en mode tâches
+  const { filteredTasks } = useTaskFilters(tasks, filters);
   const scrollContainerRef = React.useRef<HTMLDivElement>(null);
   const taskListScrollRef = React.useRef<HTMLDivElement>(null);
   const timelineScrollRef = React.useRef<HTMLDivElement>(null);
@@ -64,7 +79,7 @@ const GanttChart = () => {
 
   // ⚡ Calculer la plage de dates AVANT de l'utiliser
   const calculateDateRange = () => {
-    const items = displayMode === 'tasks' ? tasks : projects;
+    const items = displayMode === 'tasks' ? filteredTasks : projects;
     if (items.length === 0) {
       return {
         start: new Date(new Date().getFullYear(), 0, 1),
@@ -298,7 +313,8 @@ const GanttChart = () => {
     };
   };
 
-  const ganttTasks = displayMode === 'tasks' ? tasks.map(getGanttTask) : projects.map(getGanttProject);
+  // Utiliser filteredTasks au lieu de tasks en mode tâches pour appliquer les filtres
+  const ganttTasks = displayMode === 'tasks' ? filteredTasks.map(getGanttTask) : projects.map(getGanttProject);
 
   const {
     draggedTask,
@@ -356,24 +372,47 @@ const GanttChart = () => {
       />
 
       {/* Boutons de basculement Projet/Tâches */}
-      <div className="px-6 pb-4 bg-gantt-header/20">
-        <ToggleGroup
-          type="single"
-          value={displayMode}
-          onValueChange={(value) => value && setDisplayMode(value as 'tasks' | 'projects')}
-          className="justify-start"
-        >
-          <ToggleGroupItem value="tasks" className="data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">
-            📝 Tâches
-          </ToggleGroupItem>
-          <ToggleGroupItem value="projects" className="data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">
-            📁 Projets
-          </ToggleGroupItem>
-        </ToggleGroup>
-        {displayMode === 'projects' && (
-          <p className="text-sm text-muted-foreground mt-2">
-            Vue Gantt des projets - Chaque barre représente la durée complète d'un projet
-          </p>
+      <div className="px-6 pb-4 bg-gantt-header/20 space-y-4">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+          <div className="flex items-center gap-3">
+            <ToggleGroup
+              type="single"
+              value={displayMode}
+              onValueChange={(value) => value && setDisplayMode(value as 'tasks' | 'projects')}
+              className="justify-start"
+            >
+              <ToggleGroupItem value="tasks" className="data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">
+                📝 Tâches
+              </ToggleGroupItem>
+              <ToggleGroupItem value="projects" className="data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">
+                📁 Projets
+              </ToggleGroupItem>
+            </ToggleGroup>
+            {displayMode === 'tasks' && filteredTasks.length > 0 && (
+              <ExportButton 
+                tasks={filteredTasks} 
+                filters={filters}
+                variant="outline"
+                size="sm"
+              />
+            )}
+          </div>
+          {displayMode === 'projects' && (
+            <p className="text-sm text-muted-foreground">
+              Vue Gantt des projets - Chaque barre représente la durée complète d'un projet
+            </p>
+          )}
+        </div>
+        
+        {/* Filtres avancés - uniquement en mode Tâches */}
+        {displayMode === 'tasks' && (
+          <AdvancedFilters
+            onFiltersChange={setFilters}
+            projects={projects}
+            employees={[]}
+            totalTasks={tasks.length}
+            filteredCount={filteredTasks.length}
+          />
         )}
       </div>
       

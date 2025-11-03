@@ -10,6 +10,9 @@ import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Progress } from '@/components/ui/progress';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
+import { AdvancedFilters, type TaskFilters } from '@/components/tasks/AdvancedFilters';
+import { useTaskFilters } from '@/hooks/useTaskFilters';
+import { ExportButton } from '@/components/tasks/ExportButton';
 import {
   DndContext,
   DragEndEvent,
@@ -161,6 +164,18 @@ export default function KanbanBoard() {
   const [activeTask, setActiveTask] = useState<Task | null>(null);
   const [displayMode, setDisplayMode] = useState<'tasks' | 'projects'>('tasks');
   const isMobile = useIsMobile();
+  const [filters, setFilters] = useState<TaskFilters>({
+    search: '',
+    status: [],
+    priority: [],
+    assignee: [],
+    project: [],
+    dateFrom: '',
+    dateTo: '',
+  });
+  
+  // Appliquer les filtres uniquement en mode tâches
+  const { filteredTasks } = useTaskFilters(tasks, filters);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -222,7 +237,8 @@ export default function KanbanBoard() {
   }
 
   const columns = displayMode === 'tasks' ? TASK_COLUMNS : PROJECT_COLUMNS;
-  const items = displayMode === 'tasks' ? tasks : projects;
+  // Utiliser filteredTasks au lieu de tasks en mode tâches
+  const items = displayMode === 'tasks' ? filteredTasks : projects;
   
   const itemsByStatus = columns.map(column => ({
     ...column,
@@ -232,26 +248,47 @@ export default function KanbanBoard() {
   return (
     <div className="space-y-4">
       {/* Boutons de basculement Projet/Tâches */}
-      <div className="flex justify-between items-center">
-        <ToggleGroup 
-          type="single" 
-          value={displayMode} 
-          onValueChange={(value) => value && setDisplayMode(value as 'tasks' | 'projects')}
-          className="justify-start"
-        >
-          <ToggleGroupItem value="tasks" className="data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">
-            📝 Tâches
-          </ToggleGroupItem>
-          <ToggleGroupItem value="projects" className="data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">
-            📁 Projets
-          </ToggleGroupItem>
-        </ToggleGroup>
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+        <div className="flex items-center gap-3">
+          <ToggleGroup 
+            type="single" 
+            value={displayMode} 
+            onValueChange={(value) => value && setDisplayMode(value as 'tasks' | 'projects')}
+            className="justify-start"
+          >
+            <ToggleGroupItem value="tasks" className="data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">
+              📝 Tâches
+            </ToggleGroupItem>
+            <ToggleGroupItem value="projects" className="data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">
+              📁 Projets
+            </ToggleGroupItem>
+          </ToggleGroup>
+          {displayMode === 'tasks' && filteredTasks.length > 0 && (
+            <ExportButton 
+              tasks={filteredTasks} 
+              filters={filters}
+              variant="outline"
+              size="sm"
+            />
+          )}
+        </div>
         {displayMode === 'projects' && (
           <p className="text-sm text-muted-foreground">
             Vue Kanban des projets par statut
           </p>
         )}
       </div>
+      
+      {/* Filtres avancés - uniquement en mode Tâches */}
+      {displayMode === 'tasks' && (
+        <AdvancedFilters
+          onFiltersChange={setFilters}
+          projects={projects}
+          employees={[]}
+          totalTasks={tasks.length}
+          filteredCount={filteredTasks.length}
+        />
+      )}
 
       <DndContext
         sensors={sensors}

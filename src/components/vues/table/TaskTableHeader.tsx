@@ -3,6 +3,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Plus, Target } from 'lucide-react';
 import { ActionCreationDialog } from './ActionCreationDialog';
+import { ExportButton } from '@/components/tasks/ExportButton';
+import { Task } from '@/hooks/optimized';
+import { TaskFilters } from '@/components/tasks/AdvancedFilters';
 
 interface TaskTableHeaderProps {
   newActionTitle: string;
@@ -17,6 +20,8 @@ interface TaskTableHeaderProps {
   selectedTaskId?: string;
   isActionButtonEnabled: boolean;
   onCreateTask?: () => void;
+  tasks?: Task[];
+  filters?: TaskFilters;
 }
 
 export const TaskTableHeader = ({ 
@@ -26,7 +31,9 @@ export const TaskTableHeader = ({
   onCreateDetailedAction,
   selectedTaskId,
   isActionButtonEnabled,
-  onCreateTask
+  onCreateTask,
+  tasks = [],
+  filters
 }: TaskTableHeaderProps) => (
   <CardHeader>
     <div className="flex justify-between items-center">
@@ -45,6 +52,14 @@ export const TaskTableHeader = ({
             <Plus className="h-4 w-4 mr-2" />
             Nouvelle Tâche
           </Button>
+        )}
+        {tasks.length > 0 && (
+          <ExportButton 
+            tasks={tasks} 
+            filters={filters}
+            variant="outline"
+            size="sm"
+          />
         )}
         {selectedTaskId && (
           <div className="text-sm text-muted-foreground self-center">

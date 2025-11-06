@@ -70,7 +70,7 @@ serve(async (req) => {
 
     // Génération des éléments
     const futureTenantId = crypto.randomUUID();
-    const tempPassword = Math.random().toString(36).slice(-8) + Math.random().toString(36).slice(-4).toUpperCase() + '1!';
+    const tempPassword = generateSecurePassword();
     const invitationTimestamp = new Date().toISOString();
     const invitationId = crypto.randomUUID();
     const validationCode = Math.random().toString(36).substring(2, 15);

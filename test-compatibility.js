@@ -6,6 +6,7 @@
  */
 
 import { config } from 'dotenv';
+import crypto from 'crypto';
 
 config();
 
@@ -28,9 +29,13 @@ async function testCompatibility() {
     
     // Simuler les 10 éléments générés par send-invitation
     const futureTenantId = crypto.randomUUID();
-    const tempPassword = Math.random().toString(36).slice(-8) + Math.random().toString(36).slice(-4).toUpperCase() + '1!';
+    // Securely generate a random password: 8 lowecase alphanum + 4 uppercase alphanum + '1!'
+    const tempPassword = crypto.randomBytes(8).toString('base64').replace(/[^a-z0-9]/gi, '').slice(0,8)
+      + crypto.randomBytes(4).toString('base64').replace(/[^A-Z0-9]/g, '').slice(0,4)
+      + '1!';
     const invitationId = crypto.randomUUID();
-    const validationCode = Math.random().toString(36).substring(2, 15);
+    // Securely generate a validation code: 13 alphanumeric chars
+    const validationCode = crypto.randomBytes(10).toString('base64').replace(/[^a-zA-Z0-9]/g,'').slice(0,13);
     const createdTimestamp = new Date().toISOString();
 
     const sendInvitationElements = {

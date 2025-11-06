@@ -11,6 +11,14 @@ node_modules
 dist
 dist-ssr
 *.local
+.vite
+.tsbuildinfo
+*.backup.json
+*.backup.ts
+
+# Test coverage
+coverage
+*.lcov
 
 # Editor directories and files
 .vscode/*

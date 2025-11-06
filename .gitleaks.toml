@@ -1,0 +1,55 @@
+# Configuration Gitleaks pour détecter les secrets
+title = "Gitleaks Configuration - Wadashaqeen SaaS"
+
+[extend]
+# Utilise la configuration par défaut de gitleaks
+useDefault = true
+
+[[rules]]
+id = "supabase-anon-key"
+description = "Supabase Anon Key"
+regex = '''eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+'''
+tags = ["key", "supabase"]
+
+[[rules]]
+id = "supabase-service-key"
+description = "Supabase Service Role Key"
+regex = '''eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+'''
+tags = ["key", "supabase", "critical"]
+
+[[rules]]
+id = "generic-api-key"
+description = "Generic API Key"
+regex = '''(?i)(['"]?)(api[_-]?key|apikey|api_secret|apisecret)(['"]?\s*[=:]\s*)(['"]?)([a-zA-Z0-9_\-]{20,})(['"]?)'''
+tags = ["api", "key"]
+
+[[rules]]
+id = "resend-api-key"
+description = "Resend API Key"
+regex = '''re_[a-zA-Z0-9]{32,}'''
+tags = ["api", "key", "resend"]
+
+# Allowlist pour ignorer certains fichiers/patterns
+[allowlist]
+description = "Fichiers à ignorer"
+paths = [
+  '''\.env\.example$''',
+  '''\.env\.template$''',
+  '''README\.md$''',
+  '''docs/.*\.md$''',
+  '''\.github/.*\.md$'''
+]
+
+regexes = [
+  # Ignorer les exemples dans la documentation
+  '''example_[a-zA-Z0-9_]+''',
+  '''EXAMPLE_[A-zA-Z0-9_]+''',
+  # Ignorer les placeholders
+  '''your[-_]api[-_]key[-_]here''',
+  '''YOUR[-_]API[-_]KEY''',
+  # Ignorer les clés de test/demo
+  '''test_[a-zA-Z0-9]+''',
+  '''TEST_[A-zA-Z0-9]+''',
+  '''demo_[a-zA-Z0-9]+''',
+  '''DEMO_[A-zA-Z0-9]+'''
+]

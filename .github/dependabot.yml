@@ -1,0 +1,55 @@
+version: 2
+updates:
+  # Dépendances npm
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+    open-pull-requests-limit: 10
+    reviewers:
+      - "YOUR_GITHUB_USERNAME"
+    assignees:
+      - "YOUR_GITHUB_USERNAME"
+    commit-message:
+      prefix: "chore(deps)"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "automated"
+    # Grouper les mises à jour mineures
+    groups:
+      dev-dependencies:
+        patterns:
+          - "@types/*"
+          - "eslint*"
+          - "prettier*"
+          - "vite*"
+          - "vitest*"
+          - "@vitest/*"
+      radix-ui:
+        patterns:
+          - "@radix-ui/*"
+      testing:
+        patterns:
+          - "@testing-library/*"
+          - "@playwright/*"
+    # Ignorer certaines dépendances si nécessaire
+    ignore:
+      # Exemple: ignorer une version spécifique
+      # - dependency-name: "react"
+      #   versions: ["19.x"]
+
+  # GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+    commit-message:
+      prefix: "ci"
+    labels:
+      - "ci/cd"
+      - "automated"

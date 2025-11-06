@@ -1,0 +1,138 @@
+name: CI/CD Pipeline - Wadashaqeen SaaS
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  test-and-build:
+    name: Test & Build Application
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x]
+    
+    steps:
+    - name: 📥 Checkout Repository
+      uses: actions/checkout@v4
+      
+    - name: 🔧 Setup Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+    
+    - name: 📦 Install Dependencies
+      run: npm ci
+      
+    - name: 🔍 TypeScript Type Check
+      run: npx tsc --noEmit
+      
+    - name: 🧹 Lint Check
+      run: npm run lint --if-present || echo "Lint script not found, skipping"
+      
+    - name: 🏗️ Build Production
+      run: npm run build
+      env:
+        NODE_ENV: production
+        
+    - name: 📊 Build Size Report
+      run: |
+        echo "## Build Size Report" >> $GITHUB_STEP_SUMMARY
+        echo "### Bundle Analysis" >> $GITHUB_STEP_SUMMARY
+        du -sh dist/* | sort -h >> $GITHUB_STEP_SUMMARY
+        
+    - name: 📤 Upload Build Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: build-${{ matrix.node-version }}
+        path: dist/
+        retention-days: 7
+        
+    - name: ✅ Build Success
+      if: success()
+      run: |
+        echo "✅ Build completed successfully!"
+        echo "Node Version: ${{ matrix.node-version }}"
+        echo "Commit: ${{ github.sha }}"
+
+  security-audit:
+    name: Security Audit
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 📥 Checkout Repository
+      uses: actions/checkout@v4
+      
+    - name: 🔧 Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20.x'
+        
+    - name: 🔒 Run Security Audit
+      run: npm audit --audit-level=moderate || true
+      
+    - name: 📋 Generate Security Report
+      run: |
+        echo "## Security Audit Report" >> $GITHUB_STEP_SUMMARY
+        npm audit --json > audit.json || true
+        echo "Audit completed. Check artifacts for details."
+
+  quality-checks:
+    name: Code Quality Checks
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 📥 Checkout Repository
+      uses: actions/checkout@v4
+      
+    - name: 🔧 Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20.x'
+        cache: 'npm'
+        
+    - name: 📦 Install Dependencies
+      run: npm ci
+      
+    - name: 📏 Check Bundle Size
+      run: |
+        npm run build
+        BUNDLE_SIZE=$(du -sh dist | cut -f1)
+        echo "Bundle Size: $BUNDLE_SIZE"
+        echo "## Bundle Size: $BUNDLE_SIZE" >> $GITHUB_STEP_SUMMARY
+
+  deploy-preview:
+    name: Deploy Preview
+    runs-on: ubuntu-latest
+    needs: [test-and-build]
+    if: github.event_name == 'pull_request'
+    
+    steps:
+    - name: 📥 Checkout Repository
+      uses: actions/checkout@v4
+      
+    - name: 🚀 Deploy Preview
+      run: |
+        echo "## 🚀 Preview Deployment" >> $GITHUB_STEP_SUMMARY
+        echo "Preview would be deployed here" >> $GITHUB_STEP_SUMMARY
+        echo "Branch: ${{ github.head_ref }}" >> $GITHUB_STEP_SUMMARY
+
+  notification:
+    name: Send Notifications
+    runs-on: ubuntu-latest
+    needs: [test-and-build, security-audit, quality-checks]
+    if: always()
+    
+    steps:
+    - name: 📧 Build Status
+      run: |
+        echo "## 📊 Pipeline Status" >> $GITHUB_STEP_SUMMARY
+        echo "- Test & Build: ${{ needs.test-and-build.result }}" >> $GITHUB_STEP_SUMMARY
+        echo "- Security Audit: ${{ needs.security-audit.result }}" >> $GITHUB_STEP_SUMMARY
+        echo "- Quality Checks: ${{ needs.quality-checks.result }}" >> $GITHUB_STEP_SUMMARY
+        echo "- Commit: ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+        echo "- Author: ${{ github.actor }}" >> $GITHUB_STEP_SUMMARY

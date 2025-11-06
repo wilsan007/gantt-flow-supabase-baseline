@@ -1,0 +1,8 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+# Lint et format des fichiers stagés
+npx lint-staged
+
+# Type check (rapide car utilise cache)
+npm run type-check

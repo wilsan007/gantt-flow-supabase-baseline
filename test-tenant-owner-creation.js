@@ -4,6 +4,7 @@
  */
 
 import { createClient } from '@supabase/supabase-js';
+import crypto from 'crypto';
 
 // Configuration Supabase
 const SUPABASE_URL = 'https://qliinxtanjdnwxlvnxji.supabase.co';
@@ -112,8 +113,9 @@ async function createAndConfirmUser() {
   console.log('\n👤 Création de l\'utilisateur...');
   
   try {
-    // Générer un mot de passe temporaire
-    const tempPassword = Math.random().toString(36).slice(-8) + 'A1!';
+    // Générer un mot de passe temporaire (utilisation de randomBytes pour sécurité)
+    const tempPassword =
+      crypto.randomBytes(6).toString('base64').replace(/[^a-zA-Z0-9]/g, '').slice(0, 8) + 'A1!';
     
     // Créer l'utilisateur
     const { data: userData, error: userError } = await supabase.auth.admin.createUser({

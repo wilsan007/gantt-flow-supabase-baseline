@@ -1,0 +1,113 @@
+name: Deploy to Hostinger
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  # Job 1: Tests et Build
+  test-and-build:
+    name: 🧪 Tests & Build
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 📥 Checkout Code
+      uses: actions/checkout@v4
+    
+    - name: 🔧 Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20.x'
+        cache: 'npm'
+    
+    - name: 📦 Install Dependencies
+      run: npm ci
+    
+    - name: 🧪 Run Tests
+      run: npm run test -- --run
+      continue-on-error: false
+    
+    - name: 🔍 ESLint Check
+      run: npm run lint || echo "::warning::ESLint warnings found"
+    
+    - name: 🏗️ Build Application
+      run: npm run build
+      env:
+        NODE_ENV: production
+    
+    - name: 📊 Build Summary
+      run: |
+        echo "## 🎉 Build Successful" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "**Branch:** ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
+        echo "**Commit:** ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+        echo "**Build Time:** $(date)" >> $GITHUB_STEP_SUMMARY
+        
+        if [ -d "dist" ]; then
+          BUILD_SIZE=$(du -sh dist | cut -f1)
+          echo "**Build Size:** $BUILD_SIZE" >> $GITHUB_STEP_SUMMARY
+        fi
+    
+    - name: 📤 Upload Build Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: production-build
+        path: dist/
+        retention-days: 7
+
+  # Job 2: Déploiement vers Hostinger
+  deploy-hostinger:
+    name: 🚀 Deploy to Hostinger
+    needs: test-and-build
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 📥 Download Build Artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: production-build
+        path: dist/
+    
+    - name: 📋 List Build Files
+      run: |
+        echo "📁 Fichiers à déployer:"
+        ls -lah dist/
+    
+    - name: 🚀 Deploy via FTP
+      uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+      with:
+        server: ${{ secrets.HOSTINGER_FTP_SERVER }}
+        username: ${{ secrets.HOSTINGER_FTP_USERNAME }}
+        password: ${{ secrets.HOSTINGER_FTP_PASSWORD }}
+        local-dir: ./dist/
+        server-dir: ${{ secrets.HOSTINGER_FTP_PATH }}
+        exclude: |
+          **/.git*
+          **/.git*/**
+          **/node_modules/**
+          **/.vscode/**
+        dangerous-clean-slate: false
+    
+    - name: ✅ Deployment Summary
+      run: |
+        echo "## 🎉 Deployment Successful" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "**Environment:** Production (Hostinger)" >> $GITHUB_STEP_SUMMARY
+        echo "**Deployed At:** $(date)" >> $GITHUB_STEP_SUMMARY
+        echo "**URL:** https://votre-domaine.com" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "🔗 [Visiter le site](https://votre-domaine.com)" >> $GITHUB_STEP_SUMMARY
+
+  # Job 3: Notification de succès
+  notify-success:
+    name: 📢 Notification
+    needs: deploy-hostinger
+    runs-on: ubuntu-latest
+    if: success()
+    
+    steps:
+    - name: 🎉 Success Message
+      run: |
+        echo "✅ Déploiement réussi sur Hostinger!"
+        echo "🌐 Votre application est maintenant en ligne"

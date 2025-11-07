@@ -853,9 +853,7 @@ serve(async (req)=>{
           }
         };
         
-        console.error('📦 RÉPONSE D\'ERREUR ENVOYÉE:');
-        console.error(JSON.stringify(errorResponse, null, 2));
-        console.error('');
+        console.error('📦 RÉPONSE D\'ERREUR ENVOYÉE (données sensibles masquées)');
         console.error('💥 ===== FIN DU PROCESSUS EN ÉCHEC =====');
         console.error('');
         

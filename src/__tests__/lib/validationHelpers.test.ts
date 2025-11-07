@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect } from 'vitest';
 
 // Tests pour les helpers de validation
@@ -8,7 +9,7 @@ describe('Validation Helpers', () => {
         const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return regex.test(email);
       };
-      
+
       expect(isValidEmail('user@example.com')).toBe(true);
       expect(isValidEmail('test.user@company.co.uk')).toBe(true);
       expect(isValidEmail('invalid-email')).toBe(false);
@@ -20,7 +21,7 @@ describe('Validation Helpers', () => {
       const isValidEmailLength = (email: string) => {
         return email.length >= 5 && email.length <= 255;
       };
-      
+
       expect(isValidEmailLength('a@b.c')).toBe(true);
       expect(isValidEmailLength('ab')).toBe(false);
       expect(isValidEmailLength('a'.repeat(256))).toBe(false);
@@ -32,7 +33,7 @@ describe('Validation Helpers', () => {
       const isValidPasswordLength = (password: string) => {
         return password.length >= 8 && password.length <= 128;
       };
-      
+
       expect(isValidPasswordLength('Password123!')).toBe(true);
       expect(isValidPasswordLength('Short1!')).toBe(false);
       expect(isValidPasswordLength('a'.repeat(129))).toBe(false);
@@ -44,10 +45,10 @@ describe('Validation Helpers', () => {
         const hasLowerCase = /[a-z]/.test(password);
         const hasNumber = /[0-9]/.test(password);
         const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
-        
+
         return hasUpperCase && hasLowerCase && hasNumber && hasSpecialChar;
       };
-      
+
       expect(isStrongPassword('Password123!')).toBe(true);
       expect(isStrongPassword('password123')).toBe(false); // No uppercase
       expect(isStrongPassword('PASSWORD123')).toBe(false); // No lowercase
@@ -59,7 +60,7 @@ describe('Validation Helpers', () => {
       const passwordsMatch = (password: string, confirmation: string) => {
         return password === confirmation;
       };
-      
+
       expect(passwordsMatch('Password123!', 'Password123!')).toBe(true);
       expect(passwordsMatch('Password123!', 'Different123!')).toBe(false);
     });
@@ -68,11 +69,11 @@ describe('Validation Helpers', () => {
   describe('Phone Number Validation', () => {
     it('should validate phone number format', () => {
       const isValidPhoneNumber = (phone: string) => {
-        const cleaned = phone.replace(/[\s\-\(\)]/g, '');
-        const regex = /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/;
+        const cleaned = phone.replace(/[\s\-()]/g, '');
+        const regex = /^[+]?[(]?[0-9]{3}[)]?[-\s.]?[0-9]{3}[-\s.]?[0-9]{4,6}$/;
         return regex.test(cleaned) && cleaned.length >= 10;
       };
-      
+
       expect(isValidPhoneNumber('+33612345678')).toBe(true);
       expect(isValidPhoneNumber('0612345678')).toBe(true);
       expect(isValidPhoneNumber('invalid')).toBe(false);
@@ -82,7 +83,7 @@ describe('Validation Helpers', () => {
       const isInternationalPhone = (phone: string) => {
         return phone.startsWith('+');
       };
-      
+
       expect(isInternationalPhone('+33612345678')).toBe(true);
       expect(isInternationalPhone('0612345678')).toBe(false);
     });
@@ -98,7 +99,7 @@ describe('Validation Helpers', () => {
           return false;
         }
       };
-      
+
       expect(isValidURL('https://example.com')).toBe(true);
       expect(isValidURL('http://localhost:3000')).toBe(true);
       expect(isValidURL('not-a-url')).toBe(false);
@@ -113,7 +114,7 @@ describe('Validation Helpers', () => {
           return false;
         }
       };
-      
+
       expect(isHTTPS('https://example.com')).toBe(true);
       expect(isHTTPS('http://example.com')).toBe(false);
     });
@@ -124,7 +125,7 @@ describe('Validation Helpers', () => {
       const isAlphanumeric = (str: string) => {
         return /^[a-zA-Z0-9]+$/.test(str);
       };
-      
+
       expect(isAlphanumeric('abc123')).toBe(true);
       expect(isAlphanumeric('ABC123')).toBe(true);
       expect(isAlphanumeric('abc-123')).toBe(false);
@@ -135,7 +136,7 @@ describe('Validation Helpers', () => {
       const isNonEmpty = (str: string | undefined | null) => {
         return Boolean(str && str.trim().length > 0);
       };
-      
+
       expect(isNonEmpty('test')).toBe(true);
       expect(isNonEmpty('   ')).toBe(false);
       expect(isNonEmpty('')).toBe(false);
@@ -148,7 +149,7 @@ describe('Validation Helpers', () => {
         const length = str.trim().length;
         return length >= min && length <= max;
       };
-      
+
       expect(isValidLength('test', 2, 10)).toBe(true);
       expect(isValidLength('a', 2, 10)).toBe(false);
       expect(isValidLength('too long string', 2, 10)).toBe(false);
@@ -158,7 +159,7 @@ describe('Validation Helpers', () => {
       const hasNoSpecialChars = (str: string) => {
         return /^[a-zA-Z0-9\s]+$/.test(str);
       };
-      
+
       expect(hasNoSpecialChars('Hello World 123')).toBe(true);
       expect(hasNoSpecialChars('Hello@World')).toBe(false);
     });
@@ -169,7 +170,7 @@ describe('Validation Helpers', () => {
       const isPositive = (num: number) => {
         return num > 0;
       };
-      
+
       expect(isPositive(5)).toBe(true);
       expect(isPositive(0)).toBe(false);
       expect(isPositive(-5)).toBe(false);
@@ -179,7 +180,7 @@ describe('Validation Helpers', () => {
       const isInRange = (num: number, min: number, max: number) => {
         return num >= min && num <= max;
       };
-      
+
       expect(isInRange(50, 0, 100)).toBe(true);
       expect(isInRange(0, 0, 100)).toBe(true);
       expect(isInRange(100, 0, 100)).toBe(true);
@@ -190,7 +191,7 @@ describe('Validation Helpers', () => {
       const isInteger = (num: number) => {
         return Number.isInteger(num);
       };
-      
+
       expect(isInteger(5)).toBe(true);
       expect(isInteger(5.5)).toBe(false);
     });
@@ -199,7 +200,7 @@ describe('Validation Helpers', () => {
       const isValidPercentage = (num: number) => {
         return num >= 0 && num <= 100;
       };
-      
+
       expect(isValidPercentage(50)).toBe(true);
       expect(isValidPercentage(0)).toBe(true);
       expect(isValidPercentage(100)).toBe(true);
@@ -214,7 +215,7 @@ describe('Validation Helpers', () => {
         const maxSizeBytes = maxSizeMB * 1024 * 1024;
         return sizeInBytes <= maxSizeBytes;
       };
-      
+
       expect(isValidFileSize(1024 * 1024, 5)).toBe(true); // 1MB < 5MB
       expect(isValidFileSize(10 * 1024 * 1024, 5)).toBe(false); // 10MB > 5MB
     });
@@ -224,7 +225,7 @@ describe('Validation Helpers', () => {
         const ext = filename.split('.').pop()?.toLowerCase();
         return ext ? allowedExtensions.includes(ext) : false;
       };
-      
+
       expect(isValidFileExtension('document.pdf', ['pdf', 'doc'])).toBe(true);
       expect(isValidFileExtension('image.jpg', ['pdf', 'doc'])).toBe(false);
     });
@@ -235,7 +236,7 @@ describe('Validation Helpers', () => {
         const imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'];
         return ext ? imageExtensions.includes(ext) : false;
       };
-      
+
       expect(isImageFile('photo.jpg')).toBe(true);
       expect(isImageFile('photo.png')).toBe(true);
       expect(isImageFile('document.pdf')).toBe(false);
@@ -246,20 +247,20 @@ describe('Validation Helpers', () => {
     it('should validate required fields', () => {
       const validateRequiredFields = (data: Record<string, any>, requiredFields: string[]) => {
         const missing: string[] = [];
-        
+
         requiredFields.forEach(field => {
           if (!data[field] || (typeof data[field] === 'string' && !data[field].trim())) {
             missing.push(field);
           }
         });
-        
+
         return { isValid: missing.length === 0, missing };
       };
-      
+
       const data = { name: 'John', email: 'john@example.com' };
       const result1 = validateRequiredFields(data, ['name', 'email']);
       const result2 = validateRequiredFields(data, ['name', 'email', 'phone']);
-      
+
       expect(result1.isValid).toBe(true);
       expect(result2.isValid).toBe(false);
       expect(result2.missing).toContain('phone');
@@ -268,15 +269,15 @@ describe('Validation Helpers', () => {
     it('should validate email in form', () => {
       const validateEmailField = (email: string) => {
         if (!email) return { valid: false, error: 'Email requis' };
-        
+
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(email)) {
           return { valid: false, error: 'Format email invalide' };
         }
-        
+
         return { valid: true, error: null };
       };
-      
+
       expect(validateEmailField('test@example.com').valid).toBe(true);
       expect(validateEmailField('invalid').valid).toBe(false);
       expect(validateEmailField('').valid).toBe(false);
@@ -289,31 +290,31 @@ describe('Validation Helpers', () => {
         const today = new Date();
         let age = today.getFullYear() - birthdate.getFullYear();
         const monthDiff = today.getMonth() - birthdate.getMonth();
-        
+
         if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthdate.getDate())) {
           age--;
         }
-        
+
         return age >= minimumAge;
       };
-      
+
       const eighteenYearsAgo = new Date();
       eighteenYearsAgo.setFullYear(eighteenYearsAgo.getFullYear() - 18);
-      
+
       const tenYearsAgo = new Date();
       tenYearsAgo.setFullYear(tenYearsAgo.getFullYear() - 10);
-      
+
       expect(meetsMinimumAge(eighteenYearsAgo, 18)).toBe(true);
       expect(meetsMinimumAge(tenYearsAgo, 18)).toBe(false);
     });
 
     it('should validate unique username', () => {
       const existingUsernames = ['user1', 'user2', 'admin'];
-      
+
       const isUsernameAvailable = (username: string) => {
         return !existingUsernames.includes(username.toLowerCase());
       };
-      
+
       expect(isUsernameAvailable('newuser')).toBe(true);
       expect(isUsernameAvailable('user1')).toBe(false);
       expect(isUsernameAvailable('USER1')).toBe(false);
@@ -323,7 +324,7 @@ describe('Validation Helpers', () => {
       const isValidWorkingHours = (hours: number) => {
         return hours >= 0 && hours <= 24 && hours % 0.5 === 0;
       };
-      
+
       expect(isValidWorkingHours(8)).toBe(true);
       expect(isValidWorkingHours(7.5)).toBe(true);
       expect(isValidWorkingHours(7.3)).toBe(false);

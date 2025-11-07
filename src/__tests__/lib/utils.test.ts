@@ -1,3 +1,4 @@
+/* eslint-disable no-constant-binary-expression */
 import { describe, it, expect } from 'vitest';
 import { cn } from '@/lib/utils';
 
@@ -40,9 +41,9 @@ describe('Utils Library', () => {
 
     it('should handle objects with boolean values', () => {
       const result = cn({
-        'class1': true,
-        'class2': false,
-        'class3': true
+        class1: true,
+        class2: false,
+        class3: true,
       });
       expect(result).toContain('class1');
       expect(result).not.toContain('class2');

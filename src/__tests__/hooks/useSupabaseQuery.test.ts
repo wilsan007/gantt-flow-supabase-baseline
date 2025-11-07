@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -27,10 +28,7 @@ describe('Supabase Query Hooks', () => {
 
       vi.mocked(supabase.from).mockReturnValue(mockQuery as any);
 
-      const { data, error } = await supabase
-        .from('tasks')
-        .select('*')
-        .eq('status', 'active');
+      const { data, error } = await supabase.from('tasks').select('*').eq('status', 'active');
 
       expect(data).toEqual(mockData);
       expect(error).toBeNull();
@@ -47,10 +45,7 @@ describe('Supabase Query Hooks', () => {
 
       vi.mocked(supabase.from).mockReturnValue(mockQuery as any);
 
-      const { data, error } = await supabase
-        .from('tasks')
-        .select('*')
-        .eq('status', 'active');
+      const { data, error } = await supabase.from('tasks').select('*').eq('status', 'active');
 
       expect(data).toBeNull();
       expect(error).toEqual(mockError);
@@ -130,10 +125,7 @@ describe('Supabase Query Hooks', () => {
 
       vi.mocked(supabase.from).mockReturnValue(mockQuery as any);
 
-      const { data, error } = await supabase
-        .from('tasks')
-        .delete()
-        .eq('id', '1');
+      const { data, error } = await supabase.from('tasks').delete().eq('id', '1');
 
       expect(error).toBeNull();
     });
@@ -167,9 +159,7 @@ describe('Supabase Query Hooks', () => {
 
   describe('RLS (Row Level Security)', () => {
     it('should respect tenant isolation', async () => {
-      const mockData = [
-        { id: '1', tenant_id: 'tenant-1', name: 'Item 1' },
-      ];
+      const mockData = [{ id: '1', tenant_id: 'tenant-1', name: 'Item 1' }];
 
       const mockQuery = {
         select: vi.fn().mockReturnThis(),
@@ -179,10 +169,7 @@ describe('Supabase Query Hooks', () => {
       vi.mocked(supabase.from).mockReturnValue(mockQuery as any);
 
       // Simuler query avec tenant_id
-      const { data, error } = await supabase
-        .from('tasks')
-        .select('*')
-        .eq('tenant_id', 'tenant-1');
+      const { data, error } = await supabase.from('tasks').select('*').eq('tenant_id', 'tenant-1');
 
       expect(data).toEqual(mockData);
       expect(mockQuery.eq).toHaveBeenCalledWith('tenant_id', 'tenant-1');

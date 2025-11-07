@@ -167,14 +167,14 @@ export const TaskDetailsDialog = ({ open, onOpenChange, task }: TaskDetailsDialo
                   {taskDetails?.description && (
                     <div>
                       <h4 className="mb-2 font-medium">Description</h4>
-                      <p className="rounded-lg bg-muted p-3 text-sm">{taskDetails.description}</p>
+                      <p className="rounded-lg bg-muted p-3 text-sm">{taskDetails?.description}</p>
                     </div>
                   )}
                   {taskDetails?.acceptance_criteria && (
                     <div>
                       <h4 className="mb-2 font-medium">Critères d'acceptation</h4>
                       <p className="rounded-lg bg-muted p-3 text-sm">
-                        {taskDetails.acceptance_criteria}
+                        {taskDetails?.acceptance_criteria}
                       </p>
                     </div>
                   )}

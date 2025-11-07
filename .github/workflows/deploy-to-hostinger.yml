@@ -1,0 +1,114 @@
+name: 🚀 Deploy to Hostinger
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: # Permet déclenchement manuel
+
+# Variables d'environnement
+env:
+  NODE_VERSION: '20.x'
+
+jobs:
+  deploy:
+    name: 🚀 Build & Deploy
+    runs-on: ubuntu-latest
+    
+    steps:
+      # 1. Récupérer le code
+      - name: 📥 Checkout Code
+        uses: actions/checkout@v4
+      
+      # 2. Configurer Node.js
+      - name: 🔧 Setup Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+      
+      # 3. Installer les dépendances
+      - name: 📦 Install Dependencies
+        run: npm ci --legacy-peer-deps
+      
+      # 4. Build (NON BLOQUANT si erreur)
+      - name: 🏗️ Build Application
+        run: npm run build
+        continue-on-error: false
+        env:
+          NODE_ENV: production
+          CI: false # Ignore warnings dans le build
+      
+      # 5. Vérifier le build
+      - name: 📊 Build Info
+        run: |
+          echo "## 🎉 Build Successful" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Métrique | Valeur |" >> $GITHUB_STEP_SUMMARY
+          echo "|----------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| **Branch** | \`${{ github.ref_name }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Commit** | \`${{ github.sha }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Date** | $(date +'%Y-%m-%d %H:%M:%S') |" >> $GITHUB_STEP_SUMMARY
+          
+          if [ -d "dist" ]; then
+            BUILD_SIZE=$(du -sh dist | cut -f1)
+            FILE_COUNT=$(find dist -type f | wc -l)
+            echo "| **Build Size** | $BUILD_SIZE |" >> $GITHUB_STEP_SUMMARY
+            echo "| **Files** | $FILE_COUNT |" >> $GITHUB_STEP_SUMMARY
+            
+            echo ""
+            echo "📁 **Fichiers principaux:**"
+            ls -lh dist/ | head -20
+          else
+            echo "❌ Erreur: dossier dist/ introuvable"
+            exit 1
+          fi
+      
+      # 6. Déployer vers Hostinger via FTP
+      - name: 🚀 Deploy to Hostinger (FTP)
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: ./dist/
+          server-dir: ${{ secrets.FTP_REMOTE_DIR }}
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/node_modules/**
+            **/.vscode/**
+            **/.DS_Store
+            **/Thumbs.db
+          dangerous-clean-slate: false
+          log-level: standard
+      
+      # 7. Résumé du déploiement
+      - name: ✅ Deployment Summary
+        run: |
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "---" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## 🎉 Deployment Successful!" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "✅ **Status:** Deployed to Production" >> $GITHUB_STEP_SUMMARY
+          echo "🌐 **Server:** Hostinger" >> $GITHUB_STEP_SUMMARY
+          echo "📅 **Deployed At:** $(date +'%Y-%m-%d %H:%M:%S UTC')" >> $GITHUB_STEP_SUMMARY
+          echo "👤 **Deployed By:** ${{ github.actor }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 🔗 Next Steps:" >> $GITHUB_STEP_SUMMARY
+          echo "1. Visitez votre site sur Hostinger" >> $GITHUB_STEP_SUMMARY
+          echo "2. Vérifiez que tout fonctionne correctement" >> $GITHUB_STEP_SUMMARY
+          echo "3. Testez les fonctionnalités principales" >> $GITHUB_STEP_SUMMARY
+      
+      # 8. Notification en cas d'échec
+      - name: ❌ Failure Notification
+        if: failure()
+        run: |
+          echo "## ❌ Deployment Failed" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Le déploiement a échoué. Vérifiez les logs ci-dessus." >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Causes possibles:" >> $GITHUB_STEP_SUMMARY
+          echo "- Erreur de build" >> $GITHUB_STEP_SUMMARY
+          echo "- Erreur de connexion FTP" >> $GITHUB_STEP_SUMMARY
+          echo "- Secrets GitHub mal configurés" >> $GITHUB_STEP_SUMMARY

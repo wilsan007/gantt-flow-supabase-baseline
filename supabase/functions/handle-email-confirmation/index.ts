@@ -830,9 +830,9 @@ serve(async (req)=>{
             error_name: error.name,
             error_message: error.message,
             error_code: error.code,
-            // Ne pas exposer la stack trace dans la réponse
-            user_id: user.id,
-            user_email: user.email,
+            // Ne pas exposer les données sensibles
+            user_id: '[MASQUÉ]',
+            user_email: '[MASQUÉ]',
             validation_elements_count: Object.keys(validatedElements).length,
             validation_elements_details: {
               ...validatedElements,

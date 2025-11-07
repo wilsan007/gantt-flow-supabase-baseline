@@ -87,7 +87,7 @@
 .fixed-table-header th,
 .sticky-table-header th {
   color: #ffffff !important;
-  text-shadow: 0 1px 2px rgba(0,0,0,0.3) !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
   font-weight: 700 !important;
   border-right: 1px solid rgba(255, 255, 255, 0.2) !important;
 }
@@ -121,7 +121,7 @@ td:has(.limited-text-area-container) {
 
 /* Couleurs par défaut (violet moderne) - Force maximale */
 .action-header-fixed,
-div[class*="action-header-fixed"] {
+div[class*='action-header-fixed'] {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
   border-bottom: 2px solid rgba(102, 126, 234, 0.4) !important;
   box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2) !important;
@@ -135,7 +135,7 @@ div[class*="action-header-fixed"] {
 }
 
 /* Couleurs quand une tâche est sélectionnée (rose magenta vibrant) */
-.action-header-fixed[data-selected="true"] {
+.action-header-fixed[data-selected='true'] {
   background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%) !important;
   border-bottom: 2px solid rgba(245, 87, 108, 0.4) !important;
   box-shadow: 0 4px 12px rgba(245, 87, 108, 0.3) !important;
@@ -145,7 +145,7 @@ div[class*="action-header-fixed"] {
 .action-header-fixed th,
 .sticky-action-header th {
   color: #ffffff !important;
-  text-shadow: 0 1px 3px rgba(0,0,0,0.4) !important;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4) !important;
   font-weight: 700 !important;
   letter-spacing: 0.5px !important;
 }
@@ -161,18 +161,21 @@ div[class*="action-header-fixed"] {
 
 /* Style pour les indicateurs d'actions */
 .action-header-indicator {
-  background: linear-gradient(90deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.6) 100%) !important;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.9) 0%,
+    rgba(255, 255, 255, 0.6) 100%
+  ) !important;
   box-shadow: 0 0 10px rgba(255, 255, 255, 0.8) !important;
   animation: pulse 2s infinite !important;
 }
 
-
 /* Force les couleurs des cellules d'en-tête */
 .action-header-fixed th,
 .action-header-fixed .action-header-cell,
-[class*="action-header-fixed"] th {
+[class*='action-header-fixed'] th {
   color: #ffffff !important;
-  text-shadow: 0 1px 3px rgba(0,0,0,0.4) !important;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4) !important;
   font-weight: 700 !important;
 }
 
@@ -276,69 +279,69 @@ div[class*="action-header-fixed"] {
 
 /* Styles spécifiques par colonne - seront surchargés par JavaScript */
 .fixed-table-header th:nth-child(1),
-.table-body-container td:nth-child(1) { 
-  min-width: 150px; 
-  max-width: 400px; 
+.table-body-container td:nth-child(1) {
+  min-width: 150px;
+  max-width: 400px;
 }
 
 .fixed-table-header th:nth-child(2),
-.table-body-container td:nth-child(2) { 
-  min-width: 120px; 
-  max-width: 200px; 
+.table-body-container td:nth-child(2) {
+  min-width: 120px;
+  max-width: 200px;
 }
 
 .fixed-table-header th:nth-child(3),
-.table-body-container td:nth-child(3) { 
-  min-width: 80px; 
-  max-width: 120px; 
+.table-body-container td:nth-child(3) {
+  min-width: 80px;
+  max-width: 120px;
 }
 
 .fixed-table-header th:nth-child(4),
-.table-body-container td:nth-child(4) { 
-  min-width: 80px; 
-  max-width: 120px; 
+.table-body-container td:nth-child(4) {
+  min-width: 80px;
+  max-width: 120px;
 }
 
 .fixed-table-header th:nth-child(5),
-.table-body-container td:nth-child(5) { 
-  min-width: 80px; 
-  max-width: 120px; 
+.table-body-container td:nth-child(5) {
+  min-width: 80px;
+  max-width: 120px;
 }
 
 .fixed-table-header th:nth-child(6),
-.table-body-container td:nth-child(6) { 
-  min-width: 80px; 
-  max-width: 120px; 
+.table-body-container td:nth-child(6) {
+  min-width: 80px;
+  max-width: 120px;
 }
 
 .fixed-table-header th:nth-child(7),
-.table-body-container td:nth-child(7) { 
-  min-width: 80px; 
-  max-width: 120px; 
+.table-body-container td:nth-child(7) {
+  min-width: 80px;
+  max-width: 120px;
 }
 
 .fixed-table-header th:nth-child(8),
-.table-body-container td:nth-child(8) { 
-  min-width: 100px; 
-  max-width: 150px; 
+.table-body-container td:nth-child(8) {
+  min-width: 100px;
+  max-width: 150px;
 }
 
 .fixed-table-header th:nth-child(9),
-.table-body-container td:nth-child(9) { 
-  min-width: 100px; 
-  max-width: 150px; 
+.table-body-container td:nth-child(9) {
+  min-width: 100px;
+  max-width: 150px;
 }
 
 .fixed-table-header th:nth-child(10),
-.table-body-container td:nth-child(10) { 
-  min-width: 100px; 
-  max-width: 150px; 
+.table-body-container td:nth-child(10) {
+  min-width: 100px;
+  max-width: 150px;
 }
 
 .fixed-table-header th:nth-child(11),
-.table-body-container td:nth-child(11) { 
-  min-width: 80px; 
-  max-width: 100px; 
+.table-body-container td:nth-child(11) {
+  min-width: 80px;
+  max-width: 100px;
 }
 
 /* Actions colonnes */
@@ -378,8 +381,13 @@ div[class*="action-header-fixed"] {
 
 /* Animation de l'indicateur */
 @keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
 }
 
 .action-header-indicator {
@@ -411,7 +419,7 @@ div[class*="action-header-fixed"] {
 }
 
 /* Effet de transition lors du changement de tâche sélectionnée */
-.action-header-fixed[data-selected="true"] {
+.action-header-fixed[data-selected='true'] {
   background-color: rgba(var(--primary), 0.1) !important;
   border-bottom: 2px solid rgba(var(--primary), 0.3) !important;
 }
@@ -420,4 +428,3 @@ div[class*="action-header-fixed"] {
 .action-header-cell {
   will-change: transform, order;
 }
-

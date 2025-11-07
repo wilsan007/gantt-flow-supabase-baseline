@@ -19,12 +19,12 @@ export const Auth = ({ onAuthStateChange }: AuthProps) => {
   const [fullName, setFullName] = useState(''); // Ajout du state pour le nom complet
   const [showMFAInput, setShowMFAInput] = useState(false);
   const [mfaCode, setMfaCode] = useState('');
-  
+
   // Gestion des placeholders (sécurisée - pas d'auto-complétion)
   const { handleFocus, getPlaceholder, forceHidePlaceholder } = useMultiplePlaceholderHandler({
     email: 'admin@example.com',
     password: 'Votre mot de passe',
-    fullName: 'Votre nom complet'
+    fullName: 'Votre nom complet',
   });
 
   // Forcer le masquage des placeholders si des valeurs sont détectées (sécurité)
@@ -45,13 +45,13 @@ export const Auth = ({ onAuthStateChange }: AuthProps) => {
       email,
       password,
     });
-    
+
     // Vérifier si MFA est requis
     if (error?.message?.includes('MFA') || error?.message?.includes('verification required')) {
       setShowMFAInput(true);
       return { error: null }; // Ne pas afficher d'erreur, juste montrer l'input MFA
     }
-    
+
     return { error };
   };
 
@@ -66,7 +66,7 @@ export const Auth = ({ onAuthStateChange }: AuthProps) => {
       const factorId = factors.data.totp[0].id;
       const { data, error } = await supabase.auth.mfa.challengeAndVerify({
         factorId,
-        code: mfaCode
+        code: mfaCode,
       });
       return { data, error };
     }
@@ -77,14 +77,14 @@ export const Auth = ({ onAuthStateChange }: AuthProps) => {
   const signUp = async (email: string, password: string, fullName: string) => {
     // Générer le nom de l'entreprise basé sur le nom complet
     const companyName = `Entreprise ${fullName}`;
-    
+
     // Étape 1: Créer le tenant et l'invitation
     const { data: tenantData, error: tenantError } = await (supabase as any)
       .from('tenants')
       .insert({
         name: companyName,
         slug: companyName.toLowerCase().replace(/\s+/g, '-'),
-        status: 'active'
+        status: 'active',
       })
       .select()
       .single();
@@ -106,7 +106,7 @@ export const Auth = ({ onAuthStateChange }: AuthProps) => {
     });
 
     if (invitationError) {
-      console.error('Erreur lors de la création de l\'invitation:', invitationError);
+      console.error("Erreur lors de la création de l'invitation:", invitationError);
       // En cas d'erreur, supprimer le tenant qui vient d'être créé pour nettoyer
       await (supabase as any).from('tenants').delete().eq('id', newTenantId);
       return { error: invitationError };
@@ -141,52 +141,60 @@ export const Auth = ({ onAuthStateChange }: AuthProps) => {
         // Gestion d'erreurs moderne pour l'authentification
         let errorTitle = "❌ Erreur d'authentification";
         let errorMessage = error.message || "Une erreur s'est produite.";
-        
+
         // Email déjà utilisé
-        if (error.message?.toLowerCase().includes('email') && 
-            (error.message?.toLowerCase().includes('already') || 
-             error.message?.toLowerCase().includes('exists') || 
-             error.message?.toLowerCase().includes('taken'))) {
-          errorTitle = "📧 Email déjà utilisé";
-          errorMessage = "Cette adresse email est déjà utilisée. Veuillez en choisir une autre.";
+        if (
+          error.message?.toLowerCase().includes('email') &&
+          (error.message?.toLowerCase().includes('already') ||
+            error.message?.toLowerCase().includes('exists') ||
+            error.message?.toLowerCase().includes('taken'))
+        ) {
+          errorTitle = '📧 Email déjà utilisé';
+          errorMessage = 'Cette adresse email est déjà utilisée. Veuillez en choisir une autre.';
         }
-        
+
         // Identifiants invalides
-        else if (error.message?.toLowerCase().includes('invalid') || 
-                 error.message?.toLowerCase().includes('credentials')) {
-          errorTitle = "🔐 Email ou mot de passe incorrect";
-          errorMessage = "L'email et/ou le mot de passe sont erronés. Veuillez vérifier vos informations.";
+        else if (
+          error.message?.toLowerCase().includes('invalid') ||
+          error.message?.toLowerCase().includes('credentials')
+        ) {
+          errorTitle = '🔐 Email ou mot de passe incorrect';
+          errorMessage =
+            "L'email et/ou le mot de passe sont erronés. Veuillez vérifier vos informations.";
         }
-        
+
         // Mot de passe faible
-        else if (error.message?.toLowerCase().includes('password') && 
-                 (error.message?.toLowerCase().includes('weak') || 
-                  error.message?.toLowerCase().includes('strength'))) {
-          errorTitle = "🔒 Mot de passe trop faible";
-          errorMessage = "Votre mot de passe doit contenir au moins 8 caractères avec majuscules, minuscules, chiffres et symboles.";
+        else if (
+          error.message?.toLowerCase().includes('password') &&
+          (error.message?.toLowerCase().includes('weak') ||
+            error.message?.toLowerCase().includes('strength'))
+        ) {
+          errorTitle = '🔒 Mot de passe trop faible';
+          errorMessage =
+            'Votre mot de passe doit contenir au moins 8 caractères avec majuscules, minuscules, chiffres et symboles.';
         }
 
         toast({
           title: errorTitle,
           description: errorMessage,
-          variant: "destructive",
+          variant: 'destructive',
         });
       } else if (isSignUp) {
         toast({
-          title: "Inscription réussie",
-          description: "Vérifiez votre email pour confirmer votre compte",
+          title: 'Inscription réussie',
+          description: 'Vérifiez votre email pour confirmer votre compte',
         });
       } else if (!showMFAInput) {
         toast({
-          title: "Connexion réussie",
-          description: "Vous êtes maintenant connecté",
+          title: 'Connexion réussie',
+          description: 'Vous êtes maintenant connecté',
         });
       }
     } catch (error: any) {
       toast({
-        title: "Erreur",
+        title: 'Erreur',
         description: error.message,
-        variant: "destructive",
+        variant: 'destructive',
       });
     } finally {
       setLoading(false);
@@ -202,21 +210,21 @@ export const Auth = ({ onAuthStateChange }: AuthProps) => {
 
       if (error) {
         toast({
-          title: "❌ Code incorrect",
-          description: "Le code MFA est incorrect. Veuillez réessayer.",
-          variant: "destructive",
+          title: '❌ Code incorrect',
+          description: 'Le code MFA est incorrect. Veuillez réessayer.',
+          variant: 'destructive',
         });
       } else {
         toast({
-          title: "✅ Connexion réussie",
-          description: "Authentification à deux facteurs validée",
+          title: '✅ Connexion réussie',
+          description: 'Authentification à deux facteurs validée',
         });
       }
     } catch (error: any) {
       toast({
-        title: "Erreur",
+        title: 'Erreur',
         description: error.message,
-        variant: "destructive",
+        variant: 'destructive',
       });
     } finally {
       setLoading(false);
@@ -224,21 +232,20 @@ export const Auth = ({ onAuthStateChange }: AuthProps) => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background">
+    <div className="flex min-h-screen items-center justify-center bg-background">
       <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle>{isSignUp ? 'Créer un compte' : 'Connexion'}</CardTitle>
           <CardDescription>
-            {isSignUp 
-              ? 'Créez votre compte admin pour accéder à l\'application'
-              : 'Connectez-vous avec vos identifiants admin'
-            }
+            {isSignUp
+              ? "Créez votre compte admin pour accéder à l'application"
+              : 'Connectez-vous avec vos identifiants admin'}
           </CardDescription>
         </CardHeader>
         <CardContent>
           {/* OAuth Google activé ✅ */}
           {!showMFAInput && !isSignUp && <SocialAuth />}
-          
+
           {showMFAInput ? (
             <form onSubmit={handleMFAVerification} className="space-y-4">
               <div className="space-y-2">
@@ -247,17 +254,17 @@ export const Auth = ({ onAuthStateChange }: AuthProps) => {
                   id="mfaCode"
                   type="text"
                   value={mfaCode}
-                  onChange={(e) => {
+                  onChange={e => {
                     const value = e.target.value.replace(/\D/g, '').slice(0, 6);
                     setMfaCode(value);
                   }}
                   placeholder="000000"
                   maxLength={6}
-                  className="text-center text-2xl font-mono tracking-widest"
+                  className="text-center font-mono text-2xl tracking-widest"
                   autoComplete="off"
                   required
                 />
-                <p className="text-sm text-muted-foreground text-center">
+                <p className="text-center text-sm text-muted-foreground">
                   Entrez le code à 6 chiffres depuis votre application d'authentification
                 </p>
               </div>
@@ -285,7 +292,7 @@ export const Auth = ({ onAuthStateChange }: AuthProps) => {
                     id="fullName"
                     type="text"
                     value={fullName}
-                    onChange={(e) => setFullName(e.target.value)}
+                    onChange={e => setFullName(e.target.value)}
                     onFocus={() => handleFocus('fullName')}
                     onClick={() => handleFocus('fullName')}
                     placeholder={getPlaceholder('fullName', fullName)}
@@ -303,7 +310,7 @@ export const Auth = ({ onAuthStateChange }: AuthProps) => {
                   id="email"
                   type="email"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={e => setEmail(e.target.value)}
                   onFocus={() => handleFocus('email')}
                   onClick={() => handleFocus('email')}
                   placeholder={getPlaceholder('email', email)}
@@ -320,7 +327,7 @@ export const Auth = ({ onAuthStateChange }: AuthProps) => {
                   id="password"
                   type="password"
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={e => setPassword(e.target.value)}
                   onFocus={() => handleFocus('password')}
                   onClick={() => handleFocus('password')}
                   placeholder={getPlaceholder('password', password)}
@@ -332,23 +339,13 @@ export const Auth = ({ onAuthStateChange }: AuthProps) => {
                 />
               </div>
               <Button type="submit" className="w-full" disabled={loading}>
-                {loading 
-                  ? 'Chargement...' 
-                  : isSignUp ? 'Créer le compte' : 'Se connecter'
-                }
+                {loading ? 'Chargement...' : isSignUp ? 'Créer le compte' : 'Se connecter'}
               </Button>
             </form>
           )}
           <div className="mt-4 text-center">
-            <Button
-              variant="link"
-              onClick={() => setIsSignUp(!isSignUp)}
-              className="text-sm"
-            >
-              {isSignUp 
-                ? 'Déjà un compte ? Se connecter'
-                : 'Créer un compte admin'
-              }
+            <Button variant="link" onClick={() => setIsSignUp(!isSignUp)} className="text-sm">
+              {isSignUp ? 'Déjà un compte ? Se connecter' : 'Créer un compte admin'}
             </Button>
           </div>
         </CardContent>

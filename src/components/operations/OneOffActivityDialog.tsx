@@ -78,22 +78,20 @@ export const OneOffActivityDialog: React.FC<OneOffActivityDialogProps> = ({
       });
 
       if (!activityData) {
-        throw new Error('Erreur lors de la création de l\'activité');
+        throw new Error("Erreur lors de la création de l'activité");
       }
 
       // 2. Créer les templates d'actions si présents
       if (actionTemplates.length > 0) {
         const validTemplates = actionTemplates.filter(t => t.title.trim() !== '');
-        
+
         for (const template of validTemplates) {
-          await supabase
-            .from('operational_action_templates')
-            .insert({
-              activity_id: activityData.id,
-              title: template.title,
-              description: template.description || null,
-              position: template.position,
-            });
+          await supabase.from('operational_action_templates').insert({
+            activity_id: activityData.id,
+            title: template.title,
+            description: template.description || null,
+            position: template.position,
+          });
         }
       }
 
@@ -112,7 +110,6 @@ export const OneOffActivityDialog: React.FC<OneOffActivityDialogProps> = ({
       resetForm();
       onOpenChange(false);
       onSuccess?.();
-      
     } catch (err: any) {
       console.error('❌ Erreur création activité ponctuelle:', err);
       setError(err.message || 'Une erreur est survenue');
@@ -137,14 +134,15 @@ export const OneOffActivityDialog: React.FC<OneOffActivityDialogProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-h-[90vh] max-w-3xl overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <CalendarDays className="h-5 w-5 text-purple-600" />
             Nouvelle Activité Ponctuelle
           </DialogTitle>
           <DialogDescription>
-            Créez une activité unique à réaliser à une date précise. La tâche sera générée immédiatement.
+            Créez une activité unique à réaliser à une date précise. La tâche sera générée
+            immédiatement.
           </DialogDescription>
         </DialogHeader>
 
@@ -155,7 +153,7 @@ export const OneOffActivityDialog: React.FC<OneOffActivityDialogProps> = ({
             <Input
               id="name"
               value={name}
-              onChange={(e) => setName(e.target.value)}
+              onChange={e => setName(e.target.value)}
               placeholder="Ex: Audit de sécurité annuel"
               className={error && !name.trim() ? 'border-destructive' : ''}
             />
@@ -167,7 +165,7 @@ export const OneOffActivityDialog: React.FC<OneOffActivityDialogProps> = ({
             <Textarea
               id="description"
               value={description}
-              onChange={(e) => setDescription(e.target.value)}
+              onChange={e => setDescription(e.target.value)}
               placeholder="Décrivez brièvement l'objectif de cette activité..."
               rows={3}
             />
@@ -203,7 +201,7 @@ export const OneOffActivityDialog: React.FC<OneOffActivityDialogProps> = ({
                   <Calendar
                     mode="single"
                     selected={dueDate}
-                    onSelect={(date) => date && setDueDate(date)}
+                    onSelect={date => date && setDueDate(date)}
                     initialFocus
                   />
                 </PopoverContent>
@@ -214,29 +212,30 @@ export const OneOffActivityDialog: React.FC<OneOffActivityDialogProps> = ({
           {/* Actions Templates */}
           <div className="space-y-2">
             <Label>Actions à effectuer (optionnel)</Label>
-            <p className="text-sm text-muted-foreground mb-3">
+            <p className="mb-3 text-sm text-muted-foreground">
               Définissez une checklist d'actions qui seront automatiquement ajoutées à la tâche
             </p>
-            <ActionTemplateList
-              templates={actionTemplates}
-              onChange={setActionTemplates}
-            />
+            <ActionTemplateList templates={actionTemplates} onChange={setActionTemplates} />
           </div>
 
           {/* Erreur */}
           {error && (
-            <div className="bg-destructive/10 border border-destructive text-destructive px-4 py-3 rounded">
+            <div className="rounded border border-destructive bg-destructive/10 px-4 py-3 text-destructive">
               <p className="text-sm font-medium">{error}</p>
             </div>
           )}
 
           {/* Info */}
-          <div className="bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 px-4 py-3 rounded">
+          <div className="rounded border border-blue-200 bg-blue-50 px-4 py-3 dark:border-blue-800 dark:bg-blue-950">
             <p className="text-sm text-blue-900 dark:text-blue-100">
               💡 <strong>Bon à savoir :</strong> Cette activité générera une tâche unique le{' '}
               <strong>{format(dueDate, 'dd MMMM yyyy', { locale: fr })}</strong>.
               {actionTemplates.filter(t => t.title.trim() !== '').length > 0 && (
-                <> Elle contiendra {actionTemplates.filter(t => t.title.trim() !== '').length} action(s) prédéfinie(s).</>
+                <>
+                  {' '}
+                  Elle contiendra {actionTemplates.filter(t => t.title.trim() !== '').length}{' '}
+                  action(s) prédéfinie(s).
+                </>
               )}
             </p>
           </div>
@@ -249,12 +248,12 @@ export const OneOffActivityDialog: React.FC<OneOffActivityDialogProps> = ({
           <Button onClick={handleSubmit} disabled={loading || !name.trim()}>
             {loading ? (
               <>
-                <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full mr-2" />
+                <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
                 Création...
               </>
             ) : (
               <>
-                <Plus className="h-4 w-4 mr-2" />
+                <Plus className="mr-2 h-4 w-4" />
                 Créer et générer la tâche
               </>
             )}

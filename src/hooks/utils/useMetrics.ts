@@ -19,36 +19,39 @@ export const useMetrics = () => {
     cacheHit: false,
     dataSize: 0,
     lastUpdate: new Date(),
-    queryComplexity: 'simple'
+    queryComplexity: 'simple',
   });
 
   const startTimer = useCallback(() => {
     return performance.now();
   }, []);
 
-  const recordMetrics = useCallback((
-    startTime: number,
-    data: any,
-    cacheHit: boolean,
-    complexity: 'simple' | 'medium' | 'complex' = 'simple'
-  ) => {
-    const fetchTime = performance.now() - startTime;
-    const dataSize = JSON.stringify(data).length;
+  const recordMetrics = useCallback(
+    (
+      startTime: number,
+      data: any,
+      cacheHit: boolean,
+      complexity: 'simple' | 'medium' | 'complex' = 'simple'
+    ) => {
+      const fetchTime = performance.now() - startTime;
+      const dataSize = JSON.stringify(data).length;
 
-    setMetrics({
-      fetchTime,
-      cacheHit,
-      dataSize,
-      lastUpdate: new Date(),
-      queryComplexity: complexity
-    });
+      setMetrics({
+        fetchTime,
+        cacheHit,
+        dataSize,
+        lastUpdate: new Date(),
+        queryComplexity: complexity,
+      });
 
-    return { fetchTime, dataSize };
-  }, []);
+      return { fetchTime, dataSize };
+    },
+    []
+  );
 
   return {
     metrics,
     startTimer,
-    recordMetrics
+    recordMetrics,
   };
 };

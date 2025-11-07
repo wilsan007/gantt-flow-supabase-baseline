@@ -5,7 +5,13 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Plus, Edit, Trash2, Calendar } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -30,7 +36,7 @@ export const AbsenceTypeManagement = () => {
         color: data.color,
         requires_approval: data.requires_approval,
         deducts_from_balance: data.deducts_from_balance,
-        max_days_per_year: data.max_days_per_year ? parseInt(data.max_days_per_year) : null
+        max_days_per_year: data.max_days_per_year ? parseInt(data.max_days_per_year) : null,
       };
 
       let error;
@@ -40,16 +46,14 @@ export const AbsenceTypeManagement = () => {
           .update(absenceTypeData)
           .eq('id', editingType.id));
       } else {
-        ({ error } = await supabase
-          .from('absence_types')
-          .insert(absenceTypeData));
+        ({ error } = await supabase.from('absence_types').insert(absenceTypeData));
       }
 
       if (error) throw error;
 
       toast({
-        title: "Succès",
-        description: `Type d'absence ${editingType ? 'modifié' : 'créé'} avec succès`
+        title: 'Succès',
+        description: `Type d'absence ${editingType ? 'modifié' : 'créé'} avec succès`,
       });
 
       reset();
@@ -59,9 +63,9 @@ export const AbsenceTypeManagement = () => {
     } catch (error: any) {
       console.error('Error managing absence type:', error);
       toast({
-        title: "Erreur",
+        title: 'Erreur',
         description: `Impossible de ${editingType ? 'modifier' : 'créer'} le type d'absence`,
-        variant: "destructive"
+        variant: 'destructive',
       });
     }
   };
@@ -79,25 +83,22 @@ export const AbsenceTypeManagement = () => {
 
   const handleDelete = async (typeId: string) => {
     try {
-      const { error } = await supabase
-        .from('absence_types')
-        .delete()
-        .eq('id', typeId);
+      const { error } = await supabase.from('absence_types').delete().eq('id', typeId);
 
       if (error) throw error;
 
       toast({
-        title: "Succès",
-        description: "Type d'absence supprimé avec succès"
+        title: 'Succès',
+        description: "Type d'absence supprimé avec succès",
       });
 
       refetch();
     } catch (error: any) {
       console.error('Error deleting absence type:', error);
       toast({
-        title: "Erreur",
+        title: 'Erreur',
         description: "Impossible de supprimer le type d'absence",
-        variant: "destructive"
+        variant: 'destructive',
       });
     }
   };
@@ -107,29 +108,32 @@ export const AbsenceTypeManagement = () => {
   }
 
   return (
-    <div className="p-6 space-y-6">
-      <div className="flex justify-between items-center">
-        <h2 className="text-3xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+    <div className="space-y-6 p-6">
+      <div className="flex items-center justify-between">
+        <h2 className="bg-gradient-to-r from-primary to-accent bg-clip-text text-3xl font-bold text-transparent">
           Types d'Absence
         </h2>
-        
-        <Dialog open={isCreateDialogOpen} onOpenChange={(open) => {
-          setIsCreateDialogOpen(open);
-          if (!open) {
-            setEditingType(null);
-            reset();
-          }
-        }}>
+
+        <Dialog
+          open={isCreateDialogOpen}
+          onOpenChange={open => {
+            setIsCreateDialogOpen(open);
+            if (!open) {
+              setEditingType(null);
+              reset();
+            }
+          }}
+        >
           <DialogTrigger asChild>
             <Button className="hover-glow">
-              <Plus className="h-4 w-4 mr-2" />
+              <Plus className="mr-2 h-4 w-4" />
               Nouveau type
             </Button>
           </DialogTrigger>
           <DialogContent className="max-w-md">
             <DialogHeader>
               <DialogTitle>
-                {editingType ? 'Modifier le type' : 'Créer un type d\'absence'}
+                {editingType ? 'Modifier le type' : "Créer un type d'absence"}
               </DialogTitle>
             </DialogHeader>
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -144,21 +148,12 @@ export const AbsenceTypeManagement = () => {
 
               <div>
                 <Label htmlFor="code">Code</Label>
-                <Input
-                  id="code"
-                  placeholder="CP"
-                  {...register('code', { required: true })}
-                />
+                <Input id="code" placeholder="CP" {...register('code', { required: true })} />
               </div>
 
               <div>
                 <Label htmlFor="color">Couleur</Label>
-                <Input
-                  id="color"
-                  type="color"
-                  defaultValue="#3B82F6"
-                  {...register('color')}
-                />
+                <Input id="color" type="color" defaultValue="#3B82F6" {...register('color')} />
               </div>
 
               <div>
@@ -177,7 +172,7 @@ export const AbsenceTypeManagement = () => {
                   <Switch
                     id="requires_approval"
                     defaultChecked={true}
-                    onCheckedChange={(checked) => setValue('requires_approval', checked)}
+                    onCheckedChange={checked => setValue('requires_approval', checked)}
                   />
                 </div>
 
@@ -186,7 +181,7 @@ export const AbsenceTypeManagement = () => {
                   <Switch
                     id="deducts_from_balance"
                     defaultChecked={true}
-                    onCheckedChange={(checked) => setValue('deducts_from_balance', checked)}
+                    onCheckedChange={checked => setValue('deducts_from_balance', checked)}
                   />
                 </div>
               </div>
@@ -195,9 +190,9 @@ export const AbsenceTypeManagement = () => {
                 <Button type="submit" className="flex-1">
                   {editingType ? 'Modifier' : 'Créer'}
                 </Button>
-                <Button 
-                  type="button" 
-                  variant="outline" 
+                <Button
+                  type="button"
+                  variant="outline"
                   onClick={() => {
                     setIsCreateDialogOpen(false);
                     setEditingType(null);
@@ -217,24 +212,24 @@ export const AbsenceTypeManagement = () => {
         {absenceTypes.length === 0 ? (
           <Card className="modern-card">
             <CardContent className="p-8 text-center">
-              <Calendar className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+              <Calendar className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
               <p className="text-muted-foreground">Aucun type d'absence configuré</p>
             </CardContent>
           </Card>
         ) : (
           <div className={`grid gap-4 ${isMobile ? 'grid-cols-1' : 'grid-cols-2 lg:grid-cols-3'}`}>
-            {absenceTypes.map((type) => (
+            {absenceTypes.map(type => (
               <Card key={type.id} className="modern-card hover-glow">
                 <CardContent className="p-6">
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
-                        <div 
-                          className="w-4 h-4 rounded-full border-2 border-background"
+                        <div
+                          className="h-4 w-4 rounded-full border-2 border-background"
                           style={{ backgroundColor: type.color }}
                         />
                         <div>
-                          <h3 className="font-semibold text-lg">{type.name}</h3>
+                          <h3 className="text-lg font-semibold">{type.name}</h3>
                           <Badge variant="outline" className="text-xs">
                             {type.code}
                           </Badge>
@@ -242,18 +237,10 @@ export const AbsenceTypeManagement = () => {
                       </div>
 
                       <div className="flex gap-1">
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => handleEdit(type)}
-                        >
+                        <Button size="sm" variant="outline" onClick={() => handleEdit(type)}>
                           <Edit className="h-3 w-3" />
                         </Button>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => handleDelete(type.id)}
-                        >
+                        <Button size="sm" variant="outline" onClick={() => handleDelete(type.id)}>
                           <Trash2 className="h-3 w-3" />
                         </Button>
                       </div>
@@ -261,9 +248,11 @@ export const AbsenceTypeManagement = () => {
 
                     <div className="space-y-2 text-sm text-muted-foreground">
                       {type.max_days_per_year && (
-                        <p><strong>Max/an:</strong> {type.max_days_per_year} jours</p>
+                        <p>
+                          <strong>Max/an:</strong> {type.max_days_per_year} jours
+                        </p>
                       )}
-                      
+
                       <div className="flex flex-wrap gap-2">
                         {type.requires_approval && (
                           <Badge variant="secondary" className="text-xs">

@@ -1,6 +1,6 @@
 /**
  * AdvancedTaskSearch - Recherche avancée avec filtres multiples
- * 
+ *
  * Fonctionnalités :
  * - Recherche full-text
  * - Filtres multiples combinables
@@ -24,16 +24,7 @@ import {
 } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Skeleton } from '@/components/ui/skeleton';
-import {
-  Search,
-  Filter,
-  Star,
-  Download,
-  Trash2,
-  UserCheck,
-  RefreshCw,
-  X,
-} from 'lucide-react';
+import { Search, Filter, Star, Download, Trash2, UserCheck, RefreshCw, X } from 'lucide-react';
 import { useTasks, type Task } from '@/hooks/optimized';
 import { useProjects } from '@/hooks/optimized';
 import { useHRMinimal } from '@/hooks/useHRMinimal';
@@ -94,7 +85,7 @@ export const AdvancedTaskSearch: React.FC = () => {
     if (filters.query.trim()) {
       const query = filters.query.toLowerCase();
       result = result.filter(
-        (task) =>
+        task =>
           task.title.toLowerCase().includes(query) ||
           task.description?.toLowerCase().includes(query)
       );
@@ -102,34 +93,31 @@ export const AdvancedTaskSearch: React.FC = () => {
 
     // Filtres statut
     if (filters.status.length > 0) {
-      result = result.filter((task) => filters.status.includes(task.status));
+      result = result.filter(task => filters.status.includes(task.status));
     }
 
     // Filtres priorité
     if (filters.priority.length > 0) {
-      result = result.filter((task) =>
-        filters.priority.includes(task.priority?.toLowerCase() || '')
-      );
+      result = result.filter(task => filters.priority.includes(task.priority?.toLowerCase() || ''));
     }
 
     // Filtre projet
     if (filters.project) {
-      result = result.filter((task) => task.project_id === filters.project);
+      result = result.filter(task => task.project_id === filters.project);
     }
 
     // Filtre assigné
     if (filters.assignee) {
       result = result.filter(
-        (task) =>
-          task.assignee_id === filters.assignee ||
-          (task as any).assigned_to === filters.assignee
+        task =>
+          task.assignee_id === filters.assignee || (task as any).assigned_to === filters.assignee
       );
     }
 
     // Filtre en retard uniquement
     if (filters.showOverdueOnly) {
       const now = new Date();
-      result = result.filter((task) => {
+      result = result.filter(task => {
         if (!task.due_date) return false;
         return parseISO(task.due_date) < now && task.status !== 'done';
       });
@@ -138,7 +126,7 @@ export const AdvancedTaskSearch: React.FC = () => {
     // Filtre plage de dates
     if (filters.dateRange !== 'all') {
       const now = new Date();
-      result = result.filter((task) => {
+      result = result.filter(task => {
         if (!task.due_date) return false;
         const dueDate = parseISO(task.due_date);
 
@@ -163,23 +151,23 @@ export const AdvancedTaskSearch: React.FC = () => {
   }, [tasks, filters]);
 
   const handleFilterChange = (key: keyof SearchFilters, value: any) => {
-    setFilters((prev) => ({ ...prev, [key]: value }));
+    setFilters(prev => ({ ...prev, [key]: value }));
   };
 
   const toggleStatus = (status: string) => {
-    setFilters((prev) => ({
+    setFilters(prev => ({
       ...prev,
       status: prev.status.includes(status)
-        ? prev.status.filter((s) => s !== status)
+        ? prev.status.filter(s => s !== status)
         : [...prev.status, status],
     }));
   };
 
   const togglePriority = (priority: string) => {
-    setFilters((prev) => ({
+    setFilters(prev => ({
       ...prev,
       priority: prev.priority.includes(priority)
-        ? prev.priority.filter((p) => p !== priority)
+        ? prev.priority.filter(p => p !== priority)
         : [...prev.priority, priority],
     }));
   };
@@ -194,7 +182,7 @@ export const AdvancedTaskSearch: React.FC = () => {
   };
 
   const toggleTaskSelection = (taskId: string) => {
-    setSelectedTasks((prev) => {
+    setSelectedTasks(prev => {
       const newSet = new Set(prev);
       if (newSet.has(taskId)) {
         newSet.delete(taskId);
@@ -206,7 +194,7 @@ export const AdvancedTaskSearch: React.FC = () => {
   };
 
   const selectAll = () => {
-    setSelectedTasks(new Set(filteredTasks.map((t) => t.id)));
+    setSelectedTasks(new Set(filteredTasks.map(t => t.id)));
   };
 
   const deselectAll = () => {
@@ -216,7 +204,7 @@ export const AdvancedTaskSearch: React.FC = () => {
   const handleBulkStatusChange = async (newStatus: string) => {
     try {
       await Promise.all(
-        Array.from(selectedTasks).map((id) => updateTask(id, { status: newStatus as any }))
+        Array.from(selectedTasks).map(id => updateTask(id, { status: newStatus as any }))
       );
       setSelectedTasks(new Set());
     } catch (error) {
@@ -228,7 +216,7 @@ export const AdvancedTaskSearch: React.FC = () => {
     if (!confirm(`Supprimer ${selectedTasks.size} tâche(s) ?`)) return;
 
     try {
-      await Promise.all(Array.from(selectedTasks).map((id) => deleteTask(id)));
+      await Promise.all(Array.from(selectedTasks).map(id => deleteTask(id)));
       setSelectedTasks(new Set());
     } catch (error) {
       console.error('Erreur lors de la suppression groupée:', error);
@@ -238,7 +226,7 @@ export const AdvancedTaskSearch: React.FC = () => {
   const exportResults = () => {
     const csv = [
       ['Titre', 'Statut', 'Priorité', 'Échéance', 'Projet', 'Assigné'].join(','),
-      ...filteredTasks.map((task) =>
+      ...filteredTasks.map(task =>
         [
           task.title,
           task.status,
@@ -279,11 +267,11 @@ export const AdvancedTaskSearch: React.FC = () => {
         </div>
         <div className="flex gap-2">
           <Button variant="outline" size="sm" onClick={clearFilters}>
-            <X className="h-4 w-4 mr-2" />
+            <X className="mr-2 h-4 w-4" />
             Réinitialiser
           </Button>
           <Button variant="outline" size="sm" onClick={exportResults}>
-            <Download className="h-4 w-4 mr-2" />
+            <Download className="mr-2 h-4 w-4" />
             Exporter CSV
           </Button>
         </div>
@@ -292,14 +280,14 @@ export const AdvancedTaskSearch: React.FC = () => {
       {/* Recherches Sauvegardées */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-base flex items-center gap-2">
+          <CardTitle className="flex items-center gap-2 text-base">
             <Star className="h-4 w-4" />
             Recherches Sauvegardées
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex flex-wrap gap-2">
-            {savedSearches.map((search) => (
+            {savedSearches.map(search => (
               <Button
                 key={search.id}
                 variant="outline"
@@ -316,7 +304,7 @@ export const AdvancedTaskSearch: React.FC = () => {
       {/* Filtres */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-base flex items-center gap-2">
+          <CardTitle className="flex items-center gap-2 text-base">
             <Filter className="h-4 w-4" />
             Filtres
           </CardTitle>
@@ -326,22 +314,22 @@ export const AdvancedTaskSearch: React.FC = () => {
           <div className="space-y-2">
             <Label>Recherche</Label>
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <Input
                 placeholder="Rechercher dans titres et descriptions..."
                 value={filters.query}
-                onChange={(e) => handleFilterChange('query', e.target.value)}
+                onChange={e => handleFilterChange('query', e.target.value)}
                 className="pl-10"
               />
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
             {/* Statut */}
             <div className="space-y-2">
               <Label>Statut</Label>
               <div className="space-y-2">
-                {['todo', 'doing', 'blocked', 'done'].map((status) => (
+                {['todo', 'doing', 'blocked', 'done'].map(status => (
                   <div key={status} className="flex items-center gap-2">
                     <Checkbox
                       checked={filters.status.includes(status)}
@@ -357,7 +345,7 @@ export const AdvancedTaskSearch: React.FC = () => {
             <div className="space-y-2">
               <Label>Priorité</Label>
               <div className="space-y-2">
-                {['high', 'medium', 'low'].map((priority) => (
+                {['high', 'medium', 'low'].map(priority => (
                   <div key={priority} className="flex items-center gap-2">
                     <Checkbox
                       checked={filters.priority.includes(priority)}
@@ -374,7 +362,7 @@ export const AdvancedTaskSearch: React.FC = () => {
               <Label>Échéance</Label>
               <Select
                 value={filters.dateRange}
-                onValueChange={(value) => handleFilterChange('dateRange', value)}
+                onValueChange={value => handleFilterChange('dateRange', value)}
               >
                 <SelectTrigger>
                   <SelectValue />
@@ -393,9 +381,7 @@ export const AdvancedTaskSearch: React.FC = () => {
           <div className="flex items-center gap-2">
             <Checkbox
               checked={filters.showOverdueOnly}
-              onCheckedChange={(checked) =>
-                handleFilterChange('showOverdueOnly', checked)
-              }
+              onCheckedChange={checked => handleFilterChange('showOverdueOnly', checked)}
             />
             <Label className="cursor-pointer">Afficher seulement les tâches en retard</Label>
           </div>
@@ -417,16 +403,12 @@ export const AdvancedTaskSearch: React.FC = () => {
                 <Button variant="outline" size="sm" onClick={deselectAll}>
                   Désélectionner
                 </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handleBulkStatusChange('done')}
-                >
-                  <UserCheck className="h-4 w-4 mr-2" />
+                <Button variant="outline" size="sm" onClick={() => handleBulkStatusChange('done')}>
+                  <UserCheck className="mr-2 h-4 w-4" />
                   Marquer terminées
                 </Button>
                 <Button variant="destructive" size="sm" onClick={handleBulkDelete}>
-                  <Trash2 className="h-4 w-4 mr-2" />
+                  <Trash2 className="mr-2 h-4 w-4" />
                   Supprimer
                 </Button>
               </div>
@@ -438,9 +420,7 @@ export const AdvancedTaskSearch: React.FC = () => {
       {/* Résultats */}
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle className="text-base">
-            Résultats ({filteredTasks.length})
-          </CardTitle>
+          <CardTitle className="text-base">Résultats ({filteredTasks.length})</CardTitle>
           <div className="flex gap-2">
             <Button variant="ghost" size="sm" onClick={selectAll}>
               Tout sélectionner
@@ -449,16 +429,18 @@ export const AdvancedTaskSearch: React.FC = () => {
         </CardHeader>
         <CardContent>
           {filteredTasks.length === 0 ? (
-            <p className="text-center text-muted-foreground py-8">
+            <p className="py-8 text-center text-muted-foreground">
               Aucune tâche ne correspond aux critères de recherche
             </p>
           ) : (
             <div className="space-y-2">
-              {filteredTasks.map((task) => (
+              {filteredTasks.map(task => (
                 <div
                   key={task.id}
-                  className={`p-4 border rounded-lg flex items-center gap-4 hover:bg-accent/50 transition-colors ${
-                    selectedTasks.has(task.id) ? 'bg-blue-50 dark:bg-blue-950/20 border-blue-200' : ''
+                  className={`flex items-center gap-4 rounded-lg border p-4 transition-colors hover:bg-accent/50 ${
+                    selectedTasks.has(task.id)
+                      ? 'border-blue-200 bg-blue-50 dark:bg-blue-950/20'
+                      : ''
                   }`}
                 >
                   <Checkbox
@@ -468,7 +450,7 @@ export const AdvancedTaskSearch: React.FC = () => {
 
                   <div className="flex-1">
                     <h4 className="font-medium">{task.title}</h4>
-                    <div className="flex items-center gap-2 mt-1 text-xs">
+                    <div className="mt-1 flex items-center gap-2 text-xs">
                       {task.due_date && (
                         <Badge variant="outline">
                           {format(parseISO(task.due_date), 'dd MMM', { locale: fr })}

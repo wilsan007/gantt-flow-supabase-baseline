@@ -1,13 +1,25 @@
 import { useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useForm } from "react-hook-form";
-import { Star } from "lucide-react";
-import { useEmployees } from "@/hooks/useEmployees";
-import { Evaluation } from "@/hooks/usePerformance";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { useForm } from 'react-hook-form';
+import { Star } from 'lucide-react';
+import { useEmployees } from '@/hooks/useEmployees';
+import { Evaluation } from '@/hooks/usePerformance';
 
 interface CreateEvaluationDialogProps {
   onCreateEvaluation: (evaluation: Omit<Evaluation, 'id' | 'created_at' | 'updated_at'>) => void;
@@ -23,15 +35,25 @@ interface EvaluationFormData {
   overall_score: number;
 }
 
-export const CreateEvaluationDialog = ({ onCreateEvaluation, trigger }: CreateEvaluationDialogProps) => {
+export const CreateEvaluationDialog = ({
+  onCreateEvaluation,
+  trigger,
+}: CreateEvaluationDialogProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const { employees } = useEmployees();
-  const { register, handleSubmit, setValue, watch, reset, formState: { errors } } = useForm<EvaluationFormData>({
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    watch,
+    reset,
+    formState: { errors },
+  } = useForm<EvaluationFormData>({
     defaultValues: {
       status: 'scheduled',
       type: 'quarterly',
-      overall_score: 0
-    }
+      overall_score: 0,
+    },
   });
 
   const selectedType = watch('type');
@@ -39,13 +61,13 @@ export const CreateEvaluationDialog = ({ onCreateEvaluation, trigger }: CreateEv
   const onSubmit = (data: EvaluationFormData) => {
     const employee = employees.find(emp => emp.full_name === data.employee_name);
     const evaluator = employees.find(emp => emp.full_name === data.evaluator_name);
-    
+
     onCreateEvaluation({
       ...data,
       employee_id: employee?.user_id || undefined,
-      evaluator_id: evaluator?.user_id || undefined
+      evaluator_id: evaluator?.user_id || undefined,
     });
-    
+
     setIsOpen(false);
     reset();
   };
@@ -79,7 +101,7 @@ export const CreateEvaluationDialog = ({ onCreateEvaluation, trigger }: CreateEv
       <DialogTrigger asChild>
         {trigger || (
           <Button>
-            <Star className="h-4 w-4 mr-2" />
+            <Star className="mr-2 h-4 w-4" />
             Nouvelle évaluation
           </Button>
         )}
@@ -92,29 +114,31 @@ export const CreateEvaluationDialog = ({ onCreateEvaluation, trigger }: CreateEv
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="employee_name">Employé évalué *</Label>
-              <Select onValueChange={(value) => setValue('employee_name', value)}>
+              <Select onValueChange={value => setValue('employee_name', value)}>
                 <SelectTrigger>
                   <SelectValue placeholder="Sélectionner un employé" />
                 </SelectTrigger>
                 <SelectContent>
-                  {employees.map((employee) => (
+                  {employees.map(employee => (
                     <SelectItem key={employee.id} value={employee.full_name}>
                       {employee.full_name} {employee.job_title && `(${employee.job_title})`}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
-              {errors.employee_name && <p className="text-sm text-red-500">{errors.employee_name.message}</p>}
+              {errors.employee_name && (
+                <p className="text-sm text-red-500">{errors.employee_name.message}</p>
+              )}
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="evaluator_name">Évaluateur *</Label>
-              <Select onValueChange={(value) => setValue('evaluator_name', value)}>
+              <Select onValueChange={value => setValue('evaluator_name', value)}>
                 <SelectTrigger>
                   <SelectValue placeholder="Sélectionner un évaluateur" />
                 </SelectTrigger>
                 <SelectContent>
-                  {employees.map((employee) => (
+                  {employees.map(employee => (
                     <SelectItem key={employee.id} value={employee.full_name}>
                       {employee.full_name} {employee.job_title && `(${employee.job_title})`}
                     </SelectItem>
@@ -123,7 +147,9 @@ export const CreateEvaluationDialog = ({ onCreateEvaluation, trigger }: CreateEv
                   <SelectItem value="Direction Générale">Direction Générale</SelectItem>
                 </SelectContent>
               </Select>
-              {errors.evaluator_name && <p className="text-sm text-red-500">{errors.evaluator_name.message}</p>}
+              {errors.evaluator_name && (
+                <p className="text-sm text-red-500">{errors.evaluator_name.message}</p>
+              )}
             </div>
           </div>
 
@@ -146,7 +172,7 @@ export const CreateEvaluationDialog = ({ onCreateEvaluation, trigger }: CreateEv
               <Label htmlFor="period">Période *</Label>
               <Input
                 id="period"
-                {...register("period", { required: "La période est obligatoire" })}
+                {...register('period', { required: 'La période est obligatoire' })}
                 placeholder="Ex: Q1 2024"
                 value={watch('period')}
               />
@@ -157,7 +183,9 @@ export const CreateEvaluationDialog = ({ onCreateEvaluation, trigger }: CreateEv
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="status">Statut initial</Label>
-              <Select onValueChange={(value) => setValue('status', value as 'scheduled' | 'in_progress')}>
+              <Select
+                onValueChange={value => setValue('status', value as 'scheduled' | 'in_progress')}
+              >
                 <SelectTrigger>
                   <SelectValue placeholder="Statut" />
                 </SelectTrigger>
@@ -177,19 +205,22 @@ export const CreateEvaluationDialog = ({ onCreateEvaluation, trigger }: CreateEv
                   step="0.1"
                   min="0"
                   max="5"
-                  {...register("overall_score", { min: 0, max: 5 })}
+                  {...register('overall_score', { min: 0, max: 5 })}
                   placeholder="0.0"
                 />
               </div>
             )}
           </div>
 
-          <div className="bg-muted p-4 rounded-lg">
-            <h4 className="font-medium mb-2">Information</h4>
+          <div className="rounded-lg bg-muted p-4">
+            <h4 className="mb-2 font-medium">Information</h4>
             <p className="text-sm text-muted-foreground">
-              {selectedType === 'annual' && "L'évaluation annuelle permet un bilan complet des performances sur l'année."}
-              {selectedType === 'quarterly' && "L'évaluation trimestrielle offre un suivi régulier des objectifs."}
-              {selectedType === '360' && "L'évaluation 360° implique plusieurs évaluateurs pour une vision complète."}
+              {selectedType === 'annual' &&
+                "L'évaluation annuelle permet un bilan complet des performances sur l'année."}
+              {selectedType === 'quarterly' &&
+                "L'évaluation trimestrielle offre un suivi régulier des objectifs."}
+              {selectedType === '360' &&
+                "L'évaluation 360° implique plusieurs évaluateurs pour une vision complète."}
             </p>
           </div>
 
@@ -197,9 +228,7 @@ export const CreateEvaluationDialog = ({ onCreateEvaluation, trigger }: CreateEv
             <Button type="button" variant="outline" onClick={() => setIsOpen(false)}>
               Annuler
             </Button>
-            <Button type="submit">
-              Créer l'évaluation
-            </Button>
+            <Button type="submit">Créer l'évaluation</Button>
           </div>
         </form>
       </DialogContent>

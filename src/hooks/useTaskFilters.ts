@@ -1,7 +1,7 @@
 /**
  * 🎯 useTaskFilters - Hook de Filtrage Multi-Critères
  * Pattern: Efficient filtering with memoization
- * 
+ *
  * Fonctionnalités:
  * - Filtrage par statut, priorité, assigné, projet, dates
  * - Recherche textuelle (titre + description)
@@ -20,41 +20,36 @@ export const useTaskFilters = (tasks: Task[], filters: TaskFilters) => {
     // Filtre: Recherche textuelle
     if (filters.search) {
       const searchLower = filters.search.toLowerCase();
-      result = result.filter(task => 
-        task.title.toLowerCase().includes(searchLower) ||
-        (task.description?.toLowerCase().includes(searchLower) ?? false)
+      result = result.filter(
+        task =>
+          task.title.toLowerCase().includes(searchLower) ||
+          (task.description?.toLowerCase().includes(searchLower) ?? false)
       );
     }
 
     // Filtre: Statut
     if (filters.status.length > 0) {
-      result = result.filter(task => 
-        filters.status.includes(task.status)
-      );
+      result = result.filter(task => filters.status.includes(task.status));
     }
 
     // Filtre: Priorité
     if (filters.priority.length > 0) {
-      result = result.filter(task => 
-        filters.priority.includes(task.priority)
-      );
+      result = result.filter(task => filters.priority.includes(task.priority));
     }
 
     // Filtre: Assigné
     if (filters.assignee.length > 0) {
       result = result.filter(task => {
         // Gérer les différents formats d'assignee
-        const assigneeId = typeof task.assignee === 'string' 
-          ? task.assignee 
-          : task.assignee_id;
-        
+        const assigneeId = typeof task.assignee === 'string' ? task.assignee : task.assignee_id;
+
         return assigneeId ? filters.assignee.includes(assigneeId) : false;
       });
     }
 
     // Filtre: Projet
     if (filters.project.length > 0) {
-      result = result.filter(task => 
+      result = result.filter(task =>
         task.project_id ? filters.project.includes(task.project_id) : false
       );
     }
@@ -79,14 +74,15 @@ export const useTaskFilters = (tasks: Task[], filters: TaskFilters) => {
   }, [tasks, filters]);
 
   // Statistiques de filtrage
-  const stats = useMemo(() => ({
-    total: tasks.length,
-    filtered: filteredTasks.length,
-    removed: tasks.length - filteredTasks.length,
-    percentage: tasks.length > 0 
-      ? Math.round((filteredTasks.length / tasks.length) * 100) 
-      : 100,
-  }), [tasks.length, filteredTasks.length]);
+  const stats = useMemo(
+    () => ({
+      total: tasks.length,
+      filtered: filteredTasks.length,
+      removed: tasks.length - filteredTasks.length,
+      percentage: tasks.length > 0 ? Math.round((filteredTasks.length / tasks.length) * 100) : 100,
+    }),
+    [tasks.length, filteredTasks.length]
+  );
 
   return {
     filteredTasks,

@@ -9,7 +9,13 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Plus, Save, X, BookTemplate, Sparkles } from 'lucide-react';
 import { useTaskTemplates } from '@/hooks/useTaskTemplates';
 import { TemplateManagementDialog } from '@/components/tasks/TemplateManagementDialog';
@@ -32,7 +38,7 @@ interface TaskCreationDialogProps {
 export const TaskCreationDialog: React.FC<TaskCreationDialogProps> = ({
   open,
   onOpenChange,
-  onCreateTask
+  onCreateTask,
 }) => {
   const [title, setTitle] = useState('');
   const [assignee, setAssignee] = useState('Ahmed Waleh');
@@ -43,24 +49,36 @@ export const TaskCreationDialog: React.FC<TaskCreationDialogProps> = ({
   const [effortEstimate, setEffortEstimate] = useState(8);
   const [loading, setLoading] = useState(false);
   const [selectedTemplateId, setSelectedTemplateId] = useState<string>('');
-  
+
   const { templates, incrementUsage } = useTaskTemplates();
 
-  const availableAssignees = ['Ahmed Waleh', 'Sarah Martin', 'Jean Dupont', 'Marie Dubois', 'Pierre Moreau'];
+  const availableAssignees = [
+    'Ahmed Waleh',
+    'Sarah Martin',
+    'Jean Dupont',
+    'Marie Dubois',
+    'Pierre Moreau',
+  ];
   const availableDepartments = ['Développement', 'Marketing', 'Ventes', 'RH', 'Finance', 'Support'];
-  const availableProjects = ['Gantt Flow Next', 'Site Web Corporate', 'App Mobile', 'Migration DB', 'Formation'];
-  
+  const availableProjects = [
+    'Gantt Flow Next',
+    'Site Web Corporate',
+    'App Mobile',
+    'Migration DB',
+    'Formation',
+  ];
+
   // Appliquer un template
   const applyTemplate = (templateId: string) => {
     const template = templates.find(t => t.id === templateId);
     if (!template) return;
-    
+
     const data = template.template_data;
     setTitle(data.title);
     if (data.priority) setPriority(data.priority);
     if (data.status) setStatus(data.status);
     if (data.effort_estimate_h) setEffortEstimate(data.effort_estimate_h);
-    
+
     // Incrémenter le compteur d'utilisation
     incrementUsage(templateId);
   };
@@ -86,7 +104,7 @@ export const TaskCreationDialog: React.FC<TaskCreationDialogProps> = ({
         status,
         effort_estimate_h: effortEstimate,
       });
-      
+
       // Reset form
       setTitle('');
       setAssignee('Ahmed Waleh');
@@ -95,7 +113,7 @@ export const TaskCreationDialog: React.FC<TaskCreationDialogProps> = ({
       setPriority('medium');
       setStatus('todo');
       setEffortEstimate(8);
-      
+
       onOpenChange(false);
     } catch (error) {
       console.error('Erreur:', error);
@@ -125,17 +143,21 @@ export const TaskCreationDialog: React.FC<TaskCreationDialogProps> = ({
                   Utiliser un template
                 </Label>
                 <div className="flex gap-2">
-                  <Select value={selectedTemplateId} onValueChange={(value) => {
-                    setSelectedTemplateId(value);
-                    applyTemplate(value);
-                  }}>
+                  <Select
+                    value={selectedTemplateId}
+                    onValueChange={value => {
+                      setSelectedTemplateId(value);
+                      applyTemplate(value);
+                    }}
+                  >
                     <SelectTrigger>
                       <SelectValue placeholder="Choisir un template..." />
                     </SelectTrigger>
                     <SelectContent>
-                      {templates.map((template) => (
+                      {templates.map(template => (
                         <SelectItem key={template.id} value={template.id}>
-                          {template.name} {template.usage_count > 0 && `(⭐ ${template.usage_count})`}
+                          {template.name}{' '}
+                          {template.usage_count > 0 && `(⭐ ${template.usage_count})`}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -146,20 +168,18 @@ export const TaskCreationDialog: React.FC<TaskCreationDialogProps> = ({
               <Separator />
             </>
           )}
-          
+
           {/* Titre */}
           <div className="space-y-2">
             <Label htmlFor="title">Titre de la tâche *</Label>
             <Input
               id="title"
               value={title}
-              onChange={(e) => setTitle(e.target.value)}
+              onChange={e => setTitle(e.target.value)}
               placeholder="Nom de la tâche..."
               maxLength={100}
             />
-            <p className="text-xs text-muted-foreground">
-              {title.length}/100 caractères
-            </p>
+            <p className="text-xs text-muted-foreground">{title.length}/100 caractères</p>
           </div>
 
           {/* Responsable et Département */}
@@ -171,8 +191,10 @@ export const TaskCreationDialog: React.FC<TaskCreationDialogProps> = ({
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {availableAssignees.map((person) => (
-                    <SelectItem key={person} value={person}>{person}</SelectItem>
+                  {availableAssignees.map(person => (
+                    <SelectItem key={person} value={person}>
+                      {person}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -185,8 +207,10 @@ export const TaskCreationDialog: React.FC<TaskCreationDialogProps> = ({
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {availableDepartments.map((dept) => (
-                    <SelectItem key={dept} value={dept}>{dept}</SelectItem>
+                  {availableDepartments.map(dept => (
+                    <SelectItem key={dept} value={dept}>
+                      {dept}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -202,8 +226,10 @@ export const TaskCreationDialog: React.FC<TaskCreationDialogProps> = ({
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {availableProjects.map((proj) => (
-                    <SelectItem key={proj} value={proj}>{proj}</SelectItem>
+                  {availableProjects.map(proj => (
+                    <SelectItem key={proj} value={proj}>
+                      {proj}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -249,7 +275,7 @@ export const TaskCreationDialog: React.FC<TaskCreationDialogProps> = ({
                 min="0.5"
                 step="0.5"
                 value={effortEstimate}
-                onChange={(e) => setEffortEstimate(parseFloat(e.target.value) || 1)}
+                onChange={e => setEffortEstimate(parseFloat(e.target.value) || 1)}
               />
             </div>
           </div>
@@ -257,14 +283,14 @@ export const TaskCreationDialog: React.FC<TaskCreationDialogProps> = ({
 
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>
-            <X className="h-4 w-4 mr-2" />
+            <X className="mr-2 h-4 w-4" />
             Annuler
           </Button>
-          <Button 
-            onClick={handleSubmit} 
+          <Button
+            onClick={handleSubmit}
             disabled={loading || !title.trim() || !assignee || !department || !project}
           >
-            <Save className="h-4 w-4 mr-2" />
+            <Save className="mr-2 h-4 w-4" />
             {loading ? 'Création...' : 'Créer la Tâche'}
           </Button>
         </DialogFooter>

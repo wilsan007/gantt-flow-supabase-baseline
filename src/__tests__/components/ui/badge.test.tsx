@@ -26,7 +26,7 @@ describe('Badge Component', () => {
         <Badge variant="outline">Outline</Badge>
       </>
     );
-    
+
     expect(screen.getByText('Default')).toBeInTheDocument();
     expect(screen.getByText('Secondary')).toBeInTheDocument();
     expect(screen.getByText('Outline')).toBeInTheDocument();

@@ -1,6 +1,10 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { permissionManager, PermissionContext, PermissionEvaluation } from '@/lib/permissionManager';
+import {
+  permissionManager,
+  PermissionContext,
+  PermissionEvaluation,
+} from '@/lib/permissionManager';
 
 /**
  * Hook pour gérer les permissions de manière optimale
@@ -13,94 +17,108 @@ export const usePermissions = () => {
   // Initialiser l'ID utilisateur
   useEffect(() => {
     const getCurrentUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       setCurrentUserId(user?.id || null);
     };
-    
+
     getCurrentUser();
   }, []);
 
   /**
    * Vérifier une permission spécifique
    */
-  const checkPermission = useCallback(async (
-    permission: string,
-    context?: Partial<PermissionContext>
-  ): Promise<PermissionEvaluation> => {
-    if (!currentUserId) {
-      return {
-        granted: false,
-        reason: 'Utilisateur non authentifié',
-        appliedRules: [],
-        context: { action: 'access', resource: 'general', ...context },
-        evaluatedAt: Date.now(),
-        userId: ''
-      };
-    }
+  const checkPermission = useCallback(
+    async (
+      permission: string,
+      context?: Partial<PermissionContext>
+    ): Promise<PermissionEvaluation> => {
+      if (!currentUserId) {
+        return {
+          granted: false,
+          reason: 'Utilisateur non authentifié',
+          appliedRules: [],
+          context: { action: 'access', resource: 'general', ...context },
+          evaluatedAt: Date.now(),
+          userId: '',
+        };
+      }
 
-    setIsLoading(true);
-    try {
-      const evaluation = await permissionManager.evaluatePermission(
-        currentUserId,
-        permission,
-        context
-      );
-      return evaluation;
-    } finally {
-      setIsLoading(false);
-    }
-  }, [currentUserId]);
+      setIsLoading(true);
+      try {
+        const evaluation = await permissionManager.evaluatePermission(
+          currentUserId,
+          permission,
+          context
+        );
+        return evaluation;
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [currentUserId]
+  );
 
   /**
    * Vérifier si l'utilisateur peut effectuer une action sur une ressource
    */
-  const canUser = useCallback(async (
-    action: string,
-    resource: string,
-    context?: Partial<PermissionContext>
-  ): Promise<boolean> => {
-    if (!currentUserId) return false;
+  const canUser = useCallback(
+    async (
+      action: string,
+      resource: string,
+      context?: Partial<PermissionContext>
+    ): Promise<boolean> => {
+      if (!currentUserId) return false;
 
-    setIsLoading(true);
-    try {
-      return await permissionManager.canUser(currentUserId, action, resource, context);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [currentUserId]);
+      setIsLoading(true);
+      try {
+        return await permissionManager.canUser(currentUserId, action, resource, context);
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [currentUserId]
+  );
 
   /**
    * Vérifier plusieurs permissions en parallèle
    */
-  const checkMultiplePermissions = useCallback(async (
-    permissions: Array<{
-      permission: string;
-      context?: Partial<PermissionContext>;
-    }>
-  ): Promise<Record<string, PermissionEvaluation>> => {
-    if (!currentUserId) return {};
+  const checkMultiplePermissions = useCallback(
+    async (
+      permissions: Array<{
+        permission: string;
+        context?: Partial<PermissionContext>;
+      }>
+    ): Promise<Record<string, PermissionEvaluation>> => {
+      if (!currentUserId) return {};
 
-    setIsLoading(true);
-    try {
-      const evaluations = await Promise.all(
-        permissions.map(async ({ permission, context }) => ({
-          key: permission,
-          evaluation: await permissionManager.evaluatePermission(
-            currentUserId,
-            permission,
-            context
-          )
-        }))
-      );
+      setIsLoading(true);
+      try {
+        const evaluations = await Promise.all(
+          permissions.map(async ({ permission, context }) => ({
+            key: permission,
+            evaluation: await permissionManager.evaluatePermission(
+              currentUserId,
+              permission,
+              context
+            ),
+          }))
+        );
 
-      return evaluations.reduce((acc, { key, evaluation }) => {
-        acc[key] = evaluation;
-        return acc;
-      }, {} as Record<string, PermissionEvaluation>);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [currentUserId]);
+        return evaluations.reduce(
+          (acc, { key, evaluation }) => {
+            acc[key] = evaluation;
+            return acc;
+          },
+          {} as Record<string, PermissionEvaluation>
+        );
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [currentUserId]
+  );
 
   /**
    * Vérifications rapides pour l'UI (avec cache)
@@ -110,28 +128,40 @@ export const usePermissions = () => {
     manageUsers: useCallback(() => canUser('manage', 'users'), [canUser]),
     viewUsers: useCallback(() => canUser('view', 'users'), [canUser]),
     createUser: useCallback(() => canUser('create', 'user'), [canUser]),
-    editUser: useCallback((userId?: string) => 
-      canUser('edit', 'user', { resourceId: userId }), [canUser]),
-    deleteUser: useCallback((userId?: string) => 
-      canUser('delete', 'user', { resourceId: userId }), [canUser]),
+    editUser: useCallback(
+      (userId?: string) => canUser('edit', 'user', { resourceId: userId }),
+      [canUser]
+    ),
+    deleteUser: useCallback(
+      (userId?: string) => canUser('delete', 'user', { resourceId: userId }),
+      [canUser]
+    ),
 
     // Gestion des projets
     manageProjects: useCallback(() => canUser('manage', 'projects'), [canUser]),
     viewProjects: useCallback(() => canUser('view', 'projects'), [canUser]),
     createProject: useCallback(() => canUser('create', 'project'), [canUser]),
-    editProject: useCallback((projectId?: string) => 
-      canUser('edit', 'project', { resourceId: projectId }), [canUser]),
-    deleteProject: useCallback((projectId?: string) => 
-      canUser('delete', 'project', { resourceId: projectId }), [canUser]),
+    editProject: useCallback(
+      (projectId?: string) => canUser('edit', 'project', { resourceId: projectId }),
+      [canUser]
+    ),
+    deleteProject: useCallback(
+      (projectId?: string) => canUser('delete', 'project', { resourceId: projectId }),
+      [canUser]
+    ),
 
     // Gestion des tâches
     manageTasks: useCallback(() => canUser('manage', 'tasks'), [canUser]),
     viewTasks: useCallback(() => canUser('view', 'tasks'), [canUser]),
     createTask: useCallback(() => canUser('create', 'task'), [canUser]),
-    editTask: useCallback((taskId?: string) => 
-      canUser('edit', 'task', { resourceId: taskId }), [canUser]),
-    assignTask: useCallback((taskId?: string) => 
-      canUser('assign', 'task', { resourceId: taskId }), [canUser]),
+    editTask: useCallback(
+      (taskId?: string) => canUser('edit', 'task', { resourceId: taskId }),
+      [canUser]
+    ),
+    assignTask: useCallback(
+      (taskId?: string) => canUser('assign', 'task', { resourceId: taskId }),
+      [canUser]
+    ),
 
     // Gestion RH
     manageEmployees: useCallback(() => canUser('manage', 'employees'), [canUser]),
@@ -146,10 +176,16 @@ export const usePermissions = () => {
     accessSuperAdmin: useCallback(() => canUser('access', 'super_admin'), [canUser]),
 
     // Permissions contextuelles
-    editProjectInTenant: useCallback((projectId?: string, tenantId?: string) => 
-      canUser('edit', 'project', { resourceId: projectId, tenantId }), [canUser]),
-    assignTaskInProject: useCallback((taskId?: string, projectId?: string) => 
-      canUser('assign', 'task', { resourceId: taskId, projectId }), [canUser]),
+    editProjectInTenant: useCallback(
+      (projectId?: string, tenantId?: string) =>
+        canUser('edit', 'project', { resourceId: projectId, tenantId }),
+      [canUser]
+    ),
+    assignTaskInProject: useCallback(
+      (taskId?: string, projectId?: string) =>
+        canUser('assign', 'task', { resourceId: taskId, projectId }),
+      [canUser]
+    ),
   };
 
   /**
@@ -191,17 +227,14 @@ export const usePermissions = () => {
     // Utilitaires
     getPermissionStats,
     getAuditLog,
-    invalidatePermissionCache
+    invalidatePermissionCache,
   };
 };
 
 /**
  * Hook pour vérifier une permission spécifique en temps réel
  */
-export const usePermission = (
-  permission: string,
-  context?: Partial<PermissionContext>
-) => {
+export const usePermission = (permission: string, context?: Partial<PermissionContext>) => {
   const [evaluation, setEvaluation] = useState<PermissionEvaluation | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const { checkPermission } = usePermissions();
@@ -213,14 +246,14 @@ export const usePermission = (
         const result = await checkPermission(permission, context);
         setEvaluation(result);
       } catch (error) {
-        console.error('Erreur lors de l\'évaluation de la permission:', error);
+        console.error("Erreur lors de l'évaluation de la permission:", error);
         setEvaluation({
           granted: false,
-          reason: 'Erreur d\'évaluation',
+          reason: "Erreur d'évaluation",
           appliedRules: [],
           context: { action: 'access', resource: 'general', ...context },
           evaluatedAt: Date.now(),
-          userId: ''
+          userId: '',
         });
       } finally {
         setIsLoading(false);
@@ -233,7 +266,7 @@ export const usePermission = (
   return {
     granted: evaluation?.granted || false,
     evaluation,
-    isLoading
+    isLoading,
   };
 };
 
@@ -256,7 +289,7 @@ export const useCanUser = (
         const result = await canUser(action, resource, context);
         setCanAccess(result);
       } catch (error) {
-        console.error('Erreur lors de la vérification d\'accès:', error);
+        console.error("Erreur lors de la vérification d'accès:", error);
         setCanAccess(false);
       } finally {
         setIsLoading(false);
@@ -268,6 +301,6 @@ export const useCanUser = (
 
   return {
     canAccess,
-    isLoading
+    isLoading,
   };
 };

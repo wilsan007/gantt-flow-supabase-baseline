@@ -1,7 +1,7 @@
 /**
  * 🎯 useTaskTemplates - Hook pour gérer les templates de tâches
  * Pattern: Notion, Linear, ClickUp
- * 
+ *
  * Fonctionnalités:
  * - CRUD templates (Create, Read, Update, Delete)
  * - Templates personnels + publics du tenant
@@ -46,7 +46,12 @@ interface UseTaskTemplatesReturn {
   templates: TaskTemplate[];
   loading: boolean;
   error: Error | null;
-  createTemplate: (template: Omit<TaskTemplate, 'id' | 'tenant_id' | 'created_by' | 'usage_count' | 'created_at' | 'updated_at'>) => Promise<TaskTemplate | null>;
+  createTemplate: (
+    template: Omit<
+      TaskTemplate,
+      'id' | 'tenant_id' | 'created_by' | 'usage_count' | 'created_at' | 'updated_at'
+    >
+  ) => Promise<TaskTemplate | null>;
   updateTemplate: (id: string, updates: Partial<TaskTemplate>) => Promise<boolean>;
   deleteTemplate: (id: string) => Promise<boolean>;
   incrementUsage: (id: string) => Promise<void>;
@@ -111,120 +116,126 @@ export const useTaskTemplates = (): UseTaskTemplatesReturn => {
   /**
    * Créer un template
    */
-  const createTemplate = useCallback(async (
-    template: Omit<TaskTemplate, 'id' | 'tenant_id' | 'created_by' | 'usage_count' | 'created_at' | 'updated_at'>
-  ): Promise<TaskTemplate | null> => {
-    if (!currentTenant?.id) {
-      toast({
-        title: '❌ Erreur',
-        description: 'Tenant non disponible',
-        variant: 'destructive',
-      });
-      return null;
-    }
-
-    try {
-      const { data: session } = await supabase.auth.getSession();
-      if (!session?.session?.user) {
-        throw new Error('Non authentifié');
+  const createTemplate = useCallback(
+    async (
+      template: Omit<
+        TaskTemplate,
+        'id' | 'tenant_id' | 'created_by' | 'usage_count' | 'created_at' | 'updated_at'
+      >
+    ): Promise<TaskTemplate | null> => {
+      if (!currentTenant?.id) {
+        toast({
+          title: '❌ Erreur',
+          description: 'Tenant non disponible',
+          variant: 'destructive',
+        });
+        return null;
       }
 
-      const { data, error: createError } = await supabase
-        .from('task_templates')
-        .insert({
-          tenant_id: currentTenant.id,
-          created_by: session.session.user.id,
-          name: template.name,
-          description: template.description,
-          category: template.category,
-          template_data: template.template_data,
-          is_public: template.is_public,
-        })
-        .select()
-        .single();
+      try {
+        const { data: session } = await supabase.auth.getSession();
+        if (!session?.session?.user) {
+          throw new Error('Non authentifié');
+        }
 
-      if (createError) throw createError;
+        const { data, error: createError } = await supabase
+          .from('task_templates')
+          .insert({
+            tenant_id: currentTenant.id,
+            created_by: session.session.user.id,
+            name: template.name,
+            description: template.description,
+            category: template.category,
+            template_data: template.template_data,
+            is_public: template.is_public,
+          })
+          .select()
+          .single();
 
-      toast({
-        title: '✅ Template créé',
-        description: `"${template.name}" a été enregistré`,
-      });
+        if (createError) throw createError;
 
-      await fetchTemplates();
-      return data;
-    } catch (err) {
-      console.error('Erreur création template:', err);
-      toast({
-        title: '❌ Erreur',
-        description: 'Impossible de créer le template',
-        variant: 'destructive',
-      });
-      return null;
-    }
-  }, [currentTenant?.id, toast, fetchTemplates]);
+        toast({
+          title: '✅ Template créé',
+          description: `"${template.name}" a été enregistré`,
+        });
+
+        await fetchTemplates();
+        return data;
+      } catch (err) {
+        console.error('Erreur création template:', err);
+        toast({
+          title: '❌ Erreur',
+          description: 'Impossible de créer le template',
+          variant: 'destructive',
+        });
+        return null;
+      }
+    },
+    [currentTenant?.id, toast, fetchTemplates]
+  );
 
   /**
    * Mettre à jour un template
    */
-  const updateTemplate = useCallback(async (
-    id: string,
-    updates: Partial<TaskTemplate>
-  ): Promise<boolean> => {
-    try {
-      const { error: updateError } = await supabase
-        .from('task_templates')
-        .update(updates)
-        .eq('id', id);
+  const updateTemplate = useCallback(
+    async (id: string, updates: Partial<TaskTemplate>): Promise<boolean> => {
+      try {
+        const { error: updateError } = await supabase
+          .from('task_templates')
+          .update(updates)
+          .eq('id', id);
 
-      if (updateError) throw updateError;
+        if (updateError) throw updateError;
 
-      toast({
-        title: '✅ Template mis à jour',
-        description: 'Les modifications ont été enregistrées',
-      });
+        toast({
+          title: '✅ Template mis à jour',
+          description: 'Les modifications ont été enregistrées',
+        });
 
-      await fetchTemplates();
-      return true;
-    } catch (err) {
-      console.error('Erreur mise à jour template:', err);
-      toast({
-        title: '❌ Erreur',
-        description: 'Impossible de mettre à jour le template',
-        variant: 'destructive',
-      });
-      return false;
-    }
-  }, [toast, fetchTemplates]);
+        await fetchTemplates();
+        return true;
+      } catch (err) {
+        console.error('Erreur mise à jour template:', err);
+        toast({
+          title: '❌ Erreur',
+          description: 'Impossible de mettre à jour le template',
+          variant: 'destructive',
+        });
+        return false;
+      }
+    },
+    [toast, fetchTemplates]
+  );
 
   /**
    * Supprimer un template
    */
-  const deleteTemplate = useCallback(async (id: string): Promise<boolean> => {
-    try {
-      const { error: deleteError } = await supabase
-        .from('task_templates')
-        .delete()
-        .eq('id', id);
+  const deleteTemplate = useCallback(
+    async (id: string): Promise<boolean> => {
+      try {
+        const { error: deleteError } = await supabase.from('task_templates').delete().eq('id', id);
 
-      if (deleteError) throw deleteError;
+        if (deleteError) throw deleteError;
 
-      toast({
-        title: '✅ Template supprimé',
-        description: 'Le template a été supprimé',
-      });
+        toast({
+          title: '✅ Template supprimé',
+          description: 'Le template a été supprimé',
+        });
 
-      await fetchTemplates();
-      return true;
-    } catch (err) {
-      console.error('Erreur suppression template:', err);
-      toast({
-        title: '❌ Erreur',
-        description: 'Impossible de supprimer le template',
-        variant: 'destructive',
-      });
-      return false;
-    }
-  }, [toast, fetchTemplates]);
+        await fetchTemplates();
+        return true;
+      } catch (err) {
+        console.error('Erreur suppression template:', err);
+        toast({
+          title: '❌ Erreur',
+          description: 'Impossible de supprimer le template',
+          variant: 'destructive',
+        });
+        return false;
+      }
+    },
+    [toast, fetchTemplates]
+  );
 
   /**
    * Incrémenter le compteur d'utilisation
@@ -239,7 +250,7 @@ export const useTaskTemplates = (): UseTaskTemplatesReturn => {
 
       // Mettre à jour localement sans refetch
       setTemplates(prev =>
-        prev.map(t => t.id === id ? { ...t, usage_count: t.usage_count + 1 } : t)
+        prev.map(t => (t.id === id ? { ...t, usage_count: t.usage_count + 1 } : t))
       );
     } catch (err) {
       console.error('Erreur incrémentation usage:', err);

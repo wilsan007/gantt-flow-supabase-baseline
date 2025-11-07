@@ -24,7 +24,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   requiredRole,
   requiredPermission,
   fallbackPath = '/',
-  showAccessDenied = true
+  showAccessDenied = true,
 }) => {
   const {
     accessRights,
@@ -34,15 +34,15 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     canAccess,
     getUserRoleNames,
     getAccessLevel,
-    getAccessRestrictions
+    getAccessRestrictions,
   } = useRoleBasedAccess();
 
   // Afficher un loader pendant la vérification des rôles
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="flex min-h-screen items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+          <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-b-2 border-primary"></div>
           <p className="text-muted-foreground">Vérification des permissions...</p>
         </div>
       </div>
@@ -75,27 +75,25 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     }
 
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background p-4">
+      <div className="flex min-h-screen items-center justify-center bg-background p-4">
         <Card className="w-full max-w-md">
           <CardHeader className="text-center">
             <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-red-100">
               <Shield className="h-6 w-6 text-red-600" />
             </div>
-            <CardTitle className="text-xl font-semibold text-red-600">
-              Accès Refusé
-            </CardTitle>
+            <CardTitle className="text-xl font-semibold text-red-600">Accès Refusé</CardTitle>
             <CardDescription>
               Vous n'avez pas les permissions nécessaires pour accéder à cette page.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             {/* Raison du refus */}
-            <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
+            <div className="rounded-lg border border-red-200 bg-red-50 p-3">
               <div className="flex items-center gap-2">
                 <AlertTriangle className="h-4 w-4 text-red-500" />
                 <span className="text-sm font-medium text-red-700">Raison :</span>
               </div>
-              <p className="text-sm text-red-600 mt-1">{denialReason}</p>
+              <p className="mt-1 text-sm text-red-600">{denialReason}</p>
             </div>
 
             {/* Informations sur les rôles actuels */}
@@ -103,7 +101,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
               <p className="text-sm font-medium">Vos rôles actuels :</p>
               <div className="flex flex-wrap gap-2">
                 {getUserRoleNames().length > 0 ? (
-                  getUserRoleNames().map((role) => (
+                  getUserRoleNames().map(role => (
                     <Badge key={role} variant="secondary">
                       {role}
                     </Badge>
@@ -117,12 +115,17 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
             {/* Niveau d'accès */}
             <div className="space-y-2">
               <p className="text-sm font-medium">Niveau d'accès :</p>
-              <Badge variant={
-                getAccessLevel() === 'super_admin' ? 'default' :
-                getAccessLevel() === 'admin' ? 'secondary' :
-                getAccessLevel() === 'advanced' ? 'outline' :
-                'destructive'
-              }>
+              <Badge
+                variant={
+                  getAccessLevel() === 'super_admin'
+                    ? 'default'
+                    : getAccessLevel() === 'admin'
+                      ? 'secondary'
+                      : getAccessLevel() === 'advanced'
+                        ? 'outline'
+                        : 'destructive'
+                }
+              >
                 {getAccessLevel()}
               </Badge>
             </div>
@@ -131,10 +134,10 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
             {getAccessRestrictions().length > 0 && (
               <div className="space-y-2">
                 <p className="text-sm font-medium">Restrictions actuelles :</p>
-                <ul className="text-sm text-muted-foreground space-y-1">
+                <ul className="space-y-1 text-sm text-muted-foreground">
                   {getAccessRestrictions().map((restriction, index) => (
                     <li key={index} className="flex items-center gap-2">
-                      <div className="w-1 h-1 bg-muted-foreground rounded-full"></div>
+                      <div className="h-1 w-1 rounded-full bg-muted-foreground"></div>
                       {restriction}
                     </li>
                   ))}
@@ -143,25 +146,18 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
             )}
 
             {/* Actions */}
-            <div className="pt-4 space-y-2">
-              <Button 
-                onClick={() => window.history.back()} 
-                variant="outline" 
-                className="w-full"
-              >
-                <ArrowLeft className="h-4 w-4 mr-2" />
+            <div className="space-y-2 pt-4">
+              <Button onClick={() => window.history.back()} variant="outline" className="w-full">
+                <ArrowLeft className="mr-2 h-4 w-4" />
                 Retour
               </Button>
-              <Button 
-                onClick={() => window.location.href = fallbackPath} 
-                className="w-full"
-              >
+              <Button onClick={() => (window.location.href = fallbackPath)} className="w-full">
                 Aller au tableau de bord
               </Button>
             </div>
 
             {/* Message d'aide */}
-            <div className="text-center pt-4 border-t">
+            <div className="border-t pt-4 text-center">
               <p className="text-xs text-muted-foreground">
                 Si vous pensez que c'est une erreur, contactez votre administrateur.
               </p>

@@ -6,12 +6,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { X, Edit, Save, Calendar, CheckSquare, BarChart3, List } from 'lucide-react';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
@@ -48,13 +43,8 @@ export const ActivityDetailDialog: React.FC<ActivityDetailDialogProps> = ({
 
   const { activities, updateActivity } = useOperationalActivities({ autoFetch: false });
   const { getSchedule, upsertSchedule } = useOperationalSchedules();
-  const { 
-    templates, 
-    fetchTemplates, 
-    createTemplate, 
-    updateTemplate, 
-    deleteTemplate 
-  } = useOperationalActionTemplates();
+  const { templates, fetchTemplates, createTemplate, updateTemplate, deleteTemplate } =
+    useOperationalActionTemplates();
 
   // Charger les données
   useEffect(() => {
@@ -125,20 +115,20 @@ export const ActivityDetailDialog: React.FC<ActivityDetailDialogProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-h-[90vh] max-w-6xl overflow-y-auto">
         <DialogHeader>
           <div className="flex items-start justify-between">
             <div className="flex-1">
               {editMode ? (
                 <Input
                   value={localActivity.name || ''}
-                  onChange={(e) => setLocalActivity({ ...localActivity, name: e.target.value })}
+                  onChange={e => setLocalActivity({ ...localActivity, name: e.target.value })}
                   className="text-2xl font-bold"
                 />
               ) : (
                 <DialogTitle className="text-2xl">{activity.name}</DialogTitle>
               )}
-              <div className="flex gap-2 mt-2">
+              <div className="mt-2 flex gap-2">
                 <Badge variant={activity.is_active ? 'default' : 'secondary'}>
                   {activity.is_active ? 'Active' : 'Inactive'}
                 </Badge>
@@ -154,13 +144,13 @@ export const ActivityDetailDialog: React.FC<ActivityDetailDialogProps> = ({
                   Annuler
                 </Button>
                 <Button onClick={handleSave} size="sm">
-                  <Save className="h-4 w-4 mr-2" />
+                  <Save className="mr-2 h-4 w-4" />
                   Sauvegarder
                 </Button>
               </div>
             ) : (
               <Button onClick={() => setEditMode(true)} variant="outline" size="sm">
-                <Edit className="h-4 w-4 mr-2" />
+                <Edit className="mr-2 h-4 w-4" />
                 Modifier
               </Button>
             )}
@@ -172,23 +162,23 @@ export const ActivityDetailDialog: React.FC<ActivityDetailDialogProps> = ({
         <Tabs defaultValue="info" className="w-full">
           <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="info">
-              <List className="h-4 w-4 mr-2" />
+              <List className="mr-2 h-4 w-4" />
               Infos
             </TabsTrigger>
             <TabsTrigger value="schedule" disabled={activity.kind === 'one_off'}>
-              <Calendar className="h-4 w-4 mr-2" />
+              <Calendar className="mr-2 h-4 w-4" />
               Planning
             </TabsTrigger>
             <TabsTrigger value="actions">
-              <CheckSquare className="h-4 w-4 mr-2" />
+              <CheckSquare className="mr-2 h-4 w-4" />
               Actions
             </TabsTrigger>
             <TabsTrigger value="occurrences">
-              <List className="h-4 w-4 mr-2" />
+              <List className="mr-2 h-4 w-4" />
               Occurrences
             </TabsTrigger>
             <TabsTrigger value="stats">
-              <BarChart3 className="h-4 w-4 mr-2" />
+              <BarChart3 className="mr-2 h-4 w-4" />
               Stats
             </TabsTrigger>
           </TabsList>
@@ -201,7 +191,9 @@ export const ActivityDetailDialog: React.FC<ActivityDetailDialogProps> = ({
                 {editMode ? (
                   <Textarea
                     value={localActivity.description || ''}
-                    onChange={(e) => setLocalActivity({ ...localActivity, description: e.target.value })}
+                    onChange={e =>
+                      setLocalActivity({ ...localActivity, description: e.target.value })
+                    }
                     rows={4}
                   />
                 ) : (
@@ -216,10 +208,12 @@ export const ActivityDetailDialog: React.FC<ActivityDetailDialogProps> = ({
                 {editMode ? (
                   <Input
                     value={localActivity.task_title_template || ''}
-                    onChange={(e) => setLocalActivity({ ...localActivity, task_title_template: e.target.value })}
+                    onChange={e =>
+                      setLocalActivity({ ...localActivity, task_title_template: e.target.value })
+                    }
                   />
                 ) : (
-                  <p className="text-sm font-mono bg-muted p-2 rounded">
+                  <p className="rounded bg-muted p-2 font-mono text-sm">
                     {activity.task_title_template || 'Aucun template'}
                   </p>
                 )}
@@ -263,9 +257,9 @@ export const ActivityDetailDialog: React.FC<ActivityDetailDialogProps> = ({
                 />
               ) : schedule ? (
                 <div className="space-y-4">
-                  <div className="bg-muted p-4 rounded-lg">
+                  <div className="rounded-lg bg-muted p-4">
                     <Label>Règle RRULE</Label>
-                    <code className="text-sm block mt-2">{schedule.rrule || 'Aucune'}</code>
+                    <code className="mt-2 block text-sm">{schedule.rrule || 'Aucune'}</code>
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
@@ -277,7 +271,9 @@ export const ActivityDetailDialog: React.FC<ActivityDetailDialogProps> = ({
                     <div>
                       <Label className="text-muted-foreground">Date de fin</Label>
                       <p className="font-medium">
-                        {schedule.until ? new Date(schedule.until).toLocaleDateString('fr-FR') : 'Aucune'}
+                        {schedule.until
+                          ? new Date(schedule.until).toLocaleDateString('fr-FR')
+                          : 'Aucune'}
                       </p>
                     </div>
                   </div>
@@ -294,7 +290,7 @@ export const ActivityDetailDialog: React.FC<ActivityDetailDialogProps> = ({
           <TabsContent value="actions">
             <ActionTemplateListEnhanced
               templates={templates}
-              onAdd={async (data) => {
+              onAdd={async data => {
                 await createTemplate({
                   activity_id: activityId,
                   ...data,
@@ -305,10 +301,10 @@ export const ActivityDetailDialog: React.FC<ActivityDetailDialogProps> = ({
                 await updateTemplate(id, data);
                 await fetchTemplates(activityId);
               }}
-              onDelete={async (id) => {
+              onDelete={async id => {
                 await deleteTemplate(id, activityId);
               }}
-              onReorder={async (reordered) => {
+              onReorder={async reordered => {
                 // Mettre à jour les positions
                 for (const template of reordered) {
                   await updateTemplate(template.id, { position: template.position });

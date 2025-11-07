@@ -1,0 +1,32 @@
+{
+  "files": [],
+  "references": [
+    { "path": "./tsconfig.app.json" },
+    { "path": "./tsconfig.node.json" }
+  ],
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    },
+    
+    // ⚡ OPTIMISATIONS DE VITESSE
+    "skipLibCheck": true,
+    "skipDefaultLibCheck": true,
+    
+    // ⚡ RÉSOLUTION MODERNE (plus rapide)
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    
+    // ⚡ COMPILATION INCRÉMENTALE (cache les builds)
+    "incremental": true,
+    "tsBuildInfoFile": ".tsbuildinfo",
+    
+    // Checks désactivés pour vitesse (déjà présents)
+    "noImplicitAny": false,
+    "noUnusedParameters": false,
+    "noUnusedLocals": false,
+    "strictNullChecks": false,
+    "allowJs": true
+  }
+}

@@ -1,7 +1,7 @@
 /**
  * Gestionnaire de Permissions Avancé
  * Inspiré des meilleures pratiques de Auth0, AWS IAM, et Google Cloud IAM
- * 
+ *
  * Fonctionnalités:
  * - Évaluation des permissions en temps réel
  * - Cache intelligent avec invalidation
@@ -33,7 +33,15 @@ export interface PermissionRule {
 
 export interface PermissionCondition {
   field: string;
-  operator: 'equals' | 'not_equals' | 'in' | 'not_in' | 'contains' | 'starts_with' | 'greater_than' | 'less_than';
+  operator:
+    | 'equals'
+    | 'not_equals'
+    | 'in'
+    | 'not_in'
+    | 'contains'
+    | 'starts_with'
+    | 'greater_than'
+    | 'less_than';
   value: any;
 }
 
@@ -50,30 +58,30 @@ export interface PermissionEvaluation {
  * ========================================
  * CONFIGURATION DES PERMISSIONS - WADASHAQEEN
  * ========================================
- * 
+ *
  * IMPORTANT: Les permissions ci-dessous sont des EXEMPLES DE BASE uniquement.
  * Le système réel récupère DYNAMIQUEMENT les permissions depuis la base de données :
- * 
+ *
  * FLUX DE RÉCUPÉRATION DES PERMISSIONS:
  * =====================================
- * 
+ *
  * 1. USER → USER_ROLES (user_id)
  *    ↓
- * 2. USER_ROLES → ROLES (role_id) 
+ * 2. USER_ROLES → ROLES (role_id)
  *    ↓
  * 3. ROLES → ROLE_PERMISSIONS (role_id)
- *    ↓  
+ *    ↓
  * 4. ROLE_PERMISSIONS → PERMISSIONS (permission_id)
- * 
+ *
  * REQUÊTE SQL OPTIMISÉE:
  * ======================
  * SELECT DISTINCT p.name as permission_name, p.description, r.name as role_name
  * FROM user_roles ur
- * JOIN roles r ON ur.role_id = r.id  
+ * JOIN roles r ON ur.role_id = r.id
  * JOIN role_permissions rp ON r.id = rp.role_id
  * JOIN permissions p ON rp.permission_id = p.id
  * WHERE ur.user_id = ? AND ur.is_active = true
- * 
+ *
  * AVANTAGES DE L'APPROCHE DYNAMIQUE:
  * ===================================
  * ✅ Support des 16+ rôles en base de données
@@ -85,16 +93,16 @@ export interface PermissionEvaluation {
 // Permissions de base pour tous les utilisateurs authentifiés (exemples)
 const BASIC_AUTHENTICATED_PERMISSIONS = [
   'read_own_profile',
-  'update_own_profile', 
-  'read_own_tasks'
+  'update_own_profile',
+  'read_own_tasks',
 ];
 
 // Permissions contextuelles nécessitant une évaluation spéciale (exemples)
 const CONTEXTUAL_PERMISSIONS = [
   'edit_project_in_tenant',
-  'assign_task_in_project', 
+  'assign_task_in_project',
   'view_employee_in_tenant',
-  'manage_budget_in_project'
+  'manage_budget_in_project',
 ];
 
 /**
@@ -104,7 +112,7 @@ class PermissionManager {
   private evaluationCache = new Map<string, PermissionEvaluation>();
   private auditLog: PermissionEvaluation[] = [];
   private customRules: PermissionRule[] = [];
-  
+
   constructor() {
     // Nettoyer le cache d'évaluation périodiquement
     setInterval(() => this.cleanupEvaluationCache(), 5 * 60 * 1000); // 5 minutes
@@ -121,12 +129,12 @@ class PermissionManager {
     const fullContext: PermissionContext = {
       action: context.action || 'access',
       resource: context.resource || 'general',
-      ...context
+      ...context,
     };
 
     // Générer une clé de cache pour cette évaluation
     const cacheKey = this.generateEvaluationCacheKey(userId, permission, fullContext);
-    
+
     // Vérifier le cache d'évaluation
     const cached = this.evaluationCache.get(cacheKey);
     if (cached && this.isCacheValid(cached)) {
@@ -135,13 +143,13 @@ class PermissionManager {
 
     // Effectuer l'évaluation complète
     const evaluation = await this.performPermissionEvaluation(userId, permission, fullContext);
-    
+
     // Mettre en cache le résultat
     this.evaluationCache.set(cacheKey, evaluation);
-    
+
     // Ajouter au log d'audit
     this.addToAuditLog(evaluation);
-    
+
     return evaluation;
   }
 
@@ -159,7 +167,7 @@ class PermissionManager {
       appliedRules: [],
       context,
       evaluatedAt: Date.now(),
-      userId
+      userId,
     };
 
     try {
@@ -184,7 +192,11 @@ class PermissionManager {
       }
 
       // 4. Vérifier les permissions par rôle (avec les permissions de la DB)
-      const rolePermissionResult = this.checkRolePermissions(userRoles, userPermissions, permission);
+      const rolePermissionResult = this.checkRolePermissions(
+        userRoles,
+        userPermissions,
+        permission
+      );
       if (rolePermissionResult.granted) {
         evaluation.granted = true;
         evaluation.reason = rolePermissionResult.reason;
@@ -194,9 +206,9 @@ class PermissionManager {
 
       // 5. Vérifier les permissions contextuelles
       const contextualResult = await this.checkContextualPermissions(
-        userId, 
-        userRoles, 
-        permission, 
+        userId,
+        userRoles,
+        permission,
         context
       );
       if (contextualResult.granted) {
@@ -225,9 +237,8 @@ class PermissionManager {
 
       // Permission refusée
       evaluation.reason = `Permission '${permission}' non accordée pour ce rôle/contexte`;
-
     } catch (error) {
-      console.error('Erreur lors de l\'évaluation des permissions:', error);
+      console.error("Erreur lors de l'évaluation des permissions:", error);
       evaluation.reason = `Erreur d'évaluation: ${error}`;
     }
 
@@ -270,18 +281,18 @@ class PermissionManager {
 
   /**
    * Vérifier les permissions par rôle (LOGIQUE DYNAMIQUE)
-   * 
+   *
    * IMPORTANT: Cette fonction utilise les permissions récupérées dynamiquement
    * depuis la base de données via useUserRoles → roleCacheManager
-   * 
+   *
    * FLUX OPTIMISÉ:
    * 1. Les permissions sont déjà récupérées et mises en cache par useUserRoles
    * 2. Cette fonction vérifie simplement si la permission existe dans la liste
    * 3. Pas besoin de requête supplémentaire - tout est en cache
    */
   private checkRolePermissions(
-    userRoles: UserRole[], 
-    userPermissions: UserPermission[], 
+    userRoles: UserRole[],
+    userPermissions: UserPermission[],
     permission: string
   ): {
     granted: boolean;
@@ -289,39 +300,35 @@ class PermissionManager {
     appliedRules: string[];
   } {
     // Vérifier si l'utilisateur a la permission directement (depuis la DB)
-    const hasDirectPermission = userPermissions.some(perm => 
-      perm.permission_name === permission
-    );
-    
+    const hasDirectPermission = userPermissions.some(perm => perm.permission_name === permission);
+
     if (hasDirectPermission) {
-      const grantingRole = userPermissions.find(perm => 
-        perm.permission_name === permission
+      const grantingRole = userPermissions.find(
+        perm => perm.permission_name === permission
       )?.role_name;
-      
+
       return {
         granted: true,
         reason: `Permission '${permission}' accordée par le rôle '${grantingRole}'`,
-        appliedRules: [`ROLE_${grantingRole?.toUpperCase()}_${permission.toUpperCase()}`]
+        appliedRules: [`ROLE_${grantingRole?.toUpperCase()}_${permission.toUpperCase()}`],
       };
     }
-    
+
     // Vérifier les super admins (accès complet)
-    const isSuperAdmin = userRoles.some(role => 
-      role.roles.name === 'super_admin'
-    );
-    
+    const isSuperAdmin = userRoles.some(role => role.roles.name === 'super_admin');
+
     if (isSuperAdmin) {
       return {
         granted: true,
         reason: 'Super Admin - Accès complet à toutes les permissions',
-        appliedRules: ['SUPER_ADMIN_ALL_PERMISSIONS']
+        appliedRules: ['SUPER_ADMIN_ALL_PERMISSIONS'],
       };
     }
-    
+
     return {
       granted: false,
       reason: `Permission '${permission}' non trouvée dans les rôles de l'utilisateur`,
-      appliedRules: []
+      appliedRules: [],
     };
   }
 
@@ -335,7 +342,7 @@ class PermissionManager {
     context: PermissionContext
   ): Promise<{ granted: boolean; reason: string; appliedRules: string[] }> {
     // Exemples de permissions contextuelles
-    
+
     // Permission de modifier un projet dans son tenant
     if (permission === 'edit_project_in_tenant' && context.tenantId) {
       const userTenantId = userRoles.find(role => role.tenant_id)?.tenant_id;
@@ -343,21 +350,21 @@ class PermissionManager {
         return {
           granted: true,
           reason: 'Permission accordée dans le contexte du tenant',
-          appliedRules: ['CONTEXTUAL_TENANT_PERMISSION']
+          appliedRules: ['CONTEXTUAL_TENANT_PERMISSION'],
         };
       }
     }
 
     // Permission d'assigner des tâches dans un projet géré
     if (permission === 'assign_task_in_project' && context.projectId) {
-      const isProjectManager = userRoles.some(role => 
-        role.roles.name === RoleNames.PROJECT_MANAGER
+      const isProjectManager = userRoles.some(
+        role => role.roles.name === RoleNames.PROJECT_MANAGER
       );
       if (isProjectManager) {
         return {
           granted: true,
           reason: 'Permission accordée en tant que chef de projet',
-          appliedRules: ['CONTEXTUAL_PROJECT_MANAGER_PERMISSION']
+          appliedRules: ['CONTEXTUAL_PROJECT_MANAGER_PERMISSION'],
         };
       }
     }
@@ -365,7 +372,7 @@ class PermissionManager {
     return {
       granted: false,
       reason: 'Permission contextuelle non accordée',
-      appliedRules: []
+      appliedRules: [],
     };
   }
 
@@ -379,21 +386,21 @@ class PermissionManager {
   ): { granted: boolean; reason: string; appliedRules: string[] } {
     // Trier les règles par priorité
     const sortedRules = this.customRules.sort((a, b) => b.priority - a.priority);
-    
+
     for (const rule of sortedRules) {
       if (this.evaluateRuleConditions(rule, userRoles, permission, context)) {
         return {
           granted: rule.effect === 'allow',
           reason: `Règle personnalisée appliquée: ${rule.name}`,
-          appliedRules: [rule.id]
+          appliedRules: [rule.id],
         };
       }
     }
-    
+
     return {
       granted: false,
       reason: 'Aucune règle personnalisée applicable',
-      appliedRules: []
+      appliedRules: [],
     };
   }
 
@@ -408,7 +415,7 @@ class PermissionManager {
   ): boolean {
     return rule.conditions.every(condition => {
       let fieldValue: any;
-      
+
       // Récupérer la valeur du champ
       switch (condition.field) {
         case 'permission':
@@ -429,7 +436,7 @@ class PermissionManager {
         default:
           return false;
       }
-      
+
       // Appliquer l'opérateur
       return this.applyConditionOperator(fieldValue, condition.operator, condition.value);
     });
@@ -479,7 +486,7 @@ class PermissionManager {
   private isCacheValid(evaluation: PermissionEvaluation): boolean {
     const now = Date.now();
     const maxAge = 2 * 60 * 1000; // 2 minutes
-    return (now - evaluation.evaluatedAt) < maxAge;
+    return now - evaluation.evaluatedAt < maxAge;
   }
 
   /**
@@ -488,16 +495,16 @@ class PermissionManager {
   private cleanupEvaluationCache(): void {
     const now = Date.now();
     const maxAge = 2 * 60 * 1000; // 2 minutes
-    
+
     const expiredKeys: string[] = [];
     this.evaluationCache.forEach((evaluation, key) => {
-      if ((now - evaluation.evaluatedAt) > maxAge) {
+      if (now - evaluation.evaluatedAt > maxAge) {
         expiredKeys.push(key);
       }
     });
-    
+
     expiredKeys.forEach(key => this.evaluationCache.delete(key));
-    
+
     if (expiredKeys.length > 0) {
       console.log(`🧹 Cache d'évaluation nettoyé: ${expiredKeys.length} entrées expirées`);
     }
@@ -508,7 +515,7 @@ class PermissionManager {
    */
   private addToAuditLog(evaluation: PermissionEvaluation): void {
     this.auditLog.push(evaluation);
-    
+
     // Garder seulement les 1000 dernières évaluations
     if (this.auditLog.length > 1000) {
       this.auditLog = this.auditLog.slice(-1000);
@@ -545,16 +552,16 @@ class PermissionManager {
   } {
     const now = Date.now();
     const recentThreshold = 5 * 60 * 1000; // 5 minutes
-    
+
     const recentEvaluations = this.auditLog.filter(
-      evaluation => (now - evaluation.evaluatedAt) < recentThreshold
+      evaluation => now - evaluation.evaluatedAt < recentThreshold
     ).length;
-    
+
     return {
       evaluationCacheSize: this.evaluationCache.size,
       auditLogSize: this.auditLog.length,
       customRulesCount: this.customRules.length,
-      recentEvaluations
+      recentEvaluations,
     };
   }
 
@@ -570,16 +577,18 @@ class PermissionManager {
    */
   invalidateUserEvaluations(userId: string): void {
     const keysToDelete: string[] = [];
-    
+
     this.evaluationCache.forEach((evaluation, key) => {
       if (evaluation.userId === userId) {
         keysToDelete.push(key);
       }
     });
-    
+
     keysToDelete.forEach(key => this.evaluationCache.delete(key));
-    
-    console.log(`🗑️ Cache d'évaluation invalidé pour l'utilisateur ${userId}: ${keysToDelete.length} entrées`);
+
+    console.log(
+      `🗑️ Cache d'évaluation invalidé pour l'utilisateur ${userId}: ${keysToDelete.length} entrées`
+    );
   }
 
   /**
@@ -595,9 +604,9 @@ class PermissionManager {
     const evaluation = await this.evaluatePermission(userId, permission, {
       action,
       resource,
-      ...context
+      ...context,
     });
-    
+
     return evaluation.granted;
   }
 }

@@ -1,7 +1,7 @@
 /**
  * NotionStyleSidebar - Navigation Style Noir Élégant (Image 1)
  * Pattern: Sidebar fixe fond noir avec sections collapsibles + rétractable
- * 
+ *
  * Design:
  * - Fond noir (bg-zinc-950) avec meilleur contraste
  * - Texte blanc/gris clair pour lisibilité
@@ -13,7 +13,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { 
+import {
   ChevronDown,
   ChevronRight,
   ChevronsLeft,
@@ -37,7 +37,7 @@ import {
   LogOut,
   Bell,
   Sun,
-  Moon
+  Moon,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -53,21 +53,21 @@ interface NotionStyleSidebarProps {
 export const NotionStyleSidebar: React.FC<NotionStyleSidebarProps> = ({
   accessRights,
   isTenantAdmin,
-  signOut
+  signOut,
 }) => {
   const location = useLocation();
-  
+
   // État de rétractation avec persistance localStorage
   const [isCollapsed, setIsCollapsed] = useState(() => {
     const saved = localStorage.getItem('sidebar-collapsed');
     return saved === 'true';
   });
-  
+
   const [isHomeExpanded, setIsHomeExpanded] = useState(true);
   const [isFavoritesExpanded, setIsFavoritesExpanded] = useState(true);
   const [isSpacesExpanded, setIsSpacesExpanded] = useState(true);
   const [favorites, setFavorites] = useState<string[]>(['/tasks', '/projects']);
-  
+
   // Sauvegarder l'état dans localStorage
   useEffect(() => {
     localStorage.setItem('sidebar-collapsed', isCollapsed.toString());
@@ -76,11 +76,7 @@ export const NotionStyleSidebar: React.FC<NotionStyleSidebarProps> = ({
   const isActivePath = (path: string) => location.pathname === path;
 
   const toggleFavorite = (path: string) => {
-    setFavorites(prev => 
-      prev.includes(path) 
-        ? prev.filter(p => p !== path)
-        : [...prev, path]
-    );
+    setFavorites(prev => (prev.includes(path) ? prev.filter(p => p !== path) : [...prev, path]));
   };
 
   // Section Accueil
@@ -93,66 +89,73 @@ export const NotionStyleSidebar: React.FC<NotionStyleSidebarProps> = ({
 
   // Section Espaces (Projets/Modules)
   const spaceItems = [
-    { 
-      to: '/projects', 
-      label: 'Projets', 
-      icon: FolderKanban, 
+    {
+      to: '/projects',
+      label: 'Projets',
+      icon: FolderKanban,
       show: accessRights.canAccessProjects,
-      color: 'text-blue-600'
+      color: 'text-blue-600',
     },
-    { 
-      to: '/hr', 
-      label: 'Ressources Humaines', 
-      icon: Users, 
+    {
+      to: '/hr',
+      label: 'Ressources Humaines',
+      icon: Users,
       show: accessRights.canAccessHR,
-      color: 'text-green-600'
+      color: 'text-green-600',
     },
-    { 
-      to: '/operations', 
-      label: 'Opérations', 
-      icon: Target, 
+    {
+      to: '/operations',
+      label: 'Opérations',
+      icon: Target,
       show: accessRights.canAccessTasks,
-      color: 'text-purple-600'
+      color: 'text-purple-600',
     },
-    { 
-      to: '/analytics', 
-      label: 'Analytics', 
-      icon: BarChart3, 
+    {
+      to: '/analytics',
+      label: 'Analytics',
+      icon: BarChart3,
       show: true,
-      color: 'text-orange-600'
+      color: 'text-orange-600',
     },
   ];
 
   // Section Plus (Autres)
   const moreItems = [
     { to: '/settings', label: 'Paramètres', icon: Settings, show: true },
-    { to: '/super-admin', label: 'Super Admin', icon: Crown, show: accessRights.canAccessSuperAdmin },
+    {
+      to: '/super-admin',
+      label: 'Super Admin',
+      icon: Crown,
+      show: accessRights.canAccessSuperAdmin,
+    },
   ];
 
   return (
-    <aside className={cn(
-      "hidden lg:flex lg:flex-col h-screen sticky top-0 transition-all duration-300",
-      "bg-zinc-950 text-white border-r border-zinc-800",
-      isCollapsed ? "w-16" : "w-64"
-    )}>
+    <aside
+      className={cn(
+        'sticky top-0 hidden h-screen transition-all duration-300 lg:flex lg:flex-col',
+        'border-r border-zinc-800 bg-zinc-950 text-white',
+        isCollapsed ? 'w-16' : 'w-64'
+      )}
+    >
       {/* Header Sidebar avec bouton Toggle */}
-      <div className="p-4 border-b border-zinc-800 flex items-center justify-between">
+      <div className="flex items-center justify-between border-b border-zinc-800 p-4">
         <Link to="/" className="flex items-center gap-2 overflow-hidden">
-          <div className="w-8 h-8 flex-shrink-0 rounded-lg bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center">
-            <span className="text-white font-bold text-sm">W</span>
+          <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-blue-600 to-purple-600">
+            <span className="text-sm font-bold text-white">W</span>
           </div>
           {!isCollapsed && (
-            <span className="font-semibold text-base whitespace-nowrap">Wadashaqeen</span>
+            <span className="whitespace-nowrap text-base font-semibold">Wadashaqeen</span>
           )}
         </Link>
-        
+
         {/* Bouton Toggle Collapse/Expand */}
         <Button
           variant="ghost"
           size="sm"
           onClick={() => setIsCollapsed(!isCollapsed)}
-          className="h-8 w-8 p-0 flex-shrink-0 text-zinc-400 hover:text-white hover:bg-zinc-800"
-          title={isCollapsed ? "Développer la sidebar" : "Réduire la sidebar"}
+          className="h-8 w-8 flex-shrink-0 p-0 text-zinc-400 hover:bg-zinc-800 hover:text-white"
+          title={isCollapsed ? 'Développer la sidebar' : 'Réduire la sidebar'}
         >
           {isCollapsed ? (
             <ChevronsRight className="h-4 w-4" />
@@ -164,26 +167,26 @@ export const NotionStyleSidebar: React.FC<NotionStyleSidebarProps> = ({
 
       {/* Bouton Créer (CTA Principal) */}
       <div className="p-3">
-        <Button 
+        <Button
           className={cn(
-            "w-full gap-2 bg-blue-600 hover:bg-blue-700 text-white shadow-lg",
-            isCollapsed ? "justify-center px-0" : "justify-start"
-          )} 
+            'w-full gap-2 bg-blue-600 text-white shadow-lg hover:bg-blue-700',
+            isCollapsed ? 'justify-center px-0' : 'justify-start'
+          )}
           size="sm"
-          title={isCollapsed ? "Créer" : undefined}
+          title={isCollapsed ? 'Créer' : undefined}
         >
           <Plus className="h-4 w-4" />
-          {!isCollapsed && "Créer"}
+          {!isCollapsed && 'Créer'}
         </Button>
       </div>
 
-      <ScrollArea className={cn("flex-1", isCollapsed ? "px-1" : "px-2")}>
+      <ScrollArea className={cn('flex-1', isCollapsed ? 'px-1' : 'px-2')}>
         {/* Section ACCUEIL */}
         <div className="mb-4">
           {!isCollapsed && (
             <button
               onClick={() => setIsHomeExpanded(!isHomeExpanded)}
-              className="flex items-center gap-2 w-full px-2 py-1.5 text-xs font-semibold text-zinc-500 hover:text-zinc-200 transition-colors"
+              className="flex w-full items-center gap-2 px-2 py-1.5 text-xs font-semibold text-zinc-500 transition-colors hover:text-zinc-200"
             >
               {isHomeExpanded ? (
                 <ChevronDown className="h-3.5 w-3.5" />
@@ -195,19 +198,19 @@ export const NotionStyleSidebar: React.FC<NotionStyleSidebarProps> = ({
           )}
 
           {(isHomeExpanded || isCollapsed) && (
-            <div className={cn("mt-1 space-y-0.5", isCollapsed && "mt-0")}>
-              {homeItems.map((item) =>
+            <div className={cn('mt-1 space-y-0.5', isCollapsed && 'mt-0')}>
+              {homeItems.map(item =>
                 item.show ? (
                   <Link
                     key={item.to}
                     to={item.to}
                     title={isCollapsed ? item.label : undefined}
                     className={cn(
-                      "group flex items-center gap-2 rounded-md text-sm transition-colors relative",
-                      isCollapsed ? "justify-center py-2 px-1" : "px-2 py-1.5",
+                      'group relative flex items-center gap-2 rounded-md text-sm transition-colors',
+                      isCollapsed ? 'justify-center px-1 py-2' : 'px-2 py-1.5',
                       isActivePath(item.to)
-                        ? "bg-zinc-800 text-white font-medium shadow-sm"
-                        : "text-zinc-400 hover:bg-zinc-800/60 hover:text-white"
+                        ? 'bg-zinc-800 font-medium text-white shadow-sm'
+                        : 'text-zinc-400 hover:bg-zinc-800/60 hover:text-white'
                     )}
                   >
                     <item.icon className="h-4 w-4 flex-shrink-0" />
@@ -215,28 +218,28 @@ export const NotionStyleSidebar: React.FC<NotionStyleSidebarProps> = ({
                       <>
                         <span className="flex-1 truncate">{item.label}</span>
                         {item.badge && (
-                          <span className="ml-auto px-1.5 py-0.5 text-[10px] font-medium bg-primary text-primary-foreground rounded">
+                          <span className="ml-auto rounded bg-primary px-1.5 py-0.5 text-[10px] font-medium text-primary-foreground">
                             {item.badge}
                           </span>
                         )}
                         <button
-                          onClick={(e) => {
+                          onClick={e => {
                             e.preventDefault();
                             e.stopPropagation();
                             toggleFavorite(item.to);
                           }}
                           className={cn(
-                            "opacity-0 group-hover:opacity-100 transition-opacity",
-                            favorites.includes(item.to) && "opacity-100"
+                            'opacity-0 transition-opacity group-hover:opacity-100',
+                            favorites.includes(item.to) && 'opacity-100'
                           )}
                         >
-                          <Star 
+                          <Star
                             className={cn(
-                              "h-3.5 w-3.5",
-                              favorites.includes(item.to) 
-                                ? "fill-yellow-400 text-yellow-400" 
-                                : "text-muted-foreground"
-                            )} 
+                              'h-3.5 w-3.5',
+                              favorites.includes(item.to)
+                                ? 'fill-yellow-400 text-yellow-400'
+                                : 'text-muted-foreground'
+                            )}
                           />
                         </button>
                       </>
@@ -253,7 +256,7 @@ export const NotionStyleSidebar: React.FC<NotionStyleSidebarProps> = ({
           <div className="mb-4">
             <button
               onClick={() => setIsFavoritesExpanded(!isFavoritesExpanded)}
-              className="flex items-center gap-2 w-full px-2 py-1.5 text-xs font-semibold text-zinc-500 hover:text-zinc-200 transition-colors"
+              className="flex w-full items-center gap-2 px-2 py-1.5 text-xs font-semibold text-zinc-500 transition-colors hover:text-zinc-200"
             >
               {isFavoritesExpanded ? (
                 <ChevronDown className="h-3.5 w-3.5" />
@@ -265,16 +268,16 @@ export const NotionStyleSidebar: React.FC<NotionStyleSidebarProps> = ({
 
             {isFavoritesExpanded && (
               <div className="mt-1 space-y-0.5">
-                {[...homeItems, ...spaceItems].map((item) =>
+                {[...homeItems, ...spaceItems].map(item =>
                   item.show && favorites.includes(item.to) ? (
                     <Link
                       key={item.to}
                       to={item.to}
                       className={cn(
-                        "flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-all",
+                        'flex items-center gap-2 rounded-lg px-3 py-2 text-sm transition-all',
                         isActivePath(item.to)
-                          ? "bg-zinc-800 text-white font-medium shadow-sm"
-                          : "text-zinc-400 hover:bg-zinc-800/60 hover:text-white"
+                          ? 'bg-zinc-800 font-medium text-white shadow-sm'
+                          : 'text-zinc-400 hover:bg-zinc-800/60 hover:text-white'
                       )}
                     >
                       <Star className="h-4 w-4 flex-shrink-0 fill-yellow-400 text-yellow-400" />
@@ -295,7 +298,7 @@ export const NotionStyleSidebar: React.FC<NotionStyleSidebarProps> = ({
             <div className="flex items-center justify-between px-2 py-1.5">
               <button
                 onClick={() => setIsSpacesExpanded(!isSpacesExpanded)}
-                className="flex items-center gap-2 text-xs font-semibold text-zinc-500 hover:text-zinc-200 transition-colors"
+                className="flex items-center gap-2 text-xs font-semibold text-zinc-500 transition-colors hover:text-zinc-200"
               >
                 {isSpacesExpanded ? (
                   <ChevronDown className="h-3.5 w-3.5" />
@@ -307,7 +310,7 @@ export const NotionStyleSidebar: React.FC<NotionStyleSidebarProps> = ({
               <Button
                 variant="ghost"
                 size="sm"
-                className="h-6 w-6 p-0 text-zinc-500 hover:text-zinc-200 hover:bg-zinc-800"
+                className="h-6 w-6 p-0 text-zinc-500 hover:bg-zinc-800 hover:text-zinc-200"
                 title="Ajouter un espace"
               >
                 <Plus className="h-3.5 w-3.5" />
@@ -316,43 +319,43 @@ export const NotionStyleSidebar: React.FC<NotionStyleSidebarProps> = ({
           )}
 
           {(isSpacesExpanded || isCollapsed) && (
-            <div className={cn("mt-1 space-y-0.5", isCollapsed && "mt-0")}>
-              {spaceItems.map((item) =>
+            <div className={cn('mt-1 space-y-0.5', isCollapsed && 'mt-0')}>
+              {spaceItems.map(item =>
                 item.show ? (
                   <Link
                     key={item.to}
                     to={item.to}
                     title={isCollapsed ? item.label : undefined}
                     className={cn(
-                      "group flex items-center gap-2 rounded-lg text-sm transition-all relative",
-                      isCollapsed ? "justify-center py-2 px-1" : "px-3 py-2",
+                      'group relative flex items-center gap-2 rounded-lg text-sm transition-all',
+                      isCollapsed ? 'justify-center px-1 py-2' : 'px-3 py-2',
                       isActivePath(item.to)
-                        ? "bg-zinc-800 text-white font-medium shadow-sm"
-                        : "text-zinc-400 hover:bg-zinc-800/60 hover:text-white"
+                        ? 'bg-zinc-800 font-medium text-white shadow-sm'
+                        : 'text-zinc-400 hover:bg-zinc-800/60 hover:text-white'
                     )}
                   >
-                    <item.icon className={cn("h-4 w-4 flex-shrink-0", item.color)} />
+                    <item.icon className={cn('h-4 w-4 flex-shrink-0', item.color)} />
                     {!isCollapsed && (
                       <>
                         <span className="flex-1 truncate">{item.label}</span>
                         <button
-                          onClick={(e) => {
+                          onClick={e => {
                             e.preventDefault();
                             e.stopPropagation();
                             toggleFavorite(item.to);
                           }}
                           className={cn(
-                            "opacity-0 group-hover:opacity-100 transition-opacity",
-                            favorites.includes(item.to) && "opacity-100"
+                            'opacity-0 transition-opacity group-hover:opacity-100',
+                            favorites.includes(item.to) && 'opacity-100'
                           )}
                         >
-                          <Star 
+                          <Star
                             className={cn(
-                              "h-3.5 w-3.5",
-                              favorites.includes(item.to) 
-                                ? "fill-yellow-400 text-yellow-400" 
-                                : "text-muted-foreground"
-                            )} 
+                              'h-3.5 w-3.5',
+                              favorites.includes(item.to)
+                                ? 'fill-yellow-400 text-yellow-400'
+                                : 'text-muted-foreground'
+                            )}
                           />
                         </button>
                       </>
@@ -375,19 +378,19 @@ export const NotionStyleSidebar: React.FC<NotionStyleSidebarProps> = ({
             </div>
           )}
 
-          <div className={cn("mt-1 space-y-0.5", isCollapsed && "mt-0")}>
-            {moreItems.map((item) =>
+          <div className={cn('mt-1 space-y-0.5', isCollapsed && 'mt-0')}>
+            {moreItems.map(item =>
               item.show ? (
                 <Link
                   key={item.to}
                   to={item.to}
                   title={isCollapsed ? item.label : undefined}
                   className={cn(
-                    "flex items-center gap-2 rounded-lg text-sm transition-all",
-                    isCollapsed ? "justify-center py-2 px-1" : "px-3 py-2",
+                    'flex items-center gap-2 rounded-lg text-sm transition-all',
+                    isCollapsed ? 'justify-center px-1 py-2' : 'px-3 py-2',
                     isActivePath(item.to)
-                      ? "bg-zinc-800 text-white font-medium shadow-sm"
-                      : "text-zinc-400 hover:bg-zinc-800/60 hover:text-white"
+                      ? 'bg-zinc-800 font-medium text-white shadow-sm'
+                      : 'text-zinc-400 hover:bg-zinc-800/60 hover:text-white'
                   )}
                 >
                   <item.icon className="h-4 w-4 flex-shrink-0" />
@@ -400,21 +403,21 @@ export const NotionStyleSidebar: React.FC<NotionStyleSidebarProps> = ({
       </ScrollArea>
 
       {/* Footer Sidebar */}
-      <div className={cn("border-t border-zinc-800 space-y-2", isCollapsed ? "p-2" : "p-3")}>
+      <div className={cn('space-y-2 border-t border-zinc-800', isCollapsed ? 'p-2' : 'p-3')}>
         {/* Bouton Inviter (Tenant Admin) */}
         {isTenantAdmin && (
           <Link to="/invite-collaborators" className="block">
-            <Button 
-              variant="outline" 
-              size="sm" 
+            <Button
+              variant="outline"
+              size="sm"
               className={cn(
-                "w-full gap-2 border-zinc-700 text-zinc-300 hover:bg-zinc-800 hover:text-white hover:border-zinc-600",
-                isCollapsed ? "justify-center px-0" : "justify-start"
+                'w-full gap-2 border-zinc-700 text-zinc-300 hover:border-zinc-600 hover:bg-zinc-800 hover:text-white',
+                isCollapsed ? 'justify-center px-0' : 'justify-start'
               )}
-              title={isCollapsed ? "Inviter des collaborateurs" : undefined}
+              title={isCollapsed ? 'Inviter des collaborateurs' : undefined}
             >
               <UserPlus className="h-4 w-4" />
-              {!isCollapsed && "Inviter"}
+              {!isCollapsed && 'Inviter'}
             </Button>
           </Link>
         )}
@@ -424,14 +427,14 @@ export const NotionStyleSidebar: React.FC<NotionStyleSidebarProps> = ({
           variant="ghost"
           size="sm"
           className={cn(
-            "w-full gap-2 text-zinc-400 hover:text-red-400 hover:bg-zinc-800",
-            isCollapsed ? "justify-center px-0" : "justify-start"
+            'w-full gap-2 text-zinc-400 hover:bg-zinc-800 hover:text-red-400',
+            isCollapsed ? 'justify-center px-0' : 'justify-start'
           )}
           onClick={signOut}
-          title={isCollapsed ? "Déconnexion" : undefined}
+          title={isCollapsed ? 'Déconnexion' : undefined}
         >
           <LogOut className="h-4 w-4" />
-          {!isCollapsed && "Déconnexion"}
+          {!isCollapsed && 'Déconnexion'}
         </Button>
       </div>
     </aside>

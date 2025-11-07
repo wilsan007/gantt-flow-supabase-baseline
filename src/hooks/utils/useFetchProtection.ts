@@ -11,7 +11,7 @@ export const useFetchProtection = () => {
 
   const shouldFetch = useCallback((params: any): boolean => {
     const currentParams = JSON.stringify(params);
-    
+
     // Si déjà fetché avec les mêmes paramètres, skip
     if (fetchedRef.current && paramsRef.current === currentParams) {
       return false;
@@ -33,6 +33,6 @@ export const useFetchProtection = () => {
   return {
     shouldFetch,
     markAsFetched,
-    reset
+    reset,
   };
 };

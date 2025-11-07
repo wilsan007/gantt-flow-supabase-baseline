@@ -1,7 +1,7 @@
 /**
  * Hook HR Optimisé - Pattern Enterprise SaaS
  * Inspiré de Stripe, Salesforce, Monday.com
- * 
+ *
  * Fonctionnalités:
  * - Query-level filtering (sécurité maximale)
  * - Cache intelligent avec invalidation
@@ -120,49 +120,49 @@ export const useHRMinimal = () => {
     absenceTypes: [],
     attendances: [],
     employees: [],
-    leaveBalances: []
+    leaveBalances: [],
   });
-  
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [metrics, setMetrics] = useState<HRMetrics>({
     fetchTime: 0,
     cacheHit: false,
     dataSize: 0,
-    lastUpdate: new Date()
+    lastUpdate: new Date(),
   });
-  
+
   // Pagination state
   const [pagination, setPagination] = useState<PaginationConfig>({
     page: 1,
     limit: 50,
     total: 0,
-    hasMore: false
+    hasMore: false,
   });
-  
+
   // Hooks externes
   const { toast } = useToast();
   const { tenantId } = useTenant();
   const { isSuperAdmin, isLoading: rolesLoading, userRoles } = useUserRoles();
-  
+
   // Refs pour éviter les boucles et optimisations
   const fetchedRef = useRef(false);
   const tenantIdRef = useRef<string | null>(null);
   const cacheRef = useRef<Map<string, { data: HRData; timestamp: number }>>(new Map());
   const abortControllerRef = useRef<AbortController | null>(null);
-  
+
   // Cache TTL (5 minutes comme Stripe)
   const CACHE_TTL = 5 * 60 * 1000;
-  
+
   // Fonction de cache intelligent (Pattern Stripe/Salesforce) - Utilise le cache global
   const getCacheKey = useCallback((tenantId: string | null, isSuperAdmin: boolean) => {
     return createCacheKey('hr', isSuperAdmin ? 'super_admin' : tenantId || 'no_tenant');
   }, []);
-  
+
   const getCachedData = useCallback((cacheKey: string): HRData | null => {
     return cacheManager.get<HRData>(cacheKey);
   }, []);
-  
+
   const setCachedData = useCallback((cacheKey: string, data: HRData) => {
     cacheManager.set(cacheKey, data, 'hr_data');
   }, []);
@@ -185,16 +185,16 @@ export const useHRMinimal = () => {
     // Protection STRICTE contre les refetch - hash stable
     const currentTenantHash = `${tenantId || 'null'}-${isSuperAdmin()}`;
     const lastTenantHash = tenantIdRef.current || '';
-    
+
     // ARRÊT COMPLET si mêmes paramètres et déjà fetché
     if (fetchedRef.current && currentTenantHash === lastTenantHash) {
       return; // Pas de logs répétitifs
     }
-    
+
     // Vérifier le cache avant tout fetch
     const cacheKey = getCacheKey(tenantId, isSuperAdmin());
     const cachedData = getCachedData(cacheKey);
-    
+
     if (cachedData && currentTenantHash === lastTenantHash) {
       return; // Utiliser le cache sans refetch
     }
@@ -208,10 +208,10 @@ export const useHRMinimal = () => {
       if (abortControllerRef.current) {
         abortControllerRef.current.abort();
       }
-      
+
       const abortController = new AbortController();
       abortControllerRef.current = abortController;
-      
+
       try {
         const startTime = performance.now();
         setLoading(true);
@@ -219,7 +219,7 @@ export const useHRMinimal = () => {
 
         const isSuper = isSuperAdmin();
         const cacheKey = getCacheKey(tenantId, isSuper);
-        
+
         // Vérifier le cache d'abord (Pattern Stripe)
         const cachedData = getCachedData(cacheKey);
         if (cachedData) {
@@ -228,7 +228,7 @@ export const useHRMinimal = () => {
             ...prev,
             cacheHit: true,
             fetchTime: performance.now() - startTime,
-            lastUpdate: new Date()
+            lastUpdate: new Date(),
           }));
           setLoading(false);
           return;
@@ -237,91 +237,75 @@ export const useHRMinimal = () => {
         // // console.log('🔄 Fetching HR data for tenant:', tenantId || 'ALL_TENANTS (Super Admin)');
         // // console.log('👑 Is Super Admin:', isSuper);
         // // console.log('�� Cache key:', cacheKey);
-        
-        const [
-          leaveRequestsRes,
-          absenceTypesRes,
-          attendancesRes,
-          employeesRes,
-          leaveBalancesRes
-        ] = await Promise.all([
-          // Leave Requests - Super Admin voit tout, autres voient leur tenant
-          isSuper 
-            ? supabase
-                .from('leave_requests')
-                .select('*, profiles:employee_id(full_name, tenant_id)')
-                .order('created_at', { ascending: false })
-                .limit(100) // Plus de données pour Super Admin
-            : tenantId
+
+        const [leaveRequestsRes, absenceTypesRes, attendancesRes, employeesRes, leaveBalancesRes] =
+          await Promise.all([
+            // Leave Requests - Super Admin voit tout, autres voient leur tenant
+            isSuper
+              ? supabase
+                  .from('leave_requests')
+                  .select('*, profiles:employee_id(full_name, tenant_id)')
+                  .order('created_at', { ascending: false })
+                  .limit(100) // Plus de données pour Super Admin
+              : tenantId
                 ? supabase
                     .from('leave_requests')
                     .select('*')
                     .eq('tenant_id', tenantId)
                     .order('created_at', { ascending: false })
                     .limit(50)
-                : supabase
-                    .from('leave_requests')
-                    .select('*')
-                    .limit(0), // Pas de données si pas de tenant et pas Super Admin
-          
-          // Absence Types - Toujours globaux
-          supabase
-            .from('absence_types')
-            .select('*')
-            .order('name'),
-          
-          // Attendances - Super Admin voit tout, autres voient leur tenant
-          isSuper
-            ? supabase
-                .from('attendances')
-                .select('*, profiles:employee_id(full_name, tenant_id)')
-                .order('date', { ascending: false })
-                .limit(100) // Plus de données pour Super Admin
-            : tenantId
+                : supabase.from('leave_requests').select('*').limit(0), // Pas de données si pas de tenant et pas Super Admin
+
+            // Absence Types - Toujours globaux
+            supabase.from('absence_types').select('*').order('name'),
+
+            // Attendances - Super Admin voit tout, autres voient leur tenant
+            isSuper
+              ? supabase
+                  .from('attendances')
+                  .select('*, profiles:employee_id(full_name, tenant_id)')
+                  .order('date', { ascending: false })
+                  .limit(100) // Plus de données pour Super Admin
+              : tenantId
                 ? supabase
                     .from('attendances')
                     .select('*')
                     .eq('tenant_id', tenantId)
                     .order('date', { ascending: false })
                     .limit(30)
-                : supabase
-                    .from('attendances')
-                    .select('*')
-                    .limit(0), // Pas de données si pas de tenant et pas Super Admin
-          
-          // Employees - Super Admin voit TOUS les employés, autres voient leur tenant
-          isSuper
-            ? supabase
-                .from('profiles')
-                .select('id, user_id, full_name, avatar_url, job_title, employee_id, tenant_id, tenants:tenant_id(name)')
-                .order('full_name')
-            : tenantId
+                : supabase.from('attendances').select('*').limit(0), // Pas de données si pas de tenant et pas Super Admin
+
+            // Employees - Super Admin voit TOUS les employés, autres voient leur tenant
+            isSuper
+              ? supabase
+                  .from('profiles')
+                  .select(
+                    'id, user_id, full_name, avatar_url, job_title, employee_id, tenant_id, tenants:tenant_id(name)'
+                  )
+                  .order('full_name')
+              : tenantId
                 ? supabase
                     .from('profiles')
                     .select('id, user_id, full_name, avatar_url, job_title, employee_id')
                     .eq('tenant_id', tenantId)
-                : supabase
-                    .from('profiles')
-                    .select('*')
-                    .limit(0), // Pas de données si pas de tenant et pas Super Admin
-          
-          // Leave Balances - Super Admin voit tout, autres voient leur tenant
-          isSuper
-            ? supabase
-                .from('leave_balances')
-                .select('*, profiles:employee_id(full_name), absence_types:absence_type_id(name)')
-                .order('year', { ascending: false })
-            : tenantId
+                : supabase.from('profiles').select('*').limit(0), // Pas de données si pas de tenant et pas Super Admin
+
+            // Leave Balances - Super Admin voit tout, autres voient leur tenant
+            isSuper
+              ? supabase
+                  .from('leave_balances')
+                  .select('*, profiles:employee_id(full_name), absence_types:absence_type_id(name)')
+                  .order('year', { ascending: false })
+              : tenantId
                 ? supabase
                     .from('leave_balances')
-                    .select('*, profiles:employee_id(full_name), absence_types:absence_type_id(name)')
+                    .select(
+                      '*, profiles:employee_id(full_name), absence_types:absence_type_id(name)'
+                    )
                     .eq('tenant_id', tenantId)
                     .order('year', { ascending: false })
-                : supabase
-                    .from('leave_balances')
-                    .select('*')
-                    .limit(0)
-        ]);
+                : supabase.from('leave_balances').select('*').limit(0),
+          ]);
 
         // Vérifier les erreurs
         if (leaveRequestsRes.error) {
@@ -346,31 +330,32 @@ export const useHRMinimal = () => {
           absenceTypes: absenceTypesRes.data || [],
           attendances: attendancesRes.data || [],
           employees: employeesRes.data || [],
-          leaveBalances: leaveBalancesRes.data || []
+          leaveBalances: leaveBalancesRes.data || [],
         };
 
         // Calculer les métriques de performance
         const endTime = performance.now();
         const fetchTime = endTime - startTime;
         const dataSize = JSON.stringify(newData).length;
-        
+
         // Mettre en cache les données
         setCachedData(cacheKey, newData);
-        
+
         // Mettre à jour les états
         setData(newData);
         setMetrics({
           fetchTime,
           cacheHit: false,
           dataSize,
-          lastUpdate: new Date()
+          lastUpdate: new Date(),
         });
-        
+
         // Mettre à jour la pagination
         setPagination(prev => ({
           ...prev,
-          total: newData.employees.length + newData.leaveRequests.length + newData.attendances.length,
-          hasMore: false // Pour l'instant, pas de pagination infinie
+          total:
+            newData.employees.length + newData.leaveRequests.length + newData.attendances.length,
+          hasMore: false, // Pour l'instant, pas de pagination infinie
         }));
 
         // // console.log('✅ HR data loaded:', {
@@ -384,15 +369,14 @@ export const useHRMinimal = () => {
         //   dataSize: `${(dataSize / 1024).toFixed(2)}KB`,
         //   cacheKey
         // });
-
       } catch (error: any) {
         console.error('❌ Error fetching HR data:', error);
         setError(error.message || 'Erreur de chargement');
-        
+
         toast({
-          title: "Erreur",
-          description: "Impossible de charger les données RH",
-          variant: "destructive"
+          title: 'Erreur',
+          description: 'Impossible de charger les données RH',
+          variant: 'destructive',
         });
       } finally {
         setLoading(false);
@@ -435,18 +419,17 @@ export const useHRMinimal = () => {
   // Déterminer les informations d'accès pour l'UX
   const currentUserRole = userRoles[0]?.roles?.name || 'Aucun rôle';
   const requiredRole = 'manager_hr ou tenant_admin';
-  
+
   // SOLUTION TEMPORAIRE : Récupérer le tenant_id depuis user_roles si useTenant échoue
   const tenantIdFromRoles = userRoles[0]?.tenant_id;
   const effectiveTenantId = tenantId || tenantIdFromRoles;
-  
+
   // Vérifier si l'utilisateur a le bon rôle
-  const hasRequiredRole = isSuperAdmin() || 
-    currentUserRole === 'manager_hr' || 
-    currentUserRole === 'tenant_admin';
-  
+  const hasRequiredRole =
+    isSuperAdmin() || currentUserRole === 'manager_hr' || currentUserRole === 'tenant_admin';
+
   const hasAccess = hasRequiredRole && !!effectiveTenantId;
-  
+
   // Debug : Afficher les informations d'accès (désactivé en production)
   if (process.env.NODE_ENV === 'development') {
     console.log('🔍 HR Access Check:', {
@@ -456,41 +439,45 @@ export const useHRMinimal = () => {
       effectiveTenantId,
       hasRequiredRole,
       hasAccess,
-      isSuperAdmin: isSuperAdmin()
+      isSuperAdmin: isSuperAdmin(),
     });
   }
-  
+
   return {
     // Données
     ...data,
-    
+
     // États
     loading,
     error,
-    
+
     // Métriques de performance
     metrics,
     pagination,
-    
+
     // Permissions optimisées
     canAccess: hasAccess,
     isSuperAdmin: isSuperAdmin(),
-    
+
     // Informations d'accès pour l'UX
     accessInfo: {
       hasAccess,
       currentRole: currentUserRole,
       requiredRole,
-      reason: !hasAccess ? (currentUserRole === 'Aucun rôle' ? 'no_role' : 'insufficient_permissions') : null
+      reason: !hasAccess
+        ? currentUserRole === 'Aucun rôle'
+          ? 'no_role'
+          : 'insufficient_permissions'
+        : null,
     },
-    
+
     // Actions optimisées
     refresh,
     clearCache,
     getCacheStats,
-    
+
     // Utilitaires
     isDataStale: metrics.lastUpdate && Date.now() - metrics.lastUpdate.getTime() > CACHE_TTL,
-    cacheKey: getCacheKey(tenantId, isSuperAdmin())
+    cacheKey: getCacheKey(tenantId, isSuperAdmin()),
   };
 };

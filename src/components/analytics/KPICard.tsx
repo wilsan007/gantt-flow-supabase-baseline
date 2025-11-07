@@ -49,7 +49,7 @@ export const KPICard: React.FC<KPICardProps> = ({
 
   const formatValue = (val: number | string): string => {
     if (typeof val === 'string') return val;
-    
+
     switch (format) {
       case 'currency':
         return new Intl.NumberFormat('fr-FR', {
@@ -66,8 +66,12 @@ export const KPICard: React.FC<KPICardProps> = ({
     }
   };
 
-  const TrendIcon = trend 
-    ? (trend.value === 0 ? Minus : trend.isPositive ? TrendingUp : TrendingDown)
+  const TrendIcon = trend
+    ? trend.value === 0
+      ? Minus
+      : trend.isPositive
+        ? TrendingUp
+        : TrendingDown
     : null;
 
   return (
@@ -75,9 +79,7 @@ export const KPICard: React.FC<KPICardProps> = ({
       <CardContent className="p-6">
         <div className="flex items-start justify-between">
           <div className="flex-1">
-            <p className="text-sm font-medium text-muted-foreground mb-2">
-              {title}
-            </p>
+            <p className="mb-2 text-sm font-medium text-muted-foreground">{title}</p>
             <div className="flex items-baseline gap-2">
               <p className={cn('text-3xl font-bold', iconColorClasses[color])}>
                 {formatValue(value)}
@@ -89,8 +91,8 @@ export const KPICard: React.FC<KPICardProps> = ({
                     trend.value === 0
                       ? 'text-muted-foreground'
                       : trend.isPositive
-                      ? 'text-green-600'
-                      : 'text-red-600'
+                        ? 'text-green-600'
+                        : 'text-red-600'
                   )}
                 >
                   <TrendIcon className="h-4 w-4" />
@@ -98,13 +100,9 @@ export const KPICard: React.FC<KPICardProps> = ({
                 </div>
               )}
             </div>
-            {trend?.label && (
-              <p className="text-xs text-muted-foreground mt-2">
-                {trend.label}
-              </p>
-            )}
+            {trend?.label && <p className="mt-2 text-xs text-muted-foreground">{trend.label}</p>}
           </div>
-          <div className={cn('p-3 rounded-lg', colorClasses[color])}>
+          <div className={cn('rounded-lg p-3', colorClasses[color])}>
             <Icon className={cn('h-6 w-6', iconColorClasses[color])} />
           </div>
         </div>

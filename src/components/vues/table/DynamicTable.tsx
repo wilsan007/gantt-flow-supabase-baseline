@@ -21,13 +21,13 @@ import { AdvancedFilters, type TaskFilters } from '@/components/tasks/AdvancedFi
 import { useTaskFilters } from '@/hooks/useTaskFilters';
 
 const DynamicTable = () => {
-  const { 
-    tasks, 
-    loading, 
-    error, 
-    duplicateTask, 
-    deleteTask, 
-    toggleAction, 
+  const {
+    tasks,
+    loading,
+    error,
+    duplicateTask,
+    deleteTask,
+    toggleAction,
     addActionColumn,
     addDetailedAction,
     createSubTask,
@@ -35,11 +35,11 @@ const DynamicTable = () => {
     updateTaskAssignee,
     refetch,
     createTask,
-    updateTask
+    updateTask,
   } = useTasks();
   const isMobile = useIsMobile();
   const { projects, loading: projectsLoading, error: projectsError } = useProjects();
-  
+
   // Wrapper pour createMainTask avec compatibilité ancienne API
   const createMainTask = async (taskData: {
     title: string;
@@ -52,18 +52,18 @@ const DynamicTable = () => {
   }) => {
     const today = new Date();
     const nextWeek = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
-    
+
     return createTask({
       title: taskData.title,
       description: '',
       status: taskData.status,
       priority: taskData.priority,
       start_date: today.toISOString().split('T')[0],
-      due_date: nextWeek.toISOString().split('T')[0]
+      due_date: nextWeek.toISOString().split('T')[0],
     });
   };
   const { defaultDisplayMode } = useViewMode();
-  
+
   const [newActionTitle, setNewActionTitle] = useState('');
   const [selectedTaskId, setSelectedTaskId] = useState<string>('');
   const [editDialogOpen, setEditDialogOpen] = useState(false);
@@ -80,10 +80,10 @@ const DynamicTable = () => {
     dateFrom: '',
     dateTo: '',
   });
-  
+
   // Appliquer les filtres
   const { filteredTasks, stats } = useTaskFilters(optimisticTasks, filters);
-  
+
   // Refs pour la synchronisation du scroll
   const fixedColumnsScrollRef = useRef<HTMLDivElement>(null);
   const actionColumnsScrollRef = useRef<HTMLDivElement>(null);
@@ -97,15 +97,19 @@ const DynamicTable = () => {
   // Fonction de synchronisation du scroll
   const syncScroll = useCallback((source: 'fixed' | 'action') => {
     if (isSyncingScroll.current) return;
-    
+
     isSyncingScroll.current = true;
-    
+
     if (source === 'fixed' && fixedColumnsScrollRef.current && actionColumnsScrollRef.current) {
       actionColumnsScrollRef.current.scrollTop = fixedColumnsScrollRef.current.scrollTop;
-    } else if (source === 'action' && actionColumnsScrollRef.current && fixedColumnsScrollRef.current) {
+    } else if (
+      source === 'action' &&
+      actionColumnsScrollRef.current &&
+      fixedColumnsScrollRef.current
+    ) {
       fixedColumnsScrollRef.current.scrollTop = actionColumnsScrollRef.current.scrollTop;
     }
-    
+
     setTimeout(() => {
       isSyncingScroll.current = false;
     }, 0);
@@ -131,7 +135,7 @@ const DynamicTable = () => {
     notes?: string;
   }) => {
     if (!selectedTaskId) return;
-    
+
     try {
       await addDetailedAction(selectedTaskId, actionData);
       await refetch(); // Rafraîchir les données après l'ajout
@@ -143,24 +147,25 @@ const DynamicTable = () => {
   const handleToggleAction = async (taskId: string, actionId: string) => {
     try {
       console.log('handleToggleAction called:', { taskId, actionId });
-      
+
       // Mise à jour optimiste : on met à jour l'interface immédiatement
       const updatedTasks = optimisticTasks.map(task => {
         if (task.id === taskId && task.task_actions) {
-          const updatedActions = task.task_actions.map(action => 
-            action.id === actionId 
-              ? { ...action, is_done: !action.is_done }
-              : action
+          const updatedActions = task.task_actions.map(action =>
+            action.id === actionId ? { ...action, is_done: !action.is_done } : action
           );
-          
+
           // Calculer la nouvelle progression
-          const totalWeight = updatedActions.reduce((sum, action) => sum + action.weight_percentage, 0);
+          const totalWeight = updatedActions.reduce(
+            (sum, action) => sum + action.weight_percentage,
+            0
+          );
           const completedWeight = updatedActions
             .filter(action => action.is_done)
             .reduce((sum, action) => sum + action.weight_percentage, 0);
-          
+
           const newProgress = totalWeight === 0 ? 0 : Math.round(completedWeight);
-          
+
           // Calculer le nouveau statut
           let newStatus = task.status;
           if (newProgress === 100) {
@@ -170,19 +175,19 @@ const DynamicTable = () => {
           } else {
             newStatus = 'todo';
           }
-          
+
           return {
             ...task,
             task_actions: updatedActions,
             progress: newProgress,
-            status: newStatus as any
+            status: newStatus as any,
           };
         }
         return task;
       });
-      
+
       setOptimisticTasks(updatedTasks);
-      
+
       // Ensuite on fait la vraie mise à jour
       await toggleAction(taskId, actionId);
       // La subscription temps réel synchronisera automatiquement
@@ -228,17 +233,21 @@ const DynamicTable = () => {
     }
   };
 
-  const handleCreateSubtask = async (parentId: string, linkedActionId?: string, customData?: {
-    title: string;
-    start_date: string;
-    due_date: string;
-    effort_estimate_h: number;
-  }) => {
+  const handleCreateSubtask = async (
+    parentId: string,
+    linkedActionId?: string,
+    customData?: {
+      title: string;
+      start_date: string;
+      due_date: string;
+      effort_estimate_h: number;
+    }
+  ) => {
     try {
       console.log('Creating subtask with data:', { parentId, linkedActionId, customData });
       const newSubtask = await createSubTask(parentId, linkedActionId, customData);
       console.log('Subtask created successfully:', newSubtask);
-      
+
       // Rafraîchir les données immédiatement après la création
       await refetch();
     } catch (error) {
@@ -247,7 +256,7 @@ const DynamicTable = () => {
   };
 
   const handleCreateSubtaskWithActions = async (
-    parentId: string, 
+    parentId: string,
     customData: {
       title: string;
       start_date: string;
@@ -266,7 +275,7 @@ const DynamicTable = () => {
       console.log('Creating subtask with actions:', { parentId, customData, actions });
       const newSubtask = await createSubTaskWithActions(parentId, customData, actions);
       console.log('Subtask with actions created successfully:', newSubtask);
-      
+
       // Rafraîchir les données immédiatement après la création
       await refetch();
     } catch (error) {
@@ -300,7 +309,7 @@ const DynamicTable = () => {
   // Use mobile version on small screens
   if (isMobile) {
     return (
-      <MobileDynamicTable 
+      <MobileDynamicTable
         tasks={filteredTasks}
         loading={loading}
         error={error}
@@ -316,53 +325,62 @@ const DynamicTable = () => {
   }
 
   return (
-    <Card className="w-full modern-card glow-accent transition-smooth">
-        <TaskTableHeader 
-          newActionTitle={newActionTitle}
-          setNewActionTitle={setNewActionTitle}
-          onAddActionColumn={handleAddActionColumn}
-          onCreateDetailedAction={handleCreateDetailedAction}
-          selectedTaskId={selectedTaskId}
-          isActionButtonEnabled={isActionButtonEnabled}
-          onCreateTask={() => setCreateTaskDialogOpen(true)}
-          tasks={filteredTasks}
-          filters={filters}
-        />
-        
-        {/* Boutons de basculement Projet/Tâches */}
-        <div className="px-6 pb-4">
-          <ToggleGroup 
-            type="single" 
-            value={viewMode} 
-            onValueChange={(value) => value && setViewMode(value as 'tasks' | 'projects')}
-            className="justify-start"
+    <Card className="modern-card glow-accent transition-smooth w-full">
+      <TaskTableHeader
+        newActionTitle={newActionTitle}
+        setNewActionTitle={setNewActionTitle}
+        onAddActionColumn={handleAddActionColumn}
+        onCreateDetailedAction={handleCreateDetailedAction}
+        selectedTaskId={selectedTaskId}
+        isActionButtonEnabled={isActionButtonEnabled}
+        onCreateTask={() => setCreateTaskDialogOpen(true)}
+        tasks={filteredTasks}
+        filters={filters}
+      />
+
+      {/* Boutons de basculement Projet/Tâches */}
+      <div className="px-6 pb-4">
+        <ToggleGroup
+          type="single"
+          value={viewMode}
+          onValueChange={value => value && setViewMode(value as 'tasks' | 'projects')}
+          className="justify-start"
+        >
+          <ToggleGroupItem
+            value="tasks"
+            className="data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
           >
-            <ToggleGroupItem value="tasks" className="data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">
-              📝 Tâches
-            </ToggleGroupItem>
-            <ToggleGroupItem value="projects" className="data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">
-              📁 Projets
-            </ToggleGroupItem>
-          </ToggleGroup>
+            📝 Tâches
+          </ToggleGroupItem>
+          <ToggleGroupItem
+            value="projects"
+            className="data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
+          >
+            📁 Projets
+          </ToggleGroupItem>
+        </ToggleGroup>
+      </div>
+
+      {/* Filtres avancés - uniquement en mode Tâches */}
+      {viewMode === 'tasks' && (
+        <div className="px-6 pb-4">
+          <AdvancedFilters
+            onFiltersChange={setFilters}
+            projects={projects}
+            employees={[]}
+            totalTasks={optimisticTasks.length}
+            filteredCount={filteredTasks.length}
+          />
         </div>
-        
-        {/* Filtres avancés - uniquement en mode Tâches */}
-        {viewMode === 'tasks' && (
-          <div className="px-6 pb-4">
-            <AdvancedFilters
-              onFiltersChange={setFilters}
-              projects={projects}
-              employees={[]}
-              totalTasks={optimisticTasks.length}
-              filteredCount={filteredTasks.length}
-            />
-          </div>
-        )}
+      )}
       <CardContent className="bg-gantt-header/20 backdrop-blur-sm">
         {viewMode === 'tasks' ? (
-          <ResizablePanelGroup direction="horizontal" className="border rounded-lg border-border/50 overflow-hidden">
+          <ResizablePanelGroup
+            direction="horizontal"
+            className="overflow-hidden rounded-lg border border-border/50"
+          >
             <ResizablePanel defaultSize={60} minSize={40} maxSize={80}>
-              <TaskFixedColumns 
+              <TaskFixedColumns
                 tasks={filteredTasks}
                 onDuplicate={handleDuplicateTask}
                 onDelete={handleDeleteTask}
@@ -380,7 +398,7 @@ const DynamicTable = () => {
             <ResizableHandle withHandle />
 
             <ResizablePanel defaultSize={40} minSize={20} maxSize={60}>
-              <TaskActionColumns 
+              <TaskActionColumns
                 tasks={filteredTasks}
                 onToggleAction={handleToggleAction}
                 selectedTaskId={selectedTaskId}
@@ -390,7 +408,7 @@ const DynamicTable = () => {
             </ResizablePanel>
           </ResizablePanelGroup>
         ) : (
-          <ProjectTableView 
+          <ProjectTableView
             projects={projects.map(p => ({
               id: p.id,
               name: p.name,
@@ -399,7 +417,7 @@ const DynamicTable = () => {
               manager: p.manager_name || 'Non assigné',
               skills: [], // À implémenter avec une table séparée
               start_date: p.start_date || '',
-              end_date: p.end_date || ''
+              end_date: p.end_date || '',
             }))}
             tasks={optimisticTasks.map(t => ({
               id: t.id,
@@ -408,12 +426,12 @@ const DynamicTable = () => {
               project_name: t.project_name || '',
               progress: t.progress,
               assignee: t.assignee,
-              status: t.status
+              status: t.status,
             }))}
           />
         )}
       </CardContent>
-      
+
       {/* Dialog de modification de tâche */}
       <TaskEditDialog
         open={editDialogOpen}

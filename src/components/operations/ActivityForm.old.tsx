@@ -56,12 +56,7 @@ export interface ActivityFormData {
   }>;
 }
 
-export const ActivityForm: React.FC<ActivityFormProps> = ({
-  activity,
-  kind,
-  onSave,
-  onCancel,
-}) => {
+export const ActivityForm: React.FC<ActivityFormProps> = ({ activity, kind, onSave, onCancel }) => {
   // États du formulaire
   const [formData, setFormData] = useState<ActivityFormData>({
     name: activity?.name || '',
@@ -83,9 +78,9 @@ export const ActivityForm: React.FC<ActivityFormProps> = ({
   const [endDate, setEndDate] = useState<Date | undefined>(undefined);
 
   // État pour les actions (onglet 3)
-  const [actionTemplates, setActionTemplates] = useState<Array<{ title: string; description: string; position: number }>>([
-    { title: '', description: '', position: 0 },
-  ]);
+  const [actionTemplates, setActionTemplates] = useState<
+    Array<{ title: string; description: string; position: number }>
+  >([{ title: '', description: '', position: 0 }]);
 
   // Générer RRULE selon le type
   const generateRRule = (): string | null => {
@@ -172,7 +167,7 @@ export const ActivityForm: React.FC<ActivityFormProps> = ({
             <Input
               id="name"
               value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              onChange={e => setFormData({ ...formData, name: e.target.value })}
               placeholder="Ex: Réunion d'équipe hebdomadaire"
             />
           </div>
@@ -182,7 +177,7 @@ export const ActivityForm: React.FC<ActivityFormProps> = ({
             <Textarea
               id="description"
               value={formData.description}
-              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+              onChange={e => setFormData({ ...formData, description: e.target.value })}
               placeholder="Décrivez l'objectif de cette activité..."
               rows={3}
             />
@@ -226,15 +221,17 @@ export const ActivityForm: React.FC<ActivityFormProps> = ({
             <Input
               id="template"
               value={formData.task_title_template}
-              onChange={(e) => setFormData({ ...formData, task_title_template: e.target.value })}
+              onChange={e => setFormData({ ...formData, task_title_template: e.target.value })}
               placeholder="Ex: Réunion - Semaine {{isoWeek}}"
             />
-            <div className="flex flex-wrap gap-2 mt-2">
+            <div className="mt-2 flex flex-wrap gap-2">
               <Button
                 type="button"
                 variant="outline"
                 size="sm"
-                onClick={() => setFormData({ ...formData, task_title_template: '{{name}} - {{date}}' })}
+                onClick={() =>
+                  setFormData({ ...formData, task_title_template: '{{name}} - {{date}}' })
+                }
                 className="text-xs"
               >
                 📅 Nom + Date
@@ -243,7 +240,12 @@ export const ActivityForm: React.FC<ActivityFormProps> = ({
                 type="button"
                 variant="outline"
                 size="sm"
-                onClick={() => setFormData({ ...formData, task_title_template: '{{name}} - Semaine {{isoWeek}}' })}
+                onClick={() =>
+                  setFormData({
+                    ...formData,
+                    task_title_template: '{{name}} - Semaine {{isoWeek}}',
+                  })
+                }
                 className="text-xs"
               >
                 📆 Nom + Semaine
@@ -252,7 +254,9 @@ export const ActivityForm: React.FC<ActivityFormProps> = ({
                 type="button"
                 variant="outline"
                 size="sm"
-                onClick={() => setFormData({ ...formData, task_title_template: '{{name}} - {{month}}/{{year}}' })}
+                onClick={() =>
+                  setFormData({ ...formData, task_title_template: '{{name}} - {{month}}/{{year}}' })
+                }
                 className="text-xs"
               >
                 📊 Nom + Mois
@@ -261,7 +265,9 @@ export const ActivityForm: React.FC<ActivityFormProps> = ({
                 type="button"
                 variant="outline"
                 size="sm"
-                onClick={() => setFormData({ ...formData, task_title_template: '{{name}} du {{date}}' })}
+                onClick={() =>
+                  setFormData({ ...formData, task_title_template: '{{name}} du {{date}}' })
+                }
                 className="text-xs"
               >
                 📝 Format Simple
@@ -291,16 +297,16 @@ export const ActivityForm: React.FC<ActivityFormProps> = ({
             <div className="space-y-2">
               <Label>Jours de la semaine</Label>
               <div className="grid grid-cols-2 gap-3">
-                {weekDayOptions.map((day) => (
+                {weekDayOptions.map(day => (
                   <div key={day.value} className="flex items-center space-x-2">
                     <Checkbox
                       id={day.value}
                       checked={weekDays.includes(day.value)}
-                      onCheckedChange={(checked) => {
+                      onCheckedChange={checked => {
                         if (checked) {
                           setWeekDays([...weekDays, day.value]);
                         } else {
-                          setWeekDays(weekDays.filter((d) => d !== day.value));
+                          setWeekDays(weekDays.filter(d => d !== day.value));
                         }
                       }}
                     />
@@ -320,7 +326,7 @@ export const ActivityForm: React.FC<ActivityFormProps> = ({
               <Input
                 id="monthDays"
                 value={monthDays}
-                onChange={(e) => setMonthDays(e.target.value)}
+                onChange={e => setMonthDays(e.target.value)}
                 placeholder="Ex: 1,15 (1er et 15 du mois)"
               />
             </div>
@@ -338,7 +344,12 @@ export const ActivityForm: React.FC<ActivityFormProps> = ({
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0">
-                  <Calendar mode="single" selected={startDate} onSelect={setStartDate} initialFocus />
+                  <Calendar
+                    mode="single"
+                    selected={startDate}
+                    onSelect={setStartDate}
+                    initialFocus
+                  />
                 </PopoverContent>
               </Popover>
             </div>
@@ -360,8 +371,8 @@ export const ActivityForm: React.FC<ActivityFormProps> = ({
           </div>
 
           {/* Aperçu RRULE */}
-          <div className="bg-muted p-3 rounded-lg">
-            <p className="text-sm font-medium mb-1">Règle générée (RRULE):</p>
+          <div className="rounded-lg bg-muted p-3">
+            <p className="mb-1 text-sm font-medium">Règle générée (RRULE):</p>
             <code className="text-xs">{generateRRule() || 'Aucune'}</code>
           </div>
         </TabsContent>
@@ -371,24 +382,24 @@ export const ActivityForm: React.FC<ActivityFormProps> = ({
           <div className="flex items-center justify-between">
             <Label>Liste des actions (checklist)</Label>
             <Button onClick={handleAddAction} size="sm" variant="outline">
-              <Plus className="h-4 w-4 mr-1" />
+              <Plus className="mr-1 h-4 w-4" />
               Ajouter
             </Button>
           </div>
 
           <div className="space-y-3">
             {actionTemplates.map((action, index) => (
-              <div key={index} className="flex gap-2 p-3 border rounded-lg bg-card">
-                <GripVertical className="h-5 w-5 text-muted-foreground flex-shrink-0 mt-1 cursor-move" />
+              <div key={index} className="flex gap-2 rounded-lg border bg-card p-3">
+                <GripVertical className="mt-1 h-5 w-5 flex-shrink-0 cursor-move text-muted-foreground" />
                 <div className="flex-1 space-y-2">
                   <Input
                     value={action.title}
-                    onChange={(e) => handleActionChange(index, 'title', e.target.value)}
+                    onChange={e => handleActionChange(index, 'title', e.target.value)}
                     placeholder="Titre de l'action"
                   />
                   <Textarea
                     value={action.description}
-                    onChange={(e) => handleActionChange(index, 'description', e.target.value)}
+                    onChange={e => handleActionChange(index, 'description', e.target.value)}
                     placeholder="Description (optionnel)"
                     rows={2}
                   />
@@ -406,16 +417,18 @@ export const ActivityForm: React.FC<ActivityFormProps> = ({
           </div>
 
           {actionTemplates.length === 0 && (
-            <div className="text-center py-8 text-muted-foreground">
+            <div className="py-8 text-center text-muted-foreground">
               <p>Aucune action définie</p>
-              <p className="text-sm mt-1">Les actions seront clonées automatiquement sur chaque tâche générée</p>
+              <p className="mt-1 text-sm">
+                Les actions seront clonées automatiquement sur chaque tâche générée
+              </p>
             </div>
           )}
         </TabsContent>
       </Tabs>
 
       {/* Boutons d'action */}
-      <div className="flex justify-end gap-2 pt-4 border-t">
+      <div className="flex justify-end gap-2 border-t pt-4">
         <Button variant="outline" onClick={onCancel}>
           Annuler
         </Button>

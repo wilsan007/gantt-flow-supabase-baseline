@@ -1,6 +1,6 @@
 /**
  * TaskCalendar - Vue calendrier/timeline des tâches
- * 
+ *
  * Fonctionnalités :
  * - Vue mois/semaine/jour
  * - Affichage des tâches par date
@@ -80,7 +80,7 @@ export const TaskCalendar: React.FC = () => {
   const tasksByDate = useMemo(() => {
     const map = new Map<string, Task[]>();
 
-    tasks.forEach((task) => {
+    tasks.forEach(task => {
       if (!task.due_date) return;
 
       const dueDate = parseISO(task.due_date);
@@ -158,7 +158,7 @@ export const TaskCalendar: React.FC = () => {
 
         <div className="flex items-center gap-2">
           {/* View Mode */}
-          <div className="flex gap-1 border rounded-lg p-1">
+          <div className="flex gap-1 rounded-lg border p-1">
             <Button
               size="sm"
               variant={viewMode === 'month' ? 'default' : 'ghost'}
@@ -197,7 +197,7 @@ export const TaskCalendar: React.FC = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         {/* Calendrier Principal */}
         <Card className="lg:col-span-2">
           <CardContent className="p-4">
@@ -205,8 +205,11 @@ export const TaskCalendar: React.FC = () => {
               <div className="space-y-2">
                 {/* Jours de la semaine */}
                 <div className="grid grid-cols-7 gap-2">
-                  {['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'].map((day) => (
-                    <div key={day} className="text-center text-sm font-medium text-muted-foreground">
+                  {['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'].map(day => (
+                    <div
+                      key={day}
+                      className="text-center text-sm font-medium text-muted-foreground"
+                    >
                       {day}
                     </div>
                   ))}
@@ -214,7 +217,7 @@ export const TaskCalendar: React.FC = () => {
 
                 {/* Grille des jours */}
                 <div className="grid grid-cols-7 gap-2">
-                  {days.map((day) => {
+                  {days.map(day => {
                     const dayTasks = getTasksForDay(day);
                     const isCurrentMonth = day.getMonth() === currentDate.getMonth();
                     const isSelected = selectedDate && isSameDay(day, selectedDate);
@@ -223,21 +226,16 @@ export const TaskCalendar: React.FC = () => {
                       <button
                         key={day.toISOString()}
                         onClick={() => setSelectedDate(day)}
-                        className={`
-                          min-h-[80px] p-2 border rounded-lg text-left hover:bg-accent transition-colors
-                          ${!isCurrentMonth ? 'opacity-40' : ''}
-                          ${isToday(day) ? 'border-blue-500 bg-blue-50 dark:bg-blue-950/20' : ''}
-                          ${isSelected ? 'ring-2 ring-blue-500' : ''}
-                        `}
+                        className={`min-h-[80px] rounded-lg border p-2 text-left transition-colors hover:bg-accent ${!isCurrentMonth ? 'opacity-40' : ''} ${isToday(day) ? 'border-blue-500 bg-blue-50 dark:bg-blue-950/20' : ''} ${isSelected ? 'ring-2 ring-blue-500' : ''} `}
                       >
-                        <div className="text-sm font-medium mb-1">{format(day, 'd')}</div>
+                        <div className="mb-1 text-sm font-medium">{format(day, 'd')}</div>
 
                         {dayTasks.length > 0 && (
                           <div className="space-y-1">
-                            {dayTasks.slice(0, 2).map((task) => (
+                            {dayTasks.slice(0, 2).map(task => (
                               <div
                                 key={task.id}
-                                className={`text-xs truncate px-1 py-0.5 rounded ${getPriorityColor(
+                                className={`truncate rounded px-1 py-0.5 text-xs ${getPriorityColor(
                                   task.priority
                                 )} text-white`}
                                 title={task.title}
@@ -263,10 +261,10 @@ export const TaskCalendar: React.FC = () => {
               <div className="space-y-2">
                 {/* Jours de la semaine */}
                 <div className="grid grid-cols-7 gap-2">
-                  {days.map((day) => (
+                  {days.map(day => (
                     <div
                       key={day.toISOString()}
-                      className={`text-center p-2 ${isToday(day) ? 'bg-blue-50 dark:bg-blue-950/20 rounded-lg' : ''}`}
+                      className={`p-2 text-center ${isToday(day) ? 'rounded-lg bg-blue-50 dark:bg-blue-950/20' : ''}`}
                     >
                       <div className="text-sm text-muted-foreground">
                         {format(day, 'EEE', { locale: fr })}
@@ -278,17 +276,17 @@ export const TaskCalendar: React.FC = () => {
 
                 {/* Tâches par jour */}
                 <div className="grid grid-cols-7 gap-2">
-                  {days.map((day) => {
+                  {days.map(day => {
                     const dayTasks = getTasksForDay(day);
 
                     return (
                       <div key={day.toISOString()} className="space-y-1">
-                        {dayTasks.map((task) => (
+                        {dayTasks.map(task => (
                           <div
                             key={task.id}
-                            className={`text-xs p-1 rounded ${getPriorityColor(
+                            className={`rounded p-1 text-xs ${getPriorityColor(
                               task.priority
-                            )} text-white truncate`}
+                            )} truncate text-white`}
                             title={task.title}
                           >
                             {task.title}
@@ -306,40 +304,36 @@ export const TaskCalendar: React.FC = () => {
         {/* Détails du jour sélectionné */}
         <Card>
           <CardHeader>
-            <CardTitle className="text-base flex items-center gap-2">
+            <CardTitle className="flex items-center gap-2 text-base">
               <CalendarIcon className="h-4 w-4" />
               {selectedDate
                 ? format(selectedDate, 'EEEE d MMMM', { locale: fr })
-                : "Sélectionnez un jour"}
+                : 'Sélectionnez un jour'}
             </CardTitle>
           </CardHeader>
           <CardContent>
             {selectedDayTasks.length === 0 ? (
-              <p className="text-muted-foreground text-center py-4">
-                Aucune tâche pour ce jour
-              </p>
+              <p className="py-4 text-center text-muted-foreground">Aucune tâche pour ce jour</p>
             ) : (
               <div className="space-y-3">
-                {selectedDayTasks.map((task) => (
+                {selectedDayTasks.map(task => (
                   <div
                     key={task.id}
-                    className="p-3 border rounded-lg hover:bg-accent/50 transition-colors"
+                    className="rounded-lg border p-3 transition-colors hover:bg-accent/50"
                   >
                     <div className="flex items-start justify-between gap-2">
                       <div className="flex-1">
-                        <h4 className="font-medium text-sm">{task.title}</h4>
+                        <h4 className="text-sm font-medium">{task.title}</h4>
                         {task.description && (
-                          <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
+                          <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">
                             {task.description}
                           </p>
                         )}
                       </div>
-                      <Badge className={getPriorityColor(task.priority)}>
-                        {task.priority}
-                      </Badge>
+                      <Badge className={getPriorityColor(task.priority)}>{task.priority}</Badge>
                     </div>
 
-                    <div className="flex items-center gap-2 mt-2 text-xs">
+                    <div className="mt-2 flex items-center gap-2 text-xs">
                       <Badge variant="secondary">{task.status}</Badge>
                       {task.due_date && (
                         <span className="flex items-center gap-1 text-muted-foreground">
@@ -357,7 +351,7 @@ export const TaskCalendar: React.FC = () => {
       </div>
 
       {/* Statistiques */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
         <Card>
           <CardContent className="pt-6">
             <div className="text-center">
@@ -371,7 +365,7 @@ export const TaskCalendar: React.FC = () => {
           <CardContent className="pt-6">
             <div className="text-center">
               <p className="text-2xl font-bold">
-                {Array.from(tasksByDate.values()).filter((t) => t.length > 0).length}
+                {Array.from(tasksByDate.values()).filter(t => t.length > 0).length}
               </p>
               <p className="text-sm text-muted-foreground">Jours avec tâches</p>
             </div>
@@ -382,7 +376,7 @@ export const TaskCalendar: React.FC = () => {
           <CardContent className="pt-6">
             <div className="text-center">
               <p className="text-2xl font-bold">
-                {Math.round(tasks.length / days.length * 10) / 10}
+                {Math.round((tasks.length / days.length) * 10) / 10}
               </p>
               <p className="text-sm text-muted-foreground">Tâches/jour moyen</p>
             </div>
@@ -393,7 +387,7 @@ export const TaskCalendar: React.FC = () => {
           <CardContent className="pt-6">
             <div className="text-center">
               <p className="text-2xl font-bold">
-                {tasks.filter((t) => t.priority?.toLowerCase() === 'high').length}
+                {tasks.filter(t => t.priority?.toLowerCase() === 'high').length}
               </p>
               <p className="text-sm text-muted-foreground">Haute priorité</p>
             </div>

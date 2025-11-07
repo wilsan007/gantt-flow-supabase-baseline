@@ -1,16 +1,22 @@
 import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { BookOpen, Award, TrendingUp, User, Clock, CheckCircle, Star, Target } from "lucide-react";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { BookOpen, Award, TrendingUp, User, Clock, CheckCircle, Star, Target } from 'lucide-react';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { useSkillsTraining } from '@/hooks/useSkillsTraining';
 
 export const SkillsTraining = () => {
-  const [activeView, setActiveView] = useState("skills");
-  
+  const [activeView, setActiveView] = useState('skills');
+
   const {
     skills,
     skillAssessments,
@@ -19,7 +25,7 @@ export const SkillsTraining = () => {
     createSkill,
     createSkillAssessment,
     getSkillsMatrix,
-    getSkillsStats
+    getSkillsStats,
   } = useSkillsTraining();
 
   if (loading) return <div className="p-6 text-center">Chargement des données de formation...</div>;
@@ -40,22 +46,24 @@ export const SkillsTraining = () => {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold text-foreground">Compétences & Formations</h2>
-          <p className="text-muted-foreground">Développement des compétences et gestion de la formation</p>
+          <p className="text-muted-foreground">
+            Développement des compétences et gestion de la formation
+          </p>
         </div>
         <div className="flex gap-2">
           <Button variant="outline">
-            <BookOpen className="h-4 w-4 mr-2" />
+            <BookOpen className="mr-2 h-4 w-4" />
             Nouvelle compétence
           </Button>
           <Button>
-            <TrendingUp className="h-4 w-4 mr-2" />
+            <TrendingUp className="mr-2 h-4 w-4" />
             Évaluer compétences
           </Button>
         </div>
       </div>
 
       {/* Statistics Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
         <Card>
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
@@ -67,7 +75,7 @@ export const SkillsTraining = () => {
             </div>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
@@ -79,7 +87,7 @@ export const SkillsTraining = () => {
             </div>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
@@ -110,17 +118,24 @@ export const SkillsTraining = () => {
             {skillsMatrix.length === 0 ? (
               <Card>
                 <CardContent className="p-8 text-center">
-                  <TrendingUp className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-                  <p className="text-muted-foreground">Aucune évaluation de compétence disponible</p>
-                  <Button className="mt-4" onClick={() => {/* TODO: Open create dialog */}}>
-                    <TrendingUp className="h-4 w-4 mr-2" />
+                  <TrendingUp className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
+                  <p className="text-muted-foreground">
+                    Aucune évaluation de compétence disponible
+                  </p>
+                  <Button
+                    className="mt-4"
+                    onClick={() => {
+                      /* TODO: Open create dialog */
+                    }}
+                  >
+                    <TrendingUp className="mr-2 h-4 w-4" />
                     Créer une évaluation
                   </Button>
                 </CardContent>
               </Card>
             ) : (
               skillsMatrix.map((matrix: any) => (
-                <Card key={matrix.employeeName} className="hover:shadow-lg transition-shadow">
+                <Card key={matrix.employeeName} className="transition-shadow hover:shadow-lg">
                   <CardHeader>
                     <div className="flex items-center justify-between">
                       <div>
@@ -141,11 +156,14 @@ export const SkillsTraining = () => {
                   <CardContent className="space-y-4">
                     <div className="grid gap-4">
                       {matrix.skills.map((skill: any) => (
-                        <div key={skill.id} className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
+                        <div
+                          key={skill.id}
+                          className="flex items-center justify-between rounded-lg bg-muted/50 p-3"
+                        >
                           <div className="flex-1">
-                            <div className="flex items-center justify-between mb-2">
+                            <div className="mb-2 flex items-center justify-between">
                               <div>
-                                <p className="font-medium text-sm">{skill.name}</p>
+                                <p className="text-sm font-medium">{skill.name}</p>
                                 <p className="text-xs text-muted-foreground">{skill.category}</p>
                               </div>
                               <div className="flex items-center gap-2">
@@ -158,10 +176,7 @@ export const SkillsTraining = () => {
                               </div>
                             </div>
                             <div className="space-y-1">
-                              <Progress 
-                                value={(skill.currentLevel / 5) * 100} 
-                                className="h-2" 
-                              />
+                              <Progress value={(skill.currentLevel / 5) * 100} className="h-2" />
                               <p className="text-xs text-muted-foreground">
                                 Évalué le {skill.lastAssessed} par {skill.assessor}
                               </p>
@@ -182,37 +197,38 @@ export const SkillsTraining = () => {
             {skills.length === 0 ? (
               <Card className="md:col-span-2 lg:col-span-3">
                 <CardContent className="p-8 text-center">
-                  <Target className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                  <Target className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
                   <p className="text-muted-foreground">Aucune compétence définie</p>
-                  <Button className="mt-4" onClick={() => {/* TODO: Open create dialog */}}>
-                    <Target className="h-4 w-4 mr-2" />
+                  <Button
+                    className="mt-4"
+                    onClick={() => {
+                      /* TODO: Open create dialog */
+                    }}
+                  >
+                    <Target className="mr-2 h-4 w-4" />
                     Ajouter une compétence
                   </Button>
                 </CardContent>
               </Card>
             ) : (
-              skills.map((skill) => (
-                <Card key={skill.id} className="hover:shadow-lg transition-shadow">
+              skills.map(skill => (
+                <Card key={skill.id} className="transition-shadow hover:shadow-lg">
                   <CardContent className="p-6">
-                    <div className="flex items-center gap-3 mb-4">
+                    <div className="mb-4 flex items-center gap-3">
                       <div className="text-2xl">🎯</div>
                       <div>
                         <h3 className="font-medium">{skill.name}</h3>
-                        <Badge variant="outline">
-                          {skill.category}
-                        </Badge>
+                        <Badge variant="outline">{skill.category}</Badge>
                       </div>
                     </div>
-                    
+
                     {skill.description && (
-                      <p className="text-sm text-muted-foreground mb-4">
-                        {skill.description}
-                      </p>
+                      <p className="mb-4 text-sm text-muted-foreground">{skill.description}</p>
                     )}
-                    
+
                     <div className="text-sm">
                       <p className="text-muted-foreground">Évaluations:</p>
-                      <p className="font-bold text-lg">
+                      <p className="text-lg font-bold">
                         {skillAssessments.filter(a => a.skill_id === skill.id).length}
                       </p>
                     </div>

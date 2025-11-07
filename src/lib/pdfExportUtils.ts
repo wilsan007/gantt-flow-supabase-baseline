@@ -1,7 +1,7 @@
 /**
  * PDF Export Utilities - Export PDF complet
  * Pattern: Stripe invoices, Monday.com reports
- * 
+ *
  * Deux types d'export:
  * 1. Tabulaire (tableaux professionnels)
  * 2. Visuel (capture dashboard)
@@ -104,8 +104,8 @@ export async function exportTableToPDF(
   // Tableau avec autoTable
   autoTable(doc, {
     startY: yPosition,
-    head: [columns.map((col) => col.header)],
-    body: data.map((row) => columns.map((col) => String(row[col.dataKey] || ''))),
+    head: [columns.map(col => col.header)],
+    body: data.map(row => columns.map(col => String(row[col.dataKey] || ''))),
     theme: 'grid',
     headStyles: {
       fillColor: [59, 130, 246], // blue-500
@@ -146,12 +146,7 @@ export async function exportTableToPDF(
     doc.setPage(i);
     doc.setFontSize(8);
     doc.setTextColor(107, 114, 128);
-    doc.text(
-      `Page ${i} / ${pageCount}`,
-      pageWidth - 20,
-      pageHeight - 10,
-      { align: 'right' }
-    );
+    doc.text(`Page ${i} / ${pageCount}`, pageWidth - 20, pageHeight - 10, { align: 'right' });
   }
 
   // Télécharger le PDF
@@ -229,7 +224,7 @@ export async function exportDashboardToPDF(
 
     // Vérifier si l'image tient sur une page
     const availableHeight = pageHeight - yPosition - 15;
-    
+
     if (imgHeight <= availableHeight) {
       // Tient sur une page
       const imgData = canvas.toDataURL('image/png');
@@ -250,7 +245,7 @@ export async function exportDashboardToPDF(
         tempCanvas.width = canvas.width;
         tempCanvas.height = sourceHeight;
         const tempCtx = tempCanvas.getContext('2d');
-        
+
         if (tempCtx) {
           tempCtx.drawImage(
             canvas,
@@ -281,7 +276,7 @@ export async function exportDashboardToPDF(
     // Télécharger le PDF
     doc.save(filename);
   } catch (error) {
-    console.error('Erreur lors de l\'export PDF:', error);
+    console.error("Erreur lors de l'export PDF:", error);
     throw error;
   }
 }
@@ -357,7 +352,7 @@ export async function exportHybridPDF(
   // Afficher les métriques en grille
   const metricsPerRow = 2;
   const metricWidth = (pageWidth - 40) / metricsPerRow;
-  
+
   metrics.forEach((metric, index) => {
     const col = index % metricsPerRow;
     const row = Math.floor(index / metricsPerRow);
@@ -395,8 +390,8 @@ export async function exportHybridPDF(
   // Tableau
   autoTable(doc, {
     startY: yPosition,
-    head: [tableColumns.map((col) => col.header)],
-    body: tableData.map((row) => tableColumns.map((col) => String(row[col.dataKey] || ''))),
+    head: [tableColumns.map(col => col.header)],
+    body: tableData.map(row => tableColumns.map(col => String(row[col.dataKey] || ''))),
     theme: 'grid',
     headStyles: {
       fillColor: [59, 130, 246],

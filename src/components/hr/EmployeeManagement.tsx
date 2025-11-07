@@ -15,18 +15,23 @@ export const EmployeeManagement = () => {
 
   const getContractTypeColor = (contractType?: string) => {
     switch (contractType) {
-      case 'CDI': return 'default';
-      case 'CDD': return 'secondary';
-      case 'Stage': return 'outline';
-      case 'Freelance': return 'destructive';
-      default: return 'secondary';
+      case 'CDI':
+        return 'default';
+      case 'CDD':
+        return 'secondary';
+      case 'Stage':
+        return 'outline';
+      case 'Freelance':
+        return 'destructive';
+      default:
+        return 'secondary';
     }
   };
 
   return (
-    <div className="p-6 space-y-6">
-      <div className="flex justify-between items-center">
-        <h2 className="text-3xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+    <div className="space-y-6 p-6">
+      <div className="flex items-center justify-between">
+        <h2 className="bg-gradient-to-r from-primary to-accent bg-clip-text text-3xl font-bold text-transparent">
           Gestion des Employés
         </h2>
       </div>
@@ -73,38 +78,38 @@ export const EmployeeManagement = () => {
         {employees.length === 0 ? (
           <Card className="modern-card">
             <CardContent className="p-8 text-center">
-              <Users className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+              <Users className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
               <p className="text-muted-foreground">Aucun employé trouvé</p>
             </CardContent>
           </Card>
         ) : (
           <div className={`grid gap-4 ${isMobile ? 'grid-cols-1' : 'grid-cols-2 lg:grid-cols-3'}`}>
-            {employees.map((employee) => {
+            {employees.map(employee => {
               const department = departments.find(d => d.id === employee.department_id);
-              
+
               return (
                 <Card key={employee.user_id} className="modern-card hover-glow">
                   <CardContent className="p-6">
                     <div className="flex items-start gap-4">
                       <Avatar className="h-12 w-12">
-                        <AvatarImage 
-                          src={employee.avatar_url || undefined} 
-                          alt={employee.full_name} 
+                        <AvatarImage
+                          src={employee.avatar_url || undefined}
+                          alt={employee.full_name}
                         />
                         <AvatarFallback>
-                          {employee.full_name.split(' ').map(n => n[0]).join('').toUpperCase()}
+                          {employee.full_name
+                            .split(' ')
+                            .map(n => n[0])
+                            .join('')
+                            .toUpperCase()}
                         </AvatarFallback>
                       </Avatar>
-                      
-                      <div className="flex-1 min-w-0">
-                        <h3 className="font-semibold text-lg truncate">
-                          {employee.full_name}
-                        </h3>
-                        
+
+                      <div className="min-w-0 flex-1">
+                        <h3 className="truncate text-lg font-semibold">{employee.full_name}</h3>
+
                         {employee.job_title && (
-                          <p className="text-sm text-muted-foreground mb-2">
-                            {employee.job_title}
-                          </p>
+                          <p className="mb-2 text-sm text-muted-foreground">{employee.job_title}</p>
                         )}
 
                         <div className="space-y-2">
@@ -113,13 +118,14 @@ export const EmployeeManagement = () => {
                               <strong>ID:</strong> {employee.employee_id}
                             </p>
                           )}
-                          
+
                           {employee.hire_date && (
                             <p className="text-xs text-muted-foreground">
-                              <strong>Embauché le:</strong> {new Date(employee.hire_date).toLocaleDateString()}
+                              <strong>Embauché le:</strong>{' '}
+                              {new Date(employee.hire_date).toLocaleDateString()}
                             </p>
                           )}
-                          
+
                           {department && (
                             <p className="text-xs text-muted-foreground">
                               <strong>Département:</strong> {department.name}
@@ -127,7 +133,10 @@ export const EmployeeManagement = () => {
                           )}
 
                           {employee.contract_type && (
-                            <Badge variant={getContractTypeColor(employee.contract_type)} className="text-xs">
+                            <Badge
+                              variant={getContractTypeColor(employee.contract_type)}
+                              className="text-xs"
+                            >
                               {employee.contract_type}
                             </Badge>
                           )}

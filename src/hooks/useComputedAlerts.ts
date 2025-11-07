@@ -29,15 +29,19 @@ export const useComputedAlerts = () => {
   useEffect(() => {
     const checkPermissions = async () => {
       try {
-        const { data: { user } } = await supabase.auth.getUser();
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
         if (!user) return;
 
         const { data: userRoles, error } = await supabase
           .from('user_roles')
-          .select(`
+          .select(
+            `
             *,
             roles:role_id (name)
-          `)
+          `
+          )
           .eq('user_id', user.id)
           .eq('is_active', true);
 
@@ -47,9 +51,9 @@ export const useComputedAlerts = () => {
         }
 
         // Les admins ont accès aux données RH
-        const hasAdminRole = userRoles?.some(role => 
-          ['admin', 'tenant_admin', 'owner'].includes(role.roles.name)
-        ) || false;
+        const hasAdminRole =
+          userRoles?.some(role => ['admin', 'tenant_admin', 'owner'].includes(role.roles.name)) ||
+          false;
 
         setCanViewHRData(hasAdminRole);
       } catch (error) {
@@ -63,9 +67,7 @@ export const useComputedAlerts = () => {
   // Récupérer les alertes depuis la vue SQL avec filtrage par permissions
   const calculateCurrentAlerts = async (): Promise<ComputedAlert[]> => {
     try {
-      const { data: alerts, error } = await supabase
-        .from('current_alerts_view')
-        .select('*');
+      const { data: alerts, error } = await supabase.from('current_alerts_view').select('*');
 
       if (error) {
         console.error('Erreur lors de la récupération des alertes:', error);
@@ -98,9 +100,8 @@ export const useComputedAlerts = () => {
         context_data: alert.context_data,
         triggered_at: alert.triggered_at,
         application_domain: alert.application_domain as 'hr' | 'project',
-        recommendations: [] // À implémenter si nécessaire
+        recommendations: [], // À implémenter si nécessaire
       }));
-
     } catch (error) {
       console.error('Erreur lors du calcul des alertes:', error);
       throw error;
@@ -112,16 +113,16 @@ export const useComputedAlerts = () => {
       setLoading(true);
       setError(null);
       const alerts = await calculateCurrentAlerts();
-      
+
       // Trier par sévérité puis par date
       const sortedAlerts = alerts.sort((a, b) => {
         const severityOrder = { critical: 4, high: 3, medium: 2, low: 1 };
         const severityDiff = severityOrder[b.severity] - severityOrder[a.severity];
         if (severityDiff !== 0) return severityDiff;
-        
+
         return new Date(b.triggered_at).getTime() - new Date(a.triggered_at).getTime();
       });
-      
+
       setComputedAlerts(sortedAlerts);
     } catch (err: any) {
       setError(err.message);
@@ -137,36 +138,31 @@ export const useComputedAlerts = () => {
   // Fonctions utilitaires
   const getActiveAlerts = () => computedAlerts;
 
-  const getHighPriorityAlerts = () => 
+  const getHighPriorityAlerts = () =>
     computedAlerts.filter(alert => alert.severity === 'high' || alert.severity === 'critical');
 
-  const getCriticalAlerts = () => 
-    computedAlerts.filter(alert => alert.severity === 'critical');
+  const getCriticalAlerts = () => computedAlerts.filter(alert => alert.severity === 'critical');
 
-  const getAlertsByCategory = (category: string) => 
+  const getAlertsByCategory = (category: string) =>
     computedAlerts.filter(alert => alert.category === category);
 
-  const getTopAlerts = (limit: number = 4) => 
-    computedAlerts.slice(0, limit);
+  const getTopAlerts = (limit: number = 4) => computedAlerts.slice(0, limit);
 
   // Fonctions spécialisées pour filtrer par domaine d'application (utilisant la colonne DB)
-  const getHRAlerts = () => 
-    computedAlerts.filter(alert => alert.application_domain === 'hr');
+  const getHRAlerts = () => computedAlerts.filter(alert => alert.application_domain === 'hr');
 
-  const getHRHighPriorityAlerts = () => 
+  const getHRHighPriorityAlerts = () =>
     getHRAlerts().filter(alert => alert.severity === 'high' || alert.severity === 'critical');
 
-  const getTopHRAlerts = (limit: number = 4) => 
-    getHRAlerts().slice(0, limit);
+  const getTopHRAlerts = (limit: number = 4) => getHRAlerts().slice(0, limit);
 
-  const getProjectAlerts = () => 
+  const getProjectAlerts = () =>
     computedAlerts.filter(alert => alert.application_domain === 'project');
 
-  const getProjectHighPriorityAlerts = () => 
+  const getProjectHighPriorityAlerts = () =>
     getProjectAlerts().filter(alert => alert.severity === 'high' || alert.severity === 'critical');
 
-  const getTopProjectAlerts = (limit: number = 4) => 
-    getProjectAlerts().slice(0, limit);
+  const getTopProjectAlerts = (limit: number = 4) => getProjectAlerts().slice(0, limit);
 
   return {
     computedAlerts,
@@ -183,6 +179,6 @@ export const useComputedAlerts = () => {
     getTopHRAlerts,
     getProjectAlerts,
     getProjectHighPriorityAlerts,
-    getTopProjectAlerts
+    getTopProjectAlerts,
   };
 };

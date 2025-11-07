@@ -10,7 +10,13 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Plus, Save, X } from 'lucide-react';
 import { useEmployees } from '@/hooks/useEmployees';
@@ -34,7 +40,7 @@ interface ProjectCreationDialogProps {
 export const ProjectCreationDialog: React.FC<ProjectCreationDialogProps> = ({
   open,
   onOpenChange,
-  onCreateProject
+  onCreateProject,
 }) => {
   const { toast } = useToast();
   const { employees, refetch: refetchEmployees } = useEmployees();
@@ -49,7 +55,15 @@ export const ProjectCreationDialog: React.FC<ProjectCreationDialogProps> = ({
   const [loading, setLoading] = useState(false);
   const [showQuickInvite, setShowQuickInvite] = useState(false);
 
-  const commonSkills = ['React', 'TypeScript', 'Node.js', 'Python', 'Design', 'Marketing', 'DevOps'];
+  const commonSkills = [
+    'React',
+    'TypeScript',
+    'Node.js',
+    'Python',
+    'Design',
+    'Marketing',
+    'DevOps',
+  ];
 
   const addSkill = () => {
     if (newSkill.trim() && !skills.includes(newSkill.trim())) {
@@ -77,9 +91,9 @@ export const ProjectCreationDialog: React.FC<ProjectCreationDialogProps> = ({
         status,
         priority,
         skills_required: skills,
-        budget
+        budget,
       });
-      
+
       // Reset form
       setName('');
       setDescription('');
@@ -88,7 +102,7 @@ export const ProjectCreationDialog: React.FC<ProjectCreationDialogProps> = ({
       setPriority('medium');
       setBudget(undefined);
       setSkills([]);
-      
+
       onOpenChange(false);
     } catch (error) {
       alert('Erreur lors de la création du projet');
@@ -112,7 +126,7 @@ export const ProjectCreationDialog: React.FC<ProjectCreationDialogProps> = ({
             <Label>Nom du projet *</Label>
             <Input
               value={name}
-              onChange={(e) => setName(e.target.value)}
+              onChange={e => setName(e.target.value)}
               placeholder="Nom du projet..."
               maxLength={100}
             />
@@ -122,7 +136,7 @@ export const ProjectCreationDialog: React.FC<ProjectCreationDialogProps> = ({
             <Label>Description</Label>
             <Textarea
               value={description}
-              onChange={(e) => setDescription(e.target.value)}
+              onChange={e => setDescription(e.target.value)}
               placeholder="Description du projet..."
               rows={3}
             />
@@ -137,7 +151,7 @@ export const ProjectCreationDialog: React.FC<ProjectCreationDialogProps> = ({
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="">Non assigné</SelectItem>
-                  {employees.map((employee) => (
+                  {employees.map(employee => (
                     <SelectItem key={employee.id} value={employee.id}>
                       {employee.full_name}
                     </SelectItem>
@@ -149,7 +163,7 @@ export const ProjectCreationDialog: React.FC<ProjectCreationDialogProps> = ({
                 variant="outline"
                 size="sm"
                 onClick={() => setShowQuickInvite(true)}
-                className="w-full text-blue-600 border-blue-300 hover:bg-blue-50"
+                className="w-full border-blue-300 text-blue-600 hover:bg-blue-50"
               >
                 ➕ Inviter un manager
               </Button>
@@ -191,7 +205,7 @@ export const ProjectCreationDialog: React.FC<ProjectCreationDialogProps> = ({
               <Input
                 type="number"
                 value={budget || ''}
-                onChange={(e) => setBudget(e.target.value ? Number(e.target.value) : undefined)}
+                onChange={e => setBudget(e.target.value ? Number(e.target.value) : undefined)}
                 placeholder="Budget estimé..."
               />
             </div>
@@ -202,20 +216,20 @@ export const ProjectCreationDialog: React.FC<ProjectCreationDialogProps> = ({
             <div className="flex gap-2">
               <Input
                 value={newSkill}
-                onChange={(e) => setNewSkill(e.target.value)}
+                onChange={e => setNewSkill(e.target.value)}
                 placeholder="Ajouter une compétence..."
-                onKeyPress={(e) => e.key === 'Enter' && addSkill()}
+                onKeyPress={e => e.key === 'Enter' && addSkill()}
               />
               <Button type="button" onClick={addSkill} size="sm">
                 <Plus className="h-4 w-4" />
               </Button>
             </div>
-            
-            <div className="flex flex-wrap gap-2 mt-2">
-              {commonSkills.map((skill) => (
+
+            <div className="mt-2 flex flex-wrap gap-2">
+              {commonSkills.map(skill => (
                 <Badge
                   key={skill}
-                  variant={skills.includes(skill) ? "default" : "outline"}
+                  variant={skills.includes(skill) ? 'default' : 'outline'}
                   className="cursor-pointer"
                   onClick={() => {
                     if (skills.includes(skill)) {
@@ -229,10 +243,10 @@ export const ProjectCreationDialog: React.FC<ProjectCreationDialogProps> = ({
                 </Badge>
               ))}
             </div>
-            
+
             {skills.length > 0 && (
-              <div className="flex flex-wrap gap-2 mt-2">
-                {skills.map((skill) => (
+              <div className="mt-2 flex flex-wrap gap-2">
+                {skills.map(skill => (
                   <Badge key={skill} className="cursor-pointer" onClick={() => removeSkill(skill)}>
                     {skill} ×
                   </Badge>
@@ -244,11 +258,11 @@ export const ProjectCreationDialog: React.FC<ProjectCreationDialogProps> = ({
 
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>
-            <X className="h-4 w-4 mr-2" />
+            <X className="mr-2 h-4 w-4" />
             Annuler
           </Button>
           <Button onClick={handleSubmit} disabled={loading || !name.trim() || !manager}>
-            <Save className="h-4 w-4 mr-2" />
+            <Save className="mr-2 h-4 w-4" />
             {loading ? 'Création...' : 'Créer le Projet'}
           </Button>
         </DialogFooter>
@@ -257,7 +271,7 @@ export const ProjectCreationDialog: React.FC<ProjectCreationDialogProps> = ({
       <QuickInviteCollaborator
         open={showQuickInvite}
         onOpenChange={setShowQuickInvite}
-        onSuccess={(employeeId) => {
+        onSuccess={employeeId => {
           if (refetchEmployees) {
             refetchEmployees();
           }

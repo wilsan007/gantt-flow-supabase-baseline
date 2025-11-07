@@ -5,8 +5,20 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Plus, Clock, Check, X, Calendar } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -54,10 +66,10 @@ export const TimesheetManagement = () => {
   const fetchData = async () => {
     try {
       setLoading(true);
-      
+
       const [timesheetsRes, employeesRes] = await Promise.all([
         supabase.from('timesheets').select('*').order('date', { ascending: false }),
-        supabase.from('profiles').select('id, full_name')
+        supabase.from('profiles').select('id, full_name'),
       ]);
 
       if (timesheetsRes.error) throw timesheetsRes.error;
@@ -68,9 +80,9 @@ export const TimesheetManagement = () => {
     } catch (error: any) {
       console.error('Error fetching data:', error);
       toast({
-        title: "Erreur",
-        description: "Impossible de charger les données",
-        variant: "destructive"
+        title: 'Erreur',
+        description: 'Impossible de charger les données',
+        variant: 'destructive',
       });
     } finally {
       setLoading(false);
@@ -89,18 +101,16 @@ export const TimesheetManagement = () => {
         hours: parseFloat(data.hours),
         description: data.description || null,
         billable: data.billable || false,
-        approved: false
+        approved: false,
       };
 
-      const { error } = await supabase
-        .from('timesheets')
-        .insert(timesheetData);
+      const { error } = await supabase.from('timesheets').insert(timesheetData);
 
       if (error) throw error;
 
       toast({
-        title: "Succès",
-        description: "Feuille de temps créée avec succès"
+        title: 'Succès',
+        description: 'Feuille de temps créée avec succès',
       });
 
       reset();
@@ -109,9 +119,9 @@ export const TimesheetManagement = () => {
     } catch (error: any) {
       console.error('Error creating timesheet:', error);
       toast({
-        title: "Erreur",
-        description: "Impossible de créer la feuille de temps",
-        variant: "destructive"
+        title: 'Erreur',
+        description: 'Impossible de créer la feuille de temps',
+        variant: 'destructive',
       });
     }
   };
@@ -126,17 +136,17 @@ export const TimesheetManagement = () => {
       if (error) throw error;
 
       toast({
-        title: "Succès",
-        description: "Feuille de temps approuvée"
+        title: 'Succès',
+        description: 'Feuille de temps approuvée',
       });
 
       fetchData();
     } catch (error: any) {
       console.error('Error approving timesheet:', error);
       toast({
-        title: "Erreur",
+        title: 'Erreur',
         description: "Impossible d'approuver la feuille de temps",
-        variant: "destructive"
+        variant: 'destructive',
       });
     }
   };
@@ -151,17 +161,17 @@ export const TimesheetManagement = () => {
       if (error) throw error;
 
       toast({
-        title: "Succès",
-        description: "Feuille de temps rejetée"
+        title: 'Succès',
+        description: 'Feuille de temps rejetée',
       });
 
       fetchData();
     } catch (error: any) {
       console.error('Error rejecting timesheet:', error);
       toast({
-        title: "Erreur",
-        description: "Impossible de rejeter la feuille de temps",
-        variant: "destructive"
+        title: 'Erreur',
+        description: 'Impossible de rejeter la feuille de temps',
+        variant: 'destructive',
       });
     }
   };
@@ -171,7 +181,7 @@ export const TimesheetManagement = () => {
     const weekStart = new Date(selectedWeek);
     const weekEnd = new Date(weekStart);
     weekEnd.setDate(weekStart.getDate() + 6);
-    
+
     return timesheetDate >= weekStart && timesheetDate <= weekEnd;
   });
 
@@ -180,16 +190,16 @@ export const TimesheetManagement = () => {
   }
 
   return (
-    <div className="p-6 space-y-6">
-      <div className="flex justify-between items-center">
-        <h2 className="text-3xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+    <div className="space-y-6 p-6">
+      <div className="flex items-center justify-between">
+        <h2 className="bg-gradient-to-r from-primary to-accent bg-clip-text text-3xl font-bold text-transparent">
           Feuilles de Temps
         </h2>
-        
+
         <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
           <DialogTrigger asChild>
             <Button className="hover-glow">
-              <Plus className="h-4 w-4 mr-2" />
+              <Plus className="mr-2 h-4 w-4" />
               Nouvelle feuille
             </Button>
           </DialogTrigger>
@@ -200,7 +210,7 @@ export const TimesheetManagement = () => {
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
               <div>
                 <Label htmlFor="employee_id">Employé</Label>
-                <Select onValueChange={(value) => setValue('employee_id', value)}>
+                <Select onValueChange={value => setValue('employee_id', value)}>
                   <SelectTrigger>
                     <SelectValue placeholder="Sélectionner un employé" />
                   </SelectTrigger>
@@ -246,17 +256,16 @@ export const TimesheetManagement = () => {
 
               <div className="flex items-center justify-between">
                 <Label htmlFor="billable">Facturable</Label>
-                <Switch
-                  id="billable"
-                  onCheckedChange={(checked) => setValue('billable', checked)}
-                />
+                <Switch id="billable" onCheckedChange={checked => setValue('billable', checked)} />
               </div>
 
               <div className="flex gap-2">
-                <Button type="submit" className="flex-1">Créer</Button>
-                <Button 
-                  type="button" 
-                  variant="outline" 
+                <Button type="submit" className="flex-1">
+                  Créer
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
                   onClick={() => setIsCreateDialogOpen(false)}
                 >
                   Annuler
@@ -268,12 +277,12 @@ export const TimesheetManagement = () => {
       </div>
 
       {/* Week Filter */}
-      <div className="flex gap-4 items-center">
+      <div className="flex items-center gap-4">
         <Label>Semaine du :</Label>
         <Input
           type="date"
           value={selectedWeek}
-          onChange={(e) => setSelectedWeek(e.target.value)}
+          onChange={e => setSelectedWeek(e.target.value)}
           className="w-48"
         />
       </div>
@@ -295,7 +304,11 @@ export const TimesheetManagement = () => {
           <CardContent className="p-4">
             <div className="text-center">
               <div className="text-2xl font-bold text-success">
-                {filteredTimesheets.filter(ts => ts.billable).reduce((sum, ts) => sum + ts.hours, 0).toFixed(1)}h
+                {filteredTimesheets
+                  .filter(ts => ts.billable)
+                  .reduce((sum, ts) => sum + ts.hours, 0)
+                  .toFixed(1)}
+                h
               </div>
               <div className="text-sm text-muted-foreground">Facturables</div>
             </div>
@@ -330,40 +343,42 @@ export const TimesheetManagement = () => {
         {filteredTimesheets.length === 0 ? (
           <Card className="modern-card">
             <CardContent className="p-8 text-center">
-              <Clock className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-              <p className="text-muted-foreground">
-                Aucune feuille de temps pour cette semaine
-              </p>
+              <Clock className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
+              <p className="text-muted-foreground">Aucune feuille de temps pour cette semaine</p>
             </CardContent>
           </Card>
         ) : (
-          filteredTimesheets.map((timesheet) => {
+          filteredTimesheets.map(timesheet => {
             const employee = employees.find(emp => emp.user_id === timesheet.employee_id);
-            
+
             return (
               <Card key={timesheet.id} className="modern-card hover-glow">
                 <CardContent className="p-6">
-                  <div className={`${isMobile ? 'space-y-4' : 'flex items-center justify-between'}`}>
+                  <div
+                    className={`${isMobile ? 'space-y-4' : 'flex items-center justify-between'}`}
+                  >
                     <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-2">
-                        <h3 className="font-semibold text-lg">
+                      <div className="mb-2 flex items-center gap-3">
+                        <h3 className="text-lg font-semibold">
                           {employee?.full_name || 'Employé inconnu'}
                         </h3>
-                        <Badge
-                          variant={timesheet.approved ? 'default' : 'secondary'}
-                        >
+                        <Badge variant={timesheet.approved ? 'default' : 'secondary'}>
                           {timesheet.approved ? 'Approuvée' : 'En attente'}
                         </Badge>
-                        {timesheet.billable && (
-                          <Badge variant="outline">Facturable</Badge>
-                        )}
+                        {timesheet.billable && <Badge variant="outline">Facturable</Badge>}
                       </div>
-                      
-                      <div className="text-sm text-muted-foreground space-y-1">
-                        <p><strong>Date:</strong> {new Date(timesheet.date).toLocaleDateString()}</p>
-                        <p><strong>Heures:</strong> {timesheet.hours}h</p>
+
+                      <div className="space-y-1 text-sm text-muted-foreground">
+                        <p>
+                          <strong>Date:</strong> {new Date(timesheet.date).toLocaleDateString()}
+                        </p>
+                        <p>
+                          <strong>Heures:</strong> {timesheet.hours}h
+                        </p>
                         {timesheet.description && (
-                          <p><strong>Description:</strong> {timesheet.description}</p>
+                          <p>
+                            <strong>Description:</strong> {timesheet.description}
+                          </p>
                         )}
                       </div>
                     </div>
@@ -375,7 +390,7 @@ export const TimesheetManagement = () => {
                           onClick={() => approveTimesheet(timesheet.id)}
                           className="hover-glow"
                         >
-                          <Check className="h-4 w-4 mr-1" />
+                          <Check className="mr-1 h-4 w-4" />
                           Approuver
                         </Button>
                         <Button
@@ -383,7 +398,7 @@ export const TimesheetManagement = () => {
                           variant="outline"
                           onClick={() => rejectTimesheet(timesheet.id)}
                         >
-                          <X className="h-4 w-4 mr-1" />
+                          <X className="mr-1 h-4 w-4" />
                           Rejeter
                         </Button>
                       </div>

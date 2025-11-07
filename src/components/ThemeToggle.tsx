@@ -1,7 +1,7 @@
-import { Moon, Sun } from "lucide-react";
-import { useTheme } from "next-themes";
-import { Button } from "@/components/ui/button";
-import { useEffect, useState } from "react";
+import { Moon, Sun } from 'lucide-react';
+import { useTheme } from 'next-themes';
+import { Button } from '@/components/ui/button';
+import { useEffect, useState } from 'react';
 
 export function ThemeToggle() {
   const { theme, setTheme } = useTheme();
@@ -23,10 +23,10 @@ export function ThemeToggle() {
     <Button
       variant="outline"
       size="icon"
-      onClick={() => setTheme(theme === "light" ? "dark" : "light")}
+      onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
       className="transition-smooth hover-glow glass border-primary/30"
     >
-      {theme === "light" ? (
+      {theme === 'light' ? (
         <Moon className="h-4 w-4 text-primary" />
       ) : (
         <Sun className="h-4 w-4 text-primary" />

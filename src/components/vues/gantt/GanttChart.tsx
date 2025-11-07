@@ -24,13 +24,9 @@ import {
   getViewConfig,
   statusColors,
   getTotalUnits,
-  ViewConfig
+  ViewConfig,
 } from '@/lib/ganttHelpers';
-import {
-  assignProjectColors,
-  getTaskColor,
-  ProjectColorMap
-} from '@/lib/ganttColors';
+import { assignProjectColors, getTaskColor, ProjectColorMap } from '@/lib/ganttColors';
 
 const GanttChart = () => {
   const { toast } = useToast();
@@ -62,13 +58,13 @@ const GanttChart = () => {
   const { tasks, loading, error, updateTaskDates, refresh } = useTasks();
   const { projects, loading: projectsLoading, error: projectsError } = useProjects();
   const isMobile = useIsMobile();
-  
+
   // Appliquer les filtres uniquement en mode tâches
   const { filteredTasks } = useTaskFilters(tasks, filters);
   const scrollContainerRef = React.useRef<HTMLDivElement>(null);
   const taskListScrollRef = React.useRef<HTMLDivElement>(null);
   const timelineScrollRef = React.useRef<HTMLDivElement>(null);
-  
+
   const config = getViewConfig(viewMode);
   const rowHeight = 60;
 
@@ -83,7 +79,7 @@ const GanttChart = () => {
     if (items.length === 0) {
       return {
         start: new Date(new Date().getFullYear(), 0, 1),
-        end: new Date(new Date().getFullYear(), 11, 31)
+        end: new Date(new Date().getFullYear(), 11, 31),
       };
     }
 
@@ -93,14 +89,14 @@ const GanttChart = () => {
     items.forEach((item: any) => {
       const startDateStr = item.start_date;
       const endDateStr = item.due_date || item.end_date;
-      
+
       if (!startDateStr || !endDateStr) return;
-      
+
       const start = new Date(startDateStr);
       const end = new Date(endDateStr);
-      
+
       if (isNaN(start.getTime()) || isNaN(end.getTime())) return;
-      
+
       if (minDate === null || start < minDate) minDate = start;
       if (maxDate === null || end > maxDate) maxDate = end;
     });
@@ -108,13 +104,13 @@ const GanttChart = () => {
     if (!minDate || !maxDate) {
       return {
         start: new Date(new Date().getFullYear(), 0, 1),
-        end: new Date(new Date().getFullYear(), 11, 31)
+        end: new Date(new Date().getFullYear(), 11, 31),
       };
     }
 
     const startWithMargin = new Date(minDate);
     startWithMargin.setMonth(startWithMargin.getMonth() - 1);
-    
+
     const endWithMargin = new Date(maxDate);
     endWithMargin.setMonth(endWithMargin.getMonth() + 1);
 
@@ -127,11 +123,11 @@ const GanttChart = () => {
   const resetTaskPositions = React.useCallback(async () => {
     // Forcer le rafraîchissement des données depuis Supabase
     await refresh();
-    
+
     // Animation visuelle après le refresh
     if (errorTaskInfo) {
       const { taskId } = errorTaskInfo;
-      
+
       // Attendre que le DOM soit mis à jour après le refresh
       setTimeout(() => {
         const taskElement = document.querySelector(`[data-task-id="${taskId}"]`) as HTMLElement;
@@ -139,7 +135,7 @@ const GanttChart = () => {
           // Flash visuel pour indiquer le reset
           taskElement.style.outline = '3px solid #ef4444';
           taskElement.style.transition = 'outline 0.3s ease-out';
-          
+
           setTimeout(() => {
             taskElement.style.outline = '';
             setTimeout(() => {
@@ -166,7 +162,7 @@ const GanttChart = () => {
         setErrorTaskInfo({
           taskId,
           originalStartDate: new Date(originalTask.start_date),
-          originalEndDate: new Date(originalTask.due_date)
+          originalEndDate: new Date(originalTask.due_date),
         });
 
         // ✅ Remettre immédiatement la barre à sa position originale
@@ -206,19 +202,21 @@ const GanttChart = () => {
           <div className="mt-2 space-y-2">
             {errorDetails && <p className="text-sm">📅 {errorDetails}</p>}
             {errorSuggestion && <p className="text-sm font-medium">💡 {errorSuggestion}</p>}
-            <p className="text-xs text-muted-foreground mt-2">La barre a été replacée à sa position valide.</p>
+            <p className="mt-2 text-xs text-muted-foreground">
+              La barre a été replacée à sa position valide.
+            </p>
           </div>
         ),
         duration: 7000, // 7 secondes
       });
-      
+
       // Garder aussi la modal pour les cas où le toast n'est pas visible
       setDateUpdateError({
         message: errorMessage,
         details: errorDetails,
-        suggestion: errorSuggestion
+        suggestion: errorSuggestion,
       });
-      
+
       // Fermeture automatique de la modal après 6 secondes
       setTimeout(() => {
         setDateUpdateError(null);
@@ -229,7 +227,7 @@ const GanttChart = () => {
   // Synchroniser le scroll vertical entre la liste et la timeline
   const handleScroll = (source: 'list' | 'timeline') => (e: React.UIEvent<HTMLDivElement>) => {
     const scrollTop = e.currentTarget.scrollTop;
-    
+
     if (source === 'list' && timelineScrollRef.current) {
       timelineScrollRef.current.scrollTop = scrollTop;
     } else if (source === 'timeline' && taskListScrollRef.current) {
@@ -242,23 +240,23 @@ const GanttChart = () => {
     const totalUnits = getTotalUnits(start, end, viewConfig);
     const units = [];
     let currentDate = new Date(start);
-    
+
     for (let i = 0; i < totalUnits; i++) {
       if (viewConfig.unitDuration === 30) {
         currentDate = new Date(start.getFullYear(), start.getMonth() + i, 1);
       } else {
         currentDate = new Date(start.getTime() + i * viewConfig.unitDuration * 24 * 60 * 60 * 1000);
       }
-      
+
       units.push(
         <div
           key={i}
-          className="flex h-full items-center justify-center border-r border-gantt-grid text-xs text-foreground/70"
+          className="border-gantt-grid flex h-full items-center justify-center border-r text-xs text-foreground/70"
           style={{ minWidth: viewConfig.unitWidth }}
         >
           <div className="text-center">
             <div className="font-medium text-foreground">{viewConfig.getUnit(currentDate)}</div>
-            <div className="text-xs opacity-60 text-foreground/60">
+            <div className="text-xs text-foreground/60 opacity-60">
               {viewConfig.getSubUnit(currentDate)}
             </div>
           </div>
@@ -292,7 +290,7 @@ const GanttChart = () => {
       assignee: task.assigned_name || 'Non assigné',
       priority: task.priority,
       status: task.status,
-      project_id: task.project_id // ✅ Uniquement project_id, pas project_name
+      project_id: task.project_id, // ✅ Uniquement project_id, pas project_name
     };
   };
 
@@ -309,12 +307,13 @@ const GanttChart = () => {
       assignee: project.manager_name || 'Non assigné',
       priority: project.priority || 'medium',
       status: project.status || 'planning',
-      project_id: project.id
+      project_id: project.id,
     };
   };
 
   // Utiliser filteredTasks au lieu de tasks en mode tâches pour appliquer les filtres
-  const ganttTasks = displayMode === 'tasks' ? filteredTasks.map(getGanttTask) : projects.map(getGanttProject);
+  const ganttTasks =
+    displayMode === 'tasks' ? filteredTasks.map(getGanttTask) : projects.map(getGanttProject);
 
   const {
     draggedTask,
@@ -322,12 +321,12 @@ const GanttChart = () => {
     chartRef,
     taskMouseDownHandler,
     handleMouseMove,
-    handleMouseUp
+    handleMouseUp,
   } = useGanttDrag(config, startDate, handleUpdateTaskDates, resetTaskPositions);
 
   const onTaskMouseDown = (
-    e: React.MouseEvent, 
-    taskId: string, 
+    e: React.MouseEvent,
+    taskId: string,
     action: 'drag' | 'resize-left' | 'resize-right'
   ) => {
     taskMouseDownHandler(e, taskId, action, ganttTasks);
@@ -365,251 +364,237 @@ const GanttChart = () => {
   }
 
   return (
-    <Card className="w-full modern-card glow-primary transition-smooth">
-      <GanttHeader
-        viewMode={viewMode}
-        onViewModeChange={setViewMode}
-      />
+    <>
+      <Card className="modern-card glow-primary transition-smooth w-full">
+        <GanttHeader viewMode={viewMode} onViewModeChange={setViewMode} />
 
-      {/* Boutons de basculement Projet/Tâches */}
-      <div className="px-6 pb-4 bg-gantt-header/20 space-y-4">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-          <div className="flex items-center gap-3">
-            <ToggleGroup
-              type="single"
-              value={displayMode}
-              onValueChange={(value) => value && setDisplayMode(value as 'tasks' | 'projects')}
-              className="justify-start"
-            >
-              <ToggleGroupItem value="tasks" className="data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">
-                📝 Tâches
-              </ToggleGroupItem>
-              <ToggleGroupItem value="projects" className="data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">
-                📁 Projets
-              </ToggleGroupItem>
-            </ToggleGroup>
-            {displayMode === 'tasks' && filteredTasks.length > 0 && (
-              <ExportButton 
-                tasks={filteredTasks} 
-                filters={filters}
-                variant="outline"
-                size="sm"
-              />
+        {/* Boutons de basculement Projet/Tâches */}
+        <div className="bg-gantt-header/20 space-y-4 px-6 pb-4">
+          <div className="flex flex-col items-start justify-between gap-3 sm:flex-row sm:items-center">
+            <div className="flex items-center gap-3">
+              <ToggleGroup
+                type="single"
+                value={displayMode}
+                onValueChange={value => value && setDisplayMode(value as 'tasks' | 'projects')}
+                className="justify-start"
+              >
+                <ToggleGroupItem
+                  value="tasks"
+                  className="data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
+                >
+                  📝 Tâches
+                </ToggleGroupItem>
+                <ToggleGroupItem
+                  value="projects"
+                  className="data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
+                >
+                  📁 Projets
+                </ToggleGroupItem>
+              </ToggleGroup>
+              {displayMode === 'tasks' && filteredTasks.length > 0 && (
+                <ExportButton tasks={filteredTasks} filters={filters} variant="outline" size="sm" />
+              )}
+            </div>
+            {displayMode === 'projects' && (
+              <p className="text-sm text-muted-foreground">
+                Vue Gantt des projets - Chaque barre représente la durée complète d'un projet
+              </p>
             )}
           </div>
-          {displayMode === 'projects' && (
-            <p className="text-sm text-muted-foreground">
-              Vue Gantt des projets - Chaque barre représente la durée complète d'un projet
-            </p>
+
+          {/* Filtres avancés - uniquement en mode Tâches */}
+          {displayMode === 'tasks' && (
+            <AdvancedFilters
+              onFiltersChange={setFilters}
+              projects={projects}
+              employees={[]}
+              totalTasks={tasks.length}
+              filteredCount={filteredTasks.length}
+            />
           )}
         </div>
-        
-        {/* Filtres avancés - uniquement en mode Tâches */}
-        {displayMode === 'tasks' && (
-          <AdvancedFilters
-            onFiltersChange={setFilters}
-            projects={projects}
-            employees={[]}
-            totalTasks={tasks.length}
-            filteredCount={filteredTasks.length}
-          />
-        )}
-      </div>
-      
-      <CardContent className="p-0 bg-gantt-header/50 backdrop-blur-sm">
-        <div className="h-[600px] lg:h-[700px] rounded-b-xl flex flex-col overflow-hidden">
-          {/* Headers fixes (ne scrollent pas) */}
-          <div className="flex border-b border-gantt-grid/50 flex-shrink-0 z-20">
-            {/* Header liste tâches */}
-            <div className="w-64 h-20 flex items-center px-4 bg-gantt-header border-r border-gantt-grid/50">
-              <span className="font-medium text-foreground">
-                {displayMode === 'projects' ? 'Projets' : 'Tâches'}
-              </span>
-            </div>
-            
-            {/* Header timeline - scroll horizontal uniquement */}
-            <div 
-              ref={chartRef}
-              className="flex-1 bg-gantt-header overflow-x-auto overflow-y-hidden scrollbar-thin"
-              onScroll={(e) => {
-                // Synchroniser le scroll horizontal avec le contenu
-                if (timelineScrollRef.current) {
-                  timelineScrollRef.current.scrollLeft = e.currentTarget.scrollLeft;
-                }
-              }}
-            >
-              <div 
-                className="flex border-b border-gantt-grid h-20"
-                style={{ minWidth: getTotalUnits(startDate, endDate, config) * config.unitWidth }}
+
+        <CardContent className="bg-gantt-header/50 p-0 backdrop-blur-sm">
+          <div className="flex h-[600px] flex-col overflow-hidden rounded-b-xl lg:h-[700px]">
+            {/* Headers fixes (ne scrollent pas) */}
+            <div className="border-gantt-grid/50 z-20 flex flex-shrink-0 border-b">
+              {/* Header liste tâches */}
+              <div className="bg-gantt-header border-gantt-grid/50 flex h-20 w-64 items-center border-r px-4">
+                <span className="font-medium text-foreground">
+                  {displayMode === 'projects' ? 'Projets' : 'Tâches'}
+                </span>
+              </div>
+
+              {/* Header timeline - scroll horizontal uniquement */}
+              <div
+                ref={chartRef}
+                className="bg-gantt-header scrollbar-thin flex-1 overflow-x-auto overflow-y-hidden"
+                onScroll={e => {
+                  // Synchroniser le scroll horizontal avec le contenu
+                  if (timelineScrollRef.current) {
+                    timelineScrollRef.current.scrollLeft = e.currentTarget.scrollLeft;
+                  }
+                }}
               >
-                {renderTimelineHeader(startDate, endDate, config)}
+                <div
+                  className="border-gantt-grid flex h-20 border-b"
+                  style={{ minWidth: getTotalUnits(startDate, endDate, config) * config.unitWidth }}
+                >
+                  {renderTimelineHeader(startDate, endDate, config)}
+                </div>
+              </div>
+            </div>
+
+            {/* Contenu scrollable verticalement */}
+            <div className="flex flex-1 overflow-hidden">
+              {/* Liste des tâches - scroll vertical */}
+              <div
+                ref={taskListScrollRef}
+                className="scrollbar-thin border-gantt-grid/50 bg-gantt-task-bg/30 w-64 overflow-y-auto overflow-x-hidden border-r"
+                onScroll={handleScroll('list')}
+              >
+                {displayMode === 'projects'
+                  ? ganttTasks.map(task => (
+                      <div
+                        key={task.id}
+                        className="border-gantt-grid/30 hover:bg-gantt-hover/20 transition-smooth flex cursor-pointer items-center border-b px-4"
+                        style={{ height: rowHeight }}
+                      >
+                        <div>
+                          <div className="text-lg font-bold text-foreground">📁 {task.name}</div>
+                          <div className="text-sm text-foreground/70">{task.assignee}</div>
+                        </div>
+                      </div>
+                    ))
+                  : // Mode tâches : regroupement par project_id UNIQUEMENT
+                    (() => {
+                      // Étape 1: Regrouper les tâches par project_id (pas par nom !)
+                      const groupedTasks = ganttTasks.reduce(
+                        (groups: { [key: string]: typeof ganttTasks }, task) => {
+                          const projectKey = task.project_id || 'no-project';
+
+                          if (!groups[projectKey]) {
+                            groups[projectKey] = [];
+                          }
+                          groups[projectKey].push(task);
+                          return groups;
+                        },
+                        {}
+                      );
+
+                      // Étape 2: Utiliser l'ordre original des projets pour garantir la cohérence numéros/couleurs
+                      // Le nom et la couleur viennent UNIQUEMENT du tableau projects[] via project_id
+                      const orderedProjectGroups = projects
+                        .filter(project => groupedTasks[project.id]) // Garder seulement les projets avec tâches
+                        .map((project, index) => ({
+                          projectId: project.id,
+                          projectName: project.name, // ✅ Nom du projet depuis projects[] via project_id
+                          projectNumber: index + 1,
+                          projectColor: projectColorMap[project.id], // ✅ Couleur du projet via project_id
+                          tasks: groupedTasks[project.id],
+                        }));
+
+                      // Ajouter les tâches sans projet à la fin
+                      if (groupedTasks['no-project']) {
+                        orderedProjectGroups.push({
+                          projectId: 'no-project',
+                          projectName: 'Sans projet',
+                          projectNumber: null,
+                          projectColor: '#6b7280',
+                          tasks: groupedTasks['no-project'],
+                        });
+                      }
+
+                      // Étape 3: Afficher dans l'ordre correct
+                      return orderedProjectGroups.map(
+                        ({ projectId, projectName, projectNumber, projectColor, tasks }) => (
+                          <div key={projectId}>
+                            <div
+                              className="border-gantt-grid/50 flex items-center border-b-2 px-4"
+                              style={{
+                                height: rowHeight,
+                                backgroundColor: projectColor,
+                                opacity: 0.9,
+                              }}
+                            >
+                              <div className="flex items-center gap-2 font-bold text-white">
+                                {projectNumber && (
+                                  <span className="rounded bg-white/20 px-2 py-0.5 text-sm">
+                                    #{projectNumber}
+                                  </span>
+                                )}
+                                📁 {projectName}
+                              </div>
+                            </div>
+                            {tasks.map(task => (
+                              <div
+                                key={task.id}
+                                className="border-gantt-grid/30 hover:bg-gantt-hover/20 transition-smooth flex cursor-pointer items-center border-b px-6"
+                                style={{ height: rowHeight }}
+                              >
+                                <div>
+                                  <div className="font-medium text-foreground">{task.name}</div>
+                                  <div className="text-sm text-foreground/70">{task.assignee}</div>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        )
+                      );
+                    })()}
+              </div>
+
+              {/* Timeline - scroll vertical + horizontal synchronisé */}
+              <div
+                ref={timelineScrollRef}
+                className="bg-gantt-task-bg/30 scrollbar-thin min-w-0 flex-1 overflow-auto"
+                onScroll={e => {
+                  // Synchroniser scroll vertical avec la liste
+                  if (taskListScrollRef.current) {
+                    taskListScrollRef.current.scrollTop = e.currentTarget.scrollTop;
+                  }
+                  // Synchroniser scroll horizontal avec le header
+                  if (chartRef.current) {
+                    chartRef.current.scrollLeft = e.currentTarget.scrollLeft;
+                  }
+                }}
+              >
+                <GanttTimeline
+                  tasks={ganttTasks}
+                  config={config}
+                  startDate={startDate}
+                  endDate={endDate}
+                  rowHeight={rowHeight}
+                  draggedTask={draggedTask}
+                  resizeTask={resizeTask}
+                  onTaskMouseDown={onTaskMouseDown}
+                  displayMode={displayMode}
+                />
               </div>
             </div>
           </div>
-          
-          {/* Contenu scrollable verticalement */}
-          <div className="flex flex-1 overflow-hidden">
-            {/* Liste des tâches - scroll vertical */}
-            <div 
-              ref={taskListScrollRef}
-              className="w-64 overflow-y-auto overflow-x-hidden scrollbar-thin border-r border-gantt-grid/50 bg-gantt-task-bg/30"
-              onScroll={handleScroll('list')}
-            >
-              {displayMode === 'projects' ? (
-                ganttTasks.map((task) => (
-                  <div
-                    key={task.id}
-                    className="flex items-center px-4 border-b border-gantt-grid/30 hover:bg-gantt-hover/20 transition-smooth cursor-pointer"
-                    style={{ height: rowHeight }}
-                  >
-                    <div>
-                      <div className="font-bold text-lg text-foreground">
-                        📁 {task.name}
-                      </div>
-                      <div className="text-sm text-foreground/70">
-                        {task.assignee}
-                      </div>
-                    </div>
-                  </div>
-                ))
-              ) : (
-                // Mode tâches : regroupement par project_id UNIQUEMENT
-                (() => {
-                  // Étape 1: Regrouper les tâches par project_id (pas par nom !)
-                  const groupedTasks = ganttTasks.reduce((groups: { [key: string]: typeof ganttTasks }, task) => {
-                    const projectKey = task.project_id || 'no-project';
-                    
-                    if (!groups[projectKey]) {
-                      groups[projectKey] = [];
-                    }
-                    groups[projectKey].push(task);
-                    return groups;
-                  }, {});
-                  
-                  // Étape 2: Utiliser l'ordre original des projets pour garantir la cohérence numéros/couleurs
-                  // Le nom et la couleur viennent UNIQUEMENT du tableau projects[] via project_id
-                  const orderedProjectGroups = projects
-                    .filter(project => groupedTasks[project.id]) // Garder seulement les projets avec tâches
-                    .map((project, index) => ({
-                      projectId: project.id,
-                      projectName: project.name, // ✅ Nom du projet depuis projects[] via project_id
-                      projectNumber: index + 1,
-                      projectColor: projectColorMap[project.id], // ✅ Couleur du projet via project_id
-                      tasks: groupedTasks[project.id]
-                    }));
-                  
-                  // Ajouter les tâches sans projet à la fin
-                  if (groupedTasks['no-project']) {
-                    orderedProjectGroups.push({
-                      projectId: 'no-project',
-                      projectName: 'Sans projet',
-                      projectNumber: null,
-                      projectColor: '#6b7280',
-                      tasks: groupedTasks['no-project']
-                    });
-                  }
-                  
-                  // Étape 3: Afficher dans l'ordre correct
-                  return orderedProjectGroups.map(({ projectId, projectName, projectNumber, projectColor, tasks }) => (
-                    <div key={projectId}>
-                      <div 
-                        className="flex items-center px-4 border-b-2 border-gantt-grid/50"
-                        style={{ 
-                          height: rowHeight,
-                          backgroundColor: projectColor,
-                          opacity: 0.9
-                        }}
-                      >
-                        <div className="font-bold text-white flex items-center gap-2">
-                          {projectNumber && (
-                            <span className="bg-white/20 px-2 py-0.5 rounded text-sm">
-                              #{projectNumber}
-                            </span>
-                          )}
-                          📁 {projectName}
-                        </div>
-                      </div>
-                      {tasks.map((task) => (
-                        <div
-                          key={task.id}
-                          className="flex items-center px-6 border-b border-gantt-grid/30 hover:bg-gantt-hover/20 transition-smooth cursor-pointer"
-                          style={{ height: rowHeight }}
-                        >
-                          <div>
-                            <div className="font-medium text-foreground">{task.name}</div>
-                            <div className="text-sm text-foreground/70">
-                              {task.assignee}
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  ));
-                })()
-              )}
-            </div>
-            
-            {/* Timeline - scroll vertical + horizontal synchronisé */}
-            <div 
-              ref={timelineScrollRef}
-              className="flex-1 min-w-0 bg-gantt-task-bg/30 overflow-auto scrollbar-thin"
-              onScroll={(e) => {
-                // Synchroniser scroll vertical avec la liste
-                if (taskListScrollRef.current) {
-                  taskListScrollRef.current.scrollTop = e.currentTarget.scrollTop;
-                }
-                // Synchroniser scroll horizontal avec le header
-                if (chartRef.current) {
-                  chartRef.current.scrollLeft = e.currentTarget.scrollLeft;
-                }
-              }}
-            >
-              <GanttTimeline
-                tasks={ganttTasks}
-                config={config}
-                startDate={startDate}
-                endDate={endDate}
-                rowHeight={rowHeight}
-                draggedTask={draggedTask}
-                resizeTask={resizeTask}
-                onTaskMouseDown={onTaskMouseDown}
-                displayMode={displayMode}
-              />
-            </div>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
-  );
-
-  return (
-    <>
-      {ganttContent}
+        </CardContent>
+      </Card>
 
       {/* ✅ Modal d'erreur centré pour les problèmes de mise à jour de dates */}
       {dateUpdateError && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-background border border-border rounded-lg p-6 max-w-md w-full mx-4 shadow-lg">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+          <div className="mx-4 w-full max-w-md rounded-lg border border-border bg-background p-6 shadow-lg">
             <div className="flex items-start gap-3">
-              <AlertTriangle className="h-5 w-5 text-destructive mt-0.5 flex-shrink-0" />
+              <AlertTriangle className="mt-0.5 h-5 w-5 flex-shrink-0 text-destructive" />
               <div className="flex-1">
-                <h3 className="font-semibold text-destructive mb-2">
-                  {dateUpdateError.message}
-                </h3>
+                <h3 className="mb-2 font-semibold text-destructive">{dateUpdateError.message}</h3>
                 {dateUpdateError.details && (
-                  <p className="text-sm text-muted-foreground mb-2">
+                  <p className="mb-2 text-sm text-muted-foreground">
                     <strong>Détails :</strong> {dateUpdateError.details}
                   </p>
                 )}
                 {dateUpdateError.suggestion && (
-                  <p className="text-sm text-muted-foreground mb-4">
+                  <p className="mb-4 text-sm text-muted-foreground">
                     <strong>Solution :</strong> {dateUpdateError.suggestion}
                   </p>
                 )}
-                <Button
-                  onClick={() => setDateUpdateError(null)}
-                  className="w-full"
-                >
+                <Button onClick={() => setDateUpdateError(null)} className="w-full">
                   Compris
                 </Button>
               </div>

@@ -4,10 +4,10 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Progress } from '@/components/ui/progress';
-import { 
-  AlertTriangle, 
-  Shield, 
-  FileText, 
+import {
+  AlertTriangle,
+  Shield,
+  FileText,
   Calendar,
   Download,
   Eye,
@@ -16,7 +16,7 @@ import {
   Users,
   Clock,
   CheckCircle,
-  XCircle
+  XCircle,
 } from 'lucide-react';
 import { useHealthSafety } from '@/hooks/useHealthSafety';
 
@@ -76,7 +76,7 @@ export const HealthSafety = () => {
     error,
     createIncident,
     updateIncident,
-    uploadDocument
+    uploadDocument,
   } = useHealthSafety();
 
   if (loading) return <div>Chargement...</div>;
@@ -89,48 +89,68 @@ export const HealthSafety = () => {
 
   const getSeverityColor = (severity: string) => {
     switch (severity) {
-      case 'critical': return 'bg-red-500 text-white';
-      case 'high': return 'bg-red-100 text-red-800 border-red-200';
-      case 'medium': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-      case 'low': return 'bg-green-100 text-green-800 border-green-200';
-      default: return 'bg-gray-100 text-gray-800 border-gray-200';
+      case 'critical':
+        return 'bg-red-500 text-white';
+      case 'high':
+        return 'bg-red-100 text-red-800 border-red-200';
+      case 'medium':
+        return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+      case 'low':
+        return 'bg-green-100 text-green-800 border-green-200';
+      default:
+        return 'bg-gray-100 text-gray-800 border-gray-200';
     }
   };
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'completed': 
-      case 'resolved': 
-      case 'active': return 'bg-green-100 text-green-800';
-      case 'in-progress': 
-      case 'investigating': return 'bg-blue-100 text-blue-800';
-      case 'pending': 
-      case 'reported': 
-      case 'scheduled': return 'bg-yellow-100 text-yellow-800';
-      case 'overdue': 
-      case 'expired': return 'bg-red-100 text-red-800';
-      case 'action-required': return 'bg-orange-100 text-orange-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'completed':
+      case 'resolved':
+      case 'active':
+        return 'bg-green-100 text-green-800';
+      case 'in-progress':
+      case 'investigating':
+        return 'bg-blue-100 text-blue-800';
+      case 'pending':
+      case 'reported':
+      case 'scheduled':
+        return 'bg-yellow-100 text-yellow-800';
+      case 'overdue':
+      case 'expired':
+        return 'bg-red-100 text-red-800';
+      case 'action-required':
+        return 'bg-orange-100 text-orange-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
     }
   };
 
   const getTypeIcon = (type: string) => {
     switch (type) {
-      case 'accident': return <AlertTriangle className="h-4 w-4" />;
-      case 'near-miss': return <Eye className="h-4 w-4" />;
-      case 'property-damage': return <Shield className="h-4 w-4" />;
-      case 'environmental': return <Shield className="h-4 w-4" />;
-      default: return <AlertTriangle className="h-4 w-4" />;
+      case 'accident':
+        return <AlertTriangle className="h-4 w-4" />;
+      case 'near-miss':
+        return <Eye className="h-4 w-4" />;
+      case 'property-damage':
+        return <Shield className="h-4 w-4" />;
+      case 'environmental':
+        return <Shield className="h-4 w-4" />;
+      default:
+        return <AlertTriangle className="h-4 w-4" />;
     }
   };
 
   const stats = {
     totalIncidents: realIncidents.length,
     openIncidents: realIncidents.filter(i => i.status !== 'resolved').length,
-    criticalIncidents: realIncidents.filter(i => i.severity === 'critical' || i.severity === 'high').length,
-    pendingActions: realIncidents.reduce((total, incident) => total + (incident.actions?.length || 0), 0),
+    criticalIncidents: realIncidents.filter(i => i.severity === 'critical' || i.severity === 'high')
+      .length,
+    pendingActions: realIncidents.reduce(
+      (total, incident) => total + (incident.actions?.length || 0),
+      0
+    ),
     overdueTraining: realTrainingRecords.filter(t => t.status === 'expired').length,
-    activeDocuments: realSafetyDocuments.filter(d => d.status === 'active').length
+    activeDocuments: realSafetyDocuments.filter(d => d.status === 'active').length,
   };
 
   return (
@@ -142,18 +162,18 @@ export const HealthSafety = () => {
         </div>
         <div className="flex gap-2">
           <Button variant="outline">
-            <Plus className="h-4 w-4 mr-2" />
+            <Plus className="mr-2 h-4 w-4" />
             Nouveau document
           </Button>
           <Button>
-            <AlertTriangle className="h-4 w-4 mr-2" />
+            <AlertTriangle className="mr-2 h-4 w-4" />
             Déclarer incident
           </Button>
         </div>
       </div>
 
       {/* Statistics Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-6">
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
@@ -247,68 +267,73 @@ export const HealthSafety = () => {
           {realIncidents.length === 0 ? (
             <Card>
               <CardContent className="p-8 text-center">
-                <Shield className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-                <h3 className="text-lg font-medium mb-2">Aucun incident déclaré</h3>
-                <p className="text-muted-foreground">Commencez par déclarer votre premier incident.</p>
+                <Shield className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
+                <h3 className="mb-2 text-lg font-medium">Aucun incident déclaré</h3>
+                <p className="text-muted-foreground">
+                  Commencez par déclarer votre premier incident.
+                </p>
               </CardContent>
             </Card>
           ) : (
             <div className="grid gap-4">
-              {realIncidents.map((incident) => (
-                <Card key={incident.id} className="hover:shadow-lg transition-shadow">
+              {realIncidents.map(incident => (
+                <Card key={incident.id} className="transition-shadow hover:shadow-lg">
                   <CardHeader>
                     <div className="flex items-center justify-between">
                       <div>
-                        <CardTitle className="text-lg flex items-center gap-2">
+                        <CardTitle className="flex items-center gap-2 text-lg">
                           {getTypeIcon(incident.type)}
                           {incident.title}
                         </CardTitle>
                         <p className="text-sm text-muted-foreground">
-                          {incident.location} • Déclaré par {incident.reportedBy} le {new Date(incident.reportedDate).toLocaleDateString()}
+                          {incident.location} • Déclaré par {incident.reportedBy} le{' '}
+                          {new Date(incident.reportedDate).toLocaleDateString()}
                         </p>
                       </div>
                       <div className="flex items-center gap-2">
                         <Badge className={getSeverityColor(incident.severity)}>
                           {incident.severity}
                         </Badge>
-                        <Badge className={getStatusColor(incident.status)}>
-                          {incident.status}
-                        </Badge>
+                        <Badge className={getStatusColor(incident.status)}>{incident.status}</Badge>
                       </div>
                     </div>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <p className="text-sm">{incident.description}</p>
-                    
+
                     {incident.affectedEmployee && (
-                      <div className="p-3 rounded-lg bg-muted/50">
-                        <p className="text-sm font-medium">Employé concerné: {incident.affectedEmployee}</p>
+                      <div className="rounded-lg bg-muted/50 p-3">
+                        <p className="text-sm font-medium">
+                          Employé concerné: {incident.affectedEmployee}
+                        </p>
                       </div>
                     )}
 
                     {incident.actions && incident.actions.length > 0 && (
                       <div className="space-y-2">
-                        <h4 className="font-medium text-sm">Actions correctives</h4>
-                        {incident.actions.map((action) => (
-                          <div key={action.id} className="flex items-center justify-between p-2 rounded bg-muted/30">
+                        <h4 className="text-sm font-medium">Actions correctives</h4>
+                        {incident.actions.map(action => (
+                          <div
+                            key={action.id}
+                            className="flex items-center justify-between rounded bg-muted/30 p-2"
+                          >
                             <div className="flex-1">
                               <p className="text-sm">{action.description}</p>
                               <p className="text-xs text-muted-foreground">
-                                Responsable: {action.responsiblePerson} • Échéance: {new Date(action.dueDate).toLocaleDateString()}
+                                Responsable: {action.responsiblePerson} • Échéance:{' '}
+                                {new Date(action.dueDate).toLocaleDateString()}
                               </p>
                             </div>
-                            <Badge className={getStatusColor(action.status)}>
-                              {action.status}
-                            </Badge>
+                            <Badge className={getStatusColor(action.status)}>{action.status}</Badge>
                           </div>
                         ))}
                       </div>
                     )}
 
                     {incident.status !== 'resolved' && (
-                      <div className="flex gap-2 pt-4 border-t">
-                        <Button 
-                          size="sm" 
+                      <div className="flex gap-2 border-t pt-4">
+                        <Button
+                          size="sm"
                           variant="outline"
                           onClick={() => updateIncident(incident.id, { status: 'resolved' })}
                         >
@@ -330,19 +355,21 @@ export const HealthSafety = () => {
           {realSafetyDocuments.length === 0 ? (
             <Card>
               <CardContent className="p-8 text-center">
-                <FileText className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-                <h3 className="text-lg font-medium mb-2">Aucun document</h3>
-                <p className="text-muted-foreground">Ajoutez des documents de sécurité et conformité.</p>
+                <FileText className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
+                <h3 className="mb-2 text-lg font-medium">Aucun document</h3>
+                <p className="text-muted-foreground">
+                  Ajoutez des documents de sécurité et conformité.
+                </p>
               </CardContent>
             </Card>
           ) : (
             <div className="grid gap-4 md:grid-cols-2">
-              {realSafetyDocuments.map((document) => (
-                <Card key={document.id} className="hover:shadow-lg transition-shadow">
+              {realSafetyDocuments.map(document => (
+                <Card key={document.id} className="transition-shadow hover:shadow-lg">
                   <CardHeader>
                     <div className="flex items-center justify-between">
                       <div>
-                        <CardTitle className="text-lg flex items-center gap-2">
+                        <CardTitle className="flex items-center gap-2 text-lg">
                           <FileText className="h-5 w-5" />
                           {document.title}
                         </CardTitle>
@@ -350,9 +377,7 @@ export const HealthSafety = () => {
                           {document.category} • Version {document.version}
                         </p>
                       </div>
-                      <Badge className={getStatusColor(document.status)}>
-                        {document.status}
-                      </Badge>
+                      <Badge className={getStatusColor(document.status)}>{document.status}</Badge>
                     </div>
                   </CardHeader>
                   <CardContent className="space-y-4">
@@ -360,25 +385,29 @@ export const HealthSafety = () => {
                       <span className="text-muted-foreground">Publié le:</span>
                       <span>{new Date(document.publishedDate).toLocaleDateString()}</span>
                     </div>
-                    
+
                     {document.expiryDate && (
                       <div className="flex justify-between text-sm">
                         <span className="text-muted-foreground">Expire le:</span>
-                        <span className={
-                          new Date(document.expiryDate) < new Date() ? 'text-red-600 font-medium' : ''
-                        }>
+                        <span
+                          className={
+                            new Date(document.expiryDate) < new Date()
+                              ? 'font-medium text-red-600'
+                              : ''
+                          }
+                        >
                           {new Date(document.expiryDate).toLocaleDateString()}
                         </span>
                       </div>
                     )}
 
-                    <div className="flex gap-2 pt-4 border-t">
+                    <div className="flex gap-2 border-t pt-4">
                       <Button size="sm" className="flex-1">
-                        <Download className="h-4 w-4 mr-2" />
+                        <Download className="mr-2 h-4 w-4" />
                         Télécharger
                       </Button>
                       <Button size="sm" variant="outline">
-                        <Eye className="h-4 w-4 mr-2" />
+                        <Eye className="mr-2 h-4 w-4" />
                         Voir
                       </Button>
                     </div>
@@ -393,27 +422,25 @@ export const HealthSafety = () => {
           {realTrainingRecords.length === 0 ? (
             <Card>
               <CardContent className="p-8 text-center">
-                <BookOpen className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-                <h3 className="text-lg font-medium mb-2">Aucune formation</h3>
-                <p className="text-muted-foreground">Planifiez des formations de sécurité pour vos employés.</p>
+                <BookOpen className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
+                <h3 className="mb-2 text-lg font-medium">Aucune formation</h3>
+                <p className="text-muted-foreground">
+                  Planifiez des formations de sécurité pour vos employés.
+                </p>
               </CardContent>
             </Card>
           ) : (
             <div className="grid gap-4">
-              {realTrainingRecords.map((record) => (
-                <Card key={record.id} className="hover:shadow-lg transition-shadow">
+              {realTrainingRecords.map(record => (
+                <Card key={record.id} className="transition-shadow hover:shadow-lg">
                   <CardHeader>
                     <div className="flex items-center justify-between">
                       <div>
                         <CardTitle className="text-lg">{record.employeeName}</CardTitle>
-                        <p className="text-sm text-muted-foreground">
-                          {record.trainingTitle}
-                        </p>
+                        <p className="text-sm text-muted-foreground">{record.trainingTitle}</p>
                       </div>
                       <div className="flex items-center gap-2">
-                        <Badge className={getStatusColor(record.status)}>
-                          {record.status}
-                        </Badge>
+                        <Badge className={getStatusColor(record.status)}>{record.status}</Badge>
                       </div>
                     </div>
                   </CardHeader>
@@ -421,14 +448,18 @@ export const HealthSafety = () => {
                     <div className="grid grid-cols-2 gap-4 text-sm">
                       <div>
                         <span className="text-muted-foreground">Date formation:</span>
-                        <p className="font-medium">{new Date(record.trainingDate).toLocaleDateString()}</p>
+                        <p className="font-medium">
+                          {new Date(record.trainingDate).toLocaleDateString()}
+                        </p>
                       </div>
                       {record.expiryDate && (
                         <div>
                           <span className="text-muted-foreground">Expire le:</span>
-                          <p className={`font-medium ${
-                            new Date(record.expiryDate) < new Date() ? 'text-red-600' : ''
-                          }`}>
+                          <p
+                            className={`font-medium ${
+                              new Date(record.expiryDate) < new Date() ? 'text-red-600' : ''
+                            }`}
+                          >
                             {new Date(record.expiryDate).toLocaleDateString()}
                           </p>
                         </div>
@@ -442,9 +473,9 @@ export const HealthSafety = () => {
                     </div>
 
                     {record.status === 'completed' && record.certificateUrl && (
-                      <div className="flex gap-2 pt-4 border-t">
+                      <div className="flex gap-2 border-t pt-4">
                         <Button size="sm" variant="outline">
-                          <Download className="h-4 w-4 mr-2" />
+                          <Download className="mr-2 h-4 w-4" />
                           Certificat
                         </Button>
                       </div>

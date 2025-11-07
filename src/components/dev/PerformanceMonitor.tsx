@@ -1,6 +1,6 @@
 /**
  * Performance Monitor Component - Pattern Linear/Notion
- * 
+ *
  * Composant de développement pour monitorer les performances
  * en temps réel et afficher les métriques du cache
  */
@@ -32,18 +32,18 @@ export const PerformanceMonitor: React.FC = () => {
   const collectStats = () => {
     const cacheStats = cacheManager.getStats();
     const memoryUsage = (performance as any).memory?.usedJSHeapSize / (1024 * 1024);
-    
+
     setStats({
       cacheStats,
       memoryUsage,
-      renderMetrics: {} // Sera étendu avec les métriques des composants
+      renderMetrics: {}, // Sera étendu avec les métriques des composants
     });
   };
 
   // Auto-refresh toutes les 2 secondes
   useEffect(() => {
     if (!autoRefresh) return;
-    
+
     const interval = setInterval(collectStats, 2000);
     return () => clearInterval(interval);
   }, [autoRefresh]);
@@ -72,7 +72,7 @@ export const PerformanceMonitor: React.FC = () => {
           size="sm"
           variant="outline"
           onClick={() => setIsVisible(true)}
-          className="bg-black/80 text-white border-gray-600 hover:bg-black/90"
+          className="border-gray-600 bg-black/80 text-white hover:bg-black/90"
         >
           📊 Perf
         </Button>
@@ -96,13 +96,11 @@ export const PerformanceMonitor: React.FC = () => {
   };
 
   return (
-    <div className="fixed bottom-4 right-4 z-50 w-96 max-h-96 overflow-y-auto">
-      <Card className="bg-black/90 text-white border-gray-600">
+    <div className="fixed bottom-4 right-4 z-50 max-h-96 w-96 overflow-y-auto">
+      <Card className="border-gray-600 bg-black/90 text-white">
         <CardHeader className="pb-2">
           <div className="flex items-center justify-between">
-            <CardTitle className="text-sm font-medium">
-              🚀 Performance Monitor
-            </CardTitle>
+            <CardTitle className="text-sm font-medium">🚀 Performance Monitor</CardTitle>
             <div className="flex gap-1">
               <Button
                 size="sm"
@@ -112,12 +110,7 @@ export const PerformanceMonitor: React.FC = () => {
               >
                 {autoRefresh ? '⏸️' : '▶️'}
               </Button>
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={collectStats}
-                className="h-6 px-2 text-xs"
-              >
+              <Button size="sm" variant="ghost" onClick={collectStats} className="h-6 px-2 text-xs">
                 🔄
               </Button>
               <Button
@@ -131,16 +124,16 @@ export const PerformanceMonitor: React.FC = () => {
             </div>
           </div>
         </CardHeader>
-        
+
         <CardContent className="space-y-3 text-xs">
           {/* Cache Metrics */}
           <div>
-            <h4 className="font-medium text-blue-300 mb-1">📦 Cache Performance</h4>
+            <h4 className="mb-1 font-medium text-blue-300">📦 Cache Performance</h4>
             <div className="grid grid-cols-2 gap-2">
               <div>
                 <span className="text-gray-400">Hit Rate:</span>
-                <Badge 
-                  variant={parseFloat(getCacheHitRate()) > 80 ? "default" : "destructive"}
+                <Badge
+                  variant={parseFloat(getCacheHitRate()) > 80 ? 'default' : 'destructive'}
                   className="ml-1 text-xs"
                 >
                   {getCacheHitRate()}%
@@ -158,20 +151,18 @@ export const PerformanceMonitor: React.FC = () => {
               </div>
               <div>
                 <span className="text-gray-400">Hits:</span>
-                <span className="ml-1 text-green-400">
-                  {stats?.cacheStats.metrics?.hits || 0}
-                </span>
+                <span className="ml-1 text-green-400">{stats?.cacheStats.metrics?.hits || 0}</span>
               </div>
             </div>
           </div>
 
           {/* Memory Usage */}
           <div>
-            <h4 className="font-medium text-purple-300 mb-1">🧠 Memory Usage</h4>
+            <h4 className="mb-1 font-medium text-purple-300">🧠 Memory Usage</h4>
             <div>
               <span className="text-gray-400">Heap Size:</span>
-              <Badge 
-                variant={stats?.memoryUsage && stats.memoryUsage > 100 ? "destructive" : "default"}
+              <Badge
+                variant={stats?.memoryUsage && stats.memoryUsage > 100 ? 'destructive' : 'default'}
                 className="ml-1 text-xs"
               >
                 {getMemoryUsage()}
@@ -182,10 +173,10 @@ export const PerformanceMonitor: React.FC = () => {
           {/* Cache Keys */}
           {stats?.cacheStats.keys && stats.cacheStats.keys.length > 0 && (
             <div>
-              <h4 className="font-medium text-yellow-300 mb-1">🔑 Active Cache Keys</h4>
-              <div className="max-h-20 overflow-y-auto space-y-1">
+              <h4 className="mb-1 font-medium text-yellow-300">🔑 Active Cache Keys</h4>
+              <div className="max-h-20 space-y-1 overflow-y-auto">
                 {stats.cacheStats.keys.slice(0, 5).map((key: string, index: number) => (
-                  <div key={index} className="text-xs text-gray-300 truncate">
+                  <div key={index} className="truncate text-xs text-gray-300">
                     {key}
                   </div>
                 ))}
@@ -199,7 +190,7 @@ export const PerformanceMonitor: React.FC = () => {
           )}
 
           {/* Actions */}
-          <div className="pt-2 border-t border-gray-700">
+          <div className="border-t border-gray-700 pt-2">
             <div className="flex gap-2">
               <Button
                 size="sm"
@@ -227,8 +218,8 @@ export const PerformanceMonitor: React.FC = () => {
           </div>
 
           {/* Instructions */}
-          <div className="pt-2 border-t border-gray-700 text-xs text-gray-500">
-            Press <kbd className="bg-gray-800 px-1 rounded">Ctrl+Shift+P</kbd> to toggle
+          <div className="border-t border-gray-700 pt-2 text-xs text-gray-500">
+            Press <kbd className="rounded bg-gray-800 px-1">Ctrl+Shift+P</kbd> to toggle
           </div>
         </CardContent>
       </Card>

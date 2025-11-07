@@ -52,38 +52,41 @@ export function useOperationalSchedules() {
   }, []);
 
   // Créer ou mettre à jour une planification
-  const upsertSchedule = useCallback(async (schedule: Partial<OperationalSchedule>) => {
-    setLoading(true);
-    setError(null);
+  const upsertSchedule = useCallback(
+    async (schedule: Partial<OperationalSchedule>) => {
+      setLoading(true);
+      setError(null);
 
-    try {
-      if (!currentTenant?.id) {
-        throw new Error('Aucun tenant actif');
+      try {
+        if (!currentTenant?.id) {
+          throw new Error('Aucun tenant actif');
+        }
+
+        // Injecter tenant_id automatiquement
+        const scheduleWithTenant = {
+          ...schedule,
+          tenant_id: currentTenant.id,
+        };
+
+        const { data, error: upsertError } = await supabase
+          .from('operational_schedules')
+          .upsert(scheduleWithTenant as any)
+          .select()
+          .single();
+
+        if (upsertError) throw upsertError;
+
+        return data;
+      } catch (err: any) {
+        console.error('❌ Erreur upsertSchedule:', err);
+        setError(err.message);
+        throw err;
+      } finally {
+        setLoading(false);
       }
-
-      // Injecter tenant_id automatiquement
-      const scheduleWithTenant = {
-        ...schedule,
-        tenant_id: currentTenant.id,
-      };
-
-      const { data, error: upsertError } = await supabase
-        .from('operational_schedules')
-        .upsert(scheduleWithTenant as any)
-        .select()
-        .single();
-
-      if (upsertError) throw upsertError;
-
-      return data;
-    } catch (err: any) {
-      console.error('❌ Erreur upsertSchedule:', err);
-      setError(err.message);
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  }, [currentTenant]);
+    },
+    [currentTenant]
+  );
 
   // Supprimer une planification
   const deleteSchedule = useCallback(async (activityId: string) => {
@@ -97,7 +100,6 @@ export function useOperationalSchedules() {
         .eq('activity_id', activityId);
 
       if (deleteError) throw deleteError;
-
     } catch (err: any) {
       console.error('❌ Erreur deleteSchedule:', err);
       setError(err.message);

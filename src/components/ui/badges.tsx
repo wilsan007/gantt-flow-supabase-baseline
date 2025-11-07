@@ -18,10 +18,10 @@ interface PriorityBadgeProps {
   showIcon?: boolean;
 }
 
-export const PriorityBadge: React.FC<PriorityBadgeProps> = ({ 
-  priority, 
+export const PriorityBadge: React.FC<PriorityBadgeProps> = ({
+  priority,
   className,
-  showIcon = false 
+  showIcon = false,
 }) => {
   const styles: Record<Priority, string> = {
     critical: 'bg-priority-critical text-white',
@@ -38,11 +38,13 @@ export const PriorityBadge: React.FC<PriorityBadgeProps> = ({
   };
 
   return (
-    <span className={cn(
-      'px-2 py-1 rounded-full text-xs font-medium inline-flex items-center gap-1',
-      styles[priority],
-      className
-    )}>
+    <span
+      className={cn(
+        'inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs font-medium',
+        styles[priority],
+        className
+      )}
+    >
       {labels[priority]}
     </span>
   );
@@ -60,11 +62,7 @@ interface StatusBadgeProps {
   showIcon?: boolean;
 }
 
-export const StatusBadge: React.FC<StatusBadgeProps> = ({ 
-  status, 
-  className,
-  showIcon = true 
-}) => {
+export const StatusBadge: React.FC<StatusBadgeProps> = ({ status, className, showIcon = true }) => {
   const styles: Record<Status, string> = {
     todo: 'bg-status-todo text-gray-700 dark:text-gray-200',
     doing: 'bg-status-doing text-white',
@@ -84,11 +82,13 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({
   };
 
   return (
-    <span className={cn(
-      'px-3 py-1 rounded-md font-medium text-sm inline-flex items-center gap-1',
-      styles[status],
-      className
-    )}>
+    <span
+      className={cn(
+        'inline-flex items-center gap-1 rounded-md px-3 py-1 text-sm font-medium',
+        styles[status],
+        className
+      )}
+    >
       {labels[status]}
     </span>
   );
@@ -107,12 +107,7 @@ interface LabelProps {
   variant?: 'solid' | 'outline' | 'light';
 }
 
-export const Label: React.FC<LabelProps> = ({ 
-  color, 
-  children, 
-  className,
-  variant = 'light'
-}) => {
+export const Label: React.FC<LabelProps> = ({ color, children, className, variant = 'light' }) => {
   const variantStyles: Record<string, Record<BadgeColor, string>> = {
     light: {
       blue: 'bg-badge-blue/10 text-badge-blue border-badge-blue/20',
@@ -147,12 +142,14 @@ export const Label: React.FC<LabelProps> = ({
   };
 
   return (
-    <span className={cn(
-      'px-2 py-1 rounded text-xs font-medium inline-flex items-center gap-1',
-      variant === 'light' && 'border',
-      variantStyles[variant][color],
-      className
-    )}>
+    <span
+      className={cn(
+        'inline-flex items-center gap-1 rounded px-2 py-1 text-xs font-medium',
+        variant === 'light' && 'border',
+        variantStyles[variant][color],
+        className
+      )}
+    >
       {children}
     </span>
   );
@@ -169,11 +166,11 @@ interface EmployeeBadgeProps {
   className?: string;
 }
 
-export const EmployeeBadge: React.FC<EmployeeBadgeProps> = ({ 
-  name, 
+export const EmployeeBadge: React.FC<EmployeeBadgeProps> = ({
+  name,
   contractType,
   avatarUrl,
-  className 
+  className,
 }) => {
   const initials = name
     .split(' ')
@@ -191,22 +188,19 @@ export const EmployeeBadge: React.FC<EmployeeBadgeProps> = ({
   return (
     <div className={cn('flex items-center gap-2', className)}>
       {/* Avatar */}
-      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-badge-blue to-badge-purple flex items-center justify-center text-white text-xs font-bold">
+      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-badge-blue to-badge-purple text-xs font-bold text-white">
         {avatarUrl ? (
-          <img src={avatarUrl} alt={name} className="w-full h-full rounded-full object-cover" />
+          <img src={avatarUrl} alt={name} className="h-full w-full rounded-full object-cover" />
         ) : (
           initials
         )}
       </div>
-      
+
       {/* Name + Contract */}
       <div className="flex flex-col">
         <span className="text-sm font-medium">{name}</span>
         {contractType && (
-          <span className={cn(
-            'text-xs px-1.5 py-0.5 rounded w-fit',
-            contractColors[contractType]
-          )}>
+          <span className={cn('w-fit rounded px-1.5 py-0.5 text-xs', contractColors[contractType])}>
             {contractType}
           </span>
         )}
@@ -236,7 +230,7 @@ export const MetricCard: React.FC<MetricCardProps> = ({
   icon,
   color = 'blue',
   trend,
-  className
+  className,
 }) => {
   const colorStyles: Record<BadgeColor, string> = {
     blue: 'bg-badge-blue/10 text-badge-blue',
@@ -256,24 +250,22 @@ export const MetricCard: React.FC<MetricCardProps> = ({
   };
 
   return (
-    <div className={cn('modern-card p-4 rounded-lg', className)}>
+    <div className={cn('modern-card rounded-lg p-4', className)}>
       <div className="flex items-center gap-3">
-        {icon && (
-          <div className={cn('p-3 rounded-lg', colorStyles[color])}>
-            {icon}
-          </div>
-        )}
+        {icon && <div className={cn('rounded-lg p-3', colorStyles[color])}>{icon}</div>}
         <div className="flex-1">
           <p className="text-xs text-muted-foreground">{label}</p>
           <p className="text-2xl font-bold">{value}</p>
           {subtitle && (
-            <p className={cn(
-              'text-xs',
-              color === 'green' && 'text-badge-green',
-              color === 'red' && 'text-badge-red',
-              color === 'orange' && 'text-badge-orange',
-              color === 'blue' && 'text-badge-blue',
-            )}>
+            <p
+              className={cn(
+                'text-xs',
+                color === 'green' && 'text-badge-green',
+                color === 'red' && 'text-badge-red',
+                color === 'orange' && 'text-badge-orange',
+                color === 'blue' && 'text-badge-blue'
+              )}
+            >
               {trend && trendIcons[trend]} {subtitle}
             </p>
           )}
@@ -302,10 +294,10 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
   color = 'blue',
   showLabel = true,
   size = 'md',
-  className
+  className,
 }) => {
   const percentage = Math.min((value / max) * 100, 100);
-  
+
   const colorStyles: Record<BadgeColor, string> = {
     blue: 'bg-status-doing',
     purple: 'bg-badge-purple',
@@ -326,13 +318,13 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
   return (
     <div className={cn('w-full', className)}>
       {showLabel && (
-        <div className="flex justify-between text-xs text-muted-foreground mb-1">
+        <div className="mb-1 flex justify-between text-xs text-muted-foreground">
           <span>Progression</span>
           <span className="font-medium">{Math.round(percentage)}%</span>
         </div>
       )}
-      <div className={cn('bg-muted rounded-full overflow-hidden', sizeStyles[size])}>
-        <div 
+      <div className={cn('overflow-hidden rounded-full bg-muted', sizeStyles[size])}>
+        <div
           className={cn('h-full rounded-full transition-all duration-300', colorStyles[color])}
           style={{ width: `${percentage}%` }}
         />

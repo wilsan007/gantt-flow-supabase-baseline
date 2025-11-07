@@ -9,7 +9,13 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Edit, Save, X } from 'lucide-react';
 import { type Task } from '@/hooks/optimized';
 
@@ -24,7 +30,7 @@ export const TaskEditDialog: React.FC<TaskEditDialogProps> = ({
   open,
   onOpenChange,
   task,
-  onSave
+  onSave,
 }) => {
   const [title, setTitle] = useState('');
   const [assignee, setAssignee] = useState('');
@@ -33,17 +39,18 @@ export const TaskEditDialog: React.FC<TaskEditDialogProps> = ({
   const [loading, setLoading] = useState(false);
 
   const availableAssignees = [
-    'Ahmed Waleh', 'Sarah Martin', 
-    'Jean Dupont', 'Marie Dubois', 'Pierre Moreau'
+    'Ahmed Waleh',
+    'Sarah Martin',
+    'Jean Dupont',
+    'Marie Dubois',
+    'Pierre Moreau',
   ];
 
   useEffect(() => {
     if (task && open) {
       setTitle(task.title || '');
       setAssignee(
-        task.assignee && task.assignee !== 'Non assigné' 
-          ? task.assignee 
-          : 'Ahmed Waleh' // Valeur par défaut si non assigné
+        task.assignee && task.assignee !== 'Non assigné' ? task.assignee : 'Ahmed Waleh' // Valeur par défaut si non assigné
       );
       setPriority(task.priority || 'medium');
       setStatus(task.status || 'todo');
@@ -86,7 +93,7 @@ export const TaskEditDialog: React.FC<TaskEditDialogProps> = ({
             <Input
               id="title"
               value={title}
-              onChange={(e) => setTitle(e.target.value)}
+              onChange={e => setTitle(e.target.value)}
               placeholder="Titre de la tâche"
               maxLength={80}
             />
@@ -103,7 +110,7 @@ export const TaskEditDialog: React.FC<TaskEditDialogProps> = ({
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {availableAssignees.map((person) => (
+                  {availableAssignees.map(person => (
                     <SelectItem key={person} value={person}>
                       {person}
                     </SelectItem>
@@ -146,11 +153,14 @@ export const TaskEditDialog: React.FC<TaskEditDialogProps> = ({
 
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>
-            <X className="h-4 w-4 mr-2" />
+            <X className="mr-2 h-4 w-4" />
             Annuler
           </Button>
-          <Button onClick={handleSave} disabled={loading || !title.trim() || !assignee || assignee === 'Non assigné'}>
-            <Save className="h-4 w-4 mr-2" />
+          <Button
+            onClick={handleSave}
+            disabled={loading || !title.trim() || !assignee || assignee === 'Non assigné'}
+          >
+            <Save className="mr-2 h-4 w-4" />
             {loading ? 'Sauvegarde...' : 'Sauvegarder'}
           </Button>
         </DialogFooter>

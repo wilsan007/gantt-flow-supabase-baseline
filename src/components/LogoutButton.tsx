@@ -14,26 +14,21 @@ export const LogoutButton: React.FC<LogoutButtonProps> = ({ onSignOut }) => {
     try {
       await onSignOut();
       toast({
-        title: "Déconnexion réussie",
-        description: "Vous avez été déconnecté en toute sécurité",
-        variant: "default"
+        title: 'Déconnexion réussie',
+        description: 'Vous avez été déconnecté en toute sécurité',
+        variant: 'default',
       });
     } catch (error) {
       toast({
-        title: "Erreur",
-        description: "Erreur lors de la déconnexion",
-        variant: "destructive"
+        title: 'Erreur',
+        description: 'Erreur lors de la déconnexion',
+        variant: 'destructive',
       });
     }
   };
 
   return (
-    <Button
-      variant="outline"
-      size="sm"
-      onClick={handleLogout}
-      className="flex items-center gap-2"
-    >
+    <Button variant="outline" size="sm" onClick={handleLogout} className="flex items-center gap-2">
       <LogOut className="h-4 w-4" />
       Se déconnecter
     </Button>

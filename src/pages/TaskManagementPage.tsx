@@ -1,13 +1,13 @@
 /**
  * TaskManagementPage - Hub de Gestion Opérationnelle des Tâches
- * 
+ *
  * Phase 1 + Phase 2 (5 onglets complets) :
  * - 👤 Mes Tâches : Vue personnalisée par utilisateur
  * - ➕ Création Rapide : Formulaire optimisé
  * - 📊 Analytics : Statistiques et KPIs
  * - 🔍 Recherche : Filtres avancés et recherches sauvegardées
  * - 📅 Calendrier : Vue temporelle et planning
- * 
+ *
  * Note : Gantt/Kanban restent dans le Dashboard uniquement
  */
 
@@ -23,41 +23,37 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, User, PlusCircle, BarChart3, Search, Calendar } from 'lucide-react';
 
 export default function TaskManagementPage() {
-  const [activeTab, setActiveTab] = useState<'my-tasks' | 'create' | 'analytics' | 'search' | 'calendar'>('my-tasks');
+  const [activeTab, setActiveTab] = useState<
+    'my-tasks' | 'create' | 'analytics' | 'search' | 'calendar'
+  >('my-tasks');
   const navigate = useNavigate();
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="container mx-auto p-6 space-y-6">
+      <div className="container mx-auto space-y-6 p-6">
         {/* Header */}
-        <div className="flex justify-between items-center">
+        <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <Button
-              variant="outline"
-              onClick={() => navigate('/')}
-            >
-              <ArrowLeft className="h-4 w-4 mr-2" />
+            <Button variant="outline" onClick={() => navigate('/')}>
+              <ArrowLeft className="mr-2 h-4 w-4" />
               Retour
             </Button>
             <div>
               <h1 className="text-3xl font-bold">Gestion des Tâches</h1>
-              <p className="text-muted-foreground">
-                Hub de gestion opérationnelle
-              </p>
+              <p className="text-muted-foreground">Hub de gestion opérationnelle</p>
             </div>
           </div>
         </div>
 
         {/* Tabs pour les vues */}
-        <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as any)} className="w-full">
+        <Tabs value={activeTab} onValueChange={v => setActiveTab(v as any)} className="w-full">
           <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="my-tasks" className="flex items-center gap-2">
               <User className="h-4 w-4" />
               👤 Mes Tâches
             </TabsTrigger>
             <TabsTrigger value="create" className="flex items-center gap-2">
-              <PlusCircle className="h-4 w-4" />
-              ➕ Création
+              <PlusCircle className="h-4 w-4" />➕ Création
             </TabsTrigger>
             <TabsTrigger value="analytics" className="flex items-center gap-2">
               <BarChart3 className="h-4 w-4" />

@@ -40,7 +40,7 @@ export const useTaskHistory = (taskId?: string) => {
       setError(null);
 
       const { data, error: historyError } = await supabase.rpc('get_task_history', {
-        p_task_id: id
+        p_task_id: id,
       });
 
       if (historyError) throw historyError;
@@ -61,7 +61,7 @@ export const useTaskHistory = (taskId?: string) => {
       setError(null);
 
       const { data, error: activitiesError } = await supabase.rpc('get_recent_task_activities', {
-        p_limit: limit
+        p_limit: limit,
       });
 
       if (activitiesError) throw activitiesError;
@@ -91,7 +91,7 @@ export const useTaskHistory = (taskId?: string) => {
         p_field_name: fieldName,
         p_old_value: oldValue,
         p_new_value: newValue,
-        p_metadata: metadata || {}
+        p_metadata: metadata || {},
       });
 
       if (error) throw error;
@@ -115,13 +115,13 @@ export const useTaskHistory = (taskId?: string) => {
     switch (action_type) {
       case 'created':
         return 'Tâche créée';
-      
+
       case 'deleted':
         return 'Tâche supprimée';
-      
+
       case 'status_changed':
         return `Statut changé de "${old_value}" à "${new_value}"`;
-      
+
       case 'updated':
         switch (field_name) {
           case 'title':
@@ -143,7 +143,7 @@ export const useTaskHistory = (taskId?: string) => {
           default:
             return `${field_name} modifié: "${old_value}" → "${new_value}"`;
         }
-      
+
       default:
         return `Action: ${action_type}`;
     }
@@ -200,9 +200,9 @@ export const useTaskHistory = (taskId?: string) => {
           event: '*',
           schema: 'public',
           table: 'task_history',
-          filter: `task_id=eq.${taskId}`
+          filter: `task_id=eq.${taskId}`,
         },
-        (payload) => {
+        payload => {
           // console.log('Task history change detected:', payload);
           // Rafraîchir l'historique
           fetchTaskHistory(taskId);
@@ -225,7 +225,7 @@ export const useTaskHistory = (taskId?: string) => {
     logTaskChange,
     formatHistoryMessage,
     getActionIcon,
-    getActionColor
+    getActionColor,
   };
 };
 
@@ -241,7 +241,7 @@ export const useRecentActivities = (limit: number = 50) => {
       setError(null);
 
       const { data, error: activitiesError } = await supabase.rpc('get_recent_task_activities', {
-        p_limit: limit
+        p_limit: limit,
       });
 
       if (activitiesError) throw activitiesError;
@@ -264,9 +264,9 @@ export const useRecentActivities = (limit: number = 50) => {
         {
           event: '*',
           schema: 'public',
-          table: 'task_history'
+          table: 'task_history',
         },
-        (payload) => {
+        payload => {
           // console.log('New activity detected:', payload);
           // Rafraîchir les activités
           fetchActivities();
@@ -286,6 +286,6 @@ export const useRecentActivities = (limit: number = 50) => {
     activities,
     loading,
     error,
-    refetch: fetchActivities
+    refetch: fetchActivities,
   };
 };

@@ -9,7 +9,13 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { Mail, UserPlus, Loader2, CheckCircle2 } from 'lucide-react';
@@ -23,7 +29,7 @@ interface QuickInviteCollaboratorProps {
 export const QuickInviteCollaborator: React.FC<QuickInviteCollaboratorProps> = ({
   open,
   onOpenChange,
-  onSuccess
+  onSuccess,
 }) => {
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
@@ -31,7 +37,7 @@ export const QuickInviteCollaborator: React.FC<QuickInviteCollaboratorProps> = (
   const [formData, setFormData] = useState({
     email: '',
     full_name: '',
-    role: 'employee'
+    role: 'employee',
   });
 
   const roles = [
@@ -42,7 +48,7 @@ export const QuickInviteCollaborator: React.FC<QuickInviteCollaboratorProps> = (
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!formData.email || !formData.full_name) {
       toast({
         title: 'Champs requis',
@@ -67,7 +73,9 @@ export const QuickInviteCollaborator: React.FC<QuickInviteCollaboratorProps> = (
 
     try {
       // Récupérer le tenant_id de l'utilisateur connecté
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) throw new Error('Utilisateur non connecté');
 
       const { data: profile } = await supabase
@@ -90,7 +98,7 @@ export const QuickInviteCollaborator: React.FC<QuickInviteCollaboratorProps> = (
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`,
+            Authorization: `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`,
           },
           body: JSON.stringify({
             email: formData.email,
@@ -124,18 +132,17 @@ export const QuickInviteCollaborator: React.FC<QuickInviteCollaboratorProps> = (
         onOpenChange(false);
         setSuccess(false);
         setFormData({ email: '', full_name: '', role: 'employee' });
-        
+
         // Si on a un ID d'employé, on peut l'utiliser
         if (result.employee_id && onSuccess) {
           onSuccess(result.employee_id);
         }
       }, 1500);
-
     } catch (error: any) {
       console.error('❌ Erreur invitation:', error);
-      
-      let errorMessage = 'Une erreur est survenue lors de l\'envoi de l\'invitation.';
-      
+
+      let errorMessage = "Une erreur est survenue lors de l'envoi de l'invitation.";
+
       if (error.message.includes('already exists')) {
         errorMessage = 'Cet email est déjà invité ou existe déjà.';
       } else if (error.message.includes('email')) {
@@ -161,17 +168,16 @@ export const QuickInviteCollaborator: React.FC<QuickInviteCollaboratorProps> = (
             Inviter un nouveau collaborateur
           </DialogTitle>
           <DialogDescription>
-            Cette personne recevra un email d'invitation et pourra être assignée aux tâches une fois inscrite.
+            Cette personne recevra un email d'invitation et pourra être assignée aux tâches une fois
+            inscrite.
           </DialogDescription>
         </DialogHeader>
 
         {success ? (
           <div className="py-8 text-center">
-            <CheckCircle2 className="h-16 w-16 text-green-500 mx-auto mb-4 animate-in zoom-in" />
-            <h3 className="text-lg font-semibold text-green-700 mb-2">Invitation envoyée !</h3>
-            <p className="text-sm text-gray-600">
-              Un email a été envoyé à {formData.email}
-            </p>
+            <CheckCircle2 className="mx-auto mb-4 h-16 w-16 text-green-500 animate-in zoom-in" />
+            <h3 className="mb-2 text-lg font-semibold text-green-700">Invitation envoyée !</h3>
+            <p className="text-sm text-gray-600">Un email a été envoyé à {formData.email}</p>
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -186,7 +192,7 @@ export const QuickInviteCollaborator: React.FC<QuickInviteCollaboratorProps> = (
                 type="email"
                 placeholder="nom@entreprise.com"
                 value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                onChange={e => setFormData({ ...formData, email: e.target.value })}
                 required
                 disabled={loading}
                 className="mt-1"
@@ -195,15 +201,13 @@ export const QuickInviteCollaborator: React.FC<QuickInviteCollaboratorProps> = (
 
             {/* Nom complet */}
             <div>
-              <Label htmlFor="quick-invite-name">
-                Nom complet *
-              </Label>
+              <Label htmlFor="quick-invite-name">Nom complet *</Label>
               <Input
                 id="quick-invite-name"
                 type="text"
                 placeholder="Jean Dupont"
                 value={formData.full_name}
-                onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
+                onChange={e => setFormData({ ...formData, full_name: e.target.value })}
                 required
                 disabled={loading}
                 className="mt-1"
@@ -212,35 +216,34 @@ export const QuickInviteCollaborator: React.FC<QuickInviteCollaboratorProps> = (
 
             {/* Rôle */}
             <div>
-              <Label htmlFor="quick-invite-role">
-                Rôle
-              </Label>
+              <Label htmlFor="quick-invite-role">Rôle</Label>
               <Select
                 value={formData.role}
-                onValueChange={(value) => setFormData({ ...formData, role: value })}
+                onValueChange={value => setFormData({ ...formData, role: value })}
                 disabled={loading}
               >
                 <SelectTrigger className="mt-1">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {roles.map((role) => (
+                  {roles.map(role => (
                     <SelectItem key={role.value} value={role.value}>
                       {role.label}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
-              <p className="text-xs text-muted-foreground mt-1">
+              <p className="mt-1 text-xs text-muted-foreground">
                 Le rôle peut être modifié plus tard dans la gestion RH
               </p>
             </div>
 
             {/* Info box */}
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+            <div className="rounded-lg border border-blue-200 bg-blue-50 p-3">
               <p className="text-xs text-blue-800">
-                <strong>💡 Astuce :</strong> Cette personne recevra un email avec un lien d'invitation. 
-                Une fois inscrite, elle apparaîtra automatiquement dans la liste des assignés.
+                <strong>💡 Astuce :</strong> Cette personne recevra un email avec un lien
+                d'invitation. Une fois inscrite, elle apparaîtra automatiquement dans la liste des
+                assignés.
               </p>
             </div>
 
@@ -255,19 +258,15 @@ export const QuickInviteCollaborator: React.FC<QuickInviteCollaboratorProps> = (
               >
                 Annuler
               </Button>
-              <Button
-                type="submit"
-                disabled={loading}
-                className="flex-1"
-              >
+              <Button type="submit" disabled={loading} className="flex-1">
                 {loading ? (
                   <>
-                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                     Envoi...
                   </>
                 ) : (
                   <>
-                    <Mail className="h-4 w-4 mr-2" />
+                    <Mail className="mr-2 h-4 w-4" />
                     Envoyer l'invitation
                   </>
                 )}

@@ -62,9 +62,9 @@ export const AbsenceCalendar: React.FC<AbsenceCalendarProps> = ({
     for (let day = 1; day <= daysCount; day++) {
       const date = new Date(year, month, day);
       const dateStr = date.toISOString().split('T')[0];
-      
+
       // Filtrer les absences pour ce jour
-      const dayAbsences = absences.filter((absence) => {
+      const dayAbsences = absences.filter(absence => {
         const start = new Date(absence.start_date).toISOString().split('T')[0];
         const end = new Date(absence.end_date).toISOString().split('T')[0];
         return dateStr >= start && dateStr <= end && absence.status === 'approved';
@@ -114,9 +114,7 @@ export const AbsenceCalendar: React.FC<AbsenceCalendarProps> = ({
     <Card className="modern-card">
       <CardHeader>
         <div className="flex items-center justify-between">
-          <CardTitle className="text-base font-medium capitalize">
-            {monthName}
-          </CardTitle>
+          <CardTitle className="text-base font-medium capitalize">{monthName}</CardTitle>
           <div className="flex items-center gap-2">
             <Button variant="outline" size="sm" onClick={handlePrevMonth}>
               <ChevronLeft className="h-4 w-4" />
@@ -129,12 +127,9 @@ export const AbsenceCalendar: React.FC<AbsenceCalendarProps> = ({
       </CardHeader>
       <CardContent>
         {/* En-têtes des jours */}
-        <div className="grid grid-cols-7 gap-2 mb-2">
-          {weekDays.map((day) => (
-            <div
-              key={day}
-              className="text-center text-xs font-medium text-muted-foreground py-2"
-            >
+        <div className="mb-2 grid grid-cols-7 gap-2">
+          {weekDays.map(day => (
+            <div key={day} className="py-2 text-center text-xs font-medium text-muted-foreground">
               {day}
             </div>
           ))}
@@ -143,26 +138,25 @@ export const AbsenceCalendar: React.FC<AbsenceCalendarProps> = ({
         {/* Grille des jours */}
         <div className="grid grid-cols-7 gap-2">
           {daysInMonth.map((day, index) => {
-            const isToday =
-              day.date.toDateString() === new Date().toDateString();
+            const isToday = day.date.toDateString() === new Date().toDateString();
             const hasAbsences = day.absences.length > 0;
 
             return (
               <div
                 key={index}
                 className={cn(
-                  'relative min-h-[60px] p-2 rounded-lg border transition-colors',
+                  'relative min-h-[60px] rounded-lg border p-2 transition-colors',
                   day.isCurrentMonth
-                    ? 'bg-background border-border'
-                    : 'bg-muted/30 border-transparent',
+                    ? 'border-border bg-background'
+                    : 'border-transparent bg-muted/30',
                   isToday && 'ring-2 ring-primary',
-                  hasAbsences && 'bg-red-50 border-red-200',
+                  hasAbsences && 'border-red-200 bg-red-50',
                   !day.isCurrentMonth && 'opacity-40'
                 )}
               >
                 <div
                   className={cn(
-                    'text-xs font-medium mb-1',
+                    'mb-1 text-xs font-medium',
                     isToday ? 'text-primary' : 'text-foreground'
                   )}
                 >
@@ -170,10 +164,10 @@ export const AbsenceCalendar: React.FC<AbsenceCalendarProps> = ({
                 </div>
                 {hasAbsences && (
                   <div className="space-y-1">
-                    {day.absences.slice(0, 2).map((absence) => (
+                    {day.absences.slice(0, 2).map(absence => (
                       <div
                         key={absence.id}
-                        className="text-[10px] bg-red-100 text-red-700 px-1 py-0.5 rounded truncate"
+                        className="truncate rounded bg-red-100 px-1 py-0.5 text-[10px] text-red-700"
                         title={absence.employee_name}
                       >
                         {absence.employee_name.split(' ')[0]}
@@ -194,11 +188,11 @@ export const AbsenceCalendar: React.FC<AbsenceCalendarProps> = ({
         {/* Légende */}
         <div className="mt-4 flex items-center gap-4 text-xs text-muted-foreground">
           <div className="flex items-center gap-2">
-            <div className="w-4 h-4 rounded bg-red-50 border border-red-200"></div>
+            <div className="h-4 w-4 rounded border border-red-200 bg-red-50"></div>
             <span>Absences</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-4 h-4 rounded ring-2 ring-primary"></div>
+            <div className="h-4 w-4 rounded ring-2 ring-primary"></div>
             <span>Aujourd'hui</span>
           </div>
         </div>

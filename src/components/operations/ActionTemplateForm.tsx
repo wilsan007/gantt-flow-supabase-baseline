@@ -6,7 +6,13 @@
 
 import React, { useState, useEffect } from 'react';
 import { useHRMinimal } from '@/hooks/useHRMinimal';
-import { getAvailableDays, getMaxOffsetDays, getTimelineInfo, extractFrequency, type FrequencyType } from '@/lib/scheduleUtils';
+import {
+  getAvailableDays,
+  getMaxOffsetDays,
+  getTimelineInfo,
+  extractFrequency,
+  type FrequencyType,
+} from '@/lib/scheduleUtils';
 import { QuickInviteCollaborator } from '@/components/tasks/QuickInviteCollaborator';
 import { useToast } from '@/hooks/use-toast';
 import {
@@ -31,15 +37,15 @@ import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { 
-  User, 
-  Calendar, 
-  Clock, 
-  ChevronLeft, 
+import {
+  User,
+  Calendar,
+  Clock,
+  ChevronLeft,
   ChevronRight,
   Check,
   AlertCircle,
-  UserCheck
+  UserCheck,
 } from 'lucide-react';
 
 interface ActionTemplateFormProps {
@@ -132,7 +138,7 @@ export const ActionTemplateForm: React.FC<ActionTemplateFormProps> = ({
         const selectedDate = new Date(formData.specific_date);
         const min = new Date(minDate);
         const max = new Date(maxDate);
-        
+
         if (selectedDate < min || selectedDate > max) {
           newErrors.specific_date = `La date doit être entre le ${min.toLocaleDateString('fr-FR')} et le ${max.toLocaleDateString('fr-FR')}`;
         }
@@ -162,9 +168,9 @@ export const ActionTemplateForm: React.FC<ActionTemplateFormProps> = ({
   };
 
   const selectedEmployee = employees.find(e => e.user_id === formData.assignee_id);
-  const displayAssignee = formData.inherit_assignee 
-    ? mainTaskAssignee 
-    : selectedEmployee 
+  const displayAssignee = formData.inherit_assignee
+    ? mainTaskAssignee
+    : selectedEmployee
       ? { id: selectedEmployee.user_id, name: selectedEmployee.full_name }
       : null;
 
@@ -179,13 +185,13 @@ export const ActionTemplateForm: React.FC<ActionTemplateFormProps> = ({
   const getMinMaxDates = () => {
     const minDate = new Date(mainTaskDate);
     const maxDate = new Date(mainTaskDate);
-    
+
     // Pour ponctuel : ±15 jours
     const offsetRange = activityKind === 'one_off' ? 15 : maxOffset / 2;
-    
+
     minDate.setDate(minDate.getDate() - offsetRange);
     maxDate.setDate(maxDate.getDate() + offsetRange);
-    
+
     return {
       min: minDate.toISOString().split('T')[0], // Format YYYY-MM-DD
       max: maxDate.toISOString().split('T')[0],
@@ -204,10 +210,10 @@ export const ActionTemplateForm: React.FC<ActionTemplateFormProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-3xl max-h-[90vh]">
+      <DialogContent className="max-h-[90vh] max-w-3xl">
         <DialogHeader>
           <DialogTitle className="text-xl">
-            {initialData?.title ? 'Modifier l\'action' : 'Nouvelle action'}
+            {initialData?.title ? "Modifier l'action" : 'Nouvelle action'}
           </DialogTitle>
           <DialogDescription>
             Configurez l'action avec son assignation et sa position temporelle
@@ -225,12 +231,12 @@ export const ActionTemplateForm: React.FC<ActionTemplateFormProps> = ({
                 <Input
                   id="title"
                   value={formData.title}
-                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                  onChange={e => setFormData({ ...formData, title: e.target.value })}
                   placeholder="Ex: Préparer le rapport hebdomadaire"
                   className={errors.title ? 'border-red-500' : ''}
                 />
                 {errors.title && (
-                  <p className="text-sm text-red-500 mt-1 flex items-center gap-1">
+                  <p className="mt-1 flex items-center gap-1 text-sm text-red-500">
                     <AlertCircle className="h-3 w-3" />
                     {errors.title}
                   </p>
@@ -242,16 +248,14 @@ export const ActionTemplateForm: React.FC<ActionTemplateFormProps> = ({
                 <Textarea
                   id="description"
                   value={formData.description || ''}
-                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                  onChange={e => setFormData({ ...formData, description: e.target.value })}
                   placeholder="Détails supplémentaires sur cette action..."
                   rows={3}
                 />
               </div>
 
               <div>
-                <Label htmlFor="estimated_hours">
-                  Durée estimée (heures)
-                </Label>
+                <Label htmlFor="estimated_hours">Durée estimée (heures)</Label>
                 <Input
                   id="estimated_hours"
                   type="number"
@@ -259,11 +263,13 @@ export const ActionTemplateForm: React.FC<ActionTemplateFormProps> = ({
                   min="0.5"
                   max="24"
                   value={formData.estimated_hours}
-                  onChange={(e) => setFormData({ ...formData, estimated_hours: parseFloat(e.target.value) })}
+                  onChange={e =>
+                    setFormData({ ...formData, estimated_hours: parseFloat(e.target.value) })
+                  }
                   className={errors.estimated_hours ? 'border-red-500' : ''}
                 />
                 {errors.estimated_hours && (
-                  <p className="text-sm text-red-500 mt-1">{errors.estimated_hours}</p>
+                  <p className="mt-1 text-sm text-red-500">{errors.estimated_hours}</p>
                 )}
               </div>
             </div>
@@ -279,7 +285,7 @@ export const ActionTemplateForm: React.FC<ActionTemplateFormProps> = ({
               </div>
 
               {/* Switch: Hériter ou personnaliser */}
-              <div className="flex items-center justify-between p-4 bg-muted/50 rounded-lg">
+              <div className="flex items-center justify-between rounded-lg bg-muted/50 p-4">
                 <div className="flex items-center gap-3">
                   <UserCheck className="h-5 w-5 text-muted-foreground" />
                   <div>
@@ -292,7 +298,7 @@ export const ActionTemplateForm: React.FC<ActionTemplateFormProps> = ({
                 <Switch
                   id="inherit_assignee"
                   checked={formData.inherit_assignee}
-                  onCheckedChange={(checked) => 
+                  onCheckedChange={checked =>
                     setFormData({ ...formData, inherit_assignee: checked })
                   }
                 />
@@ -306,9 +312,7 @@ export const ActionTemplateForm: React.FC<ActionTemplateFormProps> = ({
                   </Label>
                   <Select
                     value={formData.assignee_id}
-                    onValueChange={(value) => 
-                      setFormData({ ...formData, assignee_id: value })
-                    }
+                    onValueChange={value => setFormData({ ...formData, assignee_id: value })}
                   >
                     <SelectTrigger className={errors.assignee ? 'border-red-500' : ''}>
                       <SelectValue placeholder="Sélectionnez un employé" />
@@ -323,7 +327,7 @@ export const ActionTemplateForm: React.FC<ActionTemplateFormProps> = ({
                           Aucun employé disponible
                         </SelectItem>
                       ) : (
-                        employees.map((employee) => (
+                        employees.map(employee => (
                           <SelectItem key={employee.user_id} value={employee.user_id}>
                             <div className="flex items-center gap-2">
                               <User className="h-4 w-4" />
@@ -344,12 +348,12 @@ export const ActionTemplateForm: React.FC<ActionTemplateFormProps> = ({
                     variant="outline"
                     size="sm"
                     onClick={() => setShowQuickInvite(true)}
-                    className="w-full text-blue-600 border-blue-300 hover:bg-blue-50"
+                    className="w-full border-blue-300 text-blue-600 hover:bg-blue-50"
                   >
                     ➕ Inviter quelqu'un
                   </Button>
                   {errors.assignee && (
-                    <p className="text-sm text-red-500 mt-1 flex items-center gap-1">
+                    <p className="mt-1 flex items-center gap-1 text-sm text-red-500">
                       <AlertCircle className="h-3 w-3" />
                       {errors.assignee}
                     </p>
@@ -359,7 +363,7 @@ export const ActionTemplateForm: React.FC<ActionTemplateFormProps> = ({
 
               {/* Affichage de l'assigné actuel */}
               {displayAssignee && (
-                <div className="p-3 bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+                <div className="rounded-lg border border-blue-200 bg-blue-50 p-3 dark:border-blue-800 dark:bg-blue-950/20">
                   <div className="flex items-center gap-2">
                     <User className="h-4 w-4 text-blue-600" />
                     <span className="font-medium">Assigné à : {displayAssignee.name}</span>
@@ -379,13 +383,12 @@ export const ActionTemplateForm: React.FC<ActionTemplateFormProps> = ({
             <div className="space-y-4">
               <div>
                 <Label className="text-base font-semibold">
-                  {activityKind === 'recurring' ? 'Position temporelle' : 'Date de l\'action'}
+                  {activityKind === 'recurring' ? 'Position temporelle' : "Date de l'action"}
                 </Label>
-                <p className="text-sm text-muted-foreground mt-1">
-                  {activityKind === 'recurring' 
+                <p className="mt-1 text-sm text-muted-foreground">
+                  {activityKind === 'recurring'
                     ? 'Quand cette action doit-elle être effectuée par rapport à la tâche principale ?'
-                    : 'À quelle date cette action doit-elle être réalisée ?'
-                  }
+                    : 'À quelle date cette action doit-elle être réalisée ?'}
                 </p>
               </div>
 
@@ -393,175 +396,191 @@ export const ActionTemplateForm: React.FC<ActionTemplateFormProps> = ({
               {activityKind === 'recurring' && (
                 <>
                   {/* Date calculée */}
-                  <div className="p-4 bg-muted/50 rounded-lg border-2 border-dashed">
+                  <div className="rounded-lg border-2 border-dashed bg-muted/50 p-4">
                     <div className="flex items-center justify-between">
                       <div>
-                        <div className="flex items-center gap-2 mb-1">
+                        <div className="mb-1 flex items-center gap-2">
                           <p className="text-sm text-muted-foreground">Tâche principale</p>
-                          <Badge variant="secondary" className="text-[10px] px-1.5 py-0">
+                          <Badge variant="secondary" className="px-1.5 py-0 text-[10px]">
                             🔒 Fixe
                           </Badge>
                         </div>
                         <p className="font-medium">
-                          {mainTaskDate.toLocaleDateString('fr-FR', { 
-                            weekday: 'long', 
-                            day: 'numeric', 
-                            month: 'long' 
+                          {mainTaskDate.toLocaleDateString('fr-FR', {
+                            weekday: 'long',
+                            day: 'numeric',
+                            month: 'long',
                           })}
                         </p>
                       </div>
                       <div className="text-right">
-                        <div className="flex items-center justify-end gap-2 mb-1">
+                        <div className="mb-1 flex items-center justify-end gap-2">
                           <p className="text-sm text-muted-foreground">Cette action</p>
-                          <Badge variant="outline" className="text-[10px] px-1.5 py-0 border-blue-500 text-blue-600">
+                          <Badge
+                            variant="outline"
+                            className="border-blue-500 px-1.5 py-0 text-[10px] text-blue-600"
+                          >
                             ✓ Variable
                           </Badge>
                         </div>
                         <p className="font-medium text-blue-600">
-                          {getActionDate().toLocaleDateString('fr-FR', { 
-                            weekday: 'long', 
-                            day: 'numeric', 
-                            month: 'long' 
+                          {getActionDate().toLocaleDateString('fr-FR', {
+                            weekday: 'long',
+                            day: 'numeric',
+                            month: 'long',
                           })}
                         </p>
                       </div>
                     </div>
-                    <p className="text-xs text-muted-foreground mt-3 text-center">
+                    <p className="mt-3 text-center text-xs text-muted-foreground">
                       🔒 La date de la tâche parent est fixe (non modifiable)
                     </p>
                   </div>
 
                   {/* Info fourchette disponible */}
-                  <div className="p-3 bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-lg">
-                    <div className="flex items-center gap-2 mb-1">
+                  <div className="rounded-lg border border-blue-200 bg-blue-50 p-3 dark:border-blue-800 dark:bg-blue-950/20">
+                    <div className="mb-1 flex items-center gap-2">
                       <AlertCircle className="h-4 w-4 text-blue-600" />
                       <p className="text-sm font-medium text-blue-900 dark:text-blue-100">
                         Fourchette disponible
                       </p>
                     </div>
                     <p className="text-xs text-blue-700 dark:text-blue-300">
-                      Vous pouvez planifier cette action entre <strong>{availableDays[0] < 0 ? availableDays[0] : `J+${availableDays[0]}`}</strong> et <strong>{availableDays[availableDays.length - 1] > 0 ? `J+${availableDays[availableDays.length - 1]}` : availableDays[availableDays.length - 1]}</strong> par rapport à la tâche principale
+                      Vous pouvez planifier cette action entre{' '}
+                      <strong>
+                        {availableDays[0] < 0 ? availableDays[0] : `J+${availableDays[0]}`}
+                      </strong>{' '}
+                      et{' '}
+                      <strong>
+                        {availableDays[availableDays.length - 1] > 0
+                          ? `J+${availableDays[availableDays.length - 1]}`
+                          : availableDays[availableDays.length - 1]}
+                      </strong>{' '}
+                      par rapport à la tâche principale
                     </p>
                   </div>
 
                   {/* Timeline interactive */}
                   <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleOffsetChange(formData.offset_days - 1)}
-                    disabled={isDailyRecurrence || formData.offset_days <= availableDays[0]}
-                  >
-                    <ChevronLeft className="h-4 w-4" />
-                    Jour précédent
-                  </Button>
+                    <div className="flex items-center justify-between">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleOffsetChange(formData.offset_days - 1)}
+                        disabled={isDailyRecurrence || formData.offset_days <= availableDays[0]}
+                      >
+                        <ChevronLeft className="h-4 w-4" />
+                        Jour précédent
+                      </Button>
 
-                  <Badge variant="outline" className="px-4 py-2">
-                    {formData.offset_days === 0 
-                      ? 'Même jour (J)' 
-                      : formData.offset_days > 0 
-                        ? `J+${formData.offset_days}` 
-                        : `J${formData.offset_days}`
-                    }
-                  </Badge>
+                      <Badge variant="outline" className="px-4 py-2">
+                        {formData.offset_days === 0
+                          ? 'Même jour (J)'
+                          : formData.offset_days > 0
+                            ? `J+${formData.offset_days}`
+                            : `J${formData.offset_days}`}
+                      </Badge>
 
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleOffsetChange(formData.offset_days + 1)}
-                    disabled={isDailyRecurrence || formData.offset_days >= availableDays[availableDays.length - 1]}
-                  >
-                    Jour suivant
-                    <ChevronRight className="h-4 w-4" />
-                  </Button>
-                </div>
-
-                {/* Grille timeline */}
-                <div className="relative">
-                  {isDailyRecurrence ? (
-                    <div className="p-6 bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-lg text-center">
-                      <Calendar className="h-8 w-8 mx-auto text-blue-600 mb-2" />
-                      <p className="text-sm font-medium text-blue-900 dark:text-blue-100">
-                        Tâches quotidiennes
-                      </p>
-                      <p className="text-xs text-blue-700 dark:text-blue-300 mt-1">
-                        Les actions sont exécutées le même jour que la tâche (pas de décalage possible)
-                      </p>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleOffsetChange(formData.offset_days + 1)}
+                        disabled={
+                          isDailyRecurrence ||
+                          formData.offset_days >= availableDays[availableDays.length - 1]
+                        }
+                      >
+                        Jour suivant
+                        <ChevronRight className="h-4 w-4" />
+                      </Button>
                     </div>
-                  ) : (
-                    <>
-                  <div className="flex items-center gap-1 overflow-x-auto pb-2">
-                    {availableDays.map((offset) => {
-                      const isMainDay = offset === 0;
-                      const isSelectedDay = offset === formData.offset_days;
-                      const isPastDay = offset < formData.offset_days;
-                      const isFutureDay = offset > formData.offset_days;
 
-                      return (
-                        <button
-                          key={offset}
-                          type="button"
-                          onClick={() => handleOffsetChange(offset)}
-                          className={`
-                            relative flex-1 min-w-[60px] p-3 rounded-lg border-2 transition-all
-                            ${isMainDay 
-                              ? 'border-orange-500 bg-orange-50 dark:bg-orange-950/20' 
-                              : isSelectedDay
-                                ? 'border-blue-500 bg-blue-50 dark:bg-blue-950/20'
-                                : 'border-gray-200 dark:border-gray-700 hover:border-gray-300'
-                            }
-                          `}
-                        >
-                          <div className="text-center">
-                            <div className="text-xs font-medium mb-1">
-                              {offset === 0 ? 'J' : offset > 0 ? `J+${offset}` : `J${offset}`}
-                            </div>
-                            <div className="text-[10px] text-muted-foreground">
-                              {formatDate(offset)}
-                            </div>
+                    {/* Grille timeline */}
+                    <div className="relative">
+                      {isDailyRecurrence ? (
+                        <div className="rounded-lg border border-blue-200 bg-blue-50 p-6 text-center dark:border-blue-800 dark:bg-blue-950/20">
+                          <Calendar className="mx-auto mb-2 h-8 w-8 text-blue-600" />
+                          <p className="text-sm font-medium text-blue-900 dark:text-blue-100">
+                            Tâches quotidiennes
+                          </p>
+                          <p className="mt-1 text-xs text-blue-700 dark:text-blue-300">
+                            Les actions sont exécutées le même jour que la tâche (pas de décalage
+                            possible)
+                          </p>
+                        </div>
+                      ) : (
+                        <>
+                          <div className="flex items-center gap-1 overflow-x-auto pb-2">
+                            {availableDays.map(offset => {
+                              const isMainDay = offset === 0;
+                              const isSelectedDay = offset === formData.offset_days;
+                              const isPastDay = offset < formData.offset_days;
+                              const isFutureDay = offset > formData.offset_days;
+
+                              return (
+                                <button
+                                  key={offset}
+                                  type="button"
+                                  onClick={() => handleOffsetChange(offset)}
+                                  className={`relative min-w-[60px] flex-1 rounded-lg border-2 p-3 transition-all ${
+                                    isMainDay
+                                      ? 'border-orange-500 bg-orange-50 dark:bg-orange-950/20'
+                                      : isSelectedDay
+                                        ? 'border-blue-500 bg-blue-50 dark:bg-blue-950/20'
+                                        : 'border-gray-200 hover:border-gray-300 dark:border-gray-700'
+                                  } `}
+                                >
+                                  <div className="text-center">
+                                    <div className="mb-1 text-xs font-medium">
+                                      {offset === 0
+                                        ? 'J'
+                                        : offset > 0
+                                          ? `J+${offset}`
+                                          : `J${offset}`}
+                                    </div>
+                                    <div className="text-[10px] text-muted-foreground">
+                                      {formatDate(offset)}
+                                    </div>
+                                  </div>
+
+                                  {isMainDay && (
+                                    <div className="absolute -top-2 left-1/2 -translate-x-1/2">
+                                      <Badge variant="default" className="px-1.5 py-0 text-[10px]">
+                                        Tâche
+                                      </Badge>
+                                    </div>
+                                  )}
+
+                                  {isSelectedDay && !isMainDay && (
+                                    <div className="absolute -bottom-2 left-1/2 -translate-x-1/2">
+                                      <Check className="h-4 w-4 text-blue-600" />
+                                    </div>
+                                  )}
+                                </button>
+                              );
+                            })}
                           </div>
 
-                          {isMainDay && (
-                            <div className="absolute -top-2 left-1/2 -translate-x-1/2">
-                              <Badge variant="default" className="text-[10px] px-1.5 py-0">
-                                Tâche
-                              </Badge>
+                          {/* Légende */}
+                          <div className="mt-4 flex items-center justify-center gap-4 text-xs text-muted-foreground">
+                            <div className="flex items-center gap-1">
+                              <div className="h-3 w-3 rounded border-2 border-orange-500 bg-orange-50" />
+                              <span>Tâche principale</span>
                             </div>
-                          )}
-
-                          {isSelectedDay && !isMainDay && (
-                            <div className="absolute -bottom-2 left-1/2 -translate-x-1/2">
-                              <Check className="h-4 w-4 text-blue-600" />
+                            <div className="flex items-center gap-1">
+                              <div className="h-3 w-3 rounded border-2 border-blue-500 bg-blue-50" />
+                              <span>Action sélectionnée</span>
                             </div>
-                          )}
-                        </button>
-                      );
-                    })}
-                  </div>
-
-                  {/* Légende */}
-                  <div className="flex items-center justify-center gap-4 mt-4 text-xs text-muted-foreground">
-                    <div className="flex items-center gap-1">
-                      <div className="w-3 h-3 rounded border-2 border-orange-500 bg-orange-50" />
-                      <span>Tâche principale</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <div className="w-3 h-3 rounded border-2 border-blue-500 bg-blue-50" />
-                      <span>Action sélectionnée</span>
+                          </div>
+                        </>
+                      )}
                     </div>
                   </div>
-                    </>
-                  )}
-                </div>
-              </div>
-                
-              {/* Info sur la fréquence */}
-              <p className="text-xs text-muted-foreground text-center">
-                {timelineInfo}
-              </p>
+
+                  {/* Info sur la fréquence */}
+                  <p className="text-center text-xs text-muted-foreground">{timelineInfo}</p>
                 </>
               )}
 
@@ -569,36 +588,37 @@ export const ActionTemplateForm: React.FC<ActionTemplateFormProps> = ({
               {activityKind === 'one_off' && (
                 <div className="space-y-4">
                   {/* Date de la tâche parent (lecture seule) */}
-                  <div className="p-4 bg-muted/50 rounded-lg border-2 border-dashed">
-                    <div className="flex items-center gap-2 mb-2">
+                  <div className="rounded-lg border-2 border-dashed bg-muted/50 p-4">
+                    <div className="mb-2 flex items-center gap-2">
                       <Calendar className="h-4 w-4 text-muted-foreground" />
                       <Label className="text-sm font-medium text-muted-foreground">
                         Tâche ponctuelle parent
                       </Label>
                     </div>
-                    <p className="font-medium text-lg">
-                      {mainTaskDate.toLocaleDateString('fr-FR', { 
-                        weekday: 'long', 
-                        day: 'numeric', 
+                    <p className="text-lg font-medium">
+                      {mainTaskDate.toLocaleDateString('fr-FR', {
+                        weekday: 'long',
+                        day: 'numeric',
                         month: 'long',
-                        year: 'numeric'
+                        year: 'numeric',
                       })}
                     </p>
-                    <p className="text-xs text-muted-foreground mt-1">
+                    <p className="mt-1 text-xs text-muted-foreground">
                       🔒 Date fixe de référence (non modifiable)
                     </p>
                   </div>
 
                   {/* Fourchette autorisée */}
-                  <div className="p-3 bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-lg">
-                    <div className="flex items-center gap-2 mb-1">
+                  <div className="rounded-lg border border-blue-200 bg-blue-50 p-3 dark:border-blue-800 dark:bg-blue-950/20">
+                    <div className="mb-1 flex items-center gap-2">
                       <AlertCircle className="h-4 w-4 text-blue-600" />
                       <p className="text-sm font-medium text-blue-900 dark:text-blue-100">
                         Fourchette autorisée
                       </p>
                     </div>
                     <p className="text-xs text-blue-700 dark:text-blue-300">
-                      Du <strong>{new Date(minDate).toLocaleDateString('fr-FR')}</strong> au <strong>{new Date(maxDate).toLocaleDateString('fr-FR')}</strong> (±15 jours)
+                      Du <strong>{new Date(minDate).toLocaleDateString('fr-FR')}</strong> au{' '}
+                      <strong>{new Date(maxDate).toLocaleDateString('fr-FR')}</strong> (±15 jours)
                     </p>
                   </div>
 
@@ -613,16 +633,16 @@ export const ActionTemplateForm: React.FC<ActionTemplateFormProps> = ({
                       min={minDate}
                       max={maxDate}
                       value={formData.specific_date || ''}
-                      onChange={(e) => setFormData({ ...formData, specific_date: e.target.value })}
+                      onChange={e => setFormData({ ...formData, specific_date: e.target.value })}
                       className={errors.specific_date ? 'border-red-500' : ''}
                     />
                     {errors.specific_date && (
-                      <p className="text-sm text-red-500 mt-1 flex items-center gap-1">
+                      <p className="mt-1 flex items-center gap-1 text-sm text-red-500">
                         <AlertCircle className="h-3 w-3" />
                         {errors.specific_date}
                       </p>
                     )}
-                    <p className="text-xs text-muted-foreground mt-1">
+                    <p className="mt-1 text-xs text-muted-foreground">
                       📅 Sélectionnez une date dans la fourchette autorisée
                     </p>
                   </div>
@@ -632,16 +652,10 @@ export const ActionTemplateForm: React.FC<ActionTemplateFormProps> = ({
 
             {/* Actions */}
             <div className="flex items-center justify-end gap-2 pt-4">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => onOpenChange(false)}
-              >
+              <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
                 Annuler
               </Button>
-              <Button type="submit">
-                {initialData?.title ? 'Enregistrer' : 'Créer l\'action'}
-              </Button>
+              <Button type="submit">{initialData?.title ? 'Enregistrer' : "Créer l'action"}</Button>
             </div>
           </form>
         </ScrollArea>
@@ -650,7 +664,7 @@ export const ActionTemplateForm: React.FC<ActionTemplateFormProps> = ({
       <QuickInviteCollaborator
         open={showQuickInvite}
         onOpenChange={setShowQuickInvite}
-        onSuccess={(employeeId) => {
+        onSuccess={employeeId => {
           if (refetchEmployees) {
             refetchEmployees();
           }

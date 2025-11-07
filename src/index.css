@@ -50,13 +50,13 @@ All colors MUST be HSL for consistency.
     --warning: 43 96% 56%;
     --danger: 0 84% 55%;
     --info: 214 100% 50%;
-    
+
     /* Priority colors for emphasis - High contrast */
     --priority-high: 0 84% 55%;
     --priority-medium: 43 96% 56%;
     --priority-low: 142 76% 36%;
     --priority-critical: 340 82% 52%;
-    
+
     /* Status colors - Monday.com/Linear inspired */
     --status-todo: 220 15% 65%;
     --status-doing: 214 100% 50%;
@@ -64,7 +64,7 @@ All colors MUST be HSL for consistency.
     --status-done: 142 76% 36%;
     --status-review: 43 96% 56%;
     --status-backlog: 220 15% 75%;
-    
+
     /* Badge colors - Notion inspired */
     --badge-blue: 214 100% 50%;
     --badge-purple: 262 100% 58%;
@@ -74,7 +74,7 @@ All colors MUST be HSL for consistency.
     --badge-orange: 25 95% 50%;
     --badge-red: 0 84% 55%;
     --badge-gray: 220 15% 65%;
-    
+
     /* Enhanced Gantt colors */
     --gantt-grid: 220 13% 75%;
     --gantt-header: 220 15% 94%;
@@ -84,7 +84,7 @@ All colors MUST be HSL for consistency.
     /* Refined glass morphism */
     --glass-bg: 220 25% 98%;
     --glass-border: 220 13% 85%;
-    
+
     /* Premium gradients */
     --gradient-primary: linear-gradient(135deg, hsl(214 100% 50%), hsl(176 85% 45%));
     --gradient-secondary: linear-gradient(135deg, hsl(0 0% 100%), hsl(220 15% 92%));
@@ -131,7 +131,7 @@ All colors MUST be HSL for consistency.
     --border: 220 30% 20%;
     --input: 220 30% 8%;
     --ring: 262 100% 80%;
-    
+
     /* Maximum contrast tech colors for dark theme */
     --tech-blue: 214 100% 80%;
     --tech-purple: 262 100% 80%;
@@ -143,13 +143,13 @@ All colors MUST be HSL for consistency.
     --warning: 43 100% 75%;
     --danger: 0 84% 75%;
     --info: 214 100% 80%;
-    
+
     /* Priority colors with maximum contrast for dark theme */
     --priority-high: 0 84% 75%;
     --priority-medium: 43 100% 75%;
     --priority-low: 142 84% 65%;
     --priority-critical: 340 100% 75%;
-    
+
     /* Status colors - Dark theme */
     --status-todo: 220 15% 70%;
     --status-doing: 214 100% 80%;
@@ -157,7 +157,7 @@ All colors MUST be HSL for consistency.
     --status-done: 142 84% 65%;
     --status-review: 43 100% 75%;
     --status-backlog: 220 15% 60%;
-    
+
     /* Badge colors - Dark theme */
     --badge-blue: 214 100% 80%;
     --badge-purple: 262 100% 80%;
@@ -167,7 +167,7 @@ All colors MUST be HSL for consistency.
     --badge-orange: 25 100% 75%;
     --badge-red: 0 84% 75%;
     --badge-gray: 220 15% 70%;
-    
+
     /* Enhanced Gantt colors for dark */
     --gantt-grid: 220 27% 25%;
     --gantt-header: 220 27% 10%;
@@ -177,14 +177,14 @@ All colors MUST be HSL for consistency.
     /* Premium glass morphism */
     --glass-bg: 220 27% 8%;
     --glass-border: 220 27% 18%;
-    
+
     /* Vibrant gradients for dark */
     --gradient-primary: linear-gradient(135deg, hsl(262 100% 75%), hsl(180 100% 70%));
     --gradient-secondary: linear-gradient(135deg, hsl(220 27% 8%), hsl(220 27% 12%));
     --gradient-accent: linear-gradient(135deg, hsl(180 100% 70%), hsl(142 84% 60%));
     --gradient-bg: linear-gradient(135deg, hsl(220 27% 6%), hsl(220 27% 8%));
     --gradient-card: linear-gradient(145deg, hsl(220 27% 8%), hsl(220 27% 10%));
-    
+
     --sidebar-background: 220 13% 9%;
     --sidebar-foreground: 210 40% 95%;
     --sidebar-primary: 262 83% 70%;
@@ -212,13 +212,13 @@ All colors MUST be HSL for consistency.
     backdrop-filter: blur(20px) saturate(180%);
     -webkit-backdrop-filter: blur(20px) saturate(180%);
   }
-  
+
   .dark .glass {
     background: rgba(255, 255, 255, 0.03);
     border: 1px solid rgba(255, 255, 255, 0.08);
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
   }
-  
+
   .glass {
     background: rgba(220, 230, 255, 0.75);
     border: 1px solid rgba(120, 160, 255, 0.6);
@@ -232,15 +232,15 @@ All colors MUST be HSL for consistency.
     backdrop-filter: blur(20px) saturate(180%);
     -webkit-backdrop-filter: blur(20px) saturate(180%);
   }
-  
+
   .dark .modern-card {
-    background: linear-gradient(145deg, hsl(var(--card)), hsl(var(--card))/95%);
-    box-shadow: 
+    background: linear-gradient(145deg, hsl(var(--card)), hsl(var(--card)) / 95%);
+    box-shadow:
       0 8px 32px rgba(0, 0, 0, 0.4),
       inset 0 1px 0 rgba(255, 255, 255, 0.05);
     border: 1px solid hsl(var(--border));
   }
-  
+
   .modern-card {
     box-shadow: 0 12px 48px rgba(50, 100, 200, 0.18);
     border: 2px solid hsl(220 40% 70%);
@@ -276,9 +276,15 @@ All colors MUST be HSL for consistency.
   }
 
   @keyframes gradient {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
   }
 
   /* Premium hover effects */

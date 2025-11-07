@@ -10,8 +10,8 @@ vi.mock('@/hooks/useUserRoles', () => ({
     isSuperAdmin: false,
     currentTenantId: 'tenant-1',
     hasRole: () => false,
-    hasPermission: () => false
-  })
+    hasPermission: () => false,
+  }),
 }));
 
 vi.mock('@/integrations/supabase/client', () => ({
@@ -19,17 +19,19 @@ vi.mock('@/integrations/supabase/client', () => ({
     from: vi.fn(() => ({
       select: vi.fn(() => ({
         eq: vi.fn(() => ({
-          order: vi.fn(() => Promise.resolve({ data: [], error: null }))
-        }))
-      }))
+          order: vi.fn(() => Promise.resolve({ data: [], error: null })),
+        })),
+      })),
     })),
     auth: {
-      getUser: vi.fn(() => Promise.resolve({
-        data: { user: { id: 'user-1' } },
-        error: null
-      }))
-    }
-  }
+      getUser: vi.fn(() =>
+        Promise.resolve({
+          data: { user: { id: 'user-1' } },
+          error: null,
+        })
+      ),
+    },
+  },
 }));
 
 describe('Index Page', () => {
@@ -40,13 +42,13 @@ describe('Index Page', () => {
         <p>Bienvenue</p>
       </div>
     );
-    
+
     const { container } = render(
       <BrowserRouter>
         <TestComponent />
       </BrowserRouter>
     );
-    
+
     expect(container).toBeTruthy();
     expect(screen.getByTestId('index-page')).toBeInTheDocument();
   });
@@ -58,13 +60,13 @@ describe('Index Page', () => {
         <p>Bienvenue sur Wadashaqeen</p>
       </div>
     );
-    
+
     render(
       <BrowserRouter>
         <TestComponent />
       </BrowserRouter>
     );
-    
+
     expect(screen.getByText(/Tableau de bord/i)).toBeInTheDocument();
   });
 
@@ -78,13 +80,13 @@ describe('Index Page', () => {
         </nav>
       </div>
     );
-    
+
     render(
       <BrowserRouter>
         <TestComponent />
       </BrowserRouter>
     );
-    
+
     expect(screen.getByText('Tâches')).toBeInTheDocument();
     expect(screen.getByText('Projets')).toBeInTheDocument();
     expect(screen.getByText('RH')).toBeInTheDocument();
@@ -96,13 +98,13 @@ describe('Index Page', () => {
         <div role="status">Chargement...</div>
       </div>
     );
-    
+
     render(
       <BrowserRouter>
         <LoadingComponent />
       </BrowserRouter>
     );
-    
+
     expect(screen.getByRole('status')).toBeInTheDocument();
   });
 
@@ -119,13 +121,13 @@ describe('Index Page', () => {
         </div>
       </div>
     );
-    
+
     render(
       <BrowserRouter>
         <StatsComponent />
       </BrowserRouter>
     );
-    
+
     expect(screen.getByTestId('stat-tasks')).toBeInTheDocument();
     expect(screen.getByTestId('stat-projects')).toBeInTheDocument();
   });

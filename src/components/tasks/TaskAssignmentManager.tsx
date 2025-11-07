@@ -1,7 +1,13 @@
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useEmployees } from '@/hooks/useEmployees';
@@ -18,7 +24,7 @@ interface TaskAssignmentManagerProps {
 
 export const TaskAssignmentManager: React.FC<TaskAssignmentManagerProps> = ({
   tasks,
-  onTaskUpdate
+  onTaskUpdate,
 }) => {
   const { employees } = useEmployees();
   const { toast } = useToast();
@@ -32,21 +38,21 @@ export const TaskAssignmentManager: React.FC<TaskAssignmentManagerProps> = ({
 
   const handleAssignTask = async () => {
     if (!selectedTask || !selectedEmployee) return;
-    
+
     setLoading(true);
     try {
       const { error } = await supabase
         .from('tasks')
         .update({ assignee_id: selectedEmployee })
         .eq('id', selectedTask);
-      
+
       if (error) throw error;
-      
+
       toast({
         title: 'Tâche assignée',
         description: 'La tâche a été assignée avec succès',
       });
-      
+
       setSelectedTask('');
       setSelectedEmployee('');
       onTaskUpdate();
@@ -54,7 +60,7 @@ export const TaskAssignmentManager: React.FC<TaskAssignmentManagerProps> = ({
       console.error('Error assigning task:', error);
       toast({
         title: 'Erreur',
-        description: 'Impossible d\'assigner la tâche',
+        description: "Impossible d'assigner la tâche",
         variant: 'destructive',
       });
     } finally {
@@ -65,18 +71,15 @@ export const TaskAssignmentManager: React.FC<TaskAssignmentManagerProps> = ({
   const handleUnassignTask = async (taskId: string) => {
     setLoading(true);
     try {
-      const { error } = await supabase
-        .from('tasks')
-        .update({ assignee_id: null })
-        .eq('id', taskId);
-      
+      const { error } = await supabase.from('tasks').update({ assignee_id: null }).eq('id', taskId);
+
       if (error) throw error;
-      
+
       toast({
         title: 'Tâche désassignée',
         description: 'La tâche a été désassignée avec succès',
       });
-      
+
       onTaskUpdate();
     } catch (error) {
       console.error('Error unassigning task:', error);
@@ -96,20 +99,21 @@ export const TaskAssignmentManager: React.FC<TaskAssignmentManagerProps> = ({
 
   const getTasksByEmployee = () => {
     const tasksByEmployee: { [key: string]: Task[] } = {};
-    
+
     assignedTasks.forEach(task => {
       if (task.assignee) {
-        const assigneeKey = typeof task.assignee === 'object' 
-          ? task.assignee.full_name 
-          : task.assigned_name || 'Unknown';
-        
+        const assigneeKey =
+          typeof task.assignee === 'object'
+            ? task.assignee.full_name
+            : task.assigned_name || 'Unknown';
+
         if (!tasksByEmployee[assigneeKey]) {
           tasksByEmployee[assigneeKey] = [];
         }
         tasksByEmployee[assigneeKey].push(task);
       }
     });
-    
+
     return tasksByEmployee;
   };
 
@@ -126,15 +130,15 @@ export const TaskAssignmentManager: React.FC<TaskAssignmentManagerProps> = ({
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex gap-4 items-end">
+          <div className="flex items-end gap-4">
             <div className="flex-1">
-              <label className="text-sm font-medium mb-2 block">Tâche</label>
+              <label className="mb-2 block text-sm font-medium">Tâche</label>
               <Select value={selectedTask} onValueChange={setSelectedTask}>
                 <SelectTrigger>
                   <SelectValue placeholder="Sélectionner une tâche" />
                 </SelectTrigger>
                 <SelectContent>
-                  {unassignedTasks.map((task) => (
+                  {unassignedTasks.map(task => (
                     <SelectItem key={task.id} value={task.id}>
                       <div className="flex items-center gap-2">
                         <Badge variant="outline" className="text-xs">
@@ -147,21 +151,24 @@ export const TaskAssignmentManager: React.FC<TaskAssignmentManagerProps> = ({
                 </SelectContent>
               </Select>
             </div>
-            
+
             <div className="flex-1">
-              <label className="text-sm font-medium mb-2 block">Employé</label>
+              <label className="mb-2 block text-sm font-medium">Employé</label>
               <Select value={selectedEmployee} onValueChange={setSelectedEmployee}>
                 <SelectTrigger>
                   <SelectValue placeholder="Sélectionner un employé" />
                 </SelectTrigger>
                 <SelectContent>
-                  {employees.map((employee) => (
+                  {employees.map(employee => (
                     <SelectItem key={employee.id} value={employee.id}>
                       <div className="flex items-center gap-2">
-                        <Avatar className="w-6 h-6">
+                        <Avatar className="h-6 w-6">
                           <AvatarImage src={employee.avatar_url || ''} />
                           <AvatarFallback className="text-xs">
-                            {employee.full_name.split(' ').map(n => n[0]).join('')}
+                            {employee.full_name
+                              .split(' ')
+                              .map(n => n[0])
+                              .join('')}
                           </AvatarFallback>
                         </Avatar>
                         {employee.full_name}
@@ -171,9 +178,9 @@ export const TaskAssignmentManager: React.FC<TaskAssignmentManagerProps> = ({
                 </SelectContent>
               </Select>
             </div>
-            
+
             <div className="flex gap-2">
-              <Button 
+              <Button
                 onClick={handleAssignTask}
                 disabled={!selectedTask || !selectedEmployee || loading}
               >
@@ -185,7 +192,7 @@ export const TaskAssignmentManager: React.FC<TaskAssignmentManagerProps> = ({
                 onClick={() => setShowSmartAssignee(true)}
                 disabled={!selectedTask}
               >
-                <TrendingUp className="h-4 w-4 mr-2" />
+                <TrendingUp className="mr-2 h-4 w-4" />
                 Sélection intelligente
               </Button>
             </div>
@@ -203,13 +210,16 @@ export const TaskAssignmentManager: React.FC<TaskAssignmentManagerProps> = ({
         </CardHeader>
         <CardContent>
           {unassignedTasks.length === 0 ? (
-            <p className="text-muted-foreground text-center py-4">
+            <p className="py-4 text-center text-muted-foreground">
               Toutes les tâches sont assignées
             </p>
           ) : (
             <div className="space-y-2">
-              {unassignedTasks.map((task) => (
-                <div key={task.id} className="flex items-center justify-between p-3 border rounded-lg">
+              {unassignedTasks.map(task => (
+                <div
+                  key={task.id}
+                  className="flex items-center justify-between rounded-lg border p-3"
+                >
                   <div className="flex items-center gap-2">
                     <Badge variant="outline" className="text-xs">
                       {task.priority}
@@ -219,11 +229,7 @@ export const TaskAssignmentManager: React.FC<TaskAssignmentManagerProps> = ({
                       {task.status}
                     </Badge>
                   </div>
-                  <Button 
-                    size="sm" 
-                    variant="outline"
-                    onClick={() => setSelectedTask(task.id)}
-                  >
+                  <Button size="sm" variant="outline" onClick={() => setSelectedTask(task.id)}>
                     Assigner
                   </Button>
                 </div>
@@ -234,7 +240,7 @@ export const TaskAssignmentManager: React.FC<TaskAssignmentManagerProps> = ({
       </Card>
 
       {/* Tâches par employé */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
         {Object.entries(tasksByEmployee).map(([employeeId, employeeTasks]) => {
           const employee = getEmployeeById(employeeId);
           if (!employee) return null;
@@ -250,30 +256,34 @@ export const TaskAssignmentManager: React.FC<TaskAssignmentManagerProps> = ({
                   <Avatar>
                     <AvatarImage src={employee.avatar_url || ''} />
                     <AvatarFallback>
-                      {employee.full_name.split(' ').map(n => n[0]).join('')}
+                      {employee.full_name
+                        .split(' ')
+                        .map(n => n[0])
+                        .join('')}
                     </AvatarFallback>
                   </Avatar>
                   <div>
                     <h4 className="font-medium">{employee.full_name}</h4>
                     <p className="text-sm text-muted-foreground">
-                      {employeeTasks.length} tâche{employeeTasks.length > 1 ? 's' : ''} • {totalHours}h
+                      {employeeTasks.length} tâche{employeeTasks.length > 1 ? 's' : ''} •{' '}
+                      {totalHours}h
                     </p>
                   </div>
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="flex gap-2 mb-3 text-xs">
+                <div className="mb-3 flex gap-2 text-xs">
                   <Badge variant="secondary">{completedTasks} terminées</Badge>
                   <Badge variant="default">{activeTasks} actives</Badge>
                 </div>
-                
+
                 <div className="space-y-2">
-                  {employeeTasks.slice(0, 3).map((task) => (
+                  {employeeTasks.slice(0, 3).map(task => (
                     <div key={task.id} className="flex items-center justify-between text-sm">
-                      <span className="truncate flex-1">{task.title}</span>
+                      <span className="flex-1 truncate">{task.title}</span>
                       <div className="flex items-center gap-1">
-                        <Badge 
-                          variant={task.status === 'done' ? 'secondary' : 'outline'} 
+                        <Badge
+                          variant={task.status === 'done' ? 'secondary' : 'outline'}
                           className="text-xs"
                         >
                           {task.status}
@@ -289,9 +299,9 @@ export const TaskAssignmentManager: React.FC<TaskAssignmentManagerProps> = ({
                       </div>
                     </div>
                   ))}
-                  
+
                   {employeeTasks.length > 3 && (
-                    <p className="text-xs text-muted-foreground text-center">
+                    <p className="text-center text-xs text-muted-foreground">
                       +{employeeTasks.length - 3} autres tâches
                     </p>
                   )}
@@ -306,14 +316,24 @@ export const TaskAssignmentManager: React.FC<TaskAssignmentManagerProps> = ({
         open={showSmartAssignee}
         onOpenChange={setShowSmartAssignee}
         currentAssignee={selectedEmployee}
-        onAssigneeSelect={(employeeId) => {
+        onAssigneeSelect={employeeId => {
           setSelectedEmployee(employeeId);
           if (selectedTask) {
             handleAssignTask();
           }
         }}
-        taskStartDate={selectedTask ? tasks.find(t => t.id === selectedTask)?.start_date || new Date().toISOString().split('T')[0] : new Date().toISOString().split('T')[0]}
-        taskEndDate={selectedTask ? tasks.find(t => t.id === selectedTask)?.due_date || new Date().toISOString().split('T')[0] : new Date().toISOString().split('T')[0]}
+        taskStartDate={
+          selectedTask
+            ? tasks.find(t => t.id === selectedTask)?.start_date ||
+              new Date().toISOString().split('T')[0]
+            : new Date().toISOString().split('T')[0]
+        }
+        taskEndDate={
+          selectedTask
+            ? tasks.find(t => t.id === selectedTask)?.due_date ||
+              new Date().toISOString().split('T')[0]
+            : new Date().toISOString().split('T')[0]
+        }
         taskSkills={[]} // TODO: Extract skills from task
       />
     </div>

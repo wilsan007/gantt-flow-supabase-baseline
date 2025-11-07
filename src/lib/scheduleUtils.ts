@@ -9,25 +9,28 @@ export type FrequencyType = 'daily' | 'weekly' | 'monthly' | 'quarterly' | 'year
  */
 export function extractFrequency(rrule: string | null | undefined): FrequencyType {
   if (!rrule) return null;
-  
+
   if (rrule.includes('FREQ=DAILY')) return 'daily';
   if (rrule.includes('FREQ=WEEKLY')) return 'weekly';
   if (rrule.includes('FREQ=MONTHLY')) return 'monthly';
   if (rrule.includes('FREQ=QUARTERLY')) return 'quarterly';
   if (rrule.includes('FREQ=YEARLY')) return 'yearly';
-  
+
   return null;
 }
 
 /**
  * Retourne la fourchette de jours maximum pour les actions selon la fréquence
  */
-export function getMaxOffsetDays(frequency: FrequencyType | null, activityKind: 'recurring' | 'one_off'): number {
+export function getMaxOffsetDays(
+  frequency: FrequencyType | null,
+  activityKind: 'recurring' | 'one_off'
+): number {
   // Pour les tâches ponctuelles : max 30 jours
   if (activityKind === 'one_off') {
     return 30;
   }
-  
+
   // Pour les tâches récurrentes selon la fréquence
   switch (frequency) {
     case 'daily':
@@ -48,21 +51,24 @@ export function getMaxOffsetDays(frequency: FrequencyType | null, activityKind: 
 /**
  * Génère la liste des jours disponibles pour la timeline
  */
-export function getAvailableDays(frequency: FrequencyType | null, activityKind: 'recurring' | 'one_off'): number[] {
+export function getAvailableDays(
+  frequency: FrequencyType | null,
+  activityKind: 'recurring' | 'one_off'
+): number[] {
   const maxDays = getMaxOffsetDays(frequency, activityKind);
-  
+
   if (maxDays === 0) {
     return [0]; // Seulement le jour même
   }
-  
+
   // Générer la fourchette centrée sur 0
   const days: number[] = [];
   const halfRange = Math.floor(maxDays / 2);
-  
+
   for (let i = -halfRange; i <= halfRange; i++) {
     days.push(i);
   }
-  
+
   return days;
 }
 
@@ -71,23 +77,32 @@ export function getAvailableDays(frequency: FrequencyType | null, activityKind: 
  */
 export function getFrequencyLabel(frequency: FrequencyType | null): string {
   switch (frequency) {
-    case 'daily': return 'Quotidienne';
-    case 'weekly': return 'Hebdomadaire';
-    case 'monthly': return 'Mensuelle';
-    case 'quarterly': return 'Trimestrielle';
-    case 'yearly': return 'Annuelle';
-    default: return 'Non définie';
+    case 'daily':
+      return 'Quotidienne';
+    case 'weekly':
+      return 'Hebdomadaire';
+    case 'monthly':
+      return 'Mensuelle';
+    case 'quarterly':
+      return 'Trimestrielle';
+    case 'yearly':
+      return 'Annuelle';
+    default:
+      return 'Non définie';
   }
 }
 
 /**
  * Retourne un message d'information selon la fréquence
  */
-export function getTimelineInfo(frequency: FrequencyType | null, activityKind: 'recurring' | 'one_off'): string {
+export function getTimelineInfo(
+  frequency: FrequencyType | null,
+  activityKind: 'recurring' | 'one_off'
+): string {
   if (activityKind === 'one_off') {
     return 'Fourchette de ±15 jours autour de la date de la tâche ponctuelle';
   }
-  
+
   switch (frequency) {
     case 'daily':
       return 'Les tâches sont générées quotidiennement, pas de décalage possible';

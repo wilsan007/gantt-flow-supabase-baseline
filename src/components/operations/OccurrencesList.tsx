@@ -46,10 +46,7 @@ interface OccurrencesListProps {
   activityName: string;
 }
 
-export const OccurrencesList: React.FC<OccurrencesListProps> = ({
-  activityId,
-  activityName,
-}) => {
+export const OccurrencesList: React.FC<OccurrencesListProps> = ({ activityId, activityName }) => {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -70,7 +67,9 @@ export const OccurrencesList: React.FC<OccurrencesListProps> = ({
     try {
       let query = supabase
         .from('tasks')
-        .select('id, title, status, priority, start_date, due_date, progress, assigned_name, created_at')
+        .select(
+          'id, title, status, priority, start_date, due_date, progress, assigned_name, created_at'
+        )
         .eq('activity_id', activityId)
         .eq('is_operational', true)
         .order('start_date', { ascending: false });
@@ -93,7 +92,7 @@ export const OccurrencesList: React.FC<OccurrencesListProps> = ({
   };
 
   // Filtrer par recherche
-  const filteredTasks = tasks.filter((task) =>
+  const filteredTasks = tasks.filter(task =>
     task.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -170,12 +169,12 @@ export const OccurrencesList: React.FC<OccurrencesListProps> = ({
 
       {/* Filtres */}
       <div className="flex gap-4">
-        <div className="flex-1 relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transform text-muted-foreground" />
           <Input
             placeholder="Rechercher une tâche..."
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={e => setSearchTerm(e.target.value)}
             className="pl-10"
           />
         </div>
@@ -195,15 +194,15 @@ export const OccurrencesList: React.FC<OccurrencesListProps> = ({
 
       {/* Table */}
       {loading ? (
-        <div className="text-center py-12">
-          <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
+        <div className="py-12 text-center">
+          <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
           <p className="text-muted-foreground">Chargement des occurrences...</p>
         </div>
       ) : error ? (
         <Card className="border-destructive">
           <CardContent className="pt-6 text-center text-destructive">
             <p className="font-semibold">Erreur lors du chargement</p>
-            <p className="text-sm mt-2">{error}</p>
+            <p className="mt-2 text-sm">{error}</p>
             <Button onClick={fetchTasks} className="mt-4">
               Réessayer
             </Button>
@@ -211,10 +210,10 @@ export const OccurrencesList: React.FC<OccurrencesListProps> = ({
         </Card>
       ) : filteredTasks.length === 0 ? (
         <Card>
-          <CardContent className="pt-6 text-center py-12">
-            <Calendar className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+          <CardContent className="py-12 pt-6 text-center">
+            <Calendar className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
             <p className="text-lg font-semibold">Aucune occurrence générée</p>
-            <p className="text-sm text-muted-foreground mt-2">
+            <p className="mt-2 text-sm text-muted-foreground">
               Les tâches apparaîtront ici une fois que l'Edge Function aura généré les occurrences
             </p>
           </CardContent>
@@ -235,7 +234,7 @@ export const OccurrencesList: React.FC<OccurrencesListProps> = ({
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {paginatedTasks.map((task) => (
+                {paginatedTasks.map(task => (
                   <TableRow key={task.id} className="hover:bg-muted/50">
                     <TableCell className="font-medium">
                       <div className="flex items-center gap-2">
@@ -263,13 +262,13 @@ export const OccurrencesList: React.FC<OccurrencesListProps> = ({
                     <TableCell className="text-sm">{task.assigned_name}</TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2">
-                        <div className="flex-1 bg-gray-200 rounded-full h-2">
+                        <div className="h-2 flex-1 rounded-full bg-gray-200">
                           <div
-                            className="bg-primary h-2 rounded-full transition-all"
+                            className="h-2 rounded-full bg-primary transition-all"
                             style={{ width: `${task.progress}%` }}
                           />
                         </div>
-                        <span className="text-xs text-muted-foreground w-10 text-right">
+                        <span className="w-10 text-right text-xs text-muted-foreground">
                           {task.progress}%
                         </span>
                       </div>

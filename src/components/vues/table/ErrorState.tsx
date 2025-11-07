@@ -9,7 +9,7 @@ export const ErrorState = ({ error }: ErrorStateProps) => (
     <CardContent className="p-8">
       <div className="text-center text-destructive">
         <p>Erreur lors du chargement des tâches</p>
-        <p className="text-sm text-muted-foreground mt-2">{error}</p>
+        <p className="mt-2 text-sm text-muted-foreground">{error}</p>
       </div>
     </CardContent>
   </Card>

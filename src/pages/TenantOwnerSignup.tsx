@@ -22,22 +22,22 @@ export const TenantOwnerSignup: React.FC = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { toast } = useToast();
-  
+
   const [form, setForm] = useState<SignupForm>({
     email: '',
     password: '',
     confirmPassword: '',
     fullName: '',
-    companyName: ''
+    companyName: '',
   });
-  
+
   // Gestion des placeholders
   const { handleFocus, getPlaceholder } = useMultiplePlaceholderHandler({
     companyName: 'Mon Entreprise SARL',
     password: 'Minimum 8 caractères',
-    confirmPassword: 'Répétez votre mot de passe'
+    confirmPassword: 'Répétez votre mot de passe',
   });
-  
+
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -53,14 +53,14 @@ export const TenantOwnerSignup: React.FC = () => {
    */
   const validateToken = (token: string | null): string | null => {
     if (!token) return null;
-    
+
     // Vérifier format: UUID ou token alphanumérique
     const isValidFormat = /^[a-zA-Z0-9\-_]{10,100}$/.test(token);
     if (!isValidFormat) {
       console.error('⚠️ Format de token invalide');
       return null;
     }
-    
+
     return token;
   };
 
@@ -72,12 +72,12 @@ export const TenantOwnerSignup: React.FC = () => {
   const secureRedirect = (path: string, params?: Record<string, string>) => {
     // Whitelist des chemins autorisés
     const allowedPaths = ['/tenant-login', '/dashboard', '/'];
-    
+
     if (!allowedPaths.includes(path)) {
       console.error('⚠️ Chemin de redirection non autorisé:', path);
       return;
     }
-    
+
     // Construire URL avec paramètres encodés
     const url = new URL(path, window.location.origin);
     if (params) {
@@ -85,7 +85,7 @@ export const TenantOwnerSignup: React.FC = () => {
         url.searchParams.append(key, value);
       });
     }
-    
+
     window.location.href = url.toString();
   };
 
@@ -93,28 +93,28 @@ export const TenantOwnerSignup: React.FC = () => {
     const urlParams = new URLSearchParams(window.location.search);
     const tokenParam = urlParams.get('token');
     const typeParam = urlParams.get('type');
-    
+
     // Valider le token
     const validatedToken = validateToken(tokenParam);
-    
+
     if (validatedToken) {
       setToken(validatedToken);
-      
+
       // Valider le type (whitelist)
       const validTypes = ['signup', 'invitation'];
       const validatedType = typeParam && validTypes.includes(typeParam) ? typeParam : 'invitation';
-      
+
       if (validatedType === 'signup') {
         // Token Supabase Auth - essayer d'abord la vérification Supabase
         console.log('🔗 Token Supabase Auth détecté');
         verifySupabaseToken(validatedToken);
       } else {
         // Token d'invitation classique - validation directe
-        console.log('🎫 Token d\'invitation classique détecté');
+        console.log("🎫 Token d'invitation classique détecté");
         validateInvitationToken(validatedToken);
       }
     } else {
-      setError('Token d\'invitation manquant ou invalide dans l\'URL');
+      setError("Token d'invitation manquant ou invalide dans l'URL");
       setValidatingToken(false);
     }
   }, []);
@@ -122,10 +122,9 @@ export const TenantOwnerSignup: React.FC = () => {
   const verifySupabaseToken = async (token: string) => {
     try {
       console.log('🔗 Redirection vers la page de connexion après validation email');
-      
+
       // Rediriger de façon sécurisée vers la page de connexion avec le token
       secureRedirect('/tenant-login', { token, type: 'signup' });
-      
     } catch (err) {
       console.error('❌ Erreur redirection:', err);
       setError('Erreur lors de la redirection');
@@ -136,11 +135,13 @@ export const TenantOwnerSignup: React.FC = () => {
   const validateInvitationToken = async (token: string) => {
     try {
       console.log('🔍 Validation token:', token);
-      
+
       // Récupérer directement les données d'invitation (le token est stocké tel quel)
       const { data, error } = await supabase
         .from('invitations' as any)
-        .select('id, token, email, full_name, tenant_id, tenant_name, invitation_type, status, expires_at, created_at, accepted_at, metadata')
+        .select(
+          'id, token, email, full_name, tenant_id, tenant_name, invitation_type, status, expires_at, created_at, accepted_at, metadata'
+        )
         .eq('token', token)
         .eq('status', 'pending')
         .gt('expires_at', new Date().toISOString())
@@ -161,22 +162,21 @@ export const TenantOwnerSignup: React.FC = () => {
         tenantName: (data as any).tenant_name || 'Nouvelle entreprise',
         invitationType: (data as any).invitation_type,
         expiresAt: (data as any).expires_at,
-        tempPassword: (data as any).metadata?.temp_password
+        tempPassword: (data as any).metadata?.temp_password,
       };
 
       setInvitationData(invitation);
       setForm(prev => ({
         ...prev,
         email: invitation.email,
-        fullName: invitation.fullName
+        fullName: invitation.fullName,
       }));
-      
     } catch (error) {
       console.error('❌ Erreur lors de la validation:', error);
       toast({
-        title: "❌ Erreur",
-        description: "Erreur lors de la validation du token",
-        variant: "destructive"
+        title: '❌ Erreur',
+        description: 'Erreur lors de la validation du token',
+        variant: 'destructive',
       });
       navigate('/');
     } finally {
@@ -191,45 +191,45 @@ export const TenantOwnerSignup: React.FC = () => {
   const validateForm = (): boolean => {
     if (!form.email.trim()) {
       toast({
-        title: "Erreur",
+        title: 'Erreur',
         description: "L'email est requis",
-        variant: "destructive"
+        variant: 'destructive',
       });
       return false;
     }
 
     if (!form.fullName.trim()) {
       toast({
-        title: "Erreur",
-        description: "Le nom complet est requis",
-        variant: "destructive"
+        title: 'Erreur',
+        description: 'Le nom complet est requis',
+        variant: 'destructive',
       });
       return false;
     }
 
     if (!form.companyName.trim()) {
       toast({
-        title: "Erreur",
+        title: 'Erreur',
         description: "Le nom de l'entreprise est requis",
-        variant: "destructive"
+        variant: 'destructive',
       });
       return false;
     }
 
     if (form.password.length < 8) {
       toast({
-        title: "Erreur",
-        description: "Le mot de passe doit contenir au moins 8 caractères",
-        variant: "destructive"
+        title: 'Erreur',
+        description: 'Le mot de passe doit contenir au moins 8 caractères',
+        variant: 'destructive',
       });
       return false;
     }
 
     if (form.password !== form.confirmPassword) {
       toast({
-        title: "Erreur",
-        description: "Les mots de passe ne correspondent pas",
-        variant: "destructive"
+        title: 'Erreur',
+        description: 'Les mots de passe ne correspondent pas',
+        variant: 'destructive',
       });
       return false;
     }
@@ -242,8 +242,8 @@ export const TenantOwnerSignup: React.FC = () => {
 
     setIsLoading(true);
     try {
-      console.log('🚀 Démarrage du processus d\'inscription...');
-      
+      console.log("🚀 Démarrage du processus d'inscription...");
+
       // Récupérer le mot de passe temporaire depuis les métadonnées
       let tempPassword = null;
       if ((invitationData as any).metadata) {
@@ -258,25 +258,25 @@ export const TenantOwnerSignup: React.FC = () => {
           tempPassword = (invitationData as any).metadata.temp_password;
         }
       }
-      
+
       if (!tempPassword) {
         tempPassword = (invitationData as any).tempPassword;
       }
-      
+
       if (!tempPassword) {
-        throw new Error('Mot de passe temporaire non trouvé dans l\'invitation');
+        throw new Error("Mot de passe temporaire non trouvé dans l'invitation");
       }
-      
+
       console.log('🔐 ÉTAPE 1: Connexion avec le mot de passe temporaire...');
       console.log('📧 Email utilisé:', form.email.toLowerCase().trim());
-      console.log('🔑 Mot de passe temporaire:', tempPassword ? '***masqué***' : 'NON TROUVÉ');
-      
+      console.log('🔑 Mot de passe temporaire: ***masqué***');
+
       // Vérifier d'abord l'état de l'utilisateur avant la connexion
-      console.log('🔍 Vérification de l\'utilisateur avant connexion...');
+      console.log("🔍 Vérification de l'utilisateur avant connexion...");
       const { data: existingUser, error: userCheckError } = await supabase.auth.admin.getUserById(
         (invitationData as any).metadata?.supabase_user_id
       );
-      
+
       if (userCheckError) {
         console.error('❌ Erreur vérification utilisateur:', userCheckError);
       } else {
@@ -288,12 +288,12 @@ export const TenantOwnerSignup: React.FC = () => {
         console.log('   - Créé le:', existingUser.user?.created_at);
         console.log('   - Dernière connexion:', existingUser.user?.last_sign_in_at);
       }
-      
+
       // Étape 1: Se connecter avec le mot de passe temporaire pour confirmer l'email
       console.log('🚀 Tentative de connexion...');
       const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
         email: form.email.toLowerCase().trim(),
-        password: tempPassword
+        password: tempPassword,
       });
 
       if (signInError) {
@@ -301,22 +301,29 @@ export const TenantOwnerSignup: React.FC = () => {
         console.error('   - Code:', signInError.status);
         console.error('   - Message:', signInError.message);
         console.error('   - Détails complets:', signInError);
-        
-        if (signInError.message.includes('Email not confirmed') || signInError.message.includes('email_not_confirmed')) {
-          console.log('🔧 SOLUTION: Confirmer l\'email manuellement dans Supabase Dashboard');
+
+        if (
+          signInError.message.includes('Email not confirmed') ||
+          signInError.message.includes('email_not_confirmed')
+        ) {
+          console.log("🔧 SOLUTION: Confirmer l'email manuellement dans Supabase Dashboard");
           console.log('   1. Aller dans Authentication > Users');
           console.log(`   2. Chercher ${form.email}`);
           console.log('   3. Cliquer sur "Confirm email"');
-          throw new Error('Email non confirmé. L\'utilisateur existe mais son email n\'est pas confirmé. Veuillez confirmer l\'email dans Supabase Dashboard.');
+          throw new Error(
+            "Email non confirmé. L'utilisateur existe mais son email n'est pas confirmé. Veuillez confirmer l'email dans Supabase Dashboard."
+          );
         }
-        
+
         if (signInError.message.includes('Invalid login credentials')) {
           console.log('🔧 SOLUTION: Vérifier le mot de passe temporaire');
           console.log('   - Mot de passe fourni:', tempPassword);
           console.log('   - Métadonnées invitation:', (invitationData as any).metadata);
-          throw new Error('Identifiants de connexion invalides. Le mot de passe temporaire ne correspond pas.');
+          throw new Error(
+            'Identifiants de connexion invalides. Le mot de passe temporaire ne correspond pas.'
+          );
         }
-        
+
         throw new Error('Erreur de connexion: ' + signInError.message);
       }
 
@@ -325,17 +332,19 @@ export const TenantOwnerSignup: React.FC = () => {
       console.log('   - Email:', signInData.user?.email);
       console.log('   - Email confirmé:', signInData.user?.email_confirmed_at ? 'OUI' : 'NON');
 
-      console.log('✅ ÉTAPE 1 terminée: Connexion temporaire réussie, email confirmé automatiquement');
+      console.log(
+        '✅ ÉTAPE 1 terminée: Connexion temporaire réussie, email confirmé automatiquement'
+      );
 
       // Étape 3: Le trigger auto_create_tenant_owner devrait s'être exécuté automatiquement
       // Attendre un peu pour laisser le trigger se terminer
-      console.log('⏳ ÉTAPE 3: Attente de l\'exécution du trigger auto_create_tenant_owner...');
+      console.log("⏳ ÉTAPE 3: Attente de l'exécution du trigger auto_create_tenant_owner...");
       await new Promise(resolve => setTimeout(resolve, 3000));
 
       // Étape 4: Vérifier que le tenant owner a été créé
       console.log('🔍 ÉTAPE 4: Vérification de la création du tenant owner...');
       console.log('   - User ID à vérifier:', signInData.user.id);
-      
+
       const { data: profile, error: profileError } = await supabase
         .from('profiles')
         .select('*, tenants:tenant_id(id, name)')
@@ -345,7 +354,7 @@ export const TenantOwnerSignup: React.FC = () => {
       console.log('📊 RÉSULTAT VÉRIFICATION PROFIL:');
       console.log('   - Erreur:', profileError);
       console.log('   - Profil trouvé:', profile ? 'OUI' : 'NON');
-      
+
       if (profile) {
         console.log('✅ PROFIL DÉTAILLÉ:');
         console.log('   - ID:', profile.id);
@@ -358,22 +367,22 @@ export const TenantOwnerSignup: React.FC = () => {
 
       if (profileError || !profile) {
         console.warn('⚠️ DIAGNOSTIC ÉCHEC CRÉATION TENANT OWNER:');
-        console.warn('   - Le trigger auto_create_tenant_owner ne s\'est pas exécuté');
+        console.warn("   - Le trigger auto_create_tenant_owner ne s'est pas exécuté");
         console.warn('   - Ou il y a eu une erreur dans le trigger');
-        
+
         // Vérifier si l'utilisateur existe dans user_roles
         console.log('🔍 Vérification user_roles...');
         const { data: userRoles, error: rolesError } = await supabase
           .from('user_roles')
           .select('*, roles(name)')
           .eq('user_id', signInData.user.id);
-          
+
         console.log('📊 USER_ROLES:', {
           error: rolesError,
           count: userRoles?.length || 0,
-          data: userRoles
+          data: userRoles,
         });
-        
+
         // Vérifier si un tenant a été créé
         console.log('🔍 Vérification tenants récents...');
         const { data: recentTenants, error: tenantsError } = await supabase
@@ -381,25 +390,27 @@ export const TenantOwnerSignup: React.FC = () => {
           .select('*')
           .order('created_at', { ascending: false })
           .limit(3);
-          
+
         console.log('📊 TENANTS RÉCENTS:', {
           error: tenantsError,
           count: recentTenants?.length || 0,
-          data: recentTenants
+          data: recentTenants,
         });
-        
-        throw new Error('Le tenant owner n\'a pas été créé automatiquement. Vérifiez les logs du trigger dans Supabase.');
+
+        throw new Error(
+          "Le tenant owner n'a pas été créé automatiquement. Vérifiez les logs du trigger dans Supabase."
+        );
       }
 
       console.log('✅ ÉTAPE 4 terminée: Tenant owner créé avec succès');
 
       // Étape 5: Marquer l'invitation comme acceptée
-      console.log('✅ ÉTAPE 5: Marquage de l\'invitation comme acceptée...');
+      console.log("✅ ÉTAPE 5: Marquage de l'invitation comme acceptée...");
       const { error: invitationUpdateError } = await supabase
         .from('invitations' as any)
         .update({
           status: 'accepted',
-          accepted_at: new Date().toISOString()
+          accepted_at: new Date().toISOString(),
         })
         .eq('token', token);
 
@@ -411,19 +422,20 @@ export const TenantOwnerSignup: React.FC = () => {
 
       // Maintenant proposer l'étape 2: Changement de mot de passe
       toast({
-        title: "🎉 Compte créé avec succès !",
-        description: "Votre tenant owner a été créé. Vous pouvez maintenant changer votre mot de passe.",
-        variant: "default"
+        title: '🎉 Compte créé avec succès !',
+        description:
+          'Votre tenant owner a été créé. Vous pouvez maintenant changer votre mot de passe.',
+        variant: 'default',
       });
 
       // Étape 2: Proposer la mise à jour du mot de passe
       console.log('🔐 ÉTAPE 2: Proposition de mise à jour du mot de passe...');
-      
+
       const shouldUpdatePassword = window.confirm(
-        "Votre compte a été créé avec succès !\n\n" +
-        "Souhaitez-vous changer votre mot de passe temporaire maintenant ?\n\n" +
-        "• OUI: Vous pourrez définir un nouveau mot de passe\n" +
-        "• NON: Vous serez redirigé vers le tableau de bord (vous pourrez changer le mot de passe plus tard)"
+        'Votre compte a été créé avec succès !\n\n' +
+          'Souhaitez-vous changer votre mot de passe temporaire maintenant ?\n\n' +
+          '• OUI: Vous pourrez définir un nouveau mot de passe\n' +
+          '• NON: Vous serez redirigé vers le tableau de bord (vous pourrez changer le mot de passe plus tard)'
       );
 
       if (shouldUpdatePassword) {
@@ -432,40 +444,42 @@ export const TenantOwnerSignup: React.FC = () => {
           password: form.password,
           data: {
             full_name: form.fullName.trim(),
-            company_name: form.companyName.trim()
-          }
+            company_name: form.companyName.trim(),
+          },
         });
 
         if (updateError) {
           console.error('❌ Erreur mise à jour mot de passe:', updateError);
           toast({
-            title: "⚠️ Erreur changement mot de passe",
-            description: "Le mot de passe n'a pas pu être changé, mais votre compte est créé. Vous pourrez le changer plus tard.",
-            variant: "default"
+            title: '⚠️ Erreur changement mot de passe',
+            description:
+              "Le mot de passe n'a pas pu être changé, mais votre compte est créé. Vous pourrez le changer plus tard.",
+            variant: 'default',
           });
         } else {
           console.log('✅ ÉTAPE 2 terminée: Mot de passe mis à jour avec succès');
           toast({
-            title: "🔐 Mot de passe mis à jour !",
-            description: "Votre nouveau mot de passe a été enregistré avec succès.",
-            variant: "default"
+            title: '🔐 Mot de passe mis à jour !',
+            description: 'Votre nouveau mot de passe a été enregistré avec succès.',
+            variant: 'default',
           });
         }
       } else {
-        console.log('⏭️ ÉTAPE 2 ignorée: L\'utilisateur a choisi de garder le mot de passe temporaire');
+        console.log(
+          "⏭️ ÉTAPE 2 ignorée: L'utilisateur a choisi de garder le mot de passe temporaire"
+        );
       }
 
       // Redirection vers le dashboard après un court délai
       setTimeout(() => {
         secureRedirect('/dashboard');
       }, 2000);
-
     } catch (error: any) {
       console.error('❌ Erreur inscription:', error);
       toast({
         title: "❌ Erreur d'inscription",
-        description: error.message || 'Erreur lors de l\'inscription',
-        variant: "destructive"
+        description: error.message || "Erreur lors de l'inscription",
+        variant: 'destructive',
       });
     } finally {
       setIsLoading(false);
@@ -474,9 +488,9 @@ export const TenantOwnerSignup: React.FC = () => {
 
   if (validatingToken) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="flex min-h-screen items-center justify-center">
         <div className="text-center">
-          <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
+          <Loader2 className="mx-auto mb-4 h-8 w-8 animate-spin" />
           <p>Validation de l'invitation...</p>
         </div>
       </div>
@@ -485,34 +499,33 @@ export const TenantOwnerSignup: React.FC = () => {
 
   if (!token || !invitationData) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="flex min-h-screen items-center justify-center">
         <Alert className="max-w-md">
-          <AlertDescription>
-            Lien d'invitation invalide ou manquant.
-          </AlertDescription>
+          <AlertDescription>Lien d'invitation invalide ou manquant.</AlertDescription>
         </Alert>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-3 sm:p-4">
+    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-3 sm:p-4">
       <Card className="w-full max-w-md">
-        <CardHeader className="text-center space-y-2 sm:space-y-3">
+        <CardHeader className="space-y-2 text-center sm:space-y-3">
           <CardTitle className="flex items-center justify-center gap-2 text-xl sm:text-2xl">
-            <Building className="h-5 w-5 sm:h-6 sm:w-6 flex-shrink-0" />
+            <Building className="h-5 w-5 flex-shrink-0 sm:h-6 sm:w-6" />
             <span>Créer votre entreprise</span>
           </CardTitle>
           <CardDescription className="text-sm">
             Finalisez votre inscription sur Wadashaqeen
           </CardDescription>
         </CardHeader>
-        
+
         <CardContent className="space-y-3 sm:space-y-4">
           <Alert>
             <UserPlus className="h-4 w-4 flex-shrink-0" />
-            <AlertDescription className="text-sm break-words">
-              <strong>Invitation pour :</strong> {invitationData.full_name}<br />
+            <AlertDescription className="break-words text-sm">
+              <strong>Invitation pour :</strong> {invitationData.full_name}
+              <br />
               <strong>Email :</strong> {invitationData.email}
             </AlertDescription>
           </Alert>
@@ -525,9 +538,9 @@ export const TenantOwnerSignup: React.FC = () => {
                 id="email"
                 type="email"
                 value={form.email}
-                onChange={(e) => handleInputChange('email', e.target.value)}
+                onChange={e => handleInputChange('email', e.target.value)}
                 disabled={true}
-                className="pl-10 bg-muted"
+                className="bg-muted pl-10"
               />
             </div>
           </div>
@@ -540,7 +553,7 @@ export const TenantOwnerSignup: React.FC = () => {
                 id="fullName"
                 type="text"
                 value={form.fullName}
-                onChange={(e) => handleInputChange('fullName', e.target.value)}
+                onChange={e => handleInputChange('fullName', e.target.value)}
                 disabled={isLoading}
                 className="pl-10"
               />
@@ -556,7 +569,7 @@ export const TenantOwnerSignup: React.FC = () => {
                 type="text"
                 placeholder={getPlaceholder('companyName', form.companyName)}
                 value={form.companyName}
-                onChange={(e) => handleInputChange('companyName', e.target.value)}
+                onChange={e => handleInputChange('companyName', e.target.value)}
                 onFocus={() => handleFocus('companyName')}
                 disabled={isLoading}
                 className="pl-10"
@@ -570,10 +583,10 @@ export const TenantOwnerSignup: React.FC = () => {
               <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
               <Input
                 id="password"
-                type={showPassword ? "text" : "password"}
+                type={showPassword ? 'text' : 'password'}
                 placeholder={getPlaceholder('password', form.password)}
                 value={form.password}
-                onChange={(e) => handleInputChange('password', e.target.value)}
+                onChange={e => handleInputChange('password', e.target.value)}
                 onFocus={() => handleFocus('password')}
                 disabled={isLoading}
                 className="pl-10 pr-10"
@@ -585,11 +598,7 @@ export const TenantOwnerSignup: React.FC = () => {
                 className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
                 onClick={() => setShowPassword(!showPassword)}
               >
-                {showPassword ? (
-                  <EyeOff className="h-4 w-4" />
-                ) : (
-                  <Eye className="h-4 w-4" />
-                )}
+                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
               </Button>
             </div>
           </div>
@@ -600,10 +609,10 @@ export const TenantOwnerSignup: React.FC = () => {
               <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
               <Input
                 id="confirmPassword"
-                type={showConfirmPassword ? "text" : "password"}
+                type={showConfirmPassword ? 'text' : 'password'}
                 placeholder={getPlaceholder('confirmPassword', form.confirmPassword)}
                 value={form.confirmPassword}
-                onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
+                onChange={e => handleInputChange('confirmPassword', e.target.value)}
                 onFocus={() => handleFocus('confirmPassword')}
                 disabled={isLoading}
                 className="pl-10 pr-10"
@@ -615,20 +624,12 @@ export const TenantOwnerSignup: React.FC = () => {
                 className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
               >
-                {showConfirmPassword ? (
-                  <EyeOff className="h-4 w-4" />
-                ) : (
-                  <Eye className="h-4 w-4" />
-                )}
+                {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
               </Button>
             </div>
           </div>
 
-          <Button 
-            onClick={handleSignup}
-            disabled={isLoading}
-            className="w-full"
-          >
+          <Button onClick={handleSignup} disabled={isLoading} className="w-full">
             {isLoading ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -642,7 +643,7 @@ export const TenantOwnerSignup: React.FC = () => {
             )}
           </Button>
 
-          <div className="text-center text-xs sm:text-sm text-muted-foreground pt-2">
+          <div className="pt-2 text-center text-xs text-muted-foreground sm:text-sm">
             <p>En créant votre compte, vous acceptez nos conditions d'utilisation</p>
           </div>
         </CardContent>

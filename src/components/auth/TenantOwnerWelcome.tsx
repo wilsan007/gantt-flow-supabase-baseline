@@ -25,13 +25,15 @@ const TenantOwnerWelcome: React.FC<TenantOwnerWelcomeProps> = ({ userEmail }) =>
   const checkTenantCreation = async () => {
     try {
       setIsLoading(true);
-      
+
       // Attendre un peu pour laisser le trigger se déclencher
       await new Promise(resolve => setTimeout(resolve, 2000));
-      
+
       // Vérifier si l'utilisateur a maintenant un profil et un tenant
-      const { data: { user } } = await supabase.auth.getUser();
-      
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
       if (!user) {
         setError('Utilisateur non connecté');
         return;
@@ -40,14 +42,16 @@ const TenantOwnerWelcome: React.FC<TenantOwnerWelcomeProps> = ({ userEmail }) =>
       // Récupérer le profil utilisateur
       const { data: profile, error: profileError } = await supabase
         .from('profiles')
-        .select(`
+        .select(
+          `
           *,
           tenants:tenant_id (
             id,
             name,
             status
           )
-        `)
+        `
+        )
         .eq('user_id', user.id)
         .single();
 
@@ -61,18 +65,17 @@ const TenantOwnerWelcome: React.FC<TenantOwnerWelcomeProps> = ({ userEmail }) =>
         setTenantInfo({
           tenantName: profile.tenants.name,
           userFullName: profile.full_name,
-          role: profile.role
+          role: profile.role,
         });
-        
+
         toast({
-          title: "🎉 Bienvenue !",
+          title: '🎉 Bienvenue !',
           description: `Votre entreprise "${profile.tenants.name}" a été créée avec succès`,
-          variant: "default"
+          variant: 'default',
         });
       } else {
         setError('Erreur lors de la création de votre entreprise');
       }
-      
     } catch (error: any) {
       console.error('Erreur vérification tenant:', error);
       setError('Erreur lors de la vérification');
@@ -87,15 +90,15 @@ const TenantOwnerWelcome: React.FC<TenantOwnerWelcomeProps> = ({ userEmail }) =>
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
+      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
         <Card className="w-full max-w-md">
           <CardContent className="p-8 text-center">
-            <Loader2 className="h-12 w-12 animate-spin mx-auto mb-4 text-blue-600" />
-            <h2 className="text-xl font-semibold mb-2">Création de votre entreprise...</h2>
+            <Loader2 className="mx-auto mb-4 h-12 w-12 animate-spin text-blue-600" />
+            <h2 className="mb-2 text-xl font-semibold">Création de votre entreprise...</h2>
             <p className="text-muted-foreground">
               Nous configurons votre espace de travail, veuillez patienter quelques instants.
             </p>
-            <div className="mt-6 space-y-2 text-sm text-left">
+            <div className="mt-6 space-y-2 text-left text-sm">
               <div className="flex items-center gap-2">
                 <CheckCircle className="h-4 w-4 text-green-500" />
                 <span>Validation de votre invitation</span>
@@ -121,7 +124,7 @@ const TenantOwnerWelcome: React.FC<TenantOwnerWelcomeProps> = ({ userEmail }) =>
 
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
+      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
         <Card className="w-full max-w-md">
           <CardHeader>
             <CardTitle className="text-center text-red-600">Erreur</CardTitle>
@@ -130,11 +133,7 @@ const TenantOwnerWelcome: React.FC<TenantOwnerWelcomeProps> = ({ userEmail }) =>
             <Alert className="mb-4">
               <AlertDescription>{error}</AlertDescription>
             </Alert>
-            <Button 
-              onClick={checkTenantCreation} 
-              className="w-full"
-              variant="outline"
-            >
+            <Button onClick={checkTenantCreation} className="w-full" variant="outline">
               Réessayer
             </Button>
           </CardContent>
@@ -145,29 +144,31 @@ const TenantOwnerWelcome: React.FC<TenantOwnerWelcomeProps> = ({ userEmail }) =>
 
   if (tenantInfo) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
+      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
         <Card className="w-full max-w-md">
           <CardHeader className="text-center">
-            <div className="mx-auto mb-4 h-16 w-16 rounded-full bg-green-100 flex items-center justify-center">
+            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-100">
               <CheckCircle className="h-8 w-8 text-green-600" />
             </div>
             <CardTitle className="text-2xl text-green-600">Félicitations !</CardTitle>
           </CardHeader>
-          <CardContent className="text-center space-y-4">
-            <div className="bg-green-50 p-4 rounded-lg">
-              <p className="font-semibold text-green-800">
-                Bienvenue, {tenantInfo.userFullName} !
-              </p>
-              <p className="text-green-700 mt-1">
+          <CardContent className="space-y-4 text-center">
+            <div className="rounded-lg bg-green-50 p-4">
+              <p className="font-semibold text-green-800">Bienvenue, {tenantInfo.userFullName} !</p>
+              <p className="mt-1 text-green-700">
                 Votre entreprise <strong>"{tenantInfo.tenantName}"</strong> a été créée avec succès.
               </p>
             </div>
-            
-            <div className="space-y-2 text-sm text-left bg-blue-50 p-4 rounded-lg">
-              <h3 className="font-semibold text-blue-800 mb-2">Votre compte est maintenant configuré avec :</h3>
+
+            <div className="space-y-2 rounded-lg bg-blue-50 p-4 text-left text-sm">
+              <h3 className="mb-2 font-semibold text-blue-800">
+                Votre compte est maintenant configuré avec :
+              </h3>
               <div className="flex items-center gap-2">
                 <CheckCircle className="h-4 w-4 text-green-500" />
-                <span>Rôle : {tenantInfo.role === 'tenant_admin' ? 'Administrateur' : tenantInfo.role}</span>
+                <span>
+                  Rôle : {tenantInfo.role === 'tenant_admin' ? 'Administrateur' : tenantInfo.role}
+                </span>
               </div>
               <div className="flex items-center gap-2">
                 <CheckCircle className="h-4 w-4 text-green-500" />
@@ -183,15 +184,11 @@ const TenantOwnerWelcome: React.FC<TenantOwnerWelcomeProps> = ({ userEmail }) =>
               </div>
             </div>
 
-            <Button 
-              onClick={goToDashboard}
-              className="w-full"
-              size="lg"
-            >
+            <Button onClick={goToDashboard} className="w-full" size="lg">
               <Building className="mr-2 h-4 w-4" />
               Accéder à mon tableau de bord
             </Button>
-            
+
             <p className="text-xs text-muted-foreground">
               Vous pouvez maintenant gérer votre entreprise et inviter vos employés.
             </p>

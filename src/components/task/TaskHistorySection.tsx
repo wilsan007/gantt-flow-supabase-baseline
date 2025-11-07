@@ -15,16 +15,10 @@ interface TaskHistorySectionProps {
 
 export const TaskHistorySection: React.FC<TaskHistorySectionProps> = ({
   taskId,
-  className = ''
+  className = '',
 }) => {
-  const {
-    history,
-    loading,
-    error,
-    formatHistoryMessage,
-    getActionIcon,
-    getActionColor
-  } = useTaskHistory(taskId);
+  const { history, loading, error, formatHistoryMessage, getActionIcon, getActionColor } =
+    useTaskHistory(taskId);
 
   if (loading) {
     return (
@@ -37,7 +31,7 @@ export const TaskHistorySection: React.FC<TaskHistorySectionProps> = ({
         </CardHeader>
         <CardContent>
           <div className="flex items-center justify-center py-8">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+            <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-primary"></div>
           </div>
         </CardContent>
       </Card>
@@ -54,7 +48,7 @@ export const TaskHistorySection: React.FC<TaskHistorySectionProps> = ({
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="text-center py-8 text-muted-foreground">
+          <div className="py-8 text-center text-muted-foreground">
             <p>Erreur lors du chargement de l'historique</p>
             <p className="text-sm">{error}</p>
           </div>
@@ -73,8 +67,8 @@ export const TaskHistorySection: React.FC<TaskHistorySectionProps> = ({
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="text-center py-8 text-muted-foreground">
-            <Activity className="h-12 w-12 mx-auto mb-4 opacity-50" />
+          <div className="py-8 text-center text-muted-foreground">
+            <Activity className="mx-auto mb-4 h-12 w-12 opacity-50" />
             <p>Aucune modification enregistrée</p>
             <p className="text-sm">L'historique apparaîtra ici lors des prochaines modifications</p>
           </div>
@@ -127,7 +121,7 @@ const HistoryEntry: React.FC<HistoryEntryProps> = ({
   formatMessage,
   getIcon,
   getColor,
-  isLast
+  isLast,
 }) => {
   const message = formatMessage(entry);
   const icon = getIcon(entry.action_type);
@@ -137,42 +131,37 @@ const HistoryEntry: React.FC<HistoryEntryProps> = ({
   return (
     <div className="relative">
       {/* Timeline line */}
-      {!isLast && (
-        <div className="absolute left-6 top-12 bottom-0 w-0.5 bg-border" />
-      )}
-      
+      {!isLast && <div className="absolute bottom-0 left-6 top-12 w-0.5 bg-border" />}
+
       <div className="flex items-start gap-4">
         {/* Icon */}
-        <div className={`flex-shrink-0 w-12 h-12 rounded-full bg-muted flex items-center justify-center text-lg ${colorClass}`}>
+        <div
+          className={`flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-muted text-lg ${colorClass}`}
+        >
           {icon}
         </div>
-        
+
         {/* Content */}
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center justify-between mb-1">
-            <p className="text-sm font-medium text-foreground">
-              {message}
-            </p>
-            <Badge 
-              variant="outline" 
-              className={`text-xs ${colorClass} border-current`}
-            >
+        <div className="min-w-0 flex-1">
+          <div className="mb-1 flex items-center justify-between">
+            <p className="text-sm font-medium text-foreground">{message}</p>
+            <Badge variant="outline" className={`text-xs ${colorClass} border-current`}>
               {entry.action_type}
             </Badge>
           </div>
-          
+
           <div className="flex items-center gap-4 text-xs text-muted-foreground">
             <div className="flex items-center gap-1">
               <User className="h-3 w-3" />
               <span>{entry.user_email || 'Système'}</span>
             </div>
-            
+
             <div className="flex items-center gap-1">
               <Clock className="h-3 w-3" />
               <span title={format(changeDate, 'PPpp', { locale: fr })}>
-                {formatDistanceToNow(changeDate, { 
-                  addSuffix: true, 
-                  locale: fr 
+                {formatDistanceToNow(changeDate, {
+                  addSuffix: true,
+                  locale: fr,
                 })}
               </span>
             </div>
@@ -180,32 +169,28 @@ const HistoryEntry: React.FC<HistoryEntryProps> = ({
 
           {/* Détails supplémentaires pour certains types de modifications */}
           {entry.action_type === 'updated' && entry.field_name && (
-            <div className="mt-2 p-2 bg-muted/50 rounded text-xs">
+            <div className="mt-2 rounded bg-muted/50 p-2 text-xs">
               <div className="flex justify-between">
                 <span className="font-medium">Champ:</span>
                 <span>{entry.field_name}</span>
               </div>
               {entry.old_value && (
-                <div className="flex justify-between mt-1">
+                <div className="mt-1 flex justify-between">
                   <span className="font-medium">Avant:</span>
-                  <span className="text-red-600 max-w-32 truncate">
-                    {entry.old_value}
-                  </span>
+                  <span className="max-w-32 truncate text-red-600">{entry.old_value}</span>
                 </div>
               )}
               {entry.new_value && (
-                <div className="flex justify-between mt-1">
+                <div className="mt-1 flex justify-between">
                   <span className="font-medium">Après:</span>
-                  <span className="text-green-600 max-w-32 truncate">
-                    {entry.new_value}
-                  </span>
+                  <span className="max-w-32 truncate text-green-600">{entry.new_value}</span>
                 </div>
               )}
             </div>
           )}
         </div>
       </div>
-      
+
       {!isLast && <Separator className="mt-4" />}
     </div>
   );

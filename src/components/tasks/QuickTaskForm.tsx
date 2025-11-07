@@ -1,6 +1,6 @@
 /**
  * QuickTaskForm - Formulaire optimisé pour création rapide de tâches
- * 
+ *
  * Fonctionnalités :
  * - Formulaire simplifié avec champs essentiels
  * - Auto-complétion et suggestions
@@ -25,16 +25,7 @@ import {
 } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import {
-  Plus,
-  Sparkles,
-  CheckCircle2,
-  AlertCircle,
-  Clock,
-  FileText,
-  Bug,
-  Zap,
-} from 'lucide-react';
+import { Plus, Sparkles, CheckCircle2, AlertCircle, Clock, FileText, Bug, Zap } from 'lucide-react';
 import { useTasks } from '@/hooks/optimized';
 import { useProjects } from '@/hooks/optimized';
 import { useHRMinimal } from '@/hooks/useHRMinimal';
@@ -154,7 +145,7 @@ export const QuickTaskForm: React.FC = () => {
       return false;
     }
     if (!formData.due_date) {
-      setError('La date d\'échéance est obligatoire');
+      setError("La date d'échéance est obligatoire");
       return false;
     }
     return true;
@@ -162,7 +153,7 @@ export const QuickTaskForm: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent, continueCreating: boolean = false) => {
     e.preventDefault();
-    
+
     if (!validateForm()) return;
 
     setIsSubmitting(true);
@@ -175,7 +166,7 @@ export const QuickTaskForm: React.FC = () => {
       });
 
       setSuccess(true);
-      
+
       if (!continueCreating) {
         // Reset form
         setFormData({
@@ -210,22 +201,20 @@ export const QuickTaskForm: React.FC = () => {
       {/* Header */}
       <div>
         <h2 className="text-2xl font-bold">Création Rapide</h2>
-        <p className="text-muted-foreground">
-          Créez une nouvelle tâche rapidement
-        </p>
+        <p className="text-muted-foreground">Créez une nouvelle tâche rapidement</p>
       </div>
 
       {/* Templates */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-base flex items-center gap-2">
+          <CardTitle className="flex items-center gap-2 text-base">
             <Sparkles className="h-4 w-4" />
             Templates
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex flex-wrap gap-2">
-            {templates.map((template) => (
+            {templates.map(template => (
               <Button
                 key={template.name}
                 variant="outline"
@@ -244,13 +233,13 @@ export const QuickTaskForm: React.FC = () => {
       {/* Formulaire Principal */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-base flex items-center gap-2">
+          <CardTitle className="flex items-center gap-2 text-base">
             <Plus className="h-4 w-4" />
             Nouvelle Tâche
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <form onSubmit={(e) => handleSubmit(e, false)} className="space-y-4">
+          <form onSubmit={e => handleSubmit(e, false)} className="space-y-4">
             {/* Titre */}
             <div className="space-y-2">
               <Label htmlFor="title">
@@ -259,7 +248,7 @@ export const QuickTaskForm: React.FC = () => {
               <Input
                 id="title"
                 value={formData.title}
-                onChange={(e) => handleChange('title', e.target.value)}
+                onChange={e => handleChange('title', e.target.value)}
                 placeholder="Ex: Corriger le bug de connexion"
                 required
               />
@@ -271,27 +260,27 @@ export const QuickTaskForm: React.FC = () => {
               <Textarea
                 id="description"
                 value={formData.description}
-                onChange={(e) => handleChange('description', e.target.value)}
+                onChange={e => handleChange('description', e.target.value)}
                 placeholder="Décrivez la tâche en détails..."
                 rows={3}
               />
             </div>
 
             {/* Ligne 1 : Projet et Assigné à */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <div className="space-y-2">
                 <Label htmlFor="project">
                   Projet <span className="text-destructive">*</span>
                 </Label>
                 <Select
                   value={formData.project_id}
-                  onValueChange={(value) => handleChange('project_id', value)}
+                  onValueChange={value => handleChange('project_id', value)}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Sélectionner un projet" />
                   </SelectTrigger>
                   <SelectContent>
-                    {projects.map((project) => (
+                    {projects.map(project => (
                       <SelectItem key={project.id} value={project.id}>
                         {project.name}
                       </SelectItem>
@@ -304,13 +293,13 @@ export const QuickTaskForm: React.FC = () => {
                 <Label htmlFor="assigned_to">Assigné à</Label>
                 <Select
                   value={formData.assigned_to}
-                  onValueChange={(value) => handleChange('assigned_to', value)}
+                  onValueChange={value => handleChange('assigned_to', value)}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Sélectionner une personne" />
                   </SelectTrigger>
                   <SelectContent>
-                    {employees.map((employee) => (
+                    {employees.map(employee => (
                       <SelectItem key={employee.id} value={employee.id}>
                         {employee.first_name} {employee.last_name}
                       </SelectItem>
@@ -321,7 +310,7 @@ export const QuickTaskForm: React.FC = () => {
             </div>
 
             {/* Ligne 2 : Priorité et Échéance */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <div className="space-y-2">
                 <Label htmlFor="priority">Priorité</Label>
                 <Select
@@ -362,7 +351,7 @@ export const QuickTaskForm: React.FC = () => {
                   id="due_date"
                   type="date"
                   value={formData.due_date}
-                  onChange={(e) => handleChange('due_date', e.target.value)}
+                  onChange={e => handleChange('due_date', e.target.value)}
                   required
                 />
               </div>
@@ -370,11 +359,9 @@ export const QuickTaskForm: React.FC = () => {
 
             {/* Messages */}
             {success && (
-              <Alert className="bg-green-50 text-green-900 border-green-200">
+              <Alert className="border-green-200 bg-green-50 text-green-900">
                 <CheckCircle2 className="h-4 w-4" />
-                <AlertDescription>
-                  Tâche créée avec succès ! ✅
-                </AlertDescription>
+                <AlertDescription>Tâche créée avec succès ! ✅</AlertDescription>
               </Alert>
             )}
 
@@ -387,19 +374,15 @@ export const QuickTaskForm: React.FC = () => {
 
             {/* Boutons */}
             <div className="flex gap-2">
-              <Button
-                type="submit"
-                disabled={isSubmitting || loading}
-                className="flex-1"
-              >
+              <Button type="submit" disabled={isSubmitting || loading} className="flex-1">
                 {isSubmitting ? (
                   <>
-                    <Clock className="h-4 w-4 mr-2 animate-spin" />
+                    <Clock className="mr-2 h-4 w-4 animate-spin" />
                     Création...
                   </>
                 ) : (
                   <>
-                    <Plus className="h-4 w-4 mr-2" />
+                    <Plus className="mr-2 h-4 w-4" />
                     Créer
                   </>
                 )}
@@ -409,7 +392,7 @@ export const QuickTaskForm: React.FC = () => {
                 type="button"
                 variant="secondary"
                 disabled={isSubmitting || loading}
-                onClick={(e) => handleSubmit(e, true)}
+                onClick={e => handleSubmit(e, true)}
               >
                 Créer et Continuer
               </Button>
@@ -421,25 +404,23 @@ export const QuickTaskForm: React.FC = () => {
       {/* Historique des créations récentes */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-base flex items-center gap-2">
+          <CardTitle className="flex items-center gap-2 text-base">
             <Clock className="h-4 w-4" />
             Créations Récentes ({recentTasks.length})
           </CardTitle>
         </CardHeader>
         <CardContent>
           {recentTasks.length === 0 ? (
-            <p className="text-muted-foreground text-center py-4">
-              Aucune tâche récente
-            </p>
+            <p className="py-4 text-center text-muted-foreground">Aucune tâche récente</p>
           ) : (
             <div className="space-y-2">
-              {recentTasks.map((task) => (
+              {recentTasks.map(task => (
                 <div
                   key={task.id}
-                  className="p-3 border rounded-lg flex items-center justify-between hover:bg-accent/50 transition-colors"
+                  className="flex items-center justify-between rounded-lg border p-3 transition-colors hover:bg-accent/50"
                 >
                   <div className="flex-1">
-                    <p className="font-medium text-sm">{task.title}</p>
+                    <p className="text-sm font-medium">{task.title}</p>
                     <p className="text-xs text-muted-foreground">
                       {task.created_at && format(new Date(task.created_at), 'dd/MM/yyyy HH:mm')}
                     </p>

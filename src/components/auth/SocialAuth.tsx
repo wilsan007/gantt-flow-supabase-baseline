@@ -21,9 +21,9 @@ export const SocialAuth = () => {
       if (error) throw error;
     } catch (err: any) {
       toast({
-        title: "Erreur",
-        description: err.message || "Erreur lors de la connexion Google",
-        variant: "destructive",
+        title: 'Erreur',
+        description: err.message || 'Erreur lors de la connexion Google',
+        variant: 'destructive',
       });
     }
   };
@@ -41,9 +41,9 @@ export const SocialAuth = () => {
       if (error) throw error;
     } catch (err: any) {
       toast({
-        title: "Erreur",
-        description: err.message || "Erreur lors de la connexion Microsoft",
-        variant: "destructive",
+        title: 'Erreur',
+        description: err.message || 'Erreur lors de la connexion Microsoft',
+        variant: 'destructive',
       });
     }
   };
@@ -52,9 +52,9 @@ export const SocialAuth = () => {
     <div className="space-y-3">
       <button
         onClick={handleGoogleLogin}
-        className="w-full flex items-center justify-center gap-3 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+        className="flex w-full items-center justify-center gap-3 rounded-lg border border-gray-300 px-4 py-2 transition-colors hover:bg-gray-50"
       >
-        <svg className="w-5 h-5" viewBox="0 0 24 24">
+        <svg className="h-5 w-5" viewBox="0 0 24 24">
           <path
             fill="#4285F4"
             d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -77,13 +77,13 @@ export const SocialAuth = () => {
 
       <button
         onClick={handleMicrosoftLogin}
-        className="w-full flex items-center justify-center gap-3 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+        className="flex w-full items-center justify-center gap-3 rounded-lg border border-gray-300 px-4 py-2 transition-colors hover:bg-gray-50"
       >
-        <svg className="w-5 h-5" viewBox="0 0 23 23">
-          <path fill="#f35325" d="M1 1h10v10H1z"/>
-          <path fill="#81bc06" d="M12 1h10v10H12z"/>
-          <path fill="#05a6f0" d="M1 12h10v10H1z"/>
-          <path fill="#ffba08" d="M12 12h10v10H12z"/>
+        <svg className="h-5 w-5" viewBox="0 0 23 23">
+          <path fill="#f35325" d="M1 1h10v10H1z" />
+          <path fill="#81bc06" d="M12 1h10v10H12z" />
+          <path fill="#05a6f0" d="M1 12h10v10H1z" />
+          <path fill="#ffba08" d="M12 12h10v10H12z" />
         </svg>
         <span className="text-sm font-medium text-gray-700">Continuer avec Microsoft</span>
       </button>
@@ -93,7 +93,7 @@ export const SocialAuth = () => {
           <div className="w-full border-t border-gray-300" />
         </div>
         <div className="relative flex justify-center text-sm">
-          <span className="px-2 bg-white text-gray-500">Ou</span>
+          <span className="bg-white px-2 text-gray-500">Ou</span>
         </div>
       </div>
     </div>

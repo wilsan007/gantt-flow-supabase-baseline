@@ -30,9 +30,7 @@ export const AssigneeSelect = ({ assignee, onChange, taskId }: AssigneeSelectPro
   };
 
   // Gérer assignee comme string ou objet { full_name: string }
-  const assigneeStr = typeof assignee === 'string' 
-    ? assignee 
-    : (assignee as any)?.full_name || '';
+  const assigneeStr = typeof assignee === 'string' ? assignee : (assignee as any)?.full_name || '';
   const currentAssignees = assigneeStr ? assigneeStr.split(', ').filter(Boolean) : [];
 
   return (
@@ -42,19 +40,19 @@ export const AssigneeSelect = ({ assignee, onChange, taskId }: AssigneeSelectPro
           {assigneeStr || 'Non assigné'}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-80 p-0 bg-background border" align="start">
-        <div className="p-4 space-y-4">
+      <PopoverContent className="w-80 border bg-background p-0" align="start">
+        <div className="space-y-4 p-4">
           <div className="space-y-2">
             <h4 className="font-medium">Responsables disponibles</h4>
             {loading ? (
               <div className="text-sm text-muted-foreground">Chargement...</div>
             ) : (
-              <div className="space-y-1 max-h-32 overflow-y-auto">
-                {profiles.map((profile) => (
+              <div className="max-h-32 space-y-1 overflow-y-auto">
+                {profiles.map(profile => (
                   <button
                     key={profile.id}
                     onClick={() => handleProfileSelect(profile.full_name)}
-                    className="w-full text-left px-2 py-1 hover:bg-accent rounded-sm text-sm flex items-center justify-between"
+                    className="flex w-full items-center justify-between rounded-sm px-2 py-1 text-left text-sm hover:bg-accent"
                   >
                     <span>{profile.full_name}</span>
                     {currentAssignees.includes(profile.full_name) && (
@@ -65,15 +63,15 @@ export const AssigneeSelect = ({ assignee, onChange, taskId }: AssigneeSelectPro
               </div>
             )}
           </div>
-          
+
           <div className="space-y-2">
             <h4 className="font-medium">Ajouter nouveau responsable</h4>
             <div className="flex gap-2">
               <Input
                 placeholder="Nom du responsable..."
                 value={newAssignee}
-                onChange={(e) => setNewAssignee(e.target.value)}
-                onKeyPress={(e) => e.key === 'Enter' && handleNewAssignee()}
+                onChange={e => setNewAssignee(e.target.value)}
+                onKeyPress={e => e.key === 'Enter' && handleNewAssignee()}
               />
               <Button onClick={handleNewAssignee} size="sm">
                 <UserPlus className="h-4 w-4" />

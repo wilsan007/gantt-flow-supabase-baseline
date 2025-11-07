@@ -29,11 +29,11 @@ export const MFASetup = () => {
   const handleEnroll = async () => {
     setLoading(true);
     setError('');
-    
+
     try {
       const { data, error } = await supabase.auth.mfa.enroll({
         factorType: 'totp',
-        friendlyName: 'Authenticator App'
+        friendlyName: 'Authenticator App',
       });
 
       if (error) throw error;
@@ -60,11 +60,11 @@ export const MFASetup = () => {
 
     setLoading(true);
     setError('');
-    
+
     try {
       const { data, error } = await supabase.auth.mfa.verify({
         factorId,
-        code: verificationCode
+        code: verificationCode,
       });
 
       if (error) throw error;
@@ -72,10 +72,10 @@ export const MFASetup = () => {
       if (data) {
         setSuccess('MFA activé avec succès !');
         toast({
-          title: "Authentification à deux facteurs activée",
-          description: "Votre compte est maintenant plus sécurisé",
+          title: 'Authentification à deux facteurs activée',
+          description: 'Votre compte est maintenant plus sécurisé',
         });
-        
+
         // Rafraîchir la page après 2 secondes
         setTimeout(() => {
           window.location.reload();
@@ -94,8 +94,8 @@ export const MFASetup = () => {
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
     toast({
-      title: "Secret copié",
-      description: "Le secret a été copié dans le presse-papiers",
+      title: 'Secret copié',
+      description: 'Le secret a été copié dans le presse-papiers',
     });
   };
 
@@ -104,12 +104,8 @@ export const MFASetup = () => {
       <div className="flex items-center gap-3">
         <Shield className="h-6 w-6 text-primary" />
         <div>
-          <h3 className="text-lg font-semibold">
-            Authentification à deux facteurs (2FA)
-          </h3>
-          <p className="text-sm text-muted-foreground">
-            Renforcez la sécurité de votre compte
-          </p>
+          <h3 className="text-lg font-semibold">Authentification à deux facteurs (2FA)</h3>
+          <p className="text-sm text-muted-foreground">Renforcez la sécurité de votre compte</p>
         </div>
       </div>
 
@@ -129,21 +125,17 @@ export const MFASetup = () => {
 
       {!qrCode ? (
         <div className="space-y-4">
-          <div className="p-4 bg-muted rounded-lg">
-            <h4 className="font-medium mb-2">Pourquoi activer la 2FA ?</h4>
-            <ul className="text-sm space-y-1 text-muted-foreground">
+          <div className="rounded-lg bg-muted p-4">
+            <h4 className="mb-2 font-medium">Pourquoi activer la 2FA ?</h4>
+            <ul className="space-y-1 text-sm text-muted-foreground">
               <li>✅ Protection contre 99.9% des attaques de phishing</li>
               <li>✅ Sécurité renforcée même si votre mot de passe est compromis</li>
               <li>✅ Conformité aux standards de sécurité enterprise</li>
             </ul>
           </div>
 
-          <Button 
-            onClick={handleEnroll} 
-            disabled={loading}
-            className="w-full"
-          >
-            {loading ? 'Génération...' : 'Activer l\'authentification à deux facteurs'}
+          <Button onClick={handleEnroll} disabled={loading} className="w-full">
+            {loading ? 'Génération...' : "Activer l'authentification à deux facteurs"}
           </Button>
         </div>
       ) : (
@@ -151,28 +143,19 @@ export const MFASetup = () => {
           <div className="space-y-4">
             <h4 className="font-medium">Étape 1 : Scannez le QR Code</h4>
             <p className="text-sm text-muted-foreground">
-              Utilisez une application d'authentification (Google Authenticator, Authy, Microsoft Authenticator)
+              Utilisez une application d'authentification (Google Authenticator, Authy, Microsoft
+              Authenticator)
             </p>
-            
-            <div className="flex justify-center p-6 bg-white rounded-lg border">
+
+            <div className="flex justify-center rounded-lg border bg-white p-6">
               <QRCodeSVG value={qrCode} size={256} level="H" />
             </div>
 
             <div className="space-y-2">
-              <p className="text-sm font-medium">
-                Ou entrez ce code manuellement :
-              </p>
+              <p className="text-sm font-medium">Ou entrez ce code manuellement :</p>
               <div className="flex items-center gap-2">
-                <Input 
-                  value={secret} 
-                  readOnly 
-                  className="font-mono text-sm"
-                />
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={handleCopySecret}
-                >
+                <Input value={secret} readOnly className="font-mono text-sm" />
+                <Button size="sm" variant="outline" onClick={handleCopySecret}>
                   {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
                 </Button>
               </div>
@@ -184,23 +167,23 @@ export const MFASetup = () => {
             <p className="text-sm text-muted-foreground">
               Entrez le code à 6 chiffres généré par votre application
             </p>
-            
+
             <div className="flex gap-2">
               <Input
                 type="text"
                 value={verificationCode}
-                onChange={(e) => {
+                onChange={e => {
                   const value = e.target.value.replace(/\D/g, '').slice(0, 6);
                   setVerificationCode(value);
                 }}
                 placeholder="000000"
                 maxLength={6}
-                className="text-center text-2xl font-mono tracking-widest"
+                className="text-center font-mono text-2xl tracking-widest"
               />
             </div>
 
-            <Button 
-              onClick={handleVerify} 
+            <Button
+              onClick={handleVerify}
               disabled={loading || verificationCode.length !== 6}
               className="w-full"
             >

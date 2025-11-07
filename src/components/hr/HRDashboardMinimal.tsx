@@ -1,7 +1,7 @@
 /**
  * HR Dashboard Minimal - Solution Anti-Boucle Définitive
  * Inspiré de GitHub, Stripe, Linear Dashboard
- * 
+ *
  * Principe: Composant statique, pas de re-renders inutiles
  */
 
@@ -12,37 +12,37 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { MetricCard } from '@/components/ui/badges';
 import { AccessDenied } from '@/components/ui/access-denied';
-import { 
-  Users, 
-  Calendar, 
-  Clock, 
-  CheckCircle, 
-  XCircle, 
+import {
+  Users,
+  Calendar,
+  Clock,
+  CheckCircle,
+  XCircle,
   AlertCircle,
   RefreshCw,
-  Shield
+  Shield,
 } from 'lucide-react';
 
 export const HRDashboardMinimal = () => {
-  const { 
-    leaveRequests, 
-    attendances, 
-    employees, 
+  const {
+    leaveRequests,
+    attendances,
+    employees,
     absenceTypes,
-    loading, 
-    error, 
+    loading,
+    error,
     canAccess,
     isSuperAdmin,
     accessInfo,
-    refresh
+    refresh,
   } = useHRMinimal();
 
   // Loading state
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
+      <div className="flex min-h-[400px] items-center justify-center">
         <div className="text-center">
-          <RefreshCw className="h-8 w-8 animate-spin mx-auto mb-4 text-primary" />
+          <RefreshCw className="mx-auto mb-4 h-8 w-8 animate-spin text-primary" />
           <p className="text-muted-foreground">Chargement des données RH...</p>
         </div>
       </div>
@@ -52,13 +52,13 @@ export const HRDashboardMinimal = () => {
   // Error state
   if (error) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <div className="text-center max-w-md">
-          <XCircle className="h-12 w-12 text-destructive mx-auto mb-4" />
-          <h3 className="text-lg font-semibold mb-2">Erreur de chargement</h3>
-          <p className="text-muted-foreground mb-4 text-sm">{error}</p>
+      <div className="flex min-h-[400px] items-center justify-center">
+        <div className="max-w-md text-center">
+          <XCircle className="mx-auto mb-4 h-12 w-12 text-destructive" />
+          <h3 className="mb-2 text-lg font-semibold">Erreur de chargement</h3>
+          <p className="mb-4 text-sm text-muted-foreground">{error}</p>
           <Button onClick={refresh} variant="outline" size="sm">
-            <RefreshCw className="h-4 w-4 mr-2" />
+            <RefreshCw className="mr-2 h-4 w-4" />
             Réessayer
           </Button>
         </div>
@@ -83,69 +83,68 @@ export const HRDashboardMinimal = () => {
     totalEmployees: employees?.length || 0,
     pendingRequests: leaveRequests?.filter(req => req.status === 'pending')?.length || 0,
     approvedRequests: leaveRequests?.filter(req => req.status === 'approved')?.length || 0,
-    todayAttendances: attendances?.filter(att => 
-      att.date === new Date().toISOString().split('T')[0]
-    )?.length || 0
+    todayAttendances:
+      attendances?.filter(att => att.date === new Date().toISOString().split('T')[0])?.length || 0,
   };
 
   const recentRequests = leaveRequests?.slice(0, 5) || [];
 
   return (
-    <div className="p-6 space-y-6 max-w-7xl mx-auto">
+    <div className="mx-auto max-w-7xl space-y-6 p-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+          <h1 className="bg-gradient-to-r from-primary to-accent bg-clip-text text-3xl font-bold text-transparent">
             Tableau de bord RH
           </h1>
-          <div className="text-muted-foreground mt-1 flex items-center gap-2">
+          <div className="mt-1 flex items-center gap-2 text-muted-foreground">
             <span>Vue d'ensemble des ressources humaines</span>
             {isSuperAdmin && (
               <Badge variant="secondary">
-                <Shield className="h-3 w-3 mr-1" />
+                <Shield className="mr-1 h-3 w-3" />
                 Super Admin
               </Badge>
             )}
           </div>
         </div>
-        
+
         <Button onClick={refresh} variant="outline" size="sm">
-          <RefreshCw className="h-4 w-4 mr-2" />
+          <RefreshCw className="mr-2 h-4 w-4" />
           Actualiser
         </Button>
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
         <MetricCard
           label="Total Employés"
           value={stats.totalEmployees}
           subtitle="Effectif actuel"
-          icon={<Users className="w-6 h-6" />}
+          icon={<Users className="h-6 w-6" />}
           color="blue"
         />
-        
+
         <MetricCard
           label="En attente"
           value={stats.pendingRequests}
           subtitle="Demandes à traiter"
-          icon={<AlertCircle className="w-6 h-6" />}
+          icon={<AlertCircle className="h-6 w-6" />}
           color="orange"
         />
-        
+
         <MetricCard
           label="Approuvées"
           value={stats.approvedRequests}
           subtitle="Demandes validées"
-          icon={<CheckCircle className="w-6 h-6" />}
+          icon={<CheckCircle className="h-6 w-6" />}
           color="green"
         />
-        
+
         <MetricCard
           label="Présences"
           value={stats.todayAttendances}
           subtitle="Aujourd'hui"
-          icon={<Clock className="w-6 h-6" />}
+          icon={<Clock className="h-6 w-6" />}
           color="blue"
         />
       </div>
@@ -163,30 +162,30 @@ export const HRDashboardMinimal = () => {
         </CardHeader>
         <CardContent>
           {recentRequests.length === 0 ? (
-            <div className="text-center py-8 text-muted-foreground">
-              <Calendar className="h-12 w-12 mx-auto mb-4 opacity-50" />
+            <div className="py-8 text-center text-muted-foreground">
+              <Calendar className="mx-auto mb-4 h-12 w-12 opacity-50" />
               <p>Aucune demande de congé récente</p>
             </div>
           ) : (
             <div className="space-y-3">
-              {recentRequests.map((request) => {
+              {recentRequests.map(request => {
                 const employee = employees?.find(emp => emp.user_id === request.employee_id);
                 return (
-                  <div 
-                    key={request.id} 
-                    className="flex items-center justify-between p-3 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors"
+                  <div
+                    key={request.id}
+                    className="flex items-center justify-between rounded-lg bg-muted/30 p-3 transition-colors hover:bg-muted/50"
                   >
-                    <div className="flex-1 min-w-0">
-                      <div className="font-medium truncate">
+                    <div className="min-w-0 flex-1">
+                      <div className="truncate font-medium">
                         {employee?.full_name || request.profiles?.full_name || 'Employé inconnu'}
                         {isSuperAdmin && request.profiles?.tenant_id && (
-                          <span className="ml-2 text-xs text-blue-600 font-normal">
+                          <span className="ml-2 text-xs font-normal text-blue-600">
                             ({request.profiles.tenant_id})
                           </span>
                         )}
                       </div>
                       <div className="text-sm text-muted-foreground">
-                        {new Date(request.start_date).toLocaleDateString()} - {' '}
+                        {new Date(request.start_date).toLocaleDateString()} -{' '}
                         {new Date(request.end_date).toLocaleDateString()}
                       </div>
                       <div className="text-xs text-muted-foreground">
@@ -196,13 +195,19 @@ export const HRDashboardMinimal = () => {
                     </div>
                     <Badge
                       variant={
-                        request.status === 'approved' ? 'default' :
-                        request.status === 'rejected' ? 'destructive' : 'secondary'
+                        request.status === 'approved'
+                          ? 'default'
+                          : request.status === 'rejected'
+                            ? 'destructive'
+                            : 'secondary'
                       }
                       className="ml-3 flex-shrink-0"
                     >
-                      {request.status === 'approved' ? 'Approuvée' :
-                       request.status === 'rejected' ? 'Rejetée' : 'En attente'}
+                      {request.status === 'approved'
+                        ? 'Approuvée'
+                        : request.status === 'rejected'
+                          ? 'Rejetée'
+                          : 'En attente'}
                     </Badge>
                   </div>
                 );
@@ -225,28 +230,24 @@ export const HRDashboardMinimal = () => {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {employees.slice(0, 12).map((employee) => (
-                <div 
-                  key={employee.id} 
-                  className="p-3 rounded-lg border bg-card hover:shadow-md transition-shadow"
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+              {employees.slice(0, 12).map(employee => (
+                <div
+                  key={employee.id}
+                  className="rounded-lg border bg-card p-3 transition-shadow hover:shadow-md"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
                       <Users className="h-5 w-5 text-primary" />
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="font-medium truncate">
-                        {employee.full_name}
-                      </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="truncate font-medium">{employee.full_name}</div>
                       <div className="text-sm text-muted-foreground">
                         {employee.job_title || 'Poste non défini'}
                       </div>
-                      <div className="text-xs text-blue-600">
-                        ID: {employee.employee_id}
-                      </div>
+                      <div className="text-xs text-blue-600">ID: {employee.employee_id}</div>
                       {employee.tenants?.name && (
-                        <div className="text-xs text-orange-600 font-medium">
+                        <div className="text-xs font-medium text-orange-600">
                           {employee.tenants.name}
                         </div>
                       )}
@@ -256,7 +257,7 @@ export const HRDashboardMinimal = () => {
               ))}
             </div>
             {employees.length > 12 && (
-              <div className="text-center mt-4 text-sm text-muted-foreground">
+              <div className="mt-4 text-center text-sm text-muted-foreground">
                 ... et {employees.length - 12} autres employés
               </div>
             )}
@@ -272,13 +273,13 @@ export const HRDashboardMinimal = () => {
               🔧 Informations de débogage (Super Admin)
             </CardTitle>
           </CardHeader>
-          <CardContent className="text-xs text-muted-foreground space-y-1">
-            <div>Super Admin: {isSuperAdmin ? '✅' : '❌'}</div>
+          <CardContent className="space-y-1 text-xs text-muted-foreground">
+            <div>Super Admin: ✅</div>
             <div>Can Access: {canAccess ? '✅' : '❌'}</div>
             <div>Data Loaded: {new Date().toLocaleTimeString()}</div>
-            <div>Total Items: {
-              (stats.totalEmployees + recentRequests.length + stats.todayAttendances)
-            }</div>
+            <div>
+              Total Items: {stats.totalEmployees + recentRequests.length + stats.todayAttendances}
+            </div>
           </CardContent>
         </Card>
       )}

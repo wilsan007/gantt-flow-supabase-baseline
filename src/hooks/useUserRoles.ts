@@ -1,14 +1,14 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { 
-  UserRole, 
-  UserPermission, 
-  RoleNames, 
+import {
+  UserRole,
+  UserPermission,
+  RoleNames,
   PermissionNames,
   hasRole as checkHasRole,
   hasPermission as checkHasPermission,
-  isSuperAdmin as checkIsSuperAdmin
+  isSuperAdmin as checkIsSuperAdmin,
 } from '@/lib/permissionsSystem';
 import { roleCacheManager } from '@/lib/roleCache';
 
@@ -29,10 +29,11 @@ export const useUserRoles = () => {
   // Fonctions de récupération des données (pour le cache)
   const fetchRolesFromDB = useCallback(async (userId: string) => {
     // console.log('🔍 Fetching roles for user:', userId);
-    
+
     const { data: rolesData, error: rolesError } = await supabase
       .from('user_roles')
-      .select(`
+      .select(
+        `
         id,
         user_id,
         role_id,
@@ -40,7 +41,8 @@ export const useUserRoles = () => {
         tenant_id,
         created_at,
         roles!inner(name)
-      `)
+      `
+      )
       .eq('user_id', userId)
       .eq('is_active', true);
 
@@ -64,10 +66,12 @@ export const useUserRoles = () => {
 
     const { data: permissionsData, error: permissionsError } = await supabase
       .from('role_permissions')
-      .select(`
+      .select(
+        `
         permissions!inner(name),
         roles!inner(name)
-      `)
+      `
+      )
       .in('role_id', roleIds);
 
     if (permissionsError) {
@@ -80,14 +84,17 @@ export const useUserRoles = () => {
 
     return (permissionsData || []).map((item: any) => ({
       permission_name: item.permissions?.name || '',
-      role_name: item.roles?.name || ''
+      role_name: item.roles?.name || '',
     })) as UserPermission[];
   }, []);
 
   const fetchUserRolesAndPermissions = async () => {
     try {
-      const { data: { user }, error: userError } = await supabase.auth.getUser();
-      
+      const {
+        data: { user },
+        error: userError,
+      } = await supabase.auth.getUser();
+
       if (userError || !user) {
         setUserRoles([]);
         setUserPermissions([]);
@@ -100,10 +107,8 @@ export const useUserRoles = () => {
 
       try {
         // Utiliser le cache pour récupérer les rôles
-        const roles = await roleCacheManager.getRoles(
-          user.id,
-          tenantId,
-          () => fetchRolesFromDB(user.id)
+        const roles = await roleCacheManager.getRoles(user.id, tenantId, () =>
+          fetchRolesFromDB(user.id)
         );
 
         // console.log('🎯 Rôles récupérés pour l\'utilisateur:', roles);
@@ -124,7 +129,6 @@ export const useUserRoles = () => {
         } else {
           setUserPermissions([]);
         }
-
       } catch (dbError: any) {
         // Gestion des erreurs avec fallback gracieux
         if (dbError.code === '42501') {
@@ -137,7 +141,6 @@ export const useUserRoles = () => {
           setUserPermissions([]);
         }
       }
-
     } catch (error: any) {
       // console.error('❌ Erreur lors de la récupération des rôles et permissions:', error);
       setUserRoles([]);
@@ -185,12 +188,14 @@ export const useUserRoles = () => {
   // Fonction pour rafraîchir les rôles et permissions (avec invalidation du cache)
   const refreshRoles = async () => {
     setIsLoading(true);
-    
+
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (user) {
         const tenantId = user.user_metadata?.tenant_id || user.app_metadata?.tenant_id;
-        
+
         // Invalider le cache et forcer le rafraîchissement
         await roleCacheManager.refreshUser(
           user.id,
@@ -201,7 +206,7 @@ export const useUserRoles = () => {
             return fetchPermissionsFromDB(roleIds);
           }
         );
-        
+
         // Récupérer les nouvelles données
         await fetchUserRolesAndPermissions();
       }
@@ -236,16 +241,18 @@ export const useUserRoles = () => {
     isProjectManager,
     getRoleNames,
     refreshRoles,
-    
+
     // Nouvelles fonctions pour la gestion du cache
     invalidateCache: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (user) {
         const tenantId = user.user_metadata?.tenant_id || user.app_metadata?.tenant_id;
         roleCacheManager.invalidateUser(user.id, tenantId);
       }
     },
-    
-    getCacheStats: () => roleCacheManager.getStats()
+
+    getCacheStats: () => roleCacheManager.getStats(),
   };
 };

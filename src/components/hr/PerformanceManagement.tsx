@@ -1,21 +1,36 @@
 import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Target, TrendingUp, Users, Star, Calendar, Award, CheckCircle2, Loader2 } from "lucide-react";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { usePerformance } from "@/hooks/usePerformance";
-import { CreateObjectiveDialog } from "./CreateObjectiveDialog";
-import { CreateEvaluationDialog } from "./CreateEvaluationDialog";
-import { format } from "date-fns";
-import { fr } from "date-fns/locale";
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import {
+  Target,
+  TrendingUp,
+  Users,
+  Star,
+  Calendar,
+  Award,
+  CheckCircle2,
+  Loader2,
+} from 'lucide-react';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { usePerformance } from '@/hooks/usePerformance';
+import { CreateObjectiveDialog } from './CreateObjectiveDialog';
+import { CreateEvaluationDialog } from './CreateEvaluationDialog';
+import { format } from 'date-fns';
+import { fr } from 'date-fns/locale';
 
 // Interfaces moved to usePerformance hook
 
 export const PerformanceManagement = () => {
-  const [activeView, setActiveView] = useState("objectives");
+  const [activeView, setActiveView] = useState('objectives');
   const {
     objectives,
     evaluations,
@@ -27,7 +42,7 @@ export const PerformanceManagement = () => {
     createEvaluation,
     getKeyResultsByObjective,
     getCategoriesByEvaluation,
-    getPerformanceStats
+    getPerformanceStats,
   } = usePerformance();
 
   if (loading) {
@@ -43,7 +58,7 @@ export const PerformanceManagement = () => {
     return (
       <div className="flex items-center justify-center p-8">
         <div className="text-center">
-          <p className="text-red-500 mb-2">Erreur lors du chargement des données</p>
+          <p className="mb-2 text-red-500">Erreur lors du chargement des données</p>
           <p className="text-sm text-muted-foreground">{error}</p>
         </div>
       </div>
@@ -54,20 +69,29 @@ export const PerformanceManagement = () => {
 
   const getObjectiveStatusColor = (status: string) => {
     switch (status) {
-      case 'completed': return 'bg-green-100 text-green-800 border-green-200';
-      case 'active': return 'bg-blue-100 text-blue-800 border-blue-200';
-      case 'draft': return 'bg-gray-100 text-gray-800 border-gray-200';
-      case 'cancelled': return 'bg-red-100 text-red-800 border-red-200';
-      default: return 'bg-gray-100 text-gray-800 border-gray-200';
+      case 'completed':
+        return 'bg-green-100 text-green-800 border-green-200';
+      case 'active':
+        return 'bg-blue-100 text-blue-800 border-blue-200';
+      case 'draft':
+        return 'bg-gray-100 text-gray-800 border-gray-200';
+      case 'cancelled':
+        return 'bg-red-100 text-red-800 border-red-200';
+      default:
+        return 'bg-gray-100 text-gray-800 border-gray-200';
     }
   };
 
   const getEvaluationStatusColor = (status: string) => {
     switch (status) {
-      case 'completed': return 'bg-green-100 text-green-800 border-green-200';
-      case 'in-progress': return 'bg-blue-100 text-blue-800 border-blue-200';
-      case 'scheduled': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-      default: return 'bg-gray-100 text-gray-800 border-gray-200';
+      case 'completed':
+        return 'bg-green-100 text-green-800 border-green-200';
+      case 'in-progress':
+        return 'bg-blue-100 text-blue-800 border-blue-200';
+      case 'scheduled':
+        return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+      default:
+        return 'bg-gray-100 text-gray-800 border-gray-200';
     }
   };
 
@@ -112,23 +136,25 @@ export const PerformanceManagement = () => {
             <Card>
               <CardContent className="flex items-center justify-center p-8">
                 <div className="text-center">
-                  <Target className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-                  <h3 className="text-lg font-medium mb-2">Aucun objectif trouvé</h3>
-                  <p className="text-muted-foreground mb-4">Commencez par créer votre premier objectif</p>
+                  <Target className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
+                  <h3 className="mb-2 text-lg font-medium">Aucun objectif trouvé</h3>
+                  <p className="mb-4 text-muted-foreground">
+                    Commencez par créer votre premier objectif
+                  </p>
                   <CreateObjectiveDialog onCreateObjective={createObjective} />
                 </div>
               </CardContent>
             </Card>
           ) : (
             <div className="grid gap-4">
-              {objectives.map((objective) => {
+              {objectives.map(objective => {
                 const objectiveKeyResults = getKeyResultsByObjective(objective.id);
                 return (
-                  <Card key={objective.id} className="hover:shadow-lg transition-shadow">
+                  <Card key={objective.id} className="transition-shadow hover:shadow-lg">
                     <CardHeader>
                       <div className="flex items-center justify-between">
                         <div>
-                          <CardTitle className="text-lg flex items-center gap-2">
+                          <CardTitle className="flex items-center gap-2 text-lg">
                             {objective.type === 'individual' && <Target className="h-5 w-5" />}
                             {objective.type === 'team' && <Users className="h-5 w-5" />}
                             {objective.type === 'okr' && <Award className="h-5 w-5" />}
@@ -139,9 +165,13 @@ export const PerformanceManagement = () => {
                           </p>
                         </div>
                         <Badge className={getObjectiveStatusColor(objective.status)}>
-                          {objective.status === 'active' ? 'Actif' : 
-                           objective.status === 'completed' ? 'Terminé' :
-                           objective.status === 'draft' ? 'Brouillon' : 'Annulé'}
+                          {objective.status === 'active'
+                            ? 'Actif'
+                            : objective.status === 'completed'
+                              ? 'Terminé'
+                              : objective.status === 'draft'
+                                ? 'Brouillon'
+                                : 'Annulé'}
                         </Badge>
                       </div>
                     </CardHeader>
@@ -149,18 +179,21 @@ export const PerformanceManagement = () => {
                       {objective.description && (
                         <p className="text-sm text-muted-foreground">{objective.description}</p>
                       )}
-                      
+
                       <div className="flex items-center gap-4">
                         <Calendar className="h-4 w-4 text-muted-foreground" />
                         <span className="text-sm">
-                          Échéance: {format(new Date(objective.due_date), 'dd MMMM yyyy', { locale: fr })}
+                          Échéance:{' '}
+                          {format(new Date(objective.due_date), 'dd MMMM yyyy', { locale: fr })}
                         </span>
                       </div>
-                      
+
                       <div className="space-y-2">
                         <div className="flex items-center justify-between">
                           <span className="text-sm font-medium">Progression générale</span>
-                          <span className="text-sm text-muted-foreground">{objective.progress}%</span>
+                          <span className="text-sm text-muted-foreground">
+                            {objective.progress}%
+                          </span>
                         </div>
                         <Progress value={objective.progress} className="h-2" />
                       </div>
@@ -168,10 +201,10 @@ export const PerformanceManagement = () => {
                       {objectiveKeyResults.length > 0 && (
                         <div className="space-y-3">
                           <h4 className="font-medium">Résultats clés</h4>
-                          {objectiveKeyResults.map((kr) => (
-                            <div key={kr.id} className="p-3 rounded-lg bg-muted/50 space-y-2">
+                          {objectiveKeyResults.map(kr => (
+                            <div key={kr.id} className="space-y-2 rounded-lg bg-muted/50 p-3">
                               <div className="flex items-center justify-between">
-                                <p className="font-medium text-sm">{kr.title}</p>
+                                <p className="text-sm font-medium">{kr.title}</p>
                                 <span className="text-xs text-muted-foreground">
                                   {kr.current_value || '0'} / {kr.target}
                                 </span>
@@ -194,19 +227,21 @@ export const PerformanceManagement = () => {
             <Card>
               <CardContent className="flex items-center justify-center p-8">
                 <div className="text-center">
-                  <Star className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-                  <h3 className="text-lg font-medium mb-2">Aucune évaluation trouvée</h3>
-                  <p className="text-muted-foreground mb-4">Commencez par créer votre première évaluation</p>
+                  <Star className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
+                  <h3 className="mb-2 text-lg font-medium">Aucune évaluation trouvée</h3>
+                  <p className="mb-4 text-muted-foreground">
+                    Commencez par créer votre première évaluation
+                  </p>
                   <CreateEvaluationDialog onCreateEvaluation={createEvaluation} />
                 </div>
               </CardContent>
             </Card>
           ) : (
             <div className="grid gap-4">
-              {evaluations.map((evaluation) => {
+              {evaluations.map(evaluation => {
                 const evaluationCategories = getCategoriesByEvaluation(evaluation.id);
                 return (
-                  <Card key={evaluation.id} className="hover:shadow-lg transition-shadow">
+                  <Card key={evaluation.id} className="transition-shadow hover:shadow-lg">
                     <CardHeader>
                       <div className="flex items-center justify-between">
                         <div>
@@ -217,12 +252,18 @@ export const PerformanceManagement = () => {
                         </div>
                         <div className="flex items-center gap-2">
                           <Badge variant="outline" className="uppercase">
-                            {evaluation.type === 'annual' ? 'Annuelle' :
-                             evaluation.type === 'quarterly' ? 'Trimestrielle' : '360°'}
+                            {evaluation.type === 'annual'
+                              ? 'Annuelle'
+                              : evaluation.type === 'quarterly'
+                                ? 'Trimestrielle'
+                                : '360°'}
                           </Badge>
                           <Badge className={getEvaluationStatusColor(evaluation.status)}>
-                            {evaluation.status === 'completed' ? 'Terminée' :
-                             evaluation.status === 'in_progress' ? 'En cours' : 'Planifiée'}
+                            {evaluation.status === 'completed'
+                              ? 'Terminée'
+                              : evaluation.status === 'in_progress'
+                                ? 'En cours'
+                                : 'Planifiée'}
                           </Badge>
                         </div>
                       </div>
@@ -233,21 +274,28 @@ export const PerformanceManagement = () => {
                           <div className="flex items-center gap-4">
                             <div className="flex items-center gap-2">
                               <Star className="h-5 w-5 text-yellow-500" />
-                              <span className={`text-2xl font-bold ${getScoreColor(evaluation.overall_score)}`}>
+                              <span
+                                className={`text-2xl font-bold ${getScoreColor(evaluation.overall_score)}`}
+                              >
                                 {evaluation.overall_score.toFixed(1)}
                               </span>
                               <span className="text-sm text-muted-foreground">/ 5.0</span>
                             </div>
                           </div>
-                          
+
                           {evaluationCategories.length > 0 && (
                             <div className="space-y-3">
                               <h4 className="font-medium">Détail par catégorie</h4>
-                              {evaluationCategories.map((category) => (
-                                <div key={category.id} className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
+                              {evaluationCategories.map(category => (
+                                <div
+                                  key={category.id}
+                                  className="flex items-center justify-between rounded-lg bg-muted/50 p-3"
+                                >
                                   <div>
-                                    <p className="font-medium text-sm">{category.name}</p>
-                                    <p className="text-xs text-muted-foreground">Poids: {category.weight}%</p>
+                                    <p className="text-sm font-medium">{category.name}</p>
+                                    <p className="text-xs text-muted-foreground">
+                                      Poids: {category.weight}%
+                                    </p>
                                   </div>
                                   <div className="flex items-center gap-2">
                                     <span className={`font-bold ${getScoreColor(category.score)}`}>
@@ -261,20 +309,20 @@ export const PerformanceManagement = () => {
                           )}
                         </>
                       )}
-                      
+
                       {evaluation.status === 'scheduled' && (
                         <div className="flex items-center justify-center p-8 text-muted-foreground">
                           <div className="text-center">
-                            <Calendar className="h-8 w-8 mx-auto mb-2" />
+                            <Calendar className="mx-auto mb-2 h-8 w-8" />
                             <p>Évaluation planifiée</p>
                           </div>
                         </div>
                       )}
-                      
+
                       {evaluation.status === 'in_progress' && (
                         <div className="flex items-center justify-center p-8 text-muted-foreground">
                           <div className="text-center">
-                            <Loader2 className="h-8 w-8 mx-auto mb-2 animate-spin" />
+                            <Loader2 className="mx-auto mb-2 h-8 w-8 animate-spin" />
                             <p>Évaluation en cours...</p>
                           </div>
                         </div>
@@ -288,7 +336,7 @@ export const PerformanceManagement = () => {
         </TabsContent>
 
         <TabsContent value="analytics" className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
             <Card>
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
@@ -300,7 +348,7 @@ export const PerformanceManagement = () => {
                 </div>
               </CardContent>
             </Card>
-            
+
             <Card>
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
@@ -312,24 +360,28 @@ export const PerformanceManagement = () => {
                 </div>
               </CardContent>
             </Card>
-            
+
             <Card>
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm font-medium text-muted-foreground">Score Moyen</p>
-                    <p className="text-2xl font-bold">{stats.averageScore > 0 ? stats.averageScore : '--'}</p>
+                    <p className="text-2xl font-bold">
+                      {stats.averageScore > 0 ? stats.averageScore : '--'}
+                    </p>
                   </div>
                   <Star className="h-8 w-8 text-yellow-600" />
                 </div>
               </CardContent>
             </Card>
-            
+
             <Card>
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-muted-foreground">Évaluations Planifiées</p>
+                    <p className="text-sm font-medium text-muted-foreground">
+                      Évaluations Planifiées
+                    </p>
                     <p className="text-2xl font-bold">{stats.scheduledEvaluations}</p>
                   </div>
                   <Calendar className="h-8 w-8 text-purple-600" />
@@ -338,7 +390,7 @@ export const PerformanceManagement = () => {
             </Card>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <Card>
               <CardHeader>
                 <CardTitle>Répartition des objectifs</CardTitle>
@@ -347,15 +399,27 @@ export const PerformanceManagement = () => {
                 <div className="space-y-4">
                   {['draft', 'active', 'completed', 'cancelled'].map(status => {
                     const count = objectives.filter(obj => obj.status === status).length;
-                    const percentage = objectives.length > 0 ? Math.round((count / objectives.length) * 100) : 0;
-                    const colorClass = status === 'completed' ? 'text-green-600' : 
-                                      status === 'active' ? 'text-blue-600' : 
-                                      status === 'cancelled' ? 'text-red-600' : 'text-yellow-600';
+                    const percentage =
+                      objectives.length > 0 ? Math.round((count / objectives.length) * 100) : 0;
+                    const colorClass =
+                      status === 'completed'
+                        ? 'text-green-600'
+                        : status === 'active'
+                          ? 'text-blue-600'
+                          : status === 'cancelled'
+                            ? 'text-red-600'
+                            : 'text-yellow-600';
                     return (
-                      <div key={status} className="flex justify-between items-center">
-                        <span className="capitalize">{status === 'draft' ? 'Brouillon' : 
-                                                       status === 'active' ? 'Actif' : 
-                                                       status === 'completed' ? 'Terminé' : 'Annulé'}</span>
+                      <div key={status} className="flex items-center justify-between">
+                        <span className="capitalize">
+                          {status === 'draft'
+                            ? 'Brouillon'
+                            : status === 'active'
+                              ? 'Actif'
+                              : status === 'completed'
+                                ? 'Terminé'
+                                : 'Annulé'}
+                        </span>
                         <div className="flex items-center gap-2">
                           <span className={`font-bold ${colorClass}`}>{count}</span>
                           <span className="text-sm text-muted-foreground">({percentage}%)</span>
@@ -375,10 +439,17 @@ export const PerformanceManagement = () => {
                 <div className="space-y-4">
                   {['annual', 'quarterly', '360'].map(type => {
                     const count = evaluations.filter(evaluation => evaluation.type === type).length;
-                    const percentage = evaluations.length > 0 ? Math.round((count / evaluations.length) * 100) : 0;
+                    const percentage =
+                      evaluations.length > 0 ? Math.round((count / evaluations.length) * 100) : 0;
                     return (
-                      <div key={type} className="flex justify-between items-center">
-                        <span>{type === 'annual' ? 'Annuelle' : type === 'quarterly' ? 'Trimestrielle' : '360°'}</span>
+                      <div key={type} className="flex items-center justify-between">
+                        <span>
+                          {type === 'annual'
+                            ? 'Annuelle'
+                            : type === 'quarterly'
+                              ? 'Trimestrielle'
+                              : '360°'}
+                        </span>
                         <div className="flex items-center gap-2">
                           <span className="font-bold">{count}</span>
                           <span className="text-sm text-muted-foreground">({percentage}%)</span>
@@ -399,24 +470,31 @@ export const PerformanceManagement = () => {
               <div className="space-y-4">
                 {evaluations.length > 0 ? (
                   <>
-                    <div className="flex justify-between items-center">
+                    <div className="flex items-center justify-between">
                       <span>Score moyen</span>
-                      <span className="font-bold text-2xl">{getPerformanceStats().averageScore}/5</span>
+                      <span className="text-2xl font-bold">
+                        {getPerformanceStats().averageScore}/5
+                      </span>
                     </div>
                     <div className="space-y-2">
                       {[5, 4, 3, 2, 1].map(score => {
-                        const count = evaluations.filter(evaluation => Math.round(evaluation.overall_score) === score).length;
-                        const percentage = evaluations.length > 0 ? Math.round((count / evaluations.length) * 100) : 0;
+                        const count = evaluations.filter(
+                          evaluation => Math.round(evaluation.overall_score) === score
+                        ).length;
+                        const percentage =
+                          evaluations.length > 0
+                            ? Math.round((count / evaluations.length) * 100)
+                            : 0;
                         return (
                           <div key={score} className="flex items-center gap-4">
                             <span className="w-12">{score} ⭐</span>
-                            <div className="flex-1 bg-muted rounded-full h-2">
-                              <div 
-                                className="bg-primary h-2 rounded-full transition-all duration-300" 
+                            <div className="h-2 flex-1 rounded-full bg-muted">
+                              <div
+                                className="h-2 rounded-full bg-primary transition-all duration-300"
                                 style={{ width: `${percentage}%` }}
                               />
                             </div>
-                            <span className="text-sm font-medium w-12">{count}</span>
+                            <span className="w-12 text-sm font-medium">{count}</span>
                           </div>
                         );
                       })}
@@ -424,7 +502,7 @@ export const PerformanceManagement = () => {
                   </>
                 ) : (
                   <div className="text-center text-muted-foreground">
-                    <TrendingUp className="h-12 w-12 mx-auto mb-4" />
+                    <TrendingUp className="mx-auto mb-4 h-12 w-12" />
                     <p>Aucune évaluation disponible</p>
                   </div>
                 )}

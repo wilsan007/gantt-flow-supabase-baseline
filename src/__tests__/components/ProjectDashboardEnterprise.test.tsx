@@ -10,16 +10,16 @@ vi.mock('@/contexts/RolesContext', () => ({
     hasRole: () => true,
     hasPermission: () => true,
     isSuperAdmin: false,
-    currentTenantId: 'tenant-1'
-  })
+    currentTenantId: 'tenant-1',
+  }),
 }));
 
 vi.mock('@/hooks/useTenant', () => ({
   useTenant: () => ({
     tenantId: 'tenant-1',
     tenantName: 'Test Company',
-    loading: false
-  })
+    loading: false,
+  }),
 }));
 
 vi.mock('@/hooks/useProjectsEnterprise', () => ({
@@ -33,18 +33,18 @@ vi.mock('@/hooks/useProjectsEnterprise', () => ({
       completedProjects: 0,
       totalBudget: 0,
       fetchTime: 100,
-      cacheHit: false
+      cacheHit: false,
     },
     pagination: {
       page: 1,
       limit: 10,
       total: 0,
       hasMore: false,
-      totalPages: 0
+      totalPages: 0,
     },
     refresh: vi.fn(),
-    clearCache: vi.fn()
-  })
+    clearCache: vi.fn(),
+  }),
 }));
 
 vi.mock('@/integrations/supabase/client', () => ({
@@ -52,17 +52,19 @@ vi.mock('@/integrations/supabase/client', () => ({
     from: vi.fn(() => ({
       select: vi.fn(() => ({
         eq: vi.fn(() => ({
-          order: vi.fn(() => Promise.resolve({ data: [], error: null }))
-        }))
-      }))
+          order: vi.fn(() => Promise.resolve({ data: [], error: null })),
+        })),
+      })),
     })),
     auth: {
-      getUser: vi.fn(() => Promise.resolve({
-        data: { user: { id: 'user-1' } },
-        error: null
-      }))
-    }
-  }
+      getUser: vi.fn(() =>
+        Promise.resolve({
+          data: { user: { id: 'user-1' } },
+          error: null,
+        })
+      ),
+    },
+  },
 }));
 
 // Import real component
@@ -79,7 +81,7 @@ describe('ProjectDashboardEnterprise - Real Component (Used in ProjectPage)', ()
         <ProjectDashboardEnterprise />
       </BrowserRouter>
     );
-    
+
     expect(container).toBeTruthy();
     expect(container.querySelector('div')).toBeInTheDocument();
   });
@@ -100,7 +102,7 @@ describe('ProjectDashboardEnterprise - Real Component (Used in ProjectPage)', ()
         <ProjectDashboardEnterprise />
       </BrowserRouter>
     );
-    
+
     expect(container.firstChild).toBeDefined();
   });
 });

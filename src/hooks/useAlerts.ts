@@ -68,7 +68,7 @@ export const useAlerts = () => {
   const [alertInstances, setAlertInstances] = useState<AlertInstance[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  
+
   // 🔒 Contexte utilisateur pour le filtrage
   const { userContext } = useUserFilterContext();
 
@@ -79,11 +79,7 @@ export const useAlerts = () => {
   const fetchAllData = async () => {
     try {
       setLoading(true);
-      await Promise.all([
-        fetchAlertTypes(),
-        fetchAlertSolutions(),
-        fetchAlertInstances()
-      ]);
+      await Promise.all([fetchAlertTypes(), fetchAlertSolutions(), fetchAlertInstances()]);
     } catch (error: any) {
       console.error('Error fetching alerts data:', error);
       setError(error.message);
@@ -95,11 +91,8 @@ export const useAlerts = () => {
   const fetchAlertTypes = async () => {
     if (!userContext) return;
 
-    let query = supabase
-      .from('alert_types')
-      .select('*')
-      .order('created_at', { ascending: false });
-    
+    let query = supabase.from('alert_types').select('*').order('created_at', { ascending: false });
+
     // 🔒 Appliquer le filtrage par rôle
     query = applyRoleFilters(query, userContext, 'alert_types');
 
@@ -115,7 +108,7 @@ export const useAlerts = () => {
       .from('alert_solutions')
       .select('*')
       .order('effectiveness_score', { ascending: false });
-    
+
     // 🔒 Appliquer le filtrage par rôle
     query = applyRoleFilters(query, userContext, 'alert_solutions');
 
@@ -129,16 +122,18 @@ export const useAlerts = () => {
 
     let query = supabase
       .from('alert_instances')
-      .select(`
+      .select(
+        `
         *,
         alert_type:alert_types(*),
         recommendations:alert_instance_recommendations(
           *,
           solution:alert_solutions(*)
         )
-      `)
+      `
+      )
       .order('triggered_at', { ascending: false });
-    
+
     // 🔒 Appliquer le filtrage par rôle
     query = applyRoleFilters(query, userContext, 'alert_instances');
 
@@ -147,7 +142,9 @@ export const useAlerts = () => {
     setAlertInstances((data || []) as AlertInstance[]);
   };
 
-  const createAlertInstance = async (alertData: Omit<AlertInstance, 'id' | 'created_at' | 'updated_at'>) => {
+  const createAlertInstance = async (
+    alertData: Omit<AlertInstance, 'id' | 'created_at' | 'updated_at'>
+  ) => {
     try {
       const { data, error } = await supabase
         .from('alert_instances')
@@ -159,7 +156,7 @@ export const useAlerts = () => {
 
       // Calculer les recommandations automatiquement
       await supabase.rpc('calculate_alert_recommendations', {
-        p_alert_instance_id: data.id
+        p_alert_instance_id: data.id,
       });
 
       await fetchAlertInstances();
@@ -172,14 +169,14 @@ export const useAlerts = () => {
   };
 
   const updateAlertStatus = async (
-    id: string, 
+    id: string,
     status: 'active' | 'acknowledged' | 'resolved' | 'dismissed',
     resolvedBy?: string
   ) => {
     try {
-      const updates: any = { 
+      const updates: any = {
         status,
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
       };
 
       if (status === 'acknowledged') {
@@ -191,10 +188,7 @@ export const useAlerts = () => {
         }
       }
 
-      const { error } = await supabase
-        .from('alert_instances')
-        .update(updates)
-        .eq('id', id);
+      const { error } = await supabase.from('alert_instances').update(updates).eq('id', id);
 
       if (error) throw error;
       await fetchAlertInstances();
@@ -211,27 +205,21 @@ export const useAlerts = () => {
 
   const getHighPriorityAlerts = () => {
     return alertInstances.filter(
-      alert => 
-        alert.status === 'active' && 
-        (alert.severity === 'high' || alert.severity === 'critical')
+      alert =>
+        alert.status === 'active' && (alert.severity === 'high' || alert.severity === 'critical')
     );
   };
 
   const getAlertsByCategory = (category: string) => {
-    return alertInstances.filter(
-      alert => alert.alert_type?.category === category
-    );
+    return alertInstances.filter(alert => alert.alert_type?.category === category);
   };
 
   const initializeAlertData = async () => {
     try {
       setLoading(true);
-      
+
       // Vérifier si des données existent déjà
-      const { data: existingTypes } = await supabase
-        .from('alert_types')
-        .select('id')
-        .limit(1);
+      const { data: existingTypes } = await supabase.from('alert_types').select('id').limit(1);
 
       if (existingTypes && existingTypes.length > 0) {
         // console.log('Alert data already initialized');
@@ -240,11 +228,41 @@ export const useAlerts = () => {
 
       // Insérer les types d'alertes
       const alertTypesToInsert = [
-        { code: 'WORKLOAD_HIGH', name: 'Surcharge de travail', description: 'Employé avec une charge de travail excessive', category: 'capacity', severity: 'high' },
-        { code: 'ABSENCE_PATTERN', name: 'Pattern d\'absences anormal', description: 'Augmentation significative des absences', category: 'hr', severity: 'medium' },
-        { code: 'PERFORMANCE_DROP', name: 'Baisse de performance', description: 'Diminution notable des performances', category: 'performance', severity: 'medium' },
-        { code: 'DEADLINE_RISK', name: 'Risque d\'échéance', description: 'Projet en retard ou à risque', category: 'project', severity: 'high' },
-        { code: 'TEAM_TURNOVER', name: 'Rotation d\'équipe élevée', description: 'Turnover anormalement élevé', category: 'hr', severity: 'critical' },
+        {
+          code: 'WORKLOAD_HIGH',
+          name: 'Surcharge de travail',
+          description: 'Employé avec une charge de travail excessive',
+          category: 'capacity',
+          severity: 'high',
+        },
+        {
+          code: 'ABSENCE_PATTERN',
+          name: "Pattern d'absences anormal",
+          description: 'Augmentation significative des absences',
+          category: 'hr',
+          severity: 'medium',
+        },
+        {
+          code: 'PERFORMANCE_DROP',
+          name: 'Baisse de performance',
+          description: 'Diminution notable des performances',
+          category: 'performance',
+          severity: 'medium',
+        },
+        {
+          code: 'DEADLINE_RISK',
+          name: "Risque d'échéance",
+          description: 'Projet en retard ou à risque',
+          category: 'project',
+          severity: 'high',
+        },
+        {
+          code: 'TEAM_TURNOVER',
+          name: "Rotation d'équipe élevée",
+          description: 'Turnover anormalement élevé',
+          category: 'hr',
+          severity: 'critical',
+        },
         // ... Ajouter les 45 autres types d'alertes
       ];
 
@@ -252,11 +270,41 @@ export const useAlerts = () => {
 
       // Insérer les solutions
       const solutionsToInsert = [
-        { title: 'Redistribution des tâches', description: 'Répartir les tâches vers d\'autres membres', category: 'capacity', implementation_time: 'immediate', effectiveness_score: 85 },
-        { title: 'Planification d\'entretien individuel', description: 'Organiser un entretien pour comprendre les causes', category: 'hr', implementation_time: 'short_term', effectiveness_score: 75 },
-        { title: 'Formation ciblée', description: 'Proposer une formation adaptée aux besoins', category: 'performance', implementation_time: 'long_term', effectiveness_score: 70 },
-        { title: 'Extension de délai', description: 'Négocier une extension du délai avec le client', category: 'project', implementation_time: 'immediate', effectiveness_score: 60 },
-        { title: 'Plan de rétention', description: 'Mise en place d\'un plan de rétention des talents', category: 'hr', implementation_time: 'long_term', effectiveness_score: 80 },
+        {
+          title: 'Redistribution des tâches',
+          description: "Répartir les tâches vers d'autres membres",
+          category: 'capacity',
+          implementation_time: 'immediate',
+          effectiveness_score: 85,
+        },
+        {
+          title: "Planification d'entretien individuel",
+          description: 'Organiser un entretien pour comprendre les causes',
+          category: 'hr',
+          implementation_time: 'short_term',
+          effectiveness_score: 75,
+        },
+        {
+          title: 'Formation ciblée',
+          description: 'Proposer une formation adaptée aux besoins',
+          category: 'performance',
+          implementation_time: 'long_term',
+          effectiveness_score: 70,
+        },
+        {
+          title: 'Extension de délai',
+          description: 'Négocier une extension du délai avec le client',
+          category: 'project',
+          implementation_time: 'immediate',
+          effectiveness_score: 60,
+        },
+        {
+          title: 'Plan de rétention',
+          description: "Mise en place d'un plan de rétention des talents",
+          category: 'hr',
+          implementation_time: 'long_term',
+          effectiveness_score: 80,
+        },
         // ... Ajouter les 90 autres solutions
       ];
 
@@ -283,6 +331,6 @@ export const useAlerts = () => {
     getActiveAlerts,
     getHighPriorityAlerts,
     getAlertsByCategory,
-    initializeAlertData
+    initializeAlertData,
   };
 };

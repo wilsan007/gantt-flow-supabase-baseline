@@ -41,7 +41,7 @@ export const useAlertSolutions = () => {
         .maybeSingle();
 
       if (alertTypeError) {
-        console.error('Erreur lors de la récupération du type d\'alerte:', alertTypeError);
+        console.error("Erreur lors de la récupération du type d'alerte:", alertTypeError);
         return [];
       }
 
@@ -53,7 +53,8 @@ export const useAlertSolutions = () => {
       // Récupérer les solutions liées à ce type d'alerte
       const { data: solutionsData, error: solutionsError } = await supabase
         .from('alert_type_solutions')
-        .select(`
+        .select(
+          `
           *,
           alert_solutions (
             id,
@@ -66,7 +67,8 @@ export const useAlertSolutions = () => {
             required_roles,
             action_steps
           )
-        `)
+        `
+        )
         .eq('alert_type_id', alertTypeData.id)
         .order('priority_order', { ascending: true });
 
@@ -75,7 +77,10 @@ export const useAlertSolutions = () => {
         return getGenericSolutions(alertType);
       }
 
-      return solutionsData?.map(item => item.alert_solutions).filter(Boolean) || getGenericSolutions(alertType);
+      return (
+        solutionsData?.map(item => item.alert_solutions).filter(Boolean) ||
+        getGenericSolutions(alertType)
+      );
     } catch (err: any) {
       console.error('Erreur:', err);
       setError(err.message);
@@ -88,7 +93,7 @@ export const useAlertSolutions = () => {
   // Solutions génériques basées sur le type d'alerte
   const getGenericSolutions = (alertType: string): AlertSolution[] => {
     const genericSolutions: Record<string, AlertSolution[]> = {
-      'WORKLOAD_HIGH': [
+      WORKLOAD_HIGH: [
         {
           id: 'generic-redistribute',
           title: 'Redistribuer la charge de travail',
@@ -103,9 +108,9 @@ export const useAlertSolutions = () => {
               'Analyser les tâches en cours',
               'Identifier les employés moins chargés',
               'Réassigner les tâches non critiques',
-              'Communiquer les changements'
-            ]
-          }
+              'Communiquer les changements',
+            ],
+          },
         },
         {
           id: 'generic-hire-temp',
@@ -121,12 +126,12 @@ export const useAlertSolutions = () => {
               'Définir le besoin en compétences',
               'Lancer un processus de recrutement express',
               'Sélectionner et intégrer rapidement',
-              'Former et accompagner'
-            ]
-          }
-        }
+              'Former et accompagner',
+            ],
+          },
+        },
       ],
-      'OVERLOAD_90': [
+      OVERLOAD_90: [
         {
           id: 'generic-urgent-rebalance',
           title: 'Réorganisation urgente des priorités',
@@ -138,18 +143,18 @@ export const useAlertSolutions = () => {
           required_roles: ['manager'],
           action_steps: {
             steps: [
-              'Convoquer une réunion d\'urgence',
+              "Convoquer une réunion d'urgence",
               'Identifier les tâches critiques vs non-critiques',
               'Reporter ou déléguer les tâches non-urgentes',
-              'Mettre en place un suivi quotidien'
-            ]
-          }
-        }
+              'Mettre en place un suivi quotidien',
+            ],
+          },
+        },
       ],
-      'ABSENCE_PATTERN': [
+      ABSENCE_PATTERN: [
         {
           id: 'generic-investigate',
-          title: 'Investigation des causes d\'absence',
+          title: "Investigation des causes d'absence",
           description: 'Analyser les raisons des absences répétées et proposer des solutions',
           category: 'hr',
           implementation_time: 'short_term',
@@ -159,14 +164,14 @@ export const useAlertSolutions = () => {
           action_steps: {
             steps: [
               'Programmer un entretien individuel',
-              'Analyser les patterns d\'absence',
+              "Analyser les patterns d'absence",
               'Identifier les causes (santé, stress, personnel)',
-              'Proposer un plan d\'accompagnement'
-            ]
-          }
-        }
+              "Proposer un plan d'accompagnement",
+            ],
+          },
+        },
       ],
-      'DEADLINE_RISK': [
+      DEADLINE_RISK: [
         {
           id: 'generic-escalate',
           title: 'Escalade et repriorisation',
@@ -181,12 +186,12 @@ export const useAlertSolutions = () => {
               'Alerter les parties prenantes',
               'Revoir le scope et les délais',
               'Allouer des ressources supplémentaires',
-              'Mettre en place un suivi renforcé'
-            ]
-          }
-        }
+              'Mettre en place un suivi renforcé',
+            ],
+          },
+        },
       ],
-      'PERFORMANCE_DROP': [
+      PERFORMANCE_DROP: [
         {
           id: 'generic-support',
           title: 'Support et déblocage',
@@ -201,39 +206,41 @@ export const useAlertSolutions = () => {
               'Identifier les points de blocage',
               'Organiser une session de déblocage',
               'Fournir les ressources nécessaires',
-              'Accompagner dans la résolution'
-            ]
-          }
-        }
-      ]
+              'Accompagner dans la résolution',
+            ],
+          },
+        },
+      ],
     };
 
-    return genericSolutions[alertType] || [
-      {
-        id: 'generic-default',
-        title: 'Analyser et agir',
-        description: 'Analyser la situation en détail et définir un plan d\'action approprié',
-        category: 'general',
-        implementation_time: 'short_term',
-        cost_level: 'low',
-        effectiveness_score: 70,
-        required_roles: ['manager'],
-        action_steps: {
-          steps: [
-            'Analyser la situation en détail',
-            'Consulter les parties prenantes',
-            'Définir un plan d\'action',
-            'Mettre en œuvre et suivre'
-          ]
-        }
-      }
-    ];
+    return (
+      genericSolutions[alertType] || [
+        {
+          id: 'generic-default',
+          title: 'Analyser et agir',
+          description: "Analyser la situation en détail et définir un plan d'action approprié",
+          category: 'general',
+          implementation_time: 'short_term',
+          cost_level: 'low',
+          effectiveness_score: 70,
+          required_roles: ['manager'],
+          action_steps: {
+            steps: [
+              'Analyser la situation en détail',
+              'Consulter les parties prenantes',
+              "Définir un plan d'action",
+              'Mettre en œuvre et suivre',
+            ],
+          },
+        },
+      ]
+    );
   };
 
   return {
     solutions,
     loading,
     error,
-    getSolutionsForAlertType
+    getSolutionsForAlertType,
   };
 };

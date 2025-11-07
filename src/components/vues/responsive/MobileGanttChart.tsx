@@ -26,22 +26,22 @@ const PRIORITY_COLORS = {
 
 function MobileTaskCard({ task }: { task: Task }) {
   const statusColor = statusColors[task.status];
-  
+
   return (
-    <Card className="mb-4 glass border-primary/30 bg-card/40 backdrop-blur-sm">
+    <Card className="glass mb-4 border-primary/30 bg-card/40 backdrop-blur-sm">
       <CardContent className="p-4">
         <div className="space-y-3">
           {/* Header with title and status */}
           <div className="flex items-start justify-between">
-            <h3 className="font-semibold text-foreground text-base leading-tight flex-1 mr-2">
+            <h3 className="mr-2 flex-1 text-base font-semibold leading-tight text-foreground">
               {task.title}
             </h3>
-            <Badge 
+            <Badge
               className="shrink-0 text-xs font-medium"
-              style={{ 
-                backgroundColor: `${statusColor}20`, 
+              style={{
+                backgroundColor: `${statusColor}20`,
                 color: statusColor,
-                borderColor: `${statusColor}50`
+                borderColor: `${statusColor}50`,
               }}
             >
               {task.status}
@@ -53,13 +53,15 @@ function MobileTaskCard({ task }: { task: Task }) {
             <div className="flex items-center gap-2">
               <Avatar className="h-6 w-6 ring-2 ring-primary/40">
                 <AvatarImage src="" alt={task.assignee || task.assigned_name || 'NA'} />
-                <AvatarFallback className="text-xs bg-primary/40 text-primary-foreground font-semibold">
+                <AvatarFallback className="bg-primary/40 text-xs font-semibold text-primary-foreground">
                   {(task.assignee || task.assigned_name || 'NA').slice(0, 2).toUpperCase()}
                 </AvatarFallback>
               </Avatar>
-              <span className="text-sm text-foreground/80">{task.assignee || task.assigned_name || 'Non assigné'}</span>
+              <span className="text-sm text-foreground/80">
+                {task.assignee || task.assigned_name || 'Non assigné'}
+              </span>
             </div>
-            <Badge className={`text-xs border font-medium ${PRIORITY_COLORS[task.priority]}`}>
+            <Badge className={`border text-xs font-medium ${PRIORITY_COLORS[task.priority]}`}>
               {task.priority}
             </Badge>
           </div>
@@ -79,16 +81,16 @@ function MobileTaskCard({ task }: { task: Task }) {
           {/* Progress */}
           <div className="space-y-2">
             <div className="flex justify-between text-xs">
-              <span className="text-foreground/80 font-medium">Progrès</span>
-              <span className="text-primary font-semibold">{task.progress}%</span>
+              <span className="font-medium text-foreground/80">Progrès</span>
+              <span className="font-semibold text-primary">{task.progress}%</span>
             </div>
             <Progress value={task.progress} className="h-2" />
           </div>
 
           {/* Effort estimate */}
           {task.effort_estimate_h > 0 && (
-            <div className="text-xs text-foreground/70 flex items-center gap-1">
-              <span className="w-1 h-1 bg-accent rounded-full"></span>
+            <div className="flex items-center gap-1 text-xs text-foreground/70">
+              <span className="h-1 w-1 rounded-full bg-accent"></span>
               Estimé: {task.effort_estimate_h}h
             </div>
           )}
@@ -98,15 +100,15 @@ function MobileTaskCard({ task }: { task: Task }) {
   );
 }
 
-export function MobileGanttChart({ 
-  tasks: propTasks, 
-  loading: propLoading, 
+export function MobileGanttChart({
+  tasks: propTasks,
+  loading: propLoading,
   error: propError,
-  updateTaskDates: propUpdateTaskDates 
+  updateTaskDates: propUpdateTaskDates,
 }: MobileGanttChartProps) {
   const [viewMode, setViewMode] = useState<ViewMode>('week');
   const hookData = useTasks();
-  
+
   // Use props if provided, otherwise use hook data
   const tasks = propTasks || hookData.tasks;
   const loading = propLoading !== undefined ? propLoading : hookData.loading;
@@ -136,33 +138,34 @@ export function MobileGanttChart({
   };
 
   return (
-    <Card className="w-full modern-card glow-primary transition-smooth">
-      <GanttHeader 
-        viewMode={viewMode} 
-        onViewModeChange={setViewMode} 
-      />
-      <CardContent className="p-4 bg-gantt-header/50 backdrop-blur-sm">
+    <Card className="modern-card glow-primary transition-smooth w-full">
+      <GanttHeader viewMode={viewMode} onViewModeChange={setViewMode} />
+      <CardContent className="bg-gantt-header/50 p-4 backdrop-blur-sm">
         <ScrollArea className="h-[calc(100vh-250px)]">
           <div className="space-y-6">
-            {Object.entries(tasksByStatus).map(([status, statusTasks]) => (
-              statusTasks.length > 0 && (
-                <div key={status}>
-                  <div className="flex items-center gap-2 mb-3">
-                    <h2 className="text-lg font-semibold text-foreground">
-                      {statusLabels[status as keyof typeof statusLabels]}
-                    </h2>
-                    <Badge variant="secondary" className="bg-primary/40 text-primary-foreground border-primary/50">
-                      {statusTasks.length}
-                    </Badge>
+            {Object.entries(tasksByStatus).map(
+              ([status, statusTasks]) =>
+                statusTasks.length > 0 && (
+                  <div key={status}>
+                    <div className="mb-3 flex items-center gap-2">
+                      <h2 className="text-lg font-semibold text-foreground">
+                        {statusLabels[status as keyof typeof statusLabels]}
+                      </h2>
+                      <Badge
+                        variant="secondary"
+                        className="border-primary/50 bg-primary/40 text-primary-foreground"
+                      >
+                        {statusTasks.length}
+                      </Badge>
+                    </div>
+                    <div className="space-y-3">
+                      {statusTasks.map(task => (
+                        <MobileTaskCard key={task.id} task={task} />
+                      ))}
+                    </div>
                   </div>
-                  <div className="space-y-3">
-                    {statusTasks.map((task) => (
-                      <MobileTaskCard key={task.id} task={task} />
-                    ))}
-                  </div>
-                </div>
-              )
-            ))}
+                )
+            )}
           </div>
         </ScrollArea>
       </CardContent>

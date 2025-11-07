@@ -9,18 +9,18 @@ const mockSupabaseClient = {
     signInWithPassword: vi.fn(),
     signOut: vi.fn(),
     onAuthStateChange: vi.fn(() => ({
-      data: { subscription: { unsubscribe: vi.fn() } }
-    }))
+      data: { subscription: { unsubscribe: vi.fn() } },
+    })),
   },
   storage: {
-    from: vi.fn()
+    from: vi.fn(),
   },
   channel: vi.fn(),
-  removeChannel: vi.fn()
+  removeChannel: vi.fn(),
 };
 
 vi.mock('@/integrations/supabase/client', () => ({
-  supabase: mockSupabaseClient
+  supabase: mockSupabaseClient,
 }));
 
 describe('Supabase Client Integration', () => {
@@ -34,11 +34,11 @@ describe('Supabase Client Integration', () => {
       const mockQuery = {
         select: vi.fn().mockReturnThis(),
         eq: vi.fn().mockReturnThis(),
-        single: vi.fn().mockResolvedValue({ data: {}, error: null })
+        single: vi.fn().mockResolvedValue({ data: {}, error: null }),
       };
-      
+
       mockSupabaseClient.from.mockReturnValue(mockQuery);
-      
+
       const query = mockSupabaseClient.from('users');
       expect(query).toBe(mockQuery);
     });

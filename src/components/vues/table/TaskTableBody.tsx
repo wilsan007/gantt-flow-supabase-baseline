@@ -7,24 +7,32 @@ interface TaskTableBodyProps {
   selectedTaskId?: string;
   onSelectTask: (taskId: string) => void;
   onRowDoubleClick: (task: Task) => void;
-  onCreateSubtask: (parentId: string, linkedActionId?: string, customData?: {
-    title: string;
-    start_date: string;
-    due_date: string;
-    effort_estimate_h: number;
-  }) => void;
-  onCreateSubtaskWithActions?: (parentId: string, customData: {
-    title: string;
-    start_date: string;
-    due_date: string;
-    effort_estimate_h: number;
-  }, actions: Array<{
-    id: string;
-    title: string;
-    weight_percentage: number;
-    due_date?: string;
-    notes?: string;
-  }>) => void;
+  onCreateSubtask: (
+    parentId: string,
+    linkedActionId?: string,
+    customData?: {
+      title: string;
+      start_date: string;
+      due_date: string;
+      effort_estimate_h: number;
+    }
+  ) => void;
+  onCreateSubtaskWithActions?: (
+    parentId: string,
+    customData: {
+      title: string;
+      start_date: string;
+      due_date: string;
+      effort_estimate_h: number;
+    },
+    actions: Array<{
+      id: string;
+      title: string;
+      weight_percentage: number;
+      due_date?: string;
+      notes?: string;
+    }>
+  ) => void;
   onDelete: (taskId: string) => void;
   onDuplicate: (taskId: string) => void;
   onEdit: (taskId: string) => void;
@@ -41,13 +49,13 @@ export const TaskTableBody = ({
   onDelete,
   onDuplicate,
   onEdit,
-  onUpdateAssignee
+  onUpdateAssignee,
 }: TaskTableBodyProps) => {
   // Trier les tâches par display_order pour afficher les sous-tâches correctement
   const sortedTasks = [...tasks].sort((a, b) => {
     const orderA = a.display_order?.split('.').map(n => parseInt(n)) || [0];
     const orderB = b.display_order?.split('.').map(n => parseInt(n)) || [0];
-    
+
     for (let i = 0; i < Math.max(orderA.length, orderB.length); i++) {
       const numA = orderA[i] || 0;
       const numB = orderB[i] || 0;
@@ -58,7 +66,7 @@ export const TaskTableBody = ({
 
   return (
     <TableBody>
-      {sortedTasks.map((task) => (
+      {sortedTasks.map(task => (
         <TaskRow
           key={task.id}
           task={task}

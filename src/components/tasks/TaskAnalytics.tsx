@@ -1,6 +1,6 @@
 /**
  * TaskAnalytics - Statistiques et KPIs des tâches
- * 
+ *
  * Affiche :
  * - KPIs de la semaine (créées, terminées, en retard, taux)
  * - Performance par priorité
@@ -29,11 +29,11 @@ import {
 } from 'lucide-react';
 import { useTasks } from '@/hooks/optimized';
 import { useHRMinimal } from '@/hooks/useHRMinimal';
-import { 
-  startOfWeek, 
-  endOfWeek, 
-  isWithinInterval, 
-  isBefore, 
+import {
+  startOfWeek,
+  endOfWeek,
+  isWithinInterval,
+  isBefore,
   startOfDay,
   parseISO,
   subDays,
@@ -135,7 +135,10 @@ export const TaskAnalytics: React.FC = () => {
       if (employee) {
         contributors.push({
           id: userId,
-          name: employee.full_name || `${(employee as any).first_name || ''} ${(employee as any).last_name || ''}`.trim() || 'Employé',
+          name:
+            employee.full_name ||
+            `${(employee as any).first_name || ''} ${(employee as any).last_name || ''}`.trim() ||
+            'Employé',
           completedTasks,
         });
       }
@@ -199,18 +202,16 @@ export const TaskAnalytics: React.FC = () => {
       {/* Header */}
       <div>
         <h2 className="text-2xl font-bold">Statistiques & Analytics</h2>
-        <p className="text-muted-foreground">
-          Performance et indicateurs clés
-        </p>
+        <p className="text-muted-foreground">Performance et indicateurs clés</p>
       </div>
 
       {/* KPIs Principaux */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
         <MetricCard
           label="Créées"
           value={weekStats.created}
           subtitle="Cette semaine"
-          icon={<BarChart3 className="w-6 h-6" />}
+          icon={<BarChart3 className="h-6 w-6" />}
           color="blue"
         />
 
@@ -218,7 +219,7 @@ export const TaskAnalytics: React.FC = () => {
           label="Terminées"
           value={weekStats.completed}
           subtitle="Cette semaine"
-          icon={<CheckCircle2 className="w-6 h-6" />}
+          icon={<CheckCircle2 className="h-6 w-6" />}
           color="green"
         />
 
@@ -226,17 +227,35 @@ export const TaskAnalytics: React.FC = () => {
           label="En retard"
           value={weekStats.overdue}
           subtitle="Nécessitent action"
-          icon={<XCircle className="w-6 h-6" />}
+          icon={<XCircle className="h-6 w-6" />}
           color="red"
         />
 
         <MetricCard
           label="Taux"
           value={`${weekStats.completionRate}%`}
-          subtitle={weekStats.completionRate >= 70 ? "Excellent" : weekStats.completionRate >= 50 ? "Moyen" : "Faible"}
-          icon={<TrendingUp className="w-6 h-6" />}
-          color={weekStats.completionRate >= 70 ? "green" : weekStats.completionRate >= 50 ? "orange" : "red"}
-          trend={weekStats.completionRate >= 70 ? "up" : weekStats.completionRate >= 50 ? undefined : "down"}
+          subtitle={
+            weekStats.completionRate >= 70
+              ? 'Excellent'
+              : weekStats.completionRate >= 50
+                ? 'Moyen'
+                : 'Faible'
+          }
+          icon={<TrendingUp className="h-6 w-6" />}
+          color={
+            weekStats.completionRate >= 70
+              ? 'green'
+              : weekStats.completionRate >= 50
+                ? 'orange'
+                : 'red'
+          }
+          trend={
+            weekStats.completionRate >= 70
+              ? 'up'
+              : weekStats.completionRate >= 50
+                ? undefined
+                : 'down'
+          }
         />
       </div>
 
@@ -254,7 +273,8 @@ export const TaskAnalytics: React.FC = () => {
             <div className="flex items-center justify-between text-sm">
               <span className="font-medium">🔴 Haute</span>
               <span className="text-muted-foreground">
-                {getPriorityPercentage(priorityStats.high)}% ({priorityStats.high.completed}/{priorityStats.high.total})
+                {getPriorityPercentage(priorityStats.high)}% ({priorityStats.high.completed}/
+                {priorityStats.high.total})
               </span>
             </div>
             <ProgressBar value={getPriorityPercentage(priorityStats.high)} color="red" />
@@ -265,7 +285,8 @@ export const TaskAnalytics: React.FC = () => {
             <div className="flex items-center justify-between text-sm">
               <span className="font-medium">🟡 Moyenne</span>
               <span className="text-muted-foreground">
-                {getPriorityPercentage(priorityStats.medium)}% ({priorityStats.medium.completed}/{priorityStats.medium.total})
+                {getPriorityPercentage(priorityStats.medium)}% ({priorityStats.medium.completed}/
+                {priorityStats.medium.total})
               </span>
             </div>
             <ProgressBar value={getPriorityPercentage(priorityStats.medium)} color="orange" />
@@ -276,7 +297,8 @@ export const TaskAnalytics: React.FC = () => {
             <div className="flex items-center justify-between text-sm">
               <span className="font-medium">🟢 Basse</span>
               <span className="text-muted-foreground">
-                {getPriorityPercentage(priorityStats.low)}% ({priorityStats.low.completed}/{priorityStats.low.total})
+                {getPriorityPercentage(priorityStats.low)}% ({priorityStats.low.completed}/
+                {priorityStats.low.total})
               </span>
             </div>
             <ProgressBar value={getPriorityPercentage(priorityStats.low)} color="green" />
@@ -294,7 +316,7 @@ export const TaskAnalytics: React.FC = () => {
         </CardHeader>
         <CardContent>
           {topContributors.length === 0 ? (
-            <p className="text-muted-foreground text-center py-4">
+            <p className="py-4 text-center text-muted-foreground">
               Aucune tâche terminée récemment
             </p>
           ) : (
@@ -302,21 +324,28 @@ export const TaskAnalytics: React.FC = () => {
               {topContributors.map((contributor, index) => (
                 <div
                   key={contributor.id}
-                  className="flex items-center justify-between p-3 border rounded-lg hover:bg-accent/50 transition-colors"
+                  className="flex items-center justify-between rounded-lg border p-3 transition-colors hover:bg-accent/50"
                 >
                   <div className="flex items-center gap-3">
-                    <div className={`flex items-center justify-center w-8 h-8 rounded-full ${
-                      index === 0 ? 'bg-yellow-100 text-yellow-800' :
-                      index === 1 ? 'bg-gray-100 text-gray-800' :
-                      index === 2 ? 'bg-orange-100 text-orange-800' :
-                      'bg-blue-100 text-blue-800'
-                    }`}>
-                      <span className="font-bold text-sm">{index + 1}</span>
+                    <div
+                      className={`flex h-8 w-8 items-center justify-center rounded-full ${
+                        index === 0
+                          ? 'bg-yellow-100 text-yellow-800'
+                          : index === 1
+                            ? 'bg-gray-100 text-gray-800'
+                            : index === 2
+                              ? 'bg-orange-100 text-orange-800'
+                              : 'bg-blue-100 text-blue-800'
+                      }`}
+                    >
+                      <span className="text-sm font-bold">{index + 1}</span>
                     </div>
                     <div>
                       <p className="font-medium">{contributor.name}</p>
                       <p className="text-xs text-muted-foreground">
-                        {contributor.completedTasks} tâche{contributor.completedTasks > 1 ? 's' : ''} terminée{contributor.completedTasks > 1 ? 's' : ''}
+                        {contributor.completedTasks} tâche
+                        {contributor.completedTasks > 1 ? 's' : ''} terminée
+                        {contributor.completedTasks > 1 ? 's' : ''}
                       </p>
                     </div>
                   </div>
@@ -331,16 +360,14 @@ export const TaskAnalytics: React.FC = () => {
       {/* Alertes */}
       {alerts.length > 0 && (
         <div className="space-y-3">
-          <h3 className="text-lg font-semibold flex items-center gap-2">
+          <h3 className="flex items-center gap-2 text-lg font-semibold">
             <AlertTriangle className="h-5 w-5" />
             Alertes
           </h3>
           {alerts.map((alert, index) => (
             <Alert key={index} variant={alert.type === 'error' ? 'destructive' : 'default'}>
               <AlertTriangle className="h-4 w-4" />
-              <AlertTitle>
-                {alert.type === 'error' ? 'Action Requise' : 'Attention'}
-              </AlertTitle>
+              <AlertTitle>{alert.type === 'error' ? 'Action Requise' : 'Attention'}</AlertTitle>
               <AlertDescription>{alert.message}</AlertDescription>
             </Alert>
           ))}
@@ -350,7 +377,7 @@ export const TaskAnalytics: React.FC = () => {
       {/* Info supplémentaires */}
       <Card>
         <CardContent className="pt-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+          <div className="grid grid-cols-1 gap-4 text-center md:grid-cols-3">
             <div>
               <p className="text-2xl font-bold">{tasks.length}</p>
               <p className="text-sm text-muted-foreground">Total tâches</p>

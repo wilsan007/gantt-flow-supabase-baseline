@@ -392,7 +392,7 @@ serve(async (req)=>{
       console.log('    ✔️  Validation: ' + (userMetadata?.temp_user === true ? 'PASSÉE' : 'ÉCHOUÉE'));
       console.log('');
       console.log('4️⃣  TEMP_PASSWORD:');
-      console.log('    ✅ Valeur:', tempPassword ? '[PRÉSENT - ' + tempPassword.length + ' caractères]' : '[ABSENT]');
+      console.log('    ✅ Valeur:', tempPassword ? '[PRÉSENT]' : '[ABSENT]');
       console.log('    📍 Source: user.raw_user_meta_data.temp_password');
       console.log('    ✔️  Validation: ' + (tempPassword && tempPassword.length >= 8 ? 'PASSÉE' : 'ÉCHOUÉE'));
       console.log('');
@@ -820,6 +820,9 @@ serve(async (req)=>{
         console.error('   4. Vérifier les logs Supabase pour plus de détails');
         console.error('');
         
+        // Log stack trace en interne uniquement (pas dans la réponse)
+        console.error('🔍 Stack trace (interne):', error.stack);
+        
         const errorResponse = {
           success: false,
           error: 'Erreur critique lors de la confirmation automatique de l\'email',
@@ -827,11 +830,16 @@ serve(async (req)=>{
             error_name: error.name,
             error_message: error.message,
             error_code: error.code,
-            error_stack: error.stack,
-            user_id: user.id,
-            user_email: user.email,
+            // Ne pas exposer les données sensibles
+            user_id: '[MASQUÉ]',
+            user_email: '[MASQUÉ]',
             validation_elements_count: Object.keys(validatedElements).length,
-            validation_elements_details: validatedElements,
+            validation_elements_details: {
+              ...validatedElements,
+              temp_password: validatedElements.temp_password ? '[MASQUÉ]' : undefined,
+              validation_code: validatedElements.validation_code ? '[MASQUÉ]' : undefined,
+              invitation_id: validatedElements.invitation_id ? '[MASQUÉ]' : undefined
+            },
             attempted_method: 'Service Role Admin (Méthode Leaders)',
             timestamp_error: new Date().toISOString(),
             process_stage: 'Email Confirmation',
@@ -845,9 +853,7 @@ serve(async (req)=>{
           }
         };
         
-        console.error('📦 RÉPONSE D\'ERREUR ENVOYÉE:');
-        console.error(JSON.stringify(errorResponse, null, 2));
-        console.error('');
+        console.error('📦 RÉPONSE D\'ERREUR ENVOYÉE (données sensibles masquées)');
         console.error('💥 ===== FIN DU PROCESSUS EN ÉCHEC =====');
         console.error('');
         

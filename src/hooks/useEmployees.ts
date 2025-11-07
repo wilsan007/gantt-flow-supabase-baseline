@@ -39,7 +39,7 @@ export const useEmployees = () => {
   const [departments, setDepartments] = useState<Department[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  
+
   // 🔒 Contexte utilisateur pour le filtrage
   const { userContext } = useUserFilterContext();
 
@@ -49,27 +49,25 @@ export const useEmployees = () => {
 
   const fetchData = async () => {
     if (!userContext) return;
-    
+
     try {
       setLoading(true);
-      
+
       // Log de l'utilisateur connecté
-      const { data: { session } } = await supabase.auth.getSession();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
       // console.log('👥 Fetch employees - Utilisateur:', session?.user ? {
       //   id: session.user.id,
       //   email: session.user.email
       // } : 'Non connecté');
-      
 
       // Fetch employees from profiles table avec filtrage
-      let employeesQuery = supabase
-        .from('profiles')
-        .select('*')
-        .order('full_name');
-      
+      let employeesQuery = supabase.from('profiles').select('*').order('full_name');
+
       // 🔒 Appliquer le filtrage par rôle (profiles = employees)
       employeesQuery = applyRoleFilters(employeesQuery, userContext, 'employees');
-      
+
       const { data: employeesData, error: employeesError } = await employeesQuery;
 
       // console.log('👥 Employees query result:', {
@@ -91,7 +89,7 @@ export const useEmployees = () => {
       // Map profiles data to match Employee interface
       const mappedEmployees = (employeesData || []).map(profile => ({
         ...profile,
-        employee_id: profile.employee_id || `EMP${profile.id.slice(-4)}`
+        employee_id: profile.employee_id || `EMP${profile.id.slice(-4)}`,
       }));
 
       // Déjà filtré par applyRoleFilters
@@ -105,35 +103,39 @@ export const useEmployees = () => {
     }
   };
 
-  const createEmployee = async (employeeData: Omit<Employee, 'id' | 'created_at' | 'updated_at'>) => {
+  const createEmployee = async (
+    employeeData: Omit<Employee, 'id' | 'created_at' | 'updated_at'>
+  ) => {
     try {
       // Create auth user first, then create profile
       // console.log('Creating employee with data:', employeeData);
       // For now, just create in profiles table
       const { data, error } = await supabase
         .from('profiles')
-        .insert([{
-          full_name: employeeData.full_name,
-          job_title: employeeData.job_title,
-          employee_id: employeeData.employee_id || `EMP${Date.now().toString().slice(-6)}`,
-          hire_date: employeeData.hire_date,
-          contract_type: employeeData.contract_type || 'CDI',
-          phone: employeeData.phone,
-          salary: employeeData.salary,
-          weekly_hours: employeeData.weekly_hours || 35,
-          manager_id: employeeData.manager_id,
-          emergency_contact: employeeData.emergency_contact
-        }])
+        .insert([
+          {
+            full_name: employeeData.full_name,
+            job_title: employeeData.job_title,
+            employee_id: employeeData.employee_id || `EMP${Date.now().toString().slice(-6)}`,
+            hire_date: employeeData.hire_date,
+            contract_type: employeeData.contract_type || 'CDI',
+            phone: employeeData.phone,
+            salary: employeeData.salary,
+            weekly_hours: employeeData.weekly_hours || 35,
+            manager_id: employeeData.manager_id,
+            emergency_contact: employeeData.emergency_contact,
+          },
+        ])
         .select()
         .single();
 
       if (error) throw error;
-      
+
       const mappedEmployee = {
         ...data,
-        employee_id: data.employee_id || `EMP${data.id.slice(-4)}`
+        employee_id: data.employee_id || `EMP${data.id.slice(-4)}`,
       };
-      
+
       setEmployees(prev => [...prev, mappedEmployee]);
       return mappedEmployee;
     } catch (err) {
@@ -153,8 +155,8 @@ export const useEmployees = () => {
 
       if (error) throw error;
 
-      setEmployees(prev => 
-        prev.map(employee => employee.user_id === id ? { ...employee, ...data } : employee)
+      setEmployees(prev =>
+        prev.map(employee => (employee.user_id === id ? { ...employee, ...data } : employee))
       );
       return data;
     } catch (err) {
@@ -165,10 +167,7 @@ export const useEmployees = () => {
 
   const deleteEmployee = async (id: string) => {
     try {
-      const { error } = await supabase
-        .from('profiles')
-        .delete()
-        .eq('user_id', id); // Use user_id for deletion
+      const { error } = await supabase.from('profiles').delete().eq('user_id', id); // Use user_id for deletion
 
       if (error) throw error;
 
@@ -179,7 +178,9 @@ export const useEmployees = () => {
     }
   };
 
-  const createDepartment = async (departmentData: Omit<Department, 'id' | 'created_at' | 'updated_at'>) => {
+  const createDepartment = async (
+    departmentData: Omit<Department, 'id' | 'created_at' | 'updated_at'>
+  ) => {
     try {
       const { data, error } = await supabase
         .from('departments')
@@ -188,7 +189,7 @@ export const useEmployees = () => {
         .single();
 
       if (error) throw error;
-      
+
       setDepartments(prev => [...prev, data]);
       return data;
     } catch (err) {
@@ -208,8 +209,8 @@ export const useEmployees = () => {
 
       if (error) throw error;
 
-      setDepartments(prev => 
-        prev.map(department => department.id === id ? { ...department, ...data } : department)
+      setDepartments(prev =>
+        prev.map(department => (department.id === id ? { ...department, ...data } : department))
       );
       return data;
     } catch (err) {
@@ -220,10 +221,7 @@ export const useEmployees = () => {
 
   const deleteDepartment = async (id: string) => {
     try {
-      const { error } = await supabase
-        .from('departments')
-        .delete()
-        .eq('id', id);
+      const { error } = await supabase.from('departments').delete().eq('id', id);
 
       if (error) throw error;
 
@@ -245,6 +243,6 @@ export const useEmployees = () => {
     createDepartment,
     updateDepartment,
     deleteDepartment,
-    refetch: fetchData
+    refetch: fetchData,
   };
 };

@@ -34,10 +34,10 @@ export function useOperationalActionTemplates() {
 
     try {
       const { data, error: fetchError } = await supabase
-      .from('operational_action_templates')
-      .select('*')
-      .eq('activity_id', activityId)
-      .order('position', { ascending: true });
+        .from('operational_action_templates')
+        .select('*')
+        .eq('activity_id', activityId)
+        .order('position', { ascending: true });
 
       if (fetchError) throw fetchError;
 
@@ -53,127 +53,135 @@ export function useOperationalActionTemplates() {
   }, []);
 
   // Créer un template
-  const createTemplate = useCallback(async (template: Partial<OperationalActionTemplate>) => {
-    setLoading(true);
-    setError(null);
+  const createTemplate = useCallback(
+    async (template: Partial<OperationalActionTemplate>) => {
+      setLoading(true);
+      setError(null);
 
-    try {
-      if (!currentTenant?.id) {
-        throw new Error('Aucun tenant actif');
+      try {
+        if (!currentTenant?.id) {
+          throw new Error('Aucun tenant actif');
+        }
+
+        const insertData = {
+          ...template,
+          tenant_id: currentTenant.id,
+          created_at: new Date().toISOString(),
+        };
+
+        const { data: newTemplate, error: insertError } = await supabase
+          .from('operational_action_templates')
+          .insert(insertData as any)
+          .select()
+          .single();
+
+        if (insertError) throw insertError;
+
+        // Rafraîchir la liste
+        if (newTemplate.activity_id) {
+          await fetchTemplates(newTemplate.activity_id);
+        }
+
+        return newTemplate;
+      } catch (err: any) {
+        console.error('❌ Erreur createTemplate:', err);
+        setError(err.message);
+        throw err;
+      } finally {
+        setLoading(false);
       }
-
-      const insertData = {
-        ...template,
-        tenant_id: currentTenant.id,
-        created_at: new Date().toISOString(),
-      };
-
-      const { data: newTemplate, error: insertError } = await supabase
-        .from('operational_action_templates')
-        .insert(insertData as any)
-        .select()
-        .single();
-
-      if (insertError) throw insertError;
-
-      // Rafraîchir la liste
-      if (newTemplate.activity_id) {
-        await fetchTemplates(newTemplate.activity_id);
-      }
-
-      return newTemplate;
-    } catch (err: any) {
-      console.error('❌ Erreur createTemplate:', err);
-      setError(err.message);
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  }, [fetchTemplates, currentTenant]);
+    },
+    [fetchTemplates, currentTenant]
+  );
 
   // Mettre à jour un template
-  const updateTemplate = useCallback(async (id: string, updates: Partial<OperationalActionTemplate>) => {
-    setLoading(true);
-    setError(null);
+  const updateTemplate = useCallback(
+    async (id: string, updates: Partial<OperationalActionTemplate>) => {
+      setLoading(true);
+      setError(null);
 
-    try {
-      const { error: updateError } = await supabase
-        .from('operational_action_templates')
-        .update(updates)
-        .eq('id', id)
-        .select()
-        .single();
+      try {
+        const { error: updateError } = await supabase
+          .from('operational_action_templates')
+          .update(updates)
+          .eq('id', id)
+          .select()
+          .single();
 
-      if (updateError) throw updateError;
+        if (updateError) throw updateError;
 
-      // Rafraîchir la liste
-      if (updates.activity_id) {
-        await fetchTemplates(updates.activity_id);
+        // Rafraîchir la liste
+        if (updates.activity_id) {
+          await fetchTemplates(updates.activity_id);
+        }
+
+        return updates;
+      } catch (err: any) {
+        console.error(' Erreur updateTemplate:', err);
+        setError(err.message);
+        throw err;
+      } finally {
+        setLoading(false);
       }
-
-      return updates;
-    } catch (err: any) {
-      console.error(' Erreur updateTemplate:', err);
-      setError(err.message);
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  }, [fetchTemplates]);
+    },
+    [fetchTemplates]
+  );
 
   // Supprimer un template
-  const deleteTemplate = useCallback(async (id: string, activityId: string) => {
-    setLoading(true);
-    setError(null);
+  const deleteTemplate = useCallback(
+    async (id: string, activityId: string) => {
+      setLoading(true);
+      setError(null);
 
-    try {
-      const { error: deleteError } = await supabase
-        .from('operational_action_templates')
-        .delete()
-        .eq('id', id);
+      try {
+        const { error: deleteError } = await supabase
+          .from('operational_action_templates')
+          .delete()
+          .eq('id', id);
 
-      if (deleteError) throw deleteError;
+        if (deleteError) throw deleteError;
 
-      // Rafraîchir la liste
-      await fetchTemplates(activityId);
-
-    } catch (err: any) {
-      console.error('❌ Erreur deleteTemplate:', err);
-      setError(err.message);
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  }, [fetchTemplates]);
+        // Rafraîchir la liste
+        await fetchTemplates(activityId);
+      } catch (err: any) {
+        console.error('❌ Erreur deleteTemplate:', err);
+        setError(err.message);
+        throw err;
+      } finally {
+        setLoading(false);
+      }
+    },
+    [fetchTemplates]
+  );
 
   // Réorganiser les templates (drag & drop)
-  const reorderTemplates = useCallback(async (activityId: string, reorderTemplates: OperationalActionTemplate[]) => {
-    setLoading(true);
-    setError(null);
+  const reorderTemplates = useCallback(
+    async (activityId: string, reorderTemplates: OperationalActionTemplate[]) => {
+      setLoading(true);
+      setError(null);
 
-    try {
-      const { error: updateError } = await supabase
-        .from('operational_action_templates')
-        .upsert(
+      try {
+        const { error: updateError } = await supabase.from('operational_action_templates').upsert(
           reorderTemplates.map((template, index) => ({
             id: template.id,
             position: index,
           })) as any
         );
 
-      if (updateError) throw updateError;
+        if (updateError) throw updateError;
 
-      // Rafraîchir la liste
-      await fetchTemplates(activityId);
-
-    } catch (err: any) {
-      console.error('❌ Erreur reorderTemplates:', err);
-      setError(err.message);
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  }, [fetchTemplates]);
+        // Rafraîchir la liste
+        await fetchTemplates(activityId);
+      } catch (err: any) {
+        console.error('❌ Erreur reorderTemplates:', err);
+        setError(err.message);
+        throw err;
+      } finally {
+        setLoading(false);
+      }
+    },
+    [fetchTemplates]
+  );
 
   return {
     templates,

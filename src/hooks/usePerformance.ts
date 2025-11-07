@@ -46,17 +46,17 @@ export const usePerformance = () => {
   const { toast } = useToast();
   const { tenantId } = useTenant();
   const { userRoles } = useUserRoles();
-  
+
   // 🔒 Contexte utilisateur pour le filtrage
   const { userContext } = useUserFilterContext();
-  
+
   // SOLUTION TEMPORAIRE : Récupérer le tenant_id depuis user_roles si useTenant échoue
   const tenantIdFromRoles = userRoles[0]?.tenant_id;
   const effectiveTenantId = tenantId || tenantIdFromRoles;
 
   const fetchData = async () => {
     if (!userContext) return;
-    
+
     try {
       setLoading(true);
       setError(null);
@@ -66,10 +66,10 @@ export const usePerformance = () => {
         .from('objectives')
         .select('*')
         .order('created_at', { ascending: false });
-      
+
       // 🔒 Appliquer le filtrage par rôle (performance_goals est l'équivalent)
       objectivesQuery = applyRoleFilters(objectivesQuery, userContext, 'performance_goals');
-      
+
       const { data: objectivesData, error: objectivesError } = await objectivesQuery;
 
       if (objectivesError) throw objectivesError;
@@ -79,10 +79,10 @@ export const usePerformance = () => {
         .from('evaluations')
         .select('*')
         .order('created_at', { ascending: false });
-      
+
       // 🔒 Appliquer le filtrage par rôle (performance_reviews est l'équivalent)
       evaluationsQuery = applyRoleFilters(evaluationsQuery, userContext, 'performance_reviews');
-      
+
       const { data: evaluationsData, error: evaluationsError } = await evaluationsQuery;
 
       if (evaluationsError) throw evaluationsError;
@@ -110,15 +110,13 @@ export const usePerformance = () => {
 
   const createObjective = async (data: Omit<Objective, 'id' | 'created_at' | 'updated_at'>) => {
     try {
-      const { error } = await supabase
-        .from('objectives')
-        .insert([data as any]);
+      const { error } = await supabase.from('objectives').insert([data as any]);
 
       if (error) throw error;
 
       toast({
         title: 'Objectif créé',
-        description: 'L\'objectif a été créé avec succès',
+        description: "L'objectif a été créé avec succès",
       });
 
       await fetchData();
@@ -126,7 +124,7 @@ export const usePerformance = () => {
       console.error('Error creating objective:', err);
       toast({
         title: 'Erreur',
-        description: 'Impossible de créer l\'objectif',
+        description: "Impossible de créer l'objectif",
         variant: 'destructive',
       });
       throw err;
@@ -135,15 +133,13 @@ export const usePerformance = () => {
 
   const createEvaluation = async (data: Omit<Evaluation, 'id' | 'created_at' | 'updated_at'>) => {
     try {
-      const { error } = await supabase
-        .from('evaluations')
-        .insert([data as any]);
+      const { error } = await supabase.from('evaluations').insert([data as any]);
 
       if (error) throw error;
 
       toast({
         title: 'Évaluation créée',
-        description: 'L\'évaluation a été créée avec succès',
+        description: "L'évaluation a été créée avec succès",
       });
 
       await fetchData();
@@ -151,7 +147,7 @@ export const usePerformance = () => {
       console.error('Error creating evaluation:', err);
       toast({
         title: 'Erreur',
-        description: 'Impossible de créer l\'évaluation',
+        description: "Impossible de créer l'évaluation",
         variant: 'destructive',
       });
       throw err;
@@ -169,7 +165,7 @@ export const usePerformance = () => {
 
       toast({
         title: 'Objectif mis à jour',
-        description: 'L\'objectif a été mis à jour avec succès',
+        description: "L'objectif a été mis à jour avec succès",
       });
 
       await fetchData();
@@ -177,7 +173,7 @@ export const usePerformance = () => {
       console.error('Error updating objective:', err);
       toast({
         title: 'Erreur',
-        description: 'Impossible de mettre à jour l\'objectif',
+        description: "Impossible de mettre à jour l'objectif",
         variant: 'destructive',
       });
       throw err;
@@ -186,16 +182,13 @@ export const usePerformance = () => {
 
   const deleteObjective = async (id: string) => {
     try {
-      const { error } = await supabase
-        .from('objectives')
-        .delete()
-        .eq('id', id);
+      const { error } = await supabase.from('objectives').delete().eq('id', id);
 
       if (error) throw error;
 
       toast({
         title: 'Objectif supprimé',
-        description: 'L\'objectif a été supprimé avec succès',
+        description: "L'objectif a été supprimé avec succès",
       });
 
       await fetchData();
@@ -203,7 +196,7 @@ export const usePerformance = () => {
       console.error('Error deleting objective:', err);
       toast({
         title: 'Erreur',
-        description: 'Impossible de supprimer l\'objectif',
+        description: "Impossible de supprimer l'objectif",
         variant: 'destructive',
       });
       throw err;
@@ -224,7 +217,7 @@ export const usePerformance = () => {
       totalObjectives: objectives.length,
       completedObjectives: objectives.filter(o => o.status === 'completed').length,
       totalEvaluations: evaluations.length,
-      averageScore: 0 // TODO: Calculer si nécessaire
+      averageScore: 0, // TODO: Calculer si nécessaire
     };
   };
 

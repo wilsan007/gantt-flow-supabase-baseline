@@ -1,6 +1,6 @@
 /**
  * 🎯 Roles Context - Pattern Stripe/Linear
- * 
+ *
  * Provider centralisé pour les rôles et permissions
  * Évite les appels multiples et optimise les re-renders
  */
@@ -29,22 +29,21 @@ export const RolesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   // Mémoriser la valeur du context pour éviter re-renders
   const value = useMemo<RolesContextValue>(() => {
     const currentRole = userRoles[0]?.roles?.name || 'Aucun rôle';
-    
+
     return {
       roles: userRoles,
       permissions: userPermissions,
       loading: isLoading,
       error: null, // useUserRoles ne retourne pas d'error
       currentRole,
-      
+
       // Fonction helper pour vérifier permissions
       hasPermission: (permission: string) => {
-        return userPermissions.some((p: any) => 
-          p.permissions?.name === permission || 
-          p.permissions?.code === permission
+        return userPermissions.some(
+          (p: any) => p.permissions?.name === permission || p.permissions?.code === permission
         );
       },
-      
+
       // Fonction helper pour vérifier rôles
       hasRole: (role: string) => {
         return userRoles.some(r => r.roles?.name === role);
@@ -52,11 +51,7 @@ export const RolesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     };
   }, [userRoles, userPermissions, isLoading]);
 
-  return (
-    <RolesContext.Provider value={value}>
-      {children}
-    </RolesContext.Provider>
-  );
+  return <RolesContext.Provider value={value}>{children}</RolesContext.Provider>;
 };
 
 /**
@@ -64,11 +59,11 @@ export const RolesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
  */
 export const useRoles = (): RolesContextValue => {
   const context = useContext(RolesContext);
-  
+
   if (!context) {
     throw new Error('useRoles must be used within RolesProvider');
   }
-  
+
   return context;
 };
 
@@ -78,7 +73,7 @@ export const useRoles = (): RolesContextValue => {
  */
 export const useRolesCompat = () => {
   const context = useContext(RolesContext);
-  
+
   // Si dans un RolesProvider, utiliser le context
   if (context) {
     return {
@@ -87,20 +82,20 @@ export const useRolesCompat = () => {
       isLoading: context.loading,
       hasRole: context.hasRole,
       hasPermission: context.hasPermission,
-      
+
       // Fonctions helpers compatibles
       isSuperAdmin: () => context.hasRole('super_admin'),
       isTenantAdmin: () => context.hasRole('tenant_admin'),
       isHRManager: () => context.hasRole('hr_manager'),
       isProjectManager: () => context.hasRole('project_manager'),
-      
+
       getRoleNames: () => context.roles.map((r: any) => r.roles?.name).filter(Boolean),
       refreshRoles: () => Promise.resolve(), // No-op dans context
       invalidateCache: () => Promise.resolve(),
       getCacheStats: () => ({ hits: 0, misses: 0, size: 0 }),
     };
   }
-  
+
   // Sinon, fallback sur useUserRoles (pour composants non migrés)
   return useUserRoles();
 };

@@ -1,7 +1,7 @@
 /**
  * AppLayoutWithSidebar - Layout principal avec Sidebar Notion
  * Pattern: Sidebar desktop + Menu mobile hamburger
- * 
+ *
  * Fonctionnalités:
  * - Sidebar fixe (desktop)
  * - Menu hamburger (mobile)
@@ -34,7 +34,7 @@ export const AppLayoutWithSidebar: React.FC<AppLayoutWithSidebarProps> = ({
   showWarning,
   timeLeftFormatted,
   signOut,
-  isTenantAdmin
+  isTenantAdmin,
 }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
@@ -87,9 +87,9 @@ export const AppLayoutWithSidebar: React.FC<AppLayoutWithSidebarProps> = ({
       )}
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col overflow-hidden">
+      <div className="flex flex-1 flex-col overflow-hidden">
         {/* Header Mobile/Tablet */}
-        <header className="lg:hidden sticky top-0 z-30 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <header className="sticky top-0 z-30 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 lg:hidden">
           <div className="flex items-center justify-between p-3">
             {/* Menu Hamburger + Logo */}
             <div className="flex items-center gap-3">
@@ -99,21 +99,17 @@ export const AppLayoutWithSidebar: React.FC<AppLayoutWithSidebarProps> = ({
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                 aria-label={isMobileMenuOpen ? 'Fermer le menu' : 'Ouvrir le menu'}
               >
-                {isMobileMenuOpen ? (
-                  <X className="h-5 w-5" />
-                ) : (
-                  <Menu className="h-5 w-5" />
-                )}
+                {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
               </Button>
 
-              <span className="font-semibold text-base">Wadashaqeen</span>
+              <span className="text-base font-semibold">Wadashaqeen</span>
             </div>
 
             {/* Actions droite */}
             <div className="flex items-center gap-1">
               {/* Warning Timer Mobile */}
               {showWarning && (
-                <div className="hidden sm:flex items-center gap-1 px-2 py-1 bg-orange-100 dark:bg-orange-900 text-orange-800 dark:text-orange-200 rounded text-xs font-medium">
+                <div className="hidden items-center gap-1 rounded bg-orange-100 px-2 py-1 text-xs font-medium text-orange-800 dark:bg-orange-900 dark:text-orange-200 sm:flex">
                   ⏰ {timeLeftFormatted}
                 </div>
               )}
@@ -130,8 +126,8 @@ export const AppLayoutWithSidebar: React.FC<AppLayoutWithSidebarProps> = ({
 
           {/* Warning Banner Mobile (si pas assez d'espace dans header) */}
           {showWarning && (
-            <div className="sm:hidden px-3 pb-2">
-              <div className="flex items-center justify-center gap-2 px-3 py-1.5 bg-orange-100 dark:bg-orange-900 text-orange-800 dark:text-orange-200 rounded text-xs font-medium">
+            <div className="px-3 pb-2 sm:hidden">
+              <div className="flex items-center justify-center gap-2 rounded bg-orange-100 px-3 py-1.5 text-xs font-medium text-orange-800 dark:bg-orange-900 dark:text-orange-200">
                 ⏰ Déconnexion dans {timeLeftFormatted}
               </div>
             </div>
@@ -139,17 +135,17 @@ export const AppLayoutWithSidebar: React.FC<AppLayoutWithSidebarProps> = ({
         </header>
 
         {/* Header Desktop (optionnel - pour actions supplémentaires) */}
-        <header className="hidden lg:block sticky top-0 z-30 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <header className="sticky top-0 z-30 hidden border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 lg:block">
           <div className="flex items-center justify-between px-6 py-2.5">
             {/* Titre de page */}
-            <h1 className="text-lg font-bold bg-gradient-to-r from-primary via-accent to-tech-purple bg-clip-text text-transparent">
+            <h1 className="bg-gradient-to-r from-primary via-accent to-tech-purple bg-clip-text text-lg font-bold text-transparent">
               Tableau de Bord Projet
             </h1>
 
             {/* Actions Desktop */}
             <div className="flex items-center gap-2">
               {showWarning && (
-                <div className="flex items-center gap-2 px-3 py-1.5 bg-orange-100 dark:bg-orange-900 text-orange-800 dark:text-orange-200 rounded-md text-sm font-medium">
+                <div className="flex items-center gap-2 rounded-md bg-orange-100 px-3 py-1.5 text-sm font-medium text-orange-800 dark:bg-orange-900 dark:text-orange-200">
                   ⏰ {timeLeftFormatted}
                 </div>
               )}
@@ -163,9 +159,7 @@ export const AppLayoutWithSidebar: React.FC<AppLayoutWithSidebarProps> = ({
         </header>
 
         {/* Page Content with Scroll */}
-        <main className="flex-1 overflow-hidden bg-muted/30">
-          {children}
-        </main>
+        <main className="flex-1 overflow-hidden bg-muted/30">{children}</main>
       </div>
     </div>
   );

@@ -33,7 +33,7 @@ interface LandscapeWrapperProps {
 /**
  * Composant wrapper qui force le mode paysage sur mobile/tablette
  * Affiche un message élégant en mode portrait
- * 
+ *
  * @example
  * <LandscapeWrapper>
  *   <GanttChart {...props} />
@@ -43,8 +43,8 @@ export const LandscapeWrapper: React.FC<LandscapeWrapperProps> = ({
   children,
   forceOnTablet = true,
   customMessage,
-  className = "",
-  viewType
+  className = '',
+  viewType,
 }) => {
   const { shouldShowRotateMessage, deviceType, isLandscape } = useForceLandscape();
   const { shouldForceOrientation, dismissView } = useOrientationPreference();
@@ -74,7 +74,7 @@ export const LandscapeWrapper: React.FC<LandscapeWrapperProps> = ({
   // Afficher le message de rotation si nécessaire
   if (shouldShowRotateMessage) {
     return (
-      <RotateDeviceMessage 
+      <RotateDeviceMessage
         message={customMessage}
         className={className}
         onDismiss={viewType ? handleDismiss : undefined}
@@ -85,10 +85,12 @@ export const LandscapeWrapper: React.FC<LandscapeWrapperProps> = ({
 
   // Mode paysage OK, afficher le contenu avec optimisations
   return (
-    <div className={`w-full h-full landscape-optimized ${className}`}>
+    <div className={`landscape-optimized h-full w-full ${className}`}>
       {children}
-      
-      <style dangerouslySetInnerHTML={{__html: `
+
+      <style
+        dangerouslySetInnerHTML={{
+          __html: `
         .landscape-optimized {
           /* Optimisations spécifiques au mode paysage */
           --safe-area-inset-left: env(safe-area-inset-left, 0);
@@ -104,14 +106,16 @@ export const LandscapeWrapper: React.FC<LandscapeWrapperProps> = ({
             -webkit-overflow-scrolling: touch;
           }
         }
-      `}} />
+      `,
+        }}
+      />
     </div>
   );
 };
 
 /**
  * HOC pour wrapper automatiquement un composant
- * 
+ *
  * @example
  * export default withLandscape(GanttChart);
  */

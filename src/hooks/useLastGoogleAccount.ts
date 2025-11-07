@@ -32,31 +32,31 @@ export const useLastGoogleAccount = () => {
 
   // Écouter les changements d'authentification pour sauvegarder
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        if (event === 'SIGNED_IN' && session?.user) {
-          const user = session.user;
-          
-          // Vérifier si c'est une connexion OAuth (Google ou Microsoft)
-          const provider = user.app_metadata.provider;
-          if (provider === 'google' || provider === 'azure') {
-            const accountData: LastGoogleAccount = {
-              email: user.email || '',
-              fullName: user.user_metadata.full_name || user.user_metadata.name || 'Utilisateur',
-              avatarUrl: user.user_metadata.avatar_url || user.user_metadata.picture,
-              provider: provider as 'google' | 'azure'
-            };
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (event === 'SIGNED_IN' && session?.user) {
+        const user = session.user;
 
-            // Sauvegarder dans localStorage
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(accountData));
-            setLastAccount(accountData);
-          }
-        } else if (event === 'SIGNED_OUT') {
-          // Ne pas supprimer le compte mémorisé lors de la déconnexion
-          // On veut le garder pour permettre la reconnexion rapide
+        // Vérifier si c'est une connexion OAuth (Google ou Microsoft)
+        const provider = user.app_metadata.provider;
+        if (provider === 'google' || provider === 'azure') {
+          const accountData: LastGoogleAccount = {
+            email: user.email || '',
+            fullName: user.user_metadata.full_name || user.user_metadata.name || 'Utilisateur',
+            avatarUrl: user.user_metadata.avatar_url || user.user_metadata.picture,
+            provider: provider as 'google' | 'azure',
+          };
+
+          // Sauvegarder dans localStorage
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(accountData));
+          setLastAccount(accountData);
         }
+      } else if (event === 'SIGNED_OUT') {
+        // Ne pas supprimer le compte mémorisé lors de la déconnexion
+        // On veut le garder pour permettre la reconnexion rapide
       }
-    );
+    });
 
     return () => {
       subscription.unsubscribe();
@@ -71,6 +71,6 @@ export const useLastGoogleAccount = () => {
   return {
     lastAccount,
     clearLastAccount,
-    hasLastAccount: !!lastAccount
+    hasLastAccount: !!lastAccount,
   };
 };

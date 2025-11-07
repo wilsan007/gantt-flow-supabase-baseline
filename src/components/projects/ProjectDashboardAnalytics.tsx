@@ -16,16 +16,16 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { exportToCSV, formatDateForExport, formatCurrencyForExport } from '@/lib/exportUtils';
 import { exportTableToPDF, exportDashboardToPDF, exportHybridPDF } from '@/lib/pdfExportUtils';
-import { 
-  BarChart3, 
-  TrendingUp, 
-  CheckCircle2, 
+import {
+  BarChart3,
+  TrendingUp,
+  CheckCircle2,
   AlertTriangle,
   Clock,
   Download,
   RefreshCw,
   FileText,
-  Image
+  Image,
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
@@ -60,44 +60,51 @@ export const ProjectDashboardAnalytics: React.FC = () => {
 
     // Durée moyenne des projets (en jours)
     const completedWithDates = projects.filter(
-      (p) => p.status === 'completed' && p.start_date && p.end_date
+      p => p.status === 'completed' && p.start_date && p.end_date
     );
-    
-    const avgDuration = completedWithDates.length > 0
-      ? Math.round(
-          completedWithDates.reduce((sum, p) => {
-            const start = new Date(p.start_date!);
-            const end = new Date(p.end_date!);
-            const days = Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
-            return sum + days;
-          }, 0) / completedWithDates.length
-        )
-      : 0;
+
+    const avgDuration =
+      completedWithDates.length > 0
+        ? Math.round(
+            completedWithDates.reduce((sum, p) => {
+              const start = new Date(p.start_date!);
+              const end = new Date(p.end_date!);
+              const days = Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
+              return sum + days;
+            }, 0) / completedWithDates.length
+          )
+        : 0;
 
     // Distribution par statut
-    const statusCounts = projects.reduce((acc, p) => {
-      acc[p.status] = (acc[p.status] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>);
+    const statusCounts = projects.reduce(
+      (acc, p) => {
+        acc[p.status] = (acc[p.status] || 0) + 1;
+        return acc;
+      },
+      {} as Record<string, number>
+    );
 
     const statusDistribution = [
       { name: 'Actifs', value: statusCounts.active || 0, color: '#10b981' },
       { name: 'Terminés', value: statusCounts.completed || 0, color: '#3b82f6' },
       { name: 'En pause', value: statusCounts.on_hold || 0, color: '#f59e0b' },
       { name: 'Annulés', value: statusCounts.cancelled || 0, color: '#ef4444' },
-    ].filter((item) => item.value > 0);
+    ].filter(item => item.value > 0);
 
     // Distribution par priorité
-    const priorityCounts = projects.reduce((acc, p) => {
-      acc[p.priority] = (acc[p.priority] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>);
+    const priorityCounts = projects.reduce(
+      (acc, p) => {
+        acc[p.priority] = (acc[p.priority] || 0) + 1;
+        return acc;
+      },
+      {} as Record<string, number>
+    );
 
     const priorityDistribution = [
       { name: 'Haute', value: priorityCounts.high || 0, color: '#ef4444' },
       { name: 'Moyenne', value: priorityCounts.medium || 0, color: '#f59e0b' },
       { name: 'Basse', value: priorityCounts.low || 0, color: '#10b981' },
-    ].filter((item) => item.value > 0);
+    ].filter(item => item.value > 0);
 
     // Tendances simulées (à remplacer par vraies données historiques)
     const trends = {
@@ -133,7 +140,7 @@ export const ProjectDashboardAnalytics: React.FC = () => {
 
   // Export CSV
   const handleExportCSV = () => {
-    const exportData = projects.map((p) => ({
+    const exportData = projects.map(p => ({
       Nom: p.name,
       Description: p.description || '',
       Statut: p.status,
@@ -146,7 +153,7 @@ export const ProjectDashboardAnalytics: React.FC = () => {
     }));
 
     exportToCSV(exportData, `projets-${new Date().toISOString().split('T')[0]}.csv`);
-    
+
     toast({
       title: 'Export CSV réussi',
       description: `${exportData.length} projets exportés`,
@@ -156,7 +163,7 @@ export const ProjectDashboardAnalytics: React.FC = () => {
   // Export PDF Tabulaire
   const handleExportPDFTable = async () => {
     try {
-      const tableData = projects.map((p) => ({
+      const tableData = projects.map(p => ({
         nom: p.name,
         statut: p.status,
         priorite: p.priority,
@@ -232,7 +239,7 @@ export const ProjectDashboardAnalytics: React.FC = () => {
         { label: 'Durée Moyenne', value: `${analytics.avgDuration}j` },
       ];
 
-      const tableData = projects.map((p) => ({
+      const tableData = projects.map(p => ({
         nom: p.name,
         statut: p.status,
         priorite: p.priority,
@@ -279,48 +286,37 @@ export const ProjectDashboardAnalytics: React.FC = () => {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold">Analytics Projets</h1>
-          <p className="text-muted-foreground mt-1">
-            Vue d'ensemble et métriques clés
-          </p>
+          <p className="mt-1 text-muted-foreground">Vue d'ensemble et métriques clés</p>
         </div>
         <div className="flex items-center gap-2">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button
-                variant="outline"
-                size="sm"
-                disabled={projects.length === 0}
-              >
-                <Download className="h-4 w-4 mr-2" />
+              <Button variant="outline" size="sm" disabled={projects.length === 0}>
+                <Download className="mr-2 h-4 w-4" />
                 Exporter
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuItem onClick={handleExportCSV}>
-                <FileText className="h-4 w-4 mr-2" />
+                <FileText className="mr-2 h-4 w-4" />
                 CSV (Tableau)
               </DropdownMenuItem>
               <DropdownMenuItem onClick={handleExportPDFTable}>
-                <FileText className="h-4 w-4 mr-2" />
+                <FileText className="mr-2 h-4 w-4" />
                 PDF Tableau
               </DropdownMenuItem>
               <DropdownMenuItem onClick={handleExportPDFDashboard}>
-                <Image className="h-4 w-4 mr-2" />
+                <Image className="mr-2 h-4 w-4" />
                 PDF Visuel
               </DropdownMenuItem>
               <DropdownMenuItem onClick={handleExportPDFComplete}>
-                <FileText className="h-4 w-4 mr-2" />
+                <FileText className="mr-2 h-4 w-4" />
                 PDF Complet
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={refresh}
-            disabled={loading}
-          >
-            <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+          <Button variant="outline" size="sm" onClick={refresh} disabled={loading}>
+            <RefreshCw className={`mr-2 h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
             Actualiser
           </Button>
         </div>
@@ -329,57 +325,54 @@ export const ProjectDashboardAnalytics: React.FC = () => {
       {/* Section à capturer pour PDF visuel */}
       <div id="projects-dashboard" className="space-y-6">
         {/* KPIs avec tendances */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <MetricCard
-          label="Total Projets"
-          value={totalCount}
-          subtitle={`+${analytics.trends.total.value}% vs précédent`}
-          icon={<BarChart3 className="w-6 h-6" />}
-          color="blue"
-          trend="up"
-        />
-        <MetricCard
-          label="Projets Actifs"
-          value={activeProjects}
-          subtitle={`+${analytics.trends.active.value}% vs précédent`}
-          icon={<TrendingUp className="w-6 h-6" />}
-          color="green"
-          trend="up"
-        />
-        <MetricCard
-          label="Terminés"
-          value={completedProjects}
-          subtitle={`+${analytics.trends.completed.value}% vs précédent`}
-          icon={<CheckCircle2 className="w-6 h-6" />}
-          color="green"
-          trend="up"
-        />
-        <MetricCard
-          label="En Retard"
-          value={overdueProjects}
-          subtitle="Nécessitent action"
-          icon={<AlertTriangle className="w-6 h-6" />}
-          color="red"
-        />
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
+          <MetricCard
+            label="Total Projets"
+            value={totalCount}
+            subtitle={`+${analytics.trends.total.value}% vs précédent`}
+            icon={<BarChart3 className="h-6 w-6" />}
+            color="blue"
+            trend="up"
+          />
+          <MetricCard
+            label="Projets Actifs"
+            value={activeProjects}
+            subtitle={`+${analytics.trends.active.value}% vs précédent`}
+            icon={<TrendingUp className="h-6 w-6" />}
+            color="green"
+            trend="up"
+          />
+          <MetricCard
+            label="Terminés"
+            value={completedProjects}
+            subtitle={`+${analytics.trends.completed.value}% vs précédent`}
+            icon={<CheckCircle2 className="h-6 w-6" />}
+            color="green"
+            trend="up"
+          />
+          <MetricCard
+            label="En Retard"
+            value={overdueProjects}
+            subtitle="Nécessitent action"
+            icon={<AlertTriangle className="h-6 w-6" />}
+            color="red"
+          />
         </div>
 
         {/* Métrique supplémentaire */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <MetricCard
-          label="Durée Moyenne"
-          value={`${analytics.avgDuration}j`}
-          subtitle="Temps de réalisation"
-          icon={<Clock className="w-6 h-6" />}
-          color="purple"
-        />
-      </div>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+          <MetricCard
+            label="Durée Moyenne"
+            value={`${analytics.avgDuration}j`}
+            subtitle="Temps de réalisation"
+            icon={<Clock className="h-6 w-6" />}
+            color="purple"
+          />
+        </div>
 
         {/* Graphiques de distribution */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <DistributionChart
-            title="Distribution par Statut"
-            data={analytics.statusDistribution}
-          />
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+          <DistributionChart title="Distribution par Statut" data={analytics.statusDistribution} />
           <DistributionChart
             title="Distribution par Priorité"
             data={analytics.priorityDistribution}

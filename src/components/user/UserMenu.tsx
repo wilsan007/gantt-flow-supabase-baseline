@@ -1,7 +1,7 @@
 /**
  * UserMenu - Menu Utilisateur Complet
  * Pattern: ClickUp, Notion, Linear
- * 
+ *
  * Fonctionnalités:
  * - Profil utilisateur avec statut
  * - Actions rapides personnalisées
@@ -39,7 +39,7 @@ import {
   AlertCircle,
   Home,
   BookOpen,
-  Award
+  Award,
 } from 'lucide-react';
 import {
   DropdownMenu,
@@ -77,7 +77,7 @@ export const UserMenu: React.FC<UserMenuProps> = ({
   user,
   isTenantAdmin = false,
   tenantName,
-  onSignOut
+  onSignOut,
 }) => {
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -86,14 +86,24 @@ export const UserMenu: React.FC<UserMenuProps> = ({
   const fullName = user.user_metadata?.full_name || 'Utilisateur';
   const email = user.email || '';
   const avatarUrl = user.user_metadata?.avatar_url;
-  const initials = fullName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+  const initials = fullName
+    .split(' ')
+    .map(n => n[0])
+    .join('')
+    .toUpperCase()
+    .slice(0, 2);
 
-  const statusConfig: Record<UserStatus, { label: string; icon: React.ReactNode; color: string }> = {
-    online: { label: 'En ligne', icon: <CheckCircle2 className="h-4 w-4" />, color: 'bg-green-500' },
-    away: { label: 'Absent', icon: <Clock className="h-4 w-4" />, color: 'bg-yellow-500' },
-    busy: { label: 'Occupé', icon: <Coffee className="h-4 w-4" />, color: 'bg-red-500' },
-    offline: { label: 'Hors ligne', icon: <Circle className="h-4 w-4" />, color: 'bg-gray-400' },
-  };
+  const statusConfig: Record<UserStatus, { label: string; icon: React.ReactNode; color: string }> =
+    {
+      online: {
+        label: 'En ligne',
+        icon: <CheckCircle2 className="h-4 w-4" />,
+        color: 'bg-green-500',
+      },
+      away: { label: 'Absent', icon: <Clock className="h-4 w-4" />, color: 'bg-yellow-500' },
+      busy: { label: 'Occupé', icon: <Coffee className="h-4 w-4" />, color: 'bg-red-500' },
+      offline: { label: 'Hors ligne', icon: <Circle className="h-4 w-4" />, color: 'bg-gray-400' },
+    };
 
   const handleStatusChange = (status: UserStatus) => {
     setUserStatus(status);
@@ -135,18 +145,20 @@ export const UserMenu: React.FC<UserMenuProps> = ({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <button className="flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-accent transition-colors">
+        <button className="flex items-center gap-2 rounded-lg px-2 py-1.5 transition-colors hover:bg-accent">
           <div className="relative">
             <Avatar className="h-8 w-8">
               <AvatarImage src={avatarUrl} alt={fullName} />
-              <AvatarFallback className="bg-primary text-primary-foreground text-xs">
+              <AvatarFallback className="bg-primary text-xs text-primary-foreground">
                 {initials}
               </AvatarFallback>
             </Avatar>
             {/* Indicateur de statut */}
-            <div className={`absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full border-2 border-background ${statusConfig[userStatus].color}`} />
+            <div
+              className={`absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full border-2 border-background ${statusConfig[userStatus].color}`}
+            />
           </div>
-          <div className="hidden md:block text-left">
+          <div className="hidden text-left md:block">
             <p className="text-sm font-medium leading-none">{fullName}</p>
             <p className="text-xs text-muted-foreground">{statusConfig[userStatus].label}</p>
           </div>
@@ -167,7 +179,7 @@ export const UserMenu: React.FC<UserMenuProps> = ({
               <p className="text-sm font-semibold leading-none">{fullName}</p>
               <p className="text-xs text-muted-foreground">{email}</p>
               {isTenantAdmin && tenantName && (
-                <Badge variant="secondary" className="text-xs w-fit">
+                <Badge variant="secondary" className="w-fit text-xs">
                   Admin · {tenantName}
                 </Badge>
               )}
@@ -186,7 +198,7 @@ export const UserMenu: React.FC<UserMenuProps> = ({
             </div>
           </DropdownMenuSubTrigger>
           <DropdownMenuSubContent>
-            {(Object.keys(statusConfig) as UserStatus[]).map((status) => (
+            {(Object.keys(statusConfig) as UserStatus[]).map(status => (
               <DropdownMenuItem
                 key={status}
                 onClick={() => handleStatusChange(status)}
@@ -300,14 +312,16 @@ export const UserMenu: React.FC<UserMenuProps> = ({
           <Zap className="ml-auto h-3 w-3 text-yellow-500" />
         </DropdownMenuItem>
 
-        <DropdownMenuItem onClick={() => {
-          navigate('/tasks');
-          // Ouvrir le tab calendar après navigation
-          setTimeout(() => {
-            const calendarTab = document.querySelector('[value="calendar"]') as HTMLElement;
-            calendarTab?.click();
-          }, 100);
-        }}>
+        <DropdownMenuItem
+          onClick={() => {
+            navigate('/tasks');
+            // Ouvrir le tab calendar après navigation
+            setTimeout(() => {
+              const calendarTab = document.querySelector('[value="calendar"]') as HTMLElement;
+              calendarTab?.click();
+            }, 100);
+          }}
+        >
           <Calendar className="mr-2 h-4 w-4" />
           <span>Mon calendrier</span>
         </DropdownMenuItem>

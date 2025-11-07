@@ -1,8 +1,8 @@
 /**
  * Système de Logging Optimisé pour Production
- * 
+ *
  * Pattern: Datadog + Sentry + LogRocket
- * 
+ *
  * - Logs désactivés en production par défaut
  * - Mode debug activable via console
  * - Groupage intelligent pour réduire le bruit
@@ -251,7 +251,7 @@ class Logger {
     const duration = performance.now() - start;
     this.perf(label, duration);
     this.timers.delete(label);
-    
+
     return duration;
   }
 
@@ -312,7 +312,7 @@ class Logger {
    */
   json(data: any, label?: string): void {
     if (!IS_DEV && !DEBUG_MODE) return;
-    
+
     if (label) {
       console.group(label);
     }
@@ -328,12 +328,12 @@ class Logger {
   enableDebug(): void {
     DEBUG_MODE = true;
     localStorage.setItem('DEBUG_MODE', 'true');
-    
+
     // Mettre à jour la config
     LOG_CONFIG.debug.enabled = true;
     LOG_CONFIG.info.enabled = true;
     LOG_CONFIG.perf.enabled = true;
-    
+
     console.log('✅ Mode debug activé - Rechargez la page pour voir tous les logs');
   }
 
@@ -343,12 +343,12 @@ class Logger {
   disableDebug(): void {
     DEBUG_MODE = false;
     localStorage.removeItem('DEBUG_MODE');
-    
+
     // Mettre à jour la config
     LOG_CONFIG.debug.enabled = IS_DEV;
     LOG_CONFIG.info.enabled = IS_DEV;
     LOG_CONFIG.perf.enabled = IS_DEV;
-    
+
     console.log('✅ Mode debug désactivé');
   }
 
@@ -364,8 +364,10 @@ class Logger {
    * Afficher les statistiques de logs
    */
   stats(): void {
-    const suppressed = Array.from(messageCounters.values())
-      .reduce((sum, counter) => sum + counter.suppressed, 0);
+    const suppressed = Array.from(messageCounters.values()).reduce(
+      (sum, counter) => sum + counter.suppressed,
+      0
+    );
 
     console.group('📊 Statistiques de Logs');
     console.log(`Messages uniques: ${messageCounters.size}`);
@@ -398,17 +400,13 @@ if (typeof window !== 'undefined') {
  * Décorateur pour logger les appels de fonction
  */
 export function logged(label?: string) {
-  return function (
-    target: any,
-    propertyName: string,
-    descriptor: PropertyDescriptor
-  ) {
+  return function (target: any, propertyName: string, descriptor: PropertyDescriptor) {
     const originalMethod = descriptor.value;
     const methodLabel = label || `${target.constructor.name}.${propertyName}`;
 
     descriptor.value = async function (...args: any[]) {
       logger.debug(`→ ${methodLabel}`, args);
-      
+
       try {
         const result = await originalMethod.apply(this, args);
         logger.debug(`← ${methodLabel}`, result);
@@ -427,11 +425,7 @@ export function logged(label?: string) {
  * Décorateur pour mesurer les performances
  */
 export function timed(label?: string) {
-  return function (
-    target: any,
-    propertyName: string,
-    descriptor: PropertyDescriptor
-  ) {
+  return function (target: any, propertyName: string, descriptor: PropertyDescriptor) {
     const originalMethod = descriptor.value;
     const methodLabel = label || `${target.constructor.name}.${propertyName}`;
 

@@ -1,7 +1,7 @@
 /**
  * Provider de Permissions - Initialisation Globale
  * Inspiré des meilleures pratiques de React Query, Zustand
- * 
+ *
  * Fonctionnalités:
  * - Initialisation automatique
  * - Gestion des erreurs
@@ -38,20 +38,20 @@ export const PermissionProvider: React.FC<PermissionProviderProps> = ({ children
     };
 
     // Écouter les changements d'authentification
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        console.log('🔐 Auth state changed:', event);
-        
-        if (event === 'SIGNED_IN' && session) {
-          // Utilisateur connecté - initialiser les permissions
-          await initializePermissions();
-        } else if (event === 'SIGNED_OUT') {
-          // Utilisateur déconnecté - reset
-          reset();
-          setIsInitializing(false);
-        }
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log('🔐 Auth state changed:', event);
+
+      if (event === 'SIGNED_IN' && session) {
+        // Utilisateur connecté - initialiser les permissions
+        await initializePermissions();
+      } else if (event === 'SIGNED_OUT') {
+        // Utilisateur déconnecté - reset
+        reset();
+        setIsInitializing(false);
       }
-    );
+    });
 
     // Initialisation initiale
     initializePermissions();
@@ -65,9 +65,9 @@ export const PermissionProvider: React.FC<PermissionProviderProps> = ({ children
   // Loading state pendant l'initialisation
   if (isInitializing || !isInitialized) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="flex min-h-screen items-center justify-center">
         <div className="text-center">
-          <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4 text-primary" />
+          <Loader2 className="mx-auto mb-4 h-8 w-8 animate-spin text-primary" />
           <p className="text-muted-foreground">Initialisation des permissions...</p>
         </div>
       </div>

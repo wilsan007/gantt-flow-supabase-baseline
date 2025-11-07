@@ -13,7 +13,7 @@ export function usePerformanceOptimizer() {
     memoryUsage: 0,
     activeHooks: 0,
     slowOperations: 0,
-    lastOptimization: null as Date | null
+    lastOptimization: null as Date | null,
   });
 
   const renderCountRef = useRef(0);
@@ -31,19 +31,19 @@ export function usePerformanceOptimizer() {
 
   const updateMetrics = () => {
     const cacheStats = cacheManager.getStats();
-    
+
     setMetrics(prev => ({
       ...prev,
       cacheHitRate: cacheStats.hitRate,
       memoryUsage: cacheStats.memoryUsage,
-      lastOptimization: new Date()
+      lastOptimization: new Date(),
     }));
   };
 
   // Optimisations automatiques
   const optimizePerformance = () => {
     const now = Date.now();
-    
+
     // Nettoyage du cache si nécessaire (toutes les 5 minutes)
     if (now - lastCleanupRef.current > 5 * 60 * 1000) {
       cacheManager.cleanup();
@@ -76,18 +76,30 @@ export function usePerformanceOptimizer() {
     const recommendations = [];
 
     if (cacheStats.hitRate < 0.7) {
-      recommendations.push('📈 Améliorer le cache hit rate (actuellement ' + (cacheStats.hitRate * 100).toFixed(1) + '%)');
+      recommendations.push(
+        '📈 Améliorer le cache hit rate (actuellement ' +
+          (cacheStats.hitRate * 100).toFixed(1) +
+          '%)'
+      );
     }
 
     if (renderTimesRef.current.length > 0) {
-      const avgRenderTime = renderTimesRef.current.reduce((a, b) => a + b, 0) / renderTimesRef.current.length;
+      const avgRenderTime =
+        renderTimesRef.current.reduce((a, b) => a + b, 0) / renderTimesRef.current.length;
       if (avgRenderTime > 100) {
-        recommendations.push('⚡ Optimiser les temps de rendu (actuellement ' + avgRenderTime.toFixed(1) + 'ms)');
+        recommendations.push(
+          '⚡ Optimiser les temps de rendu (actuellement ' + avgRenderTime.toFixed(1) + 'ms)'
+        );
       }
     }
 
-    if (cacheStats.memoryUsage > 50 * 1024 * 1024) { // 50MB
-      recommendations.push('🧹 Nettoyer la mémoire cache (actuellement ' + (cacheStats.memoryUsage / 1024 / 1024).toFixed(1) + 'MB)');
+    if (cacheStats.memoryUsage > 50 * 1024 * 1024) {
+      // 50MB
+      recommendations.push(
+        '🧹 Nettoyer la mémoire cache (actuellement ' +
+          (cacheStats.memoryUsage / 1024 / 1024).toFixed(1) +
+          'MB)'
+      );
     }
 
     return recommendations;
@@ -100,24 +112,32 @@ export function usePerformanceOptimizer() {
 
     return {
       summary: {
-        status: recommendations.length === 0 ? '✅ Excellent' : recommendations.length <= 2 ? '⚠️ Bon' : '❌ À améliorer',
-        score: Math.max(0, 100 - recommendations.length * 15)
+        status:
+          recommendations.length === 0
+            ? '✅ Excellent'
+            : recommendations.length <= 2
+              ? '⚠️ Bon'
+              : '❌ À améliorer',
+        score: Math.max(0, 100 - recommendations.length * 15),
       },
       cache: {
         hitRate: (cacheStats.hitRate * 100).toFixed(1) + '%',
         memoryUsage: (cacheStats.memoryUsage / 1024 / 1024).toFixed(1) + 'MB',
         activeKeys: cacheStats.activeKeys,
         totalHits: cacheStats.hits,
-        totalMisses: cacheStats.misses
+        totalMisses: cacheStats.misses,
       },
       rendering: {
         totalRenders: renderCountRef.current,
-        averageTime: renderTimesRef.current.length > 0 
-          ? (renderTimesRef.current.reduce((a, b) => a + b, 0) / renderTimesRef.current.length).toFixed(1) + 'ms'
-          : 'N/A'
+        averageTime:
+          renderTimesRef.current.length > 0
+            ? (
+                renderTimesRef.current.reduce((a, b) => a + b, 0) / renderTimesRef.current.length
+              ).toFixed(1) + 'ms'
+            : 'N/A',
       },
       recommendations,
-      lastUpdate: new Date().toISOString()
+      lastUpdate: new Date().toISOString(),
     };
   };
 
@@ -127,14 +147,14 @@ export function usePerformanceOptimizer() {
       cacheManager.clear();
       // console.log('🗑️ Cache vidé manuellement');
     },
-    
+
     cleanup: () => {
       cacheManager.cleanup();
       // console.log('🧹 Nettoyage du cache effectué');
     },
-    
+
     optimize: optimizePerformance,
-    
+
     forceGC: () => {
       if (typeof window !== 'undefined' && window.gc) {
         window.gc();
@@ -144,14 +164,14 @@ export function usePerformanceOptimizer() {
       }
     },
 
-    preload: preloadCriticalData
+    preload: preloadCriticalData,
   };
 
   return {
     metrics,
     report: getPerformanceReport(),
     recommendations: analyzeBottlenecks(),
-    actions
+    actions,
   };
 }
 
@@ -166,20 +186,22 @@ export function useRenderOptimizer(componentName: string) {
   useEffect(() => {
     const now = Date.now();
     const renderTime = now - lastRenderRef.current;
-    
+
     renderCountRef.current += 1;
     renderTimesRef.current.push(renderTime);
-    
+
     // Garder seulement les 10 derniers temps de rendu
     if (renderTimesRef.current.length > 10) {
       renderTimesRef.current = renderTimesRef.current.slice(-10);
     }
-    
+
     lastRenderRef.current = now;
 
     // Alerte si trop de re-renders
     if (renderCountRef.current > 20) {
-      console.warn(`⚠️ ${componentName} a été rendu ${renderCountRef.current} fois - vérifier les dépendances`);
+      console.warn(
+        `⚠️ ${componentName} a été rendu ${renderCountRef.current} fois - vérifier les dépendances`
+      );
     }
 
     // Alerte si rendu trop lent
@@ -190,15 +212,16 @@ export function useRenderOptimizer(componentName: string) {
 
   const getStats = () => ({
     renderCount: renderCountRef.current,
-    averageRenderTime: renderTimesRef.current.length > 0 
-      ? renderTimesRef.current.reduce((a, b) => a + b, 0) / renderTimesRef.current.length 
-      : 0,
-    lastRenderTime: renderTimesRef.current[renderTimesRef.current.length - 1] || 0
+    averageRenderTime:
+      renderTimesRef.current.length > 0
+        ? renderTimesRef.current.reduce((a, b) => a + b, 0) / renderTimesRef.current.length
+        : 0,
+    lastRenderTime: renderTimesRef.current[renderTimesRef.current.length - 1] || 0,
   });
 
   return {
     renderCount: renderCountRef.current,
-    stats: getStats()
+    stats: getStats(),
   };
 }
 

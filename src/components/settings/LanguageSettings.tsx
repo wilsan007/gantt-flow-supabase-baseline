@@ -30,23 +30,21 @@ export const LanguageSettings = () => {
     <Card>
       <CardHeader>
         <CardTitle>Langue de l'interface</CardTitle>
-        <CardDescription>
-          Sélectionnez la langue de l'application
-        </CardDescription>
+        <CardDescription>Sélectionnez la langue de l'application</CardDescription>
       </CardHeader>
       <CardContent>
         <RadioGroup value={language} onValueChange={handleLanguageChange} className="space-y-4">
-          {languages.map((lang) => (
+          {languages.map(lang => (
             <div key={lang.value} className="flex items-center space-x-3">
               <RadioGroupItem value={lang.value} id={lang.value} />
-              <Label htmlFor={lang.value} className="flex items-center gap-3 cursor-pointer">
+              <Label htmlFor={lang.value} className="flex cursor-pointer items-center gap-3">
                 <span className="text-2xl">{lang.flag}</span>
                 <span className="text-base font-medium">{lang.label}</span>
               </Label>
             </div>
           ))}
         </RadioGroup>
-        <p className="text-sm text-muted-foreground mt-4">
+        <p className="mt-4 text-sm text-muted-foreground">
           Note : La traduction complète de l'interface est en cours de développement.
         </p>
       </CardContent>

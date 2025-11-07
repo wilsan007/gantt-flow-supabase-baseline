@@ -1,36 +1,45 @@
-import { useState } from "react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, Users, Calendar, Clock, Building, TrendingUp, BookOpen, Shield } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-import { ThemeToggle } from "@/components/ThemeToggle";
-import { useIsMobile } from "@/hooks/use-mobile";
-import { ResponsiveLayout } from "@/components/responsive/ResponsiveLayout";
-import { HRDashboardMinimal as HRDashboard } from "@/components/hr/HRDashboardMinimal";
-import { LeaveManagement } from "@/components/hr/LeaveManagement";
-import { AttendanceManagement } from "@/components/hr/AttendanceManagement";
-import { EnhancedEmployeeManagement } from "@/components/hr/EnhancedEmployeeManagement";
-import { AbsenceTypeManagement } from "@/components/hr/AbsenceTypeManagement";
-import { LeaveBalanceManagement } from "@/components/hr/LeaveBalanceManagement";
-import { TimesheetManagement } from "@/components/hr/TimesheetManagement";
-import { DepartmentManagement } from "@/components/hr/DepartmentManagement";
-import { OnboardingOffboarding } from "@/components/hr/OnboardingOffboarding";
-import { PerformanceManagement } from "@/components/hr/PerformanceManagement";
-import { SkillsTraining } from "@/components/hr/SkillsTraining";
-import { ExpenseManagement } from "@/components/hr/ExpenseManagement";
-import { PayrollManagement } from "@/components/hr/PayrollManagement";
-import { HealthSafety } from "@/components/hr/HealthSafety";
+import { useState } from 'react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  ArrowLeft,
+  Users,
+  Calendar,
+  Clock,
+  Building,
+  TrendingUp,
+  BookOpen,
+  Shield,
+} from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { ThemeToggle } from '@/components/ThemeToggle';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { ResponsiveLayout } from '@/components/responsive/ResponsiveLayout';
+import { HRDashboardMinimal as HRDashboard } from '@/components/hr/HRDashboardMinimal';
+import { LeaveManagement } from '@/components/hr/LeaveManagement';
+import { AttendanceManagement } from '@/components/hr/AttendanceManagement';
+import { EnhancedEmployeeManagement } from '@/components/hr/EnhancedEmployeeManagement';
+import { AbsenceTypeManagement } from '@/components/hr/AbsenceTypeManagement';
+import { LeaveBalanceManagement } from '@/components/hr/LeaveBalanceManagement';
+import { TimesheetManagement } from '@/components/hr/TimesheetManagement';
+import { DepartmentManagement } from '@/components/hr/DepartmentManagement';
+import { OnboardingOffboarding } from '@/components/hr/OnboardingOffboarding';
+import { PerformanceManagement } from '@/components/hr/PerformanceManagement';
+import { SkillsTraining } from '@/components/hr/SkillsTraining';
+import { ExpenseManagement } from '@/components/hr/ExpenseManagement';
+import { PayrollManagement } from '@/components/hr/PayrollManagement';
+import { HealthSafety } from '@/components/hr/HealthSafety';
 // AdvancedHRDashboard supprimé - composant obsolète
 
 const HRPage = () => {
-  const [activeTab, setActiveTab] = useState("dashboard");
+  const [activeTab, setActiveTab] = useState('dashboard');
   const [activeSubTab, setActiveSubTab] = useState({
-    employees: "management",
-    operations: "onboarding",
-    development: "skills",
-    leaves: "requests",
-    time: "attendance"
+    employees: 'management',
+    operations: 'onboarding',
+    development: 'skills',
+    leaves: 'requests',
+    time: 'attendance',
   });
   const isMobile = useIsMobile();
   const navigate = useNavigate();
@@ -38,22 +47,24 @@ const HRPage = () => {
   return (
     <ResponsiveLayout>
       {/* Header avec navigation retour */}
-      <div className={`flex justify-between items-start mb-6 ${isMobile ? 'mb-4' : 'mb-8'}`}>
+      <div className={`mb-6 flex items-start justify-between ${isMobile ? 'mb-4' : 'mb-8'}`}>
         <div className="flex items-center gap-4">
           <Button
             variant="outline"
-            size={isMobile ? "sm" : "default"}
-            onClick={() => navigate("/")}
+            size={isMobile ? 'sm' : 'default'}
+            onClick={() => navigate('/')}
             className="hover-glow"
           >
-            <ArrowLeft className={isMobile ? "h-3 w-3" : "h-4 w-4"} />
-            {!isMobile && "Retour"}
+            <ArrowLeft className={isMobile ? 'h-3 w-3' : 'h-4 w-4'} />
+            {!isMobile && 'Retour'}
           </Button>
           <div className="flex-1">
-            <h1 className={`font-bold bg-gradient-to-r from-primary via-accent to-tech-purple bg-clip-text text-transparent drop-shadow-sm ${isMobile ? 'text-2xl' : 'text-4xl'}`}>
+            <h1
+              className={`bg-gradient-to-r from-primary via-accent to-tech-purple bg-clip-text font-bold text-transparent drop-shadow-sm ${isMobile ? 'text-2xl' : 'text-4xl'}`}
+            >
               Gestion des Ressources Humaines
             </h1>
-            <p className={`text-muted-foreground font-medium ${isMobile ? 'text-sm' : 'text-lg'}`}>
+            <p className={`font-medium text-muted-foreground ${isMobile ? 'text-sm' : 'text-lg'}`}>
               Module complet de gestion RH
             </p>
           </div>
@@ -62,9 +73,11 @@ const HRPage = () => {
           <ThemeToggle />
         </div>
       </div>
-      
+
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className={`grid w-full modern-card glow-primary bg-gradient-to-r from-primary/10 via-accent/10 to-tech-purple/10 border-2 ${isMobile ? 'grid-cols-3 gap-2 p-2 mb-4' : 'grid-cols-6 gap-2 p-3 mb-8'}`}>
+        <TabsList
+          className={`modern-card glow-primary grid w-full border-2 bg-gradient-to-r from-primary/10 via-accent/10 to-tech-purple/10 ${isMobile ? 'mb-4 grid-cols-3 gap-2 p-2' : 'mb-8 grid-cols-6 gap-2 p-3'}`}
+        >
           <TabsTrigger value="dashboard" className="flex items-center gap-2">
             <Building className="h-4 w-4" />
             {!isMobile && 'Dashboard'}
@@ -90,182 +103,182 @@ const HRPage = () => {
             {!isMobile && 'Sécurité'}
           </TabsTrigger>
         </TabsList>
-        
+
         <TabsContent value="dashboard" className={isMobile ? 'mt-2' : 'mt-6'}>
-          <div className="modern-card rounded-xl transition-smooth hover-glow">
+          <div className="modern-card transition-smooth hover-glow rounded-xl">
             <HRDashboard />
           </div>
         </TabsContent>
-        
+
         <TabsContent value="personnel" className={isMobile ? 'mt-2' : 'mt-6'}>
           <div className="space-y-6">
-            <div className="flex gap-2 mb-4">
+            <div className="mb-4 flex gap-2">
               <Button
-                variant={activeSubTab.employees === "management" ? "default" : "outline"}
-                onClick={() => setActiveSubTab(prev => ({...prev, employees: "management"}))}
+                variant={activeSubTab.employees === 'management' ? 'default' : 'outline'}
+                onClick={() => setActiveSubTab(prev => ({ ...prev, employees: 'management' }))}
                 className="flex-1"
               >
-                <Users className="h-4 w-4 mr-2" />
+                <Users className="mr-2 h-4 w-4" />
                 Gestion Employés
               </Button>
               <Button
-                variant={activeSubTab.employees === "departments" ? "default" : "outline"}
-                onClick={() => setActiveSubTab(prev => ({...prev, employees: "departments"}))}
+                variant={activeSubTab.employees === 'departments' ? 'default' : 'outline'}
+                onClick={() => setActiveSubTab(prev => ({ ...prev, employees: 'departments' }))}
                 className="flex-1"
               >
-                <Building className="h-4 w-4 mr-2" />
+                <Building className="mr-2 h-4 w-4" />
                 Départements
               </Button>
             </div>
-            
-            <div className="modern-card rounded-xl transition-smooth hover-glow">
-              {activeSubTab.employees === "management" && <EnhancedEmployeeManagement />}
-              {activeSubTab.employees === "departments" && <DepartmentManagement />}
+
+            <div className="modern-card transition-smooth hover-glow rounded-xl">
+              {activeSubTab.employees === 'management' && <EnhancedEmployeeManagement />}
+              {activeSubTab.employees === 'departments' && <DepartmentManagement />}
             </div>
           </div>
         </TabsContent>
 
         <TabsContent value="performance" className={isMobile ? 'mt-2' : 'mt-6'}>
-          <div className="modern-card rounded-xl transition-smooth hover-glow">
+          <div className="modern-card transition-smooth hover-glow rounded-xl">
             <PerformanceManagement />
           </div>
         </TabsContent>
-        
+
         <TabsContent value="operations" className={isMobile ? 'mt-2' : 'mt-6'}>
           <div className="space-y-6">
-            <div className="flex gap-2 mb-4 flex-wrap">
+            <div className="mb-4 flex flex-wrap gap-2">
               <Button
-                variant={activeSubTab.operations === "onboarding" ? "default" : "outline"}
-                onClick={() => setActiveSubTab(prev => ({...prev, operations: "onboarding"}))}
-                className="flex-1 min-w-32"
+                variant={activeSubTab.operations === 'onboarding' ? 'default' : 'outline'}
+                onClick={() => setActiveSubTab(prev => ({ ...prev, operations: 'onboarding' }))}
+                className="min-w-32 flex-1"
               >
-                <Users className="h-4 w-4 mr-2" />
+                <Users className="mr-2 h-4 w-4" />
                 Onboarding
               </Button>
               <Button
-                variant={activeSubTab.operations === "leaves" ? "default" : "outline"}
-                onClick={() => setActiveSubTab(prev => ({...prev, operations: "leaves"}))}
-                className="flex-1 min-w-32"
+                variant={activeSubTab.operations === 'leaves' ? 'default' : 'outline'}
+                onClick={() => setActiveSubTab(prev => ({ ...prev, operations: 'leaves' }))}
+                className="min-w-32 flex-1"
               >
-                <Calendar className="h-4 w-4 mr-2" />
+                <Calendar className="mr-2 h-4 w-4" />
                 Congés
               </Button>
               <Button
-                variant={activeSubTab.operations === "time" ? "default" : "outline"}
-                onClick={() => setActiveSubTab(prev => ({...prev, operations: "time"}))}
-                className="flex-1 min-w-32"
+                variant={activeSubTab.operations === 'time' ? 'default' : 'outline'}
+                onClick={() => setActiveSubTab(prev => ({ ...prev, operations: 'time' }))}
+                className="min-w-32 flex-1"
               >
-                <Clock className="h-4 w-4 mr-2" />
+                <Clock className="mr-2 h-4 w-4" />
                 Temps
               </Button>
               <Button
-                variant={activeSubTab.operations === "expenses" ? "default" : "outline"}
-                onClick={() => setActiveSubTab(prev => ({...prev, operations: "expenses"}))}
-                className="flex-1 min-w-32"
+                variant={activeSubTab.operations === 'expenses' ? 'default' : 'outline'}
+                onClick={() => setActiveSubTab(prev => ({ ...prev, operations: 'expenses' }))}
+                className="min-w-32 flex-1"
               >
-                <Building className="h-4 w-4 mr-2" />
+                <Building className="mr-2 h-4 w-4" />
                 Frais
               </Button>
               <Button
-                variant={activeSubTab.operations === "payroll" ? "default" : "outline"}
-                onClick={() => setActiveSubTab(prev => ({...prev, operations: "payroll"}))}
-                className="flex-1 min-w-32"
+                variant={activeSubTab.operations === 'payroll' ? 'default' : 'outline'}
+                onClick={() => setActiveSubTab(prev => ({ ...prev, operations: 'payroll' }))}
+                className="min-w-32 flex-1"
               >
-                <TrendingUp className="h-4 w-4 mr-2" />
+                <TrendingUp className="mr-2 h-4 w-4" />
                 Paie
               </Button>
             </div>
-            
-            <div className="modern-card rounded-xl transition-smooth hover-glow">
-              {activeSubTab.operations === "onboarding" && <OnboardingOffboarding />}
-              {activeSubTab.operations === "leaves" && (
+
+            <div className="modern-card transition-smooth hover-glow rounded-xl">
+              {activeSubTab.operations === 'onboarding' && <OnboardingOffboarding />}
+              {activeSubTab.operations === 'leaves' && (
                 <div className="space-y-6">
-                  <div className="flex gap-2 mb-4 flex-wrap">
+                  <div className="mb-4 flex flex-wrap gap-2">
                     <Button
-                      variant={activeSubTab.leaves === "requests" ? "default" : "outline"}
-                      onClick={() => setActiveSubTab(prev => ({...prev, leaves: "requests"}))}
-                      className="flex-1 min-w-32"
+                      variant={activeSubTab.leaves === 'requests' ? 'default' : 'outline'}
+                      onClick={() => setActiveSubTab(prev => ({ ...prev, leaves: 'requests' }))}
+                      className="min-w-32 flex-1"
                     >
-                      <Calendar className="h-4 w-4 mr-2" />
+                      <Calendar className="mr-2 h-4 w-4" />
                       Demandes
                     </Button>
                     <Button
-                      variant={activeSubTab.leaves === "balances" ? "default" : "outline"}
-                      onClick={() => setActiveSubTab(prev => ({...prev, leaves: "balances"}))}
-                      className="flex-1 min-w-32"
+                      variant={activeSubTab.leaves === 'balances' ? 'default' : 'outline'}
+                      onClick={() => setActiveSubTab(prev => ({ ...prev, leaves: 'balances' }))}
+                      className="min-w-32 flex-1"
                     >
-                      <Clock className="h-4 w-4 mr-2" />
+                      <Clock className="mr-2 h-4 w-4" />
                       Soldes
                     </Button>
                     <Button
-                      variant={activeSubTab.leaves === "types" ? "default" : "outline"}
-                      onClick={() => setActiveSubTab(prev => ({...prev, leaves: "types"}))}
-                      className="flex-1 min-w-32"
+                      variant={activeSubTab.leaves === 'types' ? 'default' : 'outline'}
+                      onClick={() => setActiveSubTab(prev => ({ ...prev, leaves: 'types' }))}
+                      className="min-w-32 flex-1"
                     >
-                      <Building className="h-4 w-4 mr-2" />
+                      <Building className="mr-2 h-4 w-4" />
                       Types
                     </Button>
                   </div>
                   <div>
-                    {activeSubTab.leaves === "requests" && <LeaveManagement />}
-                    {activeSubTab.leaves === "balances" && <LeaveBalanceManagement />}
-                    {activeSubTab.leaves === "types" && <AbsenceTypeManagement />}
+                    {activeSubTab.leaves === 'requests' && <LeaveManagement />}
+                    {activeSubTab.leaves === 'balances' && <LeaveBalanceManagement />}
+                    {activeSubTab.leaves === 'types' && <AbsenceTypeManagement />}
                   </div>
                 </div>
               )}
-              {activeSubTab.operations === "time" && (
+              {activeSubTab.operations === 'time' && (
                 <div className="space-y-6">
-                  <div className="flex gap-2 mb-4">
+                  <div className="mb-4 flex gap-2">
                     <Button
-                      variant={activeSubTab.time === "attendance" ? "default" : "outline"}
-                      onClick={() => setActiveSubTab(prev => ({...prev, time: "attendance"}))}
+                      variant={activeSubTab.time === 'attendance' ? 'default' : 'outline'}
+                      onClick={() => setActiveSubTab(prev => ({ ...prev, time: 'attendance' }))}
                       className="flex-1"
                     >
-                      <Clock className="h-4 w-4 mr-2" />
+                      <Clock className="mr-2 h-4 w-4" />
                       Présences
                     </Button>
                     <Button
-                      variant={activeSubTab.time === "timesheets" ? "default" : "outline"}
-                      onClick={() => setActiveSubTab(prev => ({...prev, time: "timesheets"}))}
+                      variant={activeSubTab.time === 'timesheets' ? 'default' : 'outline'}
+                      onClick={() => setActiveSubTab(prev => ({ ...prev, time: 'timesheets' }))}
                       className="flex-1"
                     >
-                      <Calendar className="h-4 w-4 mr-2" />
+                      <Calendar className="mr-2 h-4 w-4" />
                       Feuilles de temps
                     </Button>
                   </div>
                   <div>
-                    {activeSubTab.time === "attendance" && <AttendanceManagement />}
-                    {activeSubTab.time === "timesheets" && <TimesheetManagement />}
+                    {activeSubTab.time === 'attendance' && <AttendanceManagement />}
+                    {activeSubTab.time === 'timesheets' && <TimesheetManagement />}
                   </div>
                 </div>
               )}
-              {activeSubTab.operations === "expenses" && <ExpenseManagement />}
-              {activeSubTab.operations === "payroll" && <PayrollManagement />}
+              {activeSubTab.operations === 'expenses' && <ExpenseManagement />}
+              {activeSubTab.operations === 'payroll' && <PayrollManagement />}
             </div>
           </div>
         </TabsContent>
-        
+
         <TabsContent value="development" className={isMobile ? 'mt-2' : 'mt-6'}>
           <div className="space-y-6">
-            <div className="flex gap-2 mb-4">
+            <div className="mb-4 flex gap-2">
               <Button
-                variant={activeSubTab.development === "skills" ? "default" : "outline"}
-                onClick={() => setActiveSubTab(prev => ({...prev, development: "skills"}))}
+                variant={activeSubTab.development === 'skills' ? 'default' : 'outline'}
+                onClick={() => setActiveSubTab(prev => ({ ...prev, development: 'skills' }))}
                 className="flex-1"
               >
-                <TrendingUp className="h-4 w-4 mr-2" />
+                <TrendingUp className="mr-2 h-4 w-4" />
                 Compétences & Formation
               </Button>
             </div>
-            
-            <div className="modern-card rounded-xl transition-smooth hover-glow">
-              {activeSubTab.development === "skills" && <SkillsTraining />}
+
+            <div className="modern-card transition-smooth hover-glow rounded-xl">
+              {activeSubTab.development === 'skills' && <SkillsTraining />}
             </div>
           </div>
         </TabsContent>
 
         <TabsContent value="safety" className={isMobile ? 'mt-2' : 'mt-6'}>
-          <div className="modern-card rounded-xl transition-smooth hover-glow">
+          <div className="modern-card transition-smooth hover-glow rounded-xl">
             <HealthSafety />
           </div>
         </TabsContent>

@@ -8,21 +8,21 @@ import { UserRole, UserPermission } from './permissionsSystem';
 // Configuration du cache (ajustable selon les besoins)
 const CACHE_CONFIG = {
   // Durée de vie du cache en millisecondes
-  TTL_ROLES: 15 * 60 * 1000,        // 15 minutes pour les rôles
-  TTL_PERMISSIONS: 10 * 60 * 1000,   // 10 minutes pour les permissions
-  TTL_ACCESS_RIGHTS: 5 * 60 * 1000,  // 5 minutes pour les droits d'accès calculés
-  
+  TTL_ROLES: 15 * 60 * 1000, // 15 minutes pour les rôles
+  TTL_PERMISSIONS: 10 * 60 * 1000, // 10 minutes pour les permissions
+  TTL_ACCESS_RIGHTS: 5 * 60 * 1000, // 5 minutes pour les droits d'accès calculés
+
   // Clés de stockage
   STORAGE_PREFIX: 'wadashaqeen_auth_',
-  
+
   // Événements d'invalidation
   INVALIDATION_EVENTS: [
     'role_updated',
     'permission_changed',
     'user_role_assigned',
     'user_role_revoked',
-    'tenant_changed'
-  ]
+    'tenant_changed',
+  ],
 };
 
 interface CacheEntry<T> {
@@ -54,10 +54,10 @@ class RoleCacheManager {
   constructor() {
     // Nettoyer le cache expiré périodiquement
     this.startCleanupInterval();
-    
+
     // Écouter les événements de changement d'authentification
     this.setupAuthListeners();
-    
+
     // Restaurer le cache depuis localStorage au démarrage
     this.restoreFromStorage();
   }
@@ -95,10 +95,10 @@ class RoleCacheManager {
    * Définir une entrée dans le cache
    */
   private setCacheEntry<T>(
-    key: string, 
-    data: T, 
-    ttl: number, 
-    userId: string, 
+    key: string,
+    data: T,
+    ttl: number,
+    userId: string,
     tenantId?: string
   ): void {
     const now = Date.now();
@@ -108,7 +108,7 @@ class RoleCacheManager {
       expiresAt: now + ttl,
       version: this.generateVersion(),
       userId,
-      tenantId
+      tenantId,
     };
 
     this.cache.set(key, entry);
@@ -139,7 +139,7 @@ class RoleCacheManager {
    */
   private restoreFromStorage(): void {
     try {
-      const keys = Object.keys(localStorage).filter(key => 
+      const keys = Object.keys(localStorage).filter(key =>
         key.startsWith(CACHE_CONFIG.STORAGE_PREFIX)
       );
 
@@ -205,7 +205,7 @@ class RoleCacheManager {
    */
   private setupAuthListeners(): void {
     // Écouter les changements de session
-    window.addEventListener('storage', (event) => {
+    window.addEventListener('storage', event => {
       if (event.key?.startsWith(CACHE_CONFIG.STORAGE_PREFIX)) {
         // Un autre onglet a modifié le cache
         this.restoreFromStorage();
@@ -225,12 +225,12 @@ class RoleCacheManager {
    * Obtenir les rôles depuis le cache ou les récupérer
    */
   async getRoles(
-    userId: string, 
+    userId: string,
     tenantId: string | undefined,
     fetchFunction: () => Promise<UserRole[]>
   ): Promise<UserRole[]> {
     const key = this.generateCacheKey('roles', userId, tenantId);
-    
+
     // Vérifier le cache d'abord
     const cached = this.getCacheEntry<UserRole[]>(key);
     if (cached) {
@@ -272,7 +272,7 @@ class RoleCacheManager {
     fetchFunction: () => Promise<UserPermission[]>
   ): Promise<UserPermission[]> {
     const key = this.generateCacheKey('permissions', userId, tenantId);
-    
+
     const cached = this.getCacheEntry<UserPermission[]>(key);
     if (cached) {
       // console.log('🎯 Permissions récupérées depuis le cache:', userId);
@@ -312,7 +312,7 @@ class RoleCacheManager {
    * Définir les droits d'accès calculés dans le cache
    */
   setAccessRights(
-    userId: string, 
+    userId: string,
     tenantId: string | undefined,
     accessRights: Record<string, boolean>
   ): void {
@@ -323,12 +323,9 @@ class RoleCacheManager {
   /**
    * Récupération avec retry automatique
    */
-  private async fetchWithRetry<T>(
-    fetchFunction: () => Promise<T>, 
-    maxRetries: number
-  ): Promise<T> {
+  private async fetchWithRetry<T>(fetchFunction: () => Promise<T>, maxRetries: number): Promise<T> {
     let lastError: Error;
-    
+
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
       try {
         return await fetchFunction();
@@ -341,7 +338,7 @@ class RoleCacheManager {
         }
       }
     }
-    
+
     throw lastError!;
   }
 
@@ -350,7 +347,7 @@ class RoleCacheManager {
    */
   invalidateUser(userId: string, tenantId?: string): void {
     const keysToDelete: string[] = [];
-    
+
     this.cache.forEach((entry, key) => {
       if (entry.userId === userId && (!tenantId || entry.tenantId === tenantId)) {
         keysToDelete.push(key);
@@ -362,7 +359,9 @@ class RoleCacheManager {
       this.removeFromStorage(key);
     });
 
-    console.log(`🗑️ Cache invalidé pour l'utilisateur ${userId}: ${keysToDelete.length} entrées supprimées`);
+    console.log(
+      `🗑️ Cache invalidé pour l'utilisateur ${userId}: ${keysToDelete.length} entrées supprimées`
+    );
     this.notifyListeners('user_cache_invalidated', { userId, tenantId });
   }
 
@@ -372,10 +371,10 @@ class RoleCacheManager {
   invalidateAll(): void {
     console.log('🗑️ Invalidation complète du cache des rôles');
     this.cache.clear();
-    
+
     // Nettoyer localStorage
     try {
-      const keys = Object.keys(localStorage).filter(key => 
+      const keys = Object.keys(localStorage).filter(key =>
         key.startsWith(CACHE_CONFIG.STORAGE_PREFIX)
       );
       keys.forEach(key => localStorage.removeItem(key));
@@ -390,23 +389,23 @@ class RoleCacheManager {
    * Forcer le rafraîchissement du cache pour un utilisateur
    */
   async refreshUser(
-    userId: string, 
+    userId: string,
     tenantId: string | undefined,
     fetchRoles: () => Promise<UserRole[]>,
     fetchPermissions: () => Promise<UserPermission[]>
   ): Promise<void> {
     console.log('🔄 Rafraîchissement forcé du cache pour:', userId);
-    
+
     // Invalider le cache existant
     this.invalidateUser(userId, tenantId);
-    
+
     // Récupérer les nouvelles données
     try {
       await Promise.all([
         this.getRoles(userId, tenantId, fetchRoles),
-        this.getPermissions(userId, tenantId, [], fetchPermissions)
+        this.getPermissions(userId, tenantId, [], fetchPermissions),
       ]);
-      
+
       this.notifyListeners('user_cache_refreshed', { userId, tenantId });
     } catch (error) {
       console.error('Erreur lors du rafraîchissement du cache:', error);
@@ -460,7 +459,7 @@ class RoleCacheManager {
       totalEntries: this.cache.size,
       validEntries: validCount,
       expiredEntries: expiredCount,
-      memoryUsage: `${Math.round(JSON.stringify([...this.cache.entries()]).length / 1024)}KB`
+      memoryUsage: `${Math.round(JSON.stringify([...this.cache.entries()]).length / 1024)}KB`,
     };
   }
 
@@ -474,13 +473,13 @@ class RoleCacheManager {
     fetchPermissions: () => Promise<UserPermission[]>
   ): Promise<void> {
     console.log('⚡ Préchargement du cache pour:', userId);
-    
+
     try {
       await Promise.all([
         this.getRoles(userId, tenantId, fetchRoles),
-        this.getPermissions(userId, tenantId, [], fetchPermissions)
+        this.getPermissions(userId, tenantId, [], fetchPermissions),
       ]);
-      
+
       console.log('✅ Cache préchargé avec succès pour:', userId);
     } catch (error) {
       console.error('❌ Erreur lors du préchargement du cache:', error);

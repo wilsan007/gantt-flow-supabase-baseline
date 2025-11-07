@@ -20,14 +20,14 @@ export const useSessionManager = () => {
   const isSessionExpired = useCallback(() => {
     const lastActivity = localStorage.getItem(LAST_ACTIVITY_KEY);
     const manualLogout = localStorage.getItem(MANUAL_LOGOUT_KEY);
-    
+
     // Si déconnexion manuelle, forcer la reconnexion
     if (manualLogout === 'true') {
       return true;
     }
-    
+
     if (!lastActivity) return true;
-    
+
     const timeSinceLastActivity = Date.now() - parseInt(lastActivity);
     return timeSinceLastActivity > SESSION_TIMEOUT;
   }, []);
@@ -38,10 +38,10 @@ export const useSessionManager = () => {
       // Marquer comme déconnexion manuelle
       localStorage.setItem(MANUAL_LOGOUT_KEY, 'true');
       localStorage.removeItem(LAST_ACTIVITY_KEY);
-      
+
       // Déconnecter de Supabase
       await supabase.auth.signOut();
-      
+
       setUser(null);
       setSession(null);
     } catch (error) {
@@ -52,12 +52,15 @@ export const useSessionManager = () => {
   // Initialiser la session
   const initializeSession = useCallback(async () => {
     try {
-      const { data: { session }, error } = await supabase.auth.getSession();
-      
+      const {
+        data: { session },
+        error,
+      } = await supabase.auth.getSession();
+
       // Gérer les erreurs de refresh token
       if (error) {
         console.error('❌ Erreur lors de la récupération de la session:', error.message);
-        
+
         // Si le refresh token est invalide, nettoyer complètement
         if (error.message.includes('refresh') || error.message.includes('Invalid')) {
           console.log('🧹 Nettoyage du localStorage suite à un refresh token invalide');
@@ -69,7 +72,7 @@ export const useSessionManager = () => {
           return;
         }
       }
-      
+
       if (session && !isSessionExpired()) {
         setUser(session.user);
         setSession(session);
@@ -88,7 +91,7 @@ export const useSessionManager = () => {
         setSession(null);
       }
     } catch (error) {
-      console.error('Erreur lors de l\'initialisation de la session:', error);
+      console.error("Erreur lors de l'initialisation de la session:", error);
       // En cas d'erreur critique, nettoyer et forcer la déconnexion
       await supabase.auth.signOut();
       localStorage.clear();
@@ -100,23 +103,26 @@ export const useSessionManager = () => {
   }, [isSessionExpired, updateActivity]);
 
   // Gérer les changements d'état d'authentification
-  const handleAuthStateChange = useCallback((user: User | null, session: Session | null) => {
-    if (user && session) {
-      setUser(user);
-      setSession(session);
-      updateActivity();
-      localStorage.removeItem(MANUAL_LOGOUT_KEY);
-    } else {
-      setUser(null);
-      setSession(null);
-    }
-    setLoading(false);
-  }, [updateActivity]);
+  const handleAuthStateChange = useCallback(
+    (user: User | null, session: Session | null) => {
+      if (user && session) {
+        setUser(user);
+        setSession(session);
+        updateActivity();
+        localStorage.removeItem(MANUAL_LOGOUT_KEY);
+      } else {
+        setUser(null);
+        setSession(null);
+      }
+      setLoading(false);
+    },
+    [updateActivity]
+  );
 
   // Surveiller l'activité utilisateur
   useEffect(() => {
     const events = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart', 'click'];
-    
+
     const handleActivity = () => {
       if (user) {
         updateActivity();
@@ -149,41 +155,41 @@ export const useSessionManager = () => {
 
   // Écouter les changements d'authentification Supabase
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        console.log('🔄 Session Manager - Auth state changed:', event);
-        
-        // Gérer les erreurs de token
-        if (event === 'TOKEN_REFRESHED' && !session) {
-          console.error('❌ Échec du rafraîchissement du token');
-          await supabase.auth.signOut();
-          localStorage.clear();
-          setUser(null);
-          setSession(null);
-          setLoading(false);
-          return;
-        }
-        
-        if (event === 'SIGNED_OUT') {
-          console.log('🔒 Déconnexion détectée');
-          setUser(null);
-          setSession(null);
-          setLoading(false);
-          return;
-        }
-        
-        if (session?.user) {
-          setUser(session.user);
-          setSession(session);
-          updateActivity();
-          localStorage.removeItem(MANUAL_LOGOUT_KEY);
-        } else {
-          setUser(null);
-          setSession(null);
-        }
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log('🔄 Session Manager - Auth state changed:', event);
+
+      // Gérer les erreurs de token
+      if (event === 'TOKEN_REFRESHED' && !session) {
+        console.error('❌ Échec du rafraîchissement du token');
+        await supabase.auth.signOut();
+        localStorage.clear();
+        setUser(null);
+        setSession(null);
         setLoading(false);
+        return;
       }
-    );
+
+      if (event === 'SIGNED_OUT') {
+        console.log('🔒 Déconnexion détectée');
+        setUser(null);
+        setSession(null);
+        setLoading(false);
+        return;
+      }
+
+      if (session?.user) {
+        setUser(session.user);
+        setSession(session);
+        updateActivity();
+        localStorage.removeItem(MANUAL_LOGOUT_KEY);
+      } else {
+        setUser(null);
+        setSession(null);
+      }
+      setLoading(false);
+    });
 
     // Initialiser la session au montage
     initializeSession();
@@ -197,6 +203,6 @@ export const useSessionManager = () => {
     loading,
     signOut,
     handleAuthStateChange,
-    updateActivity
+    updateActivity,
   };
 };

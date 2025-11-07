@@ -1,7 +1,7 @@
 /**
  * Project Dashboard Enterprise - Pattern SaaS Leaders
  * Inspiré de Monday.com, Asana, Linear
- * 
+ *
  * Fonctionnalités:
  * - Vue d'ensemble des projets avec métriques
  * - Filtres avancés et recherche
@@ -20,16 +20,16 @@ import { PriorityBadge, StatusBadge, MetricCard, ProgressBar } from '@/component
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Progress } from '@/components/ui/progress';
 import { AccessDenied } from '@/components/ui/access-denied';
-import { 
+import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { 
-  Search, 
-  RefreshCw, 
+import {
+  Search,
+  RefreshCw,
   Plus,
   Filter,
   Download,
@@ -43,7 +43,7 @@ import {
   Clock,
   BarChart3,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
@@ -54,7 +54,7 @@ interface ProjectDashboardEnterpriseProps {
 
 export const ProjectDashboardEnterprise: React.FC<ProjectDashboardEnterpriseProps> = ({
   showMetrics = true,
-  compactMode = false
+  compactMode = false,
 }) => {
   // États locaux pour les filtres
   const [filters, setFilters] = useState<ProjectFilters>({});
@@ -81,18 +81,21 @@ export const ProjectDashboardEnterprise: React.FC<ProjectDashboardEnterpriseProp
     goToPage,
     setFilters: updateFilters,
     isDataStale,
-    cacheKey
+    cacheKey,
   } = useProjectsEnterprise(filters);
 
   const { toast } = useToast();
 
   // Filtres memoizés pour performance
-  const appliedFilters = useMemo(() => ({
-    ...filters,
-    search: searchTerm || undefined,
-    status: statusFilter.length > 0 ? statusFilter : undefined,
-    priority: priorityFilter.length > 0 ? priorityFilter : undefined
-  }), [filters, searchTerm, statusFilter, priorityFilter]);
+  const appliedFilters = useMemo(
+    () => ({
+      ...filters,
+      search: searchTerm || undefined,
+      status: statusFilter.length > 0 ? statusFilter : undefined,
+      priority: priorityFilter.length > 0 ? priorityFilter : undefined,
+    }),
+    [filters, searchTerm, statusFilter, priorityFilter]
+  );
 
   // Appliquer les filtres avec debounce
   const handleFiltersChange = useCallback(() => {
@@ -100,50 +103,64 @@ export const ProjectDashboardEnterprise: React.FC<ProjectDashboardEnterpriseProp
   }, [appliedFilters, updateFilters]);
 
   // Gestionnaires d'événements optimisés
-  const handleSearchChange = useCallback((value: string) => {
-    setSearchTerm(value);
-    // Debounce de 300ms
-    const timeoutId = setTimeout(() => {
+  const handleSearchChange = useCallback(
+    (value: string) => {
+      setSearchTerm(value);
+      // Debounce de 300ms
+      const timeoutId = setTimeout(() => {
+        handleFiltersChange();
+      }, 300);
+      return () => clearTimeout(timeoutId);
+    },
+    [handleFiltersChange]
+  );
+
+  const handleStatusFilterChange = useCallback(
+    (status: string) => {
+      setStatusFilter(prev =>
+        prev.includes(status) ? prev.filter(s => s !== status) : [...prev, status]
+      );
       handleFiltersChange();
-    }, 300);
-    return () => clearTimeout(timeoutId);
-  }, [handleFiltersChange]);
+    },
+    [handleFiltersChange]
+  );
 
-  const handleStatusFilterChange = useCallback((status: string) => {
-    setStatusFilter(prev => 
-      prev.includes(status) 
-        ? prev.filter(s => s !== status)
-        : [...prev, status]
-    );
-    handleFiltersChange();
-  }, [handleFiltersChange]);
-
-  const handlePriorityFilterChange = useCallback((priority: string) => {
-    setPriorityFilter(prev => 
-      prev.includes(priority) 
-        ? prev.filter(p => p !== priority)
-        : [...prev, priority]
-    );
-    handleFiltersChange();
-  }, [handleFiltersChange]);
+  const handlePriorityFilterChange = useCallback(
+    (priority: string) => {
+      setPriorityFilter(prev =>
+        prev.includes(priority) ? prev.filter(p => p !== priority) : [...prev, priority]
+      );
+      handleFiltersChange();
+    },
+    [handleFiltersChange]
+  );
 
   // Fonctions utilitaires
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'active': return 'default';
-      case 'completed': return 'secondary';
-      case 'on_hold': return 'outline';
-      case 'cancelled': return 'destructive';
-      default: return 'outline';
+      case 'active':
+        return 'default';
+      case 'completed':
+        return 'secondary';
+      case 'on_hold':
+        return 'outline';
+      case 'cancelled':
+        return 'destructive';
+      default:
+        return 'outline';
     }
   };
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
-      case 'high': return 'destructive';
-      case 'medium': return 'default';
-      case 'low': return 'secondary';
-      default: return 'outline';
+      case 'high':
+        return 'destructive';
+      case 'medium':
+        return 'default';
+      case 'low':
+        return 'secondary';
+      default:
+        return 'outline';
     }
   };
 
@@ -151,7 +168,7 @@ export const ProjectDashboardEnterprise: React.FC<ProjectDashboardEnterpriseProp
     if (!amount) return '-';
     return new Intl.NumberFormat('fr-FR', {
       style: 'currency',
-      currency: 'EUR'
+      currency: 'EUR',
     }).format(amount);
   };
 
@@ -160,7 +177,7 @@ export const ProjectDashboardEnterprise: React.FC<ProjectDashboardEnterpriseProp
     return new Date(dateString).toLocaleDateString('fr-FR', {
       day: '2-digit',
       month: '2-digit',
-      year: 'numeric'
+      year: 'numeric',
     });
   };
 
@@ -180,37 +197,37 @@ export const ProjectDashboardEnterprise: React.FC<ProjectDashboardEnterpriseProp
     <div className="space-y-6">
       {/* Métriques de Performance (Pattern Stripe) */}
       {showMetrics && !compactMode && (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
           <MetricCard
             label="Total Projets"
             value={totalCount}
             subtitle="Tous les projets"
-            icon={<BarChart3 className="w-6 h-6" />}
+            icon={<BarChart3 className="h-6 w-6" />}
             color="blue"
           />
-          
+
           <MetricCard
             label="Actifs"
             value={activeProjects}
             subtitle="En cours"
-            icon={<TrendingUp className="w-6 h-6" />}
+            icon={<TrendingUp className="h-6 w-6" />}
             color="green"
             trend="up"
           />
-          
+
           <MetricCard
             label="Terminés"
             value={completedProjects}
             subtitle="Complétés"
-            icon={<CheckCircle2 className="w-6 h-6" />}
+            icon={<CheckCircle2 className="h-6 w-6" />}
             color="green"
           />
-          
+
           <MetricCard
             label="En retard"
             value={overdueProjects}
             subtitle="Nécessitent attention"
-            icon={<AlertTriangle className="w-6 h-6" />}
+            icon={<AlertTriangle className="h-6 w-6" />}
             color="red"
             trend="down"
           />
@@ -220,63 +237,55 @@ export const ProjectDashboardEnterprise: React.FC<ProjectDashboardEnterpriseProp
       {/* Filtres et Actions (Pattern Linear) */}
       <Card>
         <CardHeader>
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div>
               <CardTitle className="flex items-center gap-2">
                 Gestion des Projets
-                {isSuperAdmin && (
-                  <Badge variant="secondary">Super Admin</Badge>
-                )}
+                {isSuperAdmin && <Badge variant="secondary">Super Admin</Badge>}
               </CardTitle>
               {!compactMode && (
-                <p className="text-sm text-muted-foreground mt-1">
-                  {totalCount} projets • Cache: {metrics.cacheHit ? '✅' : '❌'} • 
-                  Données: {(metrics.dataSize / 1024).toFixed(1)}KB • 
-                  Fetch: {metrics.fetchTime.toFixed(0)}ms
+                <p className="mt-1 text-sm text-muted-foreground">
+                  {totalCount} projets • Cache: {metrics.cacheHit ? '✅' : '❌'} • Données:{' '}
+                  {(metrics.dataSize / 1024).toFixed(1)}KB • Fetch: {metrics.fetchTime.toFixed(0)}ms
                   {isDataStale && <span className="text-orange-600"> • Données obsolètes</span>}
                 </p>
               )}
             </div>
-            
+
             <div className="flex items-center gap-2">
               <Button variant="outline" size="sm">
-                <Download className="h-4 w-4 mr-2" />
+                <Download className="mr-2 h-4 w-4" />
                 Exporter
               </Button>
-              
+
               <Button variant="outline" size="sm">
-                <Plus className="h-4 w-4 mr-2" />
+                <Plus className="mr-2 h-4 w-4" />
                 Nouveau Projet
               </Button>
-              
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={refresh}
-                disabled={loading}
-              >
-                <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+
+              <Button variant="outline" size="sm" onClick={refresh} disabled={loading}>
+                <RefreshCw className={`mr-2 h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
                 Actualiser
               </Button>
             </div>
           </div>
         </CardHeader>
-        
+
         <CardContent>
           {/* Barre de recherche et filtres */}
-          <div className="flex flex-col md:flex-row gap-4 mb-6">
+          <div className="mb-6 flex flex-col gap-4 md:flex-row">
             <div className="flex-1">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transform text-muted-foreground" />
                 <Input
                   placeholder="Rechercher des projets..."
                   value={searchTerm}
-                  onChange={(e) => handleSearchChange(e.target.value)}
+                  onChange={e => handleSearchChange(e.target.value)}
                   className="pl-10"
                 />
               </div>
             </div>
-            
+
             <div className="flex gap-2">
               <Select onValueChange={handleStatusFilterChange}>
                 <SelectTrigger className="w-40">
@@ -289,7 +298,7 @@ export const ProjectDashboardEnterprise: React.FC<ProjectDashboardEnterpriseProp
                   <SelectItem value="cancelled">Annulé</SelectItem>
                 </SelectContent>
               </Select>
-              
+
               <Select onValueChange={handlePriorityFilterChange}>
                 <SelectTrigger className="w-40">
                   <SelectValue placeholder="Priorité" />
@@ -305,45 +314,51 @@ export const ProjectDashboardEnterprise: React.FC<ProjectDashboardEnterpriseProp
 
           {/* Grille des projets */}
           {loading && projects.length === 0 ? (
-            <div className="text-center py-8">
-              <RefreshCw className="h-8 w-8 animate-spin mx-auto mb-4 text-muted-foreground" />
+            <div className="py-8 text-center">
+              <RefreshCw className="mx-auto mb-4 h-8 w-8 animate-spin text-muted-foreground" />
               <p className="text-muted-foreground">Chargement des projets...</p>
             </div>
           ) : error ? (
-            <div className="text-center py-8">
-              <AlertTriangle className="h-8 w-8 mx-auto mb-4 text-red-500" />
-              <p className="text-red-600 mb-4">{error}</p>
+            <div className="py-8 text-center">
+              <AlertTriangle className="mx-auto mb-4 h-8 w-8 text-red-500" />
+              <p className="mb-4 text-red-600">{error}</p>
               <Button onClick={refresh} variant="outline">
                 Réessayer
               </Button>
             </div>
           ) : projects.length === 0 ? (
-            <div className="text-center py-8">
-              <BarChart3 className="h-8 w-8 mx-auto mb-4 text-muted-foreground" />
+            <div className="py-8 text-center">
+              <BarChart3 className="mx-auto mb-4 h-8 w-8 text-muted-foreground" />
               <p className="text-muted-foreground">Aucun projet trouvé</p>
               <Button className="mt-4" variant="outline">
-                <Plus className="h-4 w-4 mr-2" />
+                <Plus className="mr-2 h-4 w-4" />
                 Créer votre premier projet
               </Button>
             </div>
           ) : (
             <>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {projects.map((project) => {
-                  const isOverdue = project.end_date && new Date(project.end_date) < new Date() && project.status !== 'completed';
-                  
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+                {projects.map(project => {
+                  const isOverdue =
+                    project.end_date &&
+                    new Date(project.end_date) < new Date() &&
+                    project.status !== 'completed';
+
                   return (
-                    <Card key={project.id} className={`hover:shadow-md transition-shadow cursor-pointer ${
-                      isOverdue ? 'border-red-300 bg-red-50/30' : ''
-                    }`}>
+                    <Card
+                      key={project.id}
+                      className={`cursor-pointer transition-shadow hover:shadow-md ${
+                        isOverdue ? 'border-red-300 bg-red-50/30' : ''
+                      }`}
+                    >
                       <CardHeader className="pb-3">
                         <div className="flex items-start justify-between">
                           <div className="flex-1">
-                            <h3 className="font-semibold text-lg leading-tight mb-2">
+                            <h3 className="mb-2 text-lg font-semibold leading-tight">
                               {project.name}
                             </h3>
                             {project.description && (
-                              <p className="text-sm text-muted-foreground line-clamp-2">
+                              <p className="line-clamp-2 text-sm text-muted-foreground">
                                 {project.description}
                               </p>
                             )}
@@ -353,13 +368,11 @@ export const ProjectDashboardEnterprise: React.FC<ProjectDashboardEnterpriseProp
                           </Button>
                         </div>
                       </CardHeader>
-                      
+
                       <CardContent className="space-y-4">
                         {/* Statut et Priorité */}
                         <div className="flex items-center justify-between">
-                          <Badge variant={getStatusColor(project.status)}>
-                            {project.status}
-                          </Badge>
+                          <Badge variant={getStatusColor(project.status)}>{project.status}</Badge>
                           <Badge variant={getPriorityColor(project.priority)}>
                             {project.priority}
                           </Badge>
@@ -384,11 +397,9 @@ export const ProjectDashboardEnterprise: React.FC<ProjectDashboardEnterpriseProp
                               <Calendar className="h-3 w-3" />
                               <span>Début</span>
                             </div>
-                            <div className="font-medium">
-                              {formatDate(project.start_date)}
-                            </div>
+                            <div className="font-medium">{formatDate(project.start_date)}</div>
                           </div>
-                          
+
                           <div className="space-y-1">
                             <div className="flex items-center gap-1 text-muted-foreground">
                               <Calendar className="h-3 w-3" />
@@ -406,9 +417,7 @@ export const ProjectDashboardEnterprise: React.FC<ProjectDashboardEnterpriseProp
                                 <DollarSign className="h-3 w-3" />
                                 <span>Budget</span>
                               </div>
-                              <div className="font-medium">
-                                {formatCurrency(project.budget)}
-                              </div>
+                              <div className="font-medium">{formatCurrency(project.budget)}</div>
                             </div>
                           )}
 
@@ -419,16 +428,14 @@ export const ProjectDashboardEnterprise: React.FC<ProjectDashboardEnterpriseProp
                                 <Users className="h-3 w-3" />
                                 <span>Équipe</span>
                               </div>
-                              <div className="font-medium">
-                                {project.team_size} membres
-                              </div>
+                              <div className="font-medium">{project.team_size} membres</div>
                             </div>
                           )}
                         </div>
 
                         {/* Créateur */}
                         {project.profiles && (
-                          <div className="flex items-center gap-2 pt-2 border-t">
+                          <div className="flex items-center gap-2 border-t pt-2">
                             <Avatar className="h-6 w-6">
                               <AvatarImage src={(project.profiles as any).avatar_url} />
                               <AvatarFallback className="text-xs">
@@ -443,7 +450,7 @@ export const ProjectDashboardEnterprise: React.FC<ProjectDashboardEnterpriseProp
 
                         {/* Tenant (Super Admin) */}
                         {isSuperAdmin && project.tenants && (
-                          <div className="text-xs text-muted-foreground bg-muted/50 p-2 rounded">
+                          <div className="rounded bg-muted/50 p-2 text-xs text-muted-foreground">
                             🏢 {project.tenants.name}
                           </div>
                         )}
@@ -455,12 +462,12 @@ export const ProjectDashboardEnterprise: React.FC<ProjectDashboardEnterpriseProp
 
               {/* Pagination (Pattern Stripe) */}
               {pagination.totalPages > 1 && (
-                <div className="flex items-center justify-between mt-8">
+                <div className="mt-8 flex items-center justify-between">
                   <div className="text-sm text-muted-foreground">
-                    Page {pagination.page} sur {pagination.totalPages} • 
-                    {totalCount} projets au total
+                    Page {pagination.page} sur {pagination.totalPages} •{totalCount} projets au
+                    total
                   </div>
-                  
+
                   <div className="flex items-center gap-2">
                     <Button
                       variant="outline"
@@ -470,16 +477,16 @@ export const ProjectDashboardEnterprise: React.FC<ProjectDashboardEnterpriseProp
                     >
                       <ChevronLeft className="h-4 w-4" />
                     </Button>
-                    
+
                     <div className="flex items-center gap-1">
                       {Array.from({ length: Math.min(5, pagination.totalPages) }, (_, i) => {
                         const pageNum = Math.max(1, pagination.page - 2) + i;
                         if (pageNum > pagination.totalPages) return null;
-                        
+
                         return (
                           <Button
                             key={pageNum}
-                            variant={pageNum === pagination.page ? "default" : "outline"}
+                            variant={pageNum === pagination.page ? 'default' : 'outline'}
                             size="sm"
                             onClick={() => goToPage(pageNum)}
                             disabled={loading}
@@ -489,7 +496,7 @@ export const ProjectDashboardEnterprise: React.FC<ProjectDashboardEnterpriseProp
                         );
                       })}
                     </div>
-                    
+
                     <Button
                       variant="outline"
                       size="sm"
@@ -504,15 +511,9 @@ export const ProjectDashboardEnterprise: React.FC<ProjectDashboardEnterpriseProp
 
               {/* Lazy Loading */}
               {pagination.hasMore && (
-                <div className="text-center mt-6">
-                  <Button
-                    variant="outline"
-                    onClick={loadMore}
-                    disabled={loading}
-                  >
-                    {loading ? (
-                      <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
-                    ) : null}
+                <div className="mt-6 text-center">
+                  <Button variant="outline" onClick={loadMore} disabled={loading}>
+                    {loading ? <RefreshCw className="mr-2 h-4 w-4 animate-spin" /> : null}
                     Charger plus de projets
                   </Button>
                 </div>

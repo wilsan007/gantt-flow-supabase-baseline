@@ -5,12 +5,36 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Users, UserPlus, Calendar, Phone, Mail, MapPin, Briefcase, Edit, Trash2, FileText, Eye } from 'lucide-react';
+import {
+  Users,
+  UserPlus,
+  Calendar,
+  Phone,
+  Mail,
+  MapPin,
+  Briefcase,
+  Edit,
+  Trash2,
+  FileText,
+  Eye,
+} from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useForm } from 'react-hook-form';
 import { supabase } from '@/integrations/supabase/client';
@@ -38,7 +62,8 @@ interface Department {
 }
 
 export const EnhancedEmployeeManagement = () => {
-  const { employees, departments, loading, createEmployee, updateEmployee, deleteEmployee } = useEmployees();
+  const { employees, departments, loading, createEmployee, updateEmployee, deleteEmployee } =
+    useEmployees();
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [editingEmployee, setEditingEmployee] = useState<any>(null);
   const [viewingEmployee, setViewingEmployee] = useState<any>(null);
@@ -63,11 +88,13 @@ export const EnhancedEmployeeManagement = () => {
         weekly_hours: data.weekly_hours ? parseFloat(data.weekly_hours) : 35,
         manager_id: data.manager_id || null,
         department_id: data.department_id || null,
-        emergency_contact: data.emergency_name ? {
-          name: data.emergency_name,
-          phone: data.emergency_phone,
-          relation: data.emergency_relation
-        } : null
+        emergency_contact: data.emergency_name
+          ? {
+              name: data.emergency_name,
+              phone: data.emergency_phone,
+              relation: data.emergency_relation,
+            }
+          : null,
       };
 
       if (editingEmployee) {
@@ -77,8 +104,8 @@ export const EnhancedEmployeeManagement = () => {
       }
 
       toast({
-        title: "Succès",
-        description: `Employé ${editingEmployee ? 'modifié' : 'créé'} avec succès`
+        title: 'Succès',
+        description: `Employé ${editingEmployee ? 'modifié' : 'créé'} avec succès`,
       });
 
       reset();
@@ -87,9 +114,9 @@ export const EnhancedEmployeeManagement = () => {
     } catch (error: any) {
       console.error('Error managing employee:', error);
       toast({
-        title: "Erreur",
+        title: 'Erreur',
         description: `Impossible de ${editingEmployee ? 'modifier' : 'créer'} l'employé`,
-        variant: "destructive"
+        variant: 'destructive',
       });
     }
   };
@@ -119,34 +146,40 @@ export const EnhancedEmployeeManagement = () => {
     try {
       await deleteEmployee(employeeId);
       toast({
-        title: "Succès",
-        description: "Employé supprimé avec succès"
+        title: 'Succès',
+        description: 'Employé supprimé avec succès',
       });
     } catch (error: any) {
       console.error('Error deleting employee:', error);
       toast({
-        title: "Erreur",
+        title: 'Erreur',
         description: "Impossible de supprimer l'employé",
-        variant: "destructive"
+        variant: 'destructive',
       });
     }
   };
 
   const filteredEmployees = employees.filter(employee => {
-    const matchesSearch = employee.full_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         employee.job_title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         employee.employee_id?.toLowerCase().includes(searchTerm.toLowerCase());
-    
+    const matchesSearch =
+      employee.full_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      employee.job_title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      employee.employee_id?.toLowerCase().includes(searchTerm.toLowerCase());
+
     return matchesSearch;
   });
 
   const getContractTypeColor = (contractType?: string) => {
     switch (contractType) {
-      case 'CDI': return 'default';
-      case 'CDD': return 'secondary';
-      case 'Stage': return 'outline';
-      case 'Freelance': return 'destructive';
-      default: return 'secondary';
+      case 'CDI':
+        return 'default';
+      case 'CDD':
+        return 'secondary';
+      case 'Stage':
+        return 'outline';
+      case 'Freelance':
+        return 'destructive';
+      default:
+        return 'secondary';
     }
   };
 
@@ -155,39 +188,42 @@ export const EnhancedEmployeeManagement = () => {
   }
 
   return (
-    <div className="p-6 space-y-6">
-      <div className="flex justify-between items-center">
-        <h2 className="text-3xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+    <div className="space-y-6 p-6">
+      <div className="flex items-center justify-between">
+        <h2 className="bg-gradient-to-r from-primary to-accent bg-clip-text text-3xl font-bold text-transparent">
           Gestion Avancée des Employés
         </h2>
-        
-        <Dialog open={isCreateDialogOpen} onOpenChange={(open) => {
-          setIsCreateDialogOpen(open);
-          if (!open) {
-            setEditingEmployee(null);
-            reset();
-          }
-        }}>
+
+        <Dialog
+          open={isCreateDialogOpen}
+          onOpenChange={open => {
+            setIsCreateDialogOpen(open);
+            if (!open) {
+              setEditingEmployee(null);
+              reset();
+            }
+          }}
+        >
           <DialogTrigger asChild>
             <Button className="hover-glow">
-              <UserPlus className="h-4 w-4 mr-2" />
+              <UserPlus className="mr-2 h-4 w-4" />
               {editingEmployee ? 'Modifier' : 'Nouvel employé'}
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+          <DialogContent className="max-h-[80vh] max-w-2xl overflow-y-auto">
             <DialogHeader>
               <DialogTitle>
-                {editingEmployee ? 'Modifier l\'employé' : 'Créer un employé'}
+                {editingEmployee ? "Modifier l'employé" : 'Créer un employé'}
               </DialogTitle>
             </DialogHeader>
-            
+
             <Tabs defaultValue="basic" className="w-full">
               <TabsList className="grid w-full grid-cols-3">
                 <TabsTrigger value="basic">Informations de base</TabsTrigger>
                 <TabsTrigger value="work">Travail</TabsTrigger>
                 <TabsTrigger value="emergency">Urgence</TabsTrigger>
               </TabsList>
-              
+
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                 <TabsContent value="basic" className="space-y-4">
                   <div className="grid grid-cols-2 gap-4">
@@ -199,41 +235,29 @@ export const EnhancedEmployeeManagement = () => {
                         {...register('full_name', { required: true })}
                       />
                     </div>
-                    
+
                     <div>
                       <Label htmlFor="employee_id">ID Employé</Label>
-                      <Input
-                        id="employee_id"
-                        placeholder="EMP001"
-                        {...register('employee_id')}
-                      />
+                      <Input id="employee_id" placeholder="EMP001" {...register('employee_id')} />
                     </div>
-                    
+
                     <div>
                       <Label htmlFor="phone">Téléphone</Label>
-                      <Input
-                        id="phone"
-                        placeholder="+33 1 23 45 67 89"
-                        {...register('phone')}
-                      />
+                      <Input id="phone" placeholder="+33 1 23 45 67 89" {...register('phone')} />
                     </div>
                   </div>
                 </TabsContent>
-                
+
                 <TabsContent value="work" className="space-y-4">
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <Label htmlFor="job_title">Poste</Label>
-                      <Input
-                        id="job_title"
-                        placeholder="Développeur"
-                        {...register('job_title')}
-                      />
+                      <Input id="job_title" placeholder="Développeur" {...register('job_title')} />
                     </div>
-                    
+
                     <div>
                       <Label htmlFor="contract_type">Type de contrat</Label>
-                      <Select onValueChange={(value) => setValue('contract_type', value)}>
+                      <Select onValueChange={value => setValue('contract_type', value)}>
                         <SelectTrigger>
                           <SelectValue placeholder="CDI" />
                         </SelectTrigger>
@@ -245,16 +269,12 @@ export const EnhancedEmployeeManagement = () => {
                         </SelectContent>
                       </Select>
                     </div>
-                    
+
                     <div>
                       <Label htmlFor="hire_date">Date d'embauche</Label>
-                      <Input
-                        id="hire_date"
-                        type="date"
-                        {...register('hire_date')}
-                      />
+                      <Input id="hire_date" type="date" {...register('hire_date')} />
                     </div>
-                    
+
                     <div>
                       <Label htmlFor="weekly_hours">Heures/semaine</Label>
                       <Input
@@ -264,7 +284,7 @@ export const EnhancedEmployeeManagement = () => {
                         {...register('weekly_hours')}
                       />
                     </div>
-                    
+
                     <div>
                       <Label htmlFor="salary">Salaire (€/an)</Label>
                       <Input
@@ -274,10 +294,10 @@ export const EnhancedEmployeeManagement = () => {
                         {...register('salary')}
                       />
                     </div>
-                    
+
                     <div>
                       <Label htmlFor="manager_id">Manager</Label>
-                      <Select onValueChange={(value) => setValue('manager_id', value)}>
+                      <Select onValueChange={value => setValue('manager_id', value)}>
                         <SelectTrigger>
                           <SelectValue placeholder="Sélectionner un manager" />
                         </SelectTrigger>
@@ -293,7 +313,7 @@ export const EnhancedEmployeeManagement = () => {
                     </div>
                   </div>
                 </TabsContent>
-                
+
                 <TabsContent value="emergency" className="space-y-4">
                   <h4 className="font-semibold">Contact d'urgence</h4>
                   <div className="grid grid-cols-2 gap-4">
@@ -305,7 +325,7 @@ export const EnhancedEmployeeManagement = () => {
                         {...register('emergency_name')}
                       />
                     </div>
-                    
+
                     <div>
                       <Label htmlFor="emergency_phone">Téléphone</Label>
                       <Input
@@ -314,10 +334,10 @@ export const EnhancedEmployeeManagement = () => {
                         {...register('emergency_phone')}
                       />
                     </div>
-                    
+
                     <div>
                       <Label htmlFor="emergency_relation">Relation</Label>
-                      <Select onValueChange={(value) => setValue('emergency_relation', value)}>
+                      <Select onValueChange={value => setValue('emergency_relation', value)}>
                         <SelectTrigger>
                           <SelectValue placeholder="Sélectionner" />
                         </SelectTrigger>
@@ -333,14 +353,14 @@ export const EnhancedEmployeeManagement = () => {
                     </div>
                   </div>
                 </TabsContent>
-                
-                <div className="flex gap-2 mt-6">
+
+                <div className="mt-6 flex gap-2">
                   <Button type="submit" className="flex-1">
                     {editingEmployee ? 'Modifier' : 'Créer'}
                   </Button>
-                  <Button 
-                    type="button" 
-                    variant="outline" 
+                  <Button
+                    type="button"
+                    variant="outline"
                     onClick={() => {
                       setIsCreateDialogOpen(false);
                       setEditingEmployee(null);
@@ -393,12 +413,14 @@ export const EnhancedEmployeeManagement = () => {
           <CardContent className="p-4">
             <div className="text-center">
               <div className="text-2xl font-bold text-accent">
-                {employees.filter(e => {
-                  const hireDate = e.hire_date ? new Date(e.hire_date) : null;
-                  const threeMonthsAgo = new Date();
-                  threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
-                  return hireDate && hireDate > threeMonthsAgo;
-                }).length}
+                {
+                  employees.filter(e => {
+                    const hireDate = e.hire_date ? new Date(e.hire_date) : null;
+                    const threeMonthsAgo = new Date();
+                    threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
+                    return hireDate && hireDate > threeMonthsAgo;
+                  }).length
+                }
               </div>
               <div className="text-sm text-muted-foreground">Nouveaux (3m)</div>
             </div>
@@ -407,11 +429,11 @@ export const EnhancedEmployeeManagement = () => {
       </div>
 
       {/* Filters */}
-      <div className="flex gap-4 items-center">
+      <div className="flex items-center gap-4">
         <Input
           placeholder="Rechercher un employé..."
           value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
+          onChange={e => setSearchTerm(e.target.value)}
           className="max-w-md"
         />
       </div>
@@ -421,13 +443,13 @@ export const EnhancedEmployeeManagement = () => {
         {filteredEmployees.length === 0 ? (
           <Card className="modern-card">
             <CardContent className="p-8 text-center">
-              <Users className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+              <Users className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
               <p className="text-muted-foreground">Aucun employé trouvé</p>
             </CardContent>
           </Card>
         ) : (
           <div className={`grid gap-4 ${isMobile ? 'grid-cols-1' : 'grid-cols-2 lg:grid-cols-3'}`}>
-            {filteredEmployees.map((employee) => (
+            {filteredEmployees.map(employee => (
               <Card key={employee.id} className="modern-card hover-glow">
                 <CardContent className="p-6">
                   <div className="space-y-4">
@@ -436,17 +458,24 @@ export const EnhancedEmployeeManagement = () => {
                         <Avatar className="h-12 w-12">
                           <AvatarImage src={employee.avatar_url || undefined} />
                           <AvatarFallback>
-                            {employee.full_name.split(' ').map(n => n[0]).join('').toUpperCase()}
+                            {employee.full_name
+                              .split(' ')
+                              .map(n => n[0])
+                              .join('')
+                              .toUpperCase()}
                           </AvatarFallback>
                         </Avatar>
-                        
+
                         <div className="flex-1">
-                          <h3 className="font-semibold text-lg">{employee.full_name}</h3>
+                          <h3 className="text-lg font-semibold">{employee.full_name}</h3>
                           {employee.job_title && (
                             <p className="text-sm text-muted-foreground">{employee.job_title}</p>
                           )}
                           {employee.contract_type && (
-                            <Badge variant={getContractTypeColor(employee.contract_type)} className="text-xs mt-1">
+                            <Badge
+                              variant={getContractTypeColor(employee.contract_type)}
+                              className="mt-1 text-xs"
+                            >
                               {employee.contract_type}
                             </Badge>
                           )}
@@ -461,11 +490,7 @@ export const EnhancedEmployeeManagement = () => {
                         >
                           <Eye className="h-3 w-3" />
                         </Button>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => handleEdit(employee)}
-                        >
+                        <Button size="sm" variant="outline" onClick={() => handleEdit(employee)}>
                           <Edit className="h-3 w-3" />
                         </Button>
                         <Button
@@ -480,16 +505,25 @@ export const EnhancedEmployeeManagement = () => {
 
                     <div className="space-y-2 text-sm text-muted-foreground">
                       {employee.employee_id && (
-                        <p><strong>ID:</strong> {employee.employee_id}</p>
+                        <p>
+                          <strong>ID:</strong> {employee.employee_id}
+                        </p>
                       )}
                       {employee.hire_date && (
-                        <p><strong>Embauché:</strong> {new Date(employee.hire_date).toLocaleDateString()}</p>
+                        <p>
+                          <strong>Embauché:</strong>{' '}
+                          {new Date(employee.hire_date).toLocaleDateString()}
+                        </p>
                       )}
                       {employee.phone && (
-                        <p><strong>Tél:</strong> {employee.phone}</p>
+                        <p>
+                          <strong>Tél:</strong> {employee.phone}
+                        </p>
                       )}
                       {employee.weekly_hours && (
-                        <p><strong>Temps:</strong> {employee.weekly_hours}h/sem</p>
+                        <p>
+                          <strong>Temps:</strong> {employee.weekly_hours}h/sem
+                        </p>
                       )}
                     </div>
                   </div>
@@ -504,7 +538,7 @@ export const EnhancedEmployeeManagement = () => {
       <EmployeeDetailsDialog
         employee={viewingEmployee}
         isOpen={!!viewingEmployee}
-        onOpenChange={(open) => !open && setViewingEmployee(null)}
+        onOpenChange={open => !open && setViewingEmployee(null)}
       />
     </div>
   );

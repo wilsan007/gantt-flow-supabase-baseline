@@ -17,7 +17,7 @@ export const useAbortController = () => {
     // Créer un nouveau controller
     const controller = new AbortController();
     abortControllerRef.current = controller;
-    
+
     return controller.signal;
   }, []);
 

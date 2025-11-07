@@ -4,7 +4,17 @@
  */
 
 import React, { useState } from 'react';
-import { CalendarClock, CalendarDays, MoreVertical, Edit, Trash2, Play, Pause, BarChart3, Eye } from 'lucide-react';
+import {
+  CalendarClock,
+  CalendarDays,
+  MoreVertical,
+  Edit,
+  Trash2,
+  Play,
+  Pause,
+  BarChart3,
+  Eye,
+} from 'lucide-react';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -81,15 +91,21 @@ export const ActivityCard: React.FC<ActivityCardProps> = ({
 
   return (
     <>
-      <Card className={`hover:shadow-lg transition-shadow ${!activity.is_active ? 'opacity-60' : ''}`}>
+      <Card
+        className={`transition-shadow hover:shadow-lg ${!activity.is_active ? 'opacity-60' : ''}`}
+      >
         <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-2">
-          <div className="flex items-start gap-3 flex-1">
-            <div className={`p-2 rounded-lg ${activity.kind === 'recurring' ? 'bg-blue-100' : 'bg-purple-100'}`}>
-              <KindIcon className={`h-5 w-5 ${activity.kind === 'recurring' ? 'text-blue-600' : 'text-purple-600'}`} />
+          <div className="flex flex-1 items-start gap-3">
+            <div
+              className={`rounded-lg p-2 ${activity.kind === 'recurring' ? 'bg-blue-100' : 'bg-purple-100'}`}
+            >
+              <KindIcon
+                className={`h-5 w-5 ${activity.kind === 'recurring' ? 'text-blue-600' : 'text-purple-600'}`}
+              />
             </div>
-            <div className="flex-1 min-w-0">
-              <h3 className="font-semibold text-lg truncate">{activity.name}</h3>
-              <div className="flex gap-2 mt-1 flex-wrap">
+            <div className="min-w-0 flex-1">
+              <h3 className="truncate text-lg font-semibold">{activity.name}</h3>
+              <div className="mt-1 flex flex-wrap gap-2">
                 <Badge variant={activity.is_active ? 'default' : 'secondary'}>
                   {activity.is_active ? 'Active' : 'Inactive'}
                 </Badge>
@@ -109,28 +125,28 @@ export const ActivityCard: React.FC<ActivityCardProps> = ({
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuItem onClick={() => setShowDetailDialog(true)}>
-                <Eye className="h-4 w-4 mr-2" />
+                <Eye className="mr-2 h-4 w-4" />
                 Voir les détails
               </DropdownMenuItem>
               <DropdownMenuItem onClick={handleToggleActive}>
                 {activity.is_active ? (
                   <>
-                    <Pause className="h-4 w-4 mr-2" />
+                    <Pause className="mr-2 h-4 w-4" />
                     Désactiver
                   </>
                 ) : (
                   <>
-                    <Play className="h-4 w-4 mr-2" />
+                    <Play className="mr-2 h-4 w-4" />
                     Activer
                   </>
                 )}
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => setShowDetailDialog(true)}>
-                <Edit className="h-4 w-4 mr-2" />
+                <Edit className="mr-2 h-4 w-4" />
                 Modifier
               </DropdownMenuItem>
               <DropdownMenuItem>
-                <BarChart3 className="h-4 w-4 mr-2" />
+                <BarChart3 className="mr-2 h-4 w-4" />
                 Statistiques
               </DropdownMenuItem>
               <DropdownMenuSeparator />
@@ -138,7 +154,7 @@ export const ActivityCard: React.FC<ActivityCardProps> = ({
                 onClick={() => setShowDeleteDialog(true)}
                 className="text-destructive"
               >
-                <Trash2 className="h-4 w-4 mr-2" />
+                <Trash2 className="mr-2 h-4 w-4" />
                 Supprimer
               </DropdownMenuItem>
             </DropdownMenuContent>
@@ -147,7 +163,7 @@ export const ActivityCard: React.FC<ActivityCardProps> = ({
 
         <CardContent>
           {activity.description && (
-            <p className="text-sm text-muted-foreground line-clamp-2 mb-4">
+            <p className="mb-4 line-clamp-2 text-sm text-muted-foreground">
               {activity.description}
             </p>
           )}
@@ -155,7 +171,7 @@ export const ActivityCard: React.FC<ActivityCardProps> = ({
           <div className="flex items-center justify-between text-xs text-muted-foreground">
             <span>Créée le {new Date(activity.created_at).toLocaleDateString('fr-FR')}</span>
             {activity.task_title_template && (
-              <span className="truncate ml-2" title={activity.task_title_template}>
+              <span className="ml-2 truncate" title={activity.task_title_template}>
                 Template: {activity.task_title_template}
               </span>
             )}
@@ -184,11 +200,7 @@ export const ActivityCard: React.FC<ActivityCardProps> = ({
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel disabled={deleting}>Annuler</AlertDialogCancel>
-            <Button
-              variant="outline"
-              onClick={() => handleDelete(true)}
-              disabled={deleting}
-            >
+            <Button variant="outline" onClick={() => handleDelete(true)} disabled={deleting}>
               Conserver les terminées
             </Button>
             <AlertDialogAction

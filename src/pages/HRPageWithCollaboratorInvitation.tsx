@@ -9,7 +9,7 @@ import HRPage from './HRPage';
  * 🎯 Page: HRPageWithCollaboratorInvitation
  * Extension de la page RH avec invitation de collaborateurs
  * Pattern: Notion, Linear - Interface modulaire avec tabs
- * 
+ *
  * Cette page étend HRPage en ajoutant un onglet pour les invitations
  */
 
@@ -17,8 +17,7 @@ const HRPageWithCollaboratorInvitation: React.FC = () => {
   const [activeTab, setActiveTab] = useState('invitations');
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
-      
+    <div className="container mx-auto space-y-6 p-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -37,25 +36,25 @@ const HRPageWithCollaboratorInvitation: React.FC = () => {
             <span className="hidden sm:inline">Vue d'ensemble</span>
             <span className="sm:hidden">Vue</span>
           </TabsTrigger>
-          
+
           <TabsTrigger value="employees" className="flex items-center gap-2">
             <Users className="h-4 w-4" />
             <span className="hidden sm:inline">Employés</span>
             <span className="sm:hidden">Staff</span>
           </TabsTrigger>
-          
+
           <TabsTrigger value="invitations" className="flex items-center gap-2">
             <UserPlus className="h-4 w-4" />
             <span className="hidden sm:inline">Invitations</span>
             <span className="sm:hidden">Inviter</span>
           </TabsTrigger>
-          
+
           <TabsTrigger value="leaves" className="flex items-center gap-2">
             <Calendar className="h-4 w-4" />
             <span className="hidden sm:inline">Congés</span>
             <span className="sm:hidden">Congés</span>
           </TabsTrigger>
-          
+
           <TabsTrigger value="attendance" className="flex items-center gap-2">
             <Clock className="h-4 w-4" />
             <span className="hidden sm:inline">Présences</span>
@@ -68,9 +67,7 @@ const HRPageWithCollaboratorInvitation: React.FC = () => {
           <Card>
             <CardHeader>
               <CardTitle>Tableau de bord RH</CardTitle>
-              <CardDescription>
-                Vue d'ensemble des statistiques et indicateurs clés
-              </CardDescription>
+              <CardDescription>Vue d'ensemble des statistiques et indicateurs clés</CardDescription>
             </CardHeader>
             <CardContent>
               <p className="text-muted-foreground">
@@ -95,9 +92,7 @@ const HRPageWithCollaboratorInvitation: React.FC = () => {
           <Card>
             <CardHeader>
               <CardTitle>Gestion des congés</CardTitle>
-              <CardDescription>
-                Demandes de congés et validation
-              </CardDescription>
+              <CardDescription>Demandes de congés et validation</CardDescription>
             </CardHeader>
             <CardContent>
               <p className="text-muted-foreground">
@@ -112,9 +107,7 @@ const HRPageWithCollaboratorInvitation: React.FC = () => {
           <Card>
             <CardHeader>
               <CardTitle>Suivi des présences</CardTitle>
-              <CardDescription>
-                Pointage et suivi du temps de travail
-              </CardDescription>
+              <CardDescription>Pointage et suivi du temps de travail</CardDescription>
             </CardHeader>
             <CardContent>
               <p className="text-muted-foreground">
@@ -124,7 +117,6 @@ const HRPageWithCollaboratorInvitation: React.FC = () => {
           </Card>
         </TabsContent>
       </Tabs>
-
     </div>
   );
 };

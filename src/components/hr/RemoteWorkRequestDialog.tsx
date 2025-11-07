@@ -7,10 +7,22 @@ import { useHRSelfService } from '@/hooks/useHRSelfService';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { Home, CalendarIcon, Info } from 'lucide-react';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
@@ -74,9 +86,7 @@ export function RemoteWorkRequestDialog({
             <Home className="h-5 w-5" />
             Demande de Télétravail
           </DialogTitle>
-          <DialogDescription>
-            Demandez l'autorisation de travailler à distance
-          </DialogDescription>
+          <DialogDescription>Demandez l'autorisation de travailler à distance</DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -95,7 +105,7 @@ export function RemoteWorkRequestDialog({
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {FREQUENCIES.map((freq) => (
+                {FREQUENCIES.map(freq => (
                   <SelectItem key={freq.value} value={freq.value}>
                     {freq.label}
                   </SelectItem>
@@ -105,7 +115,7 @@ export function RemoteWorkRequestDialog({
           </div>
 
           {/* Dates */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             {/* Date début */}
             <div className="space-y-2">
               <Label>Date de début *</Label>
@@ -152,11 +162,7 @@ export function RemoteWorkRequestDialog({
                       )}
                     >
                       <CalendarIcon className="mr-2 h-4 w-4" />
-                      {endDate ? (
-                        format(endDate, 'PPP', { locale: fr })
-                      ) : (
-                        <span>Indéterminée</span>
-                      )}
+                      {endDate ? format(endDate, 'PPP', { locale: fr }) : <span>Indéterminée</span>}
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0">
@@ -166,9 +172,7 @@ export function RemoteWorkRequestDialog({
                       onSelect={setEndDate}
                       initialFocus
                       locale={fr}
-                      disabled={(date) =>
-                        startDate ? date < startDate : false
-                      }
+                      disabled={date => (startDate ? date < startDate : false)}
                     />
                   </PopoverContent>
                 </Popover>
@@ -184,7 +188,7 @@ export function RemoteWorkRequestDialog({
               placeholder="Expliquez pourquoi vous souhaitez travailler à distance..."
               rows={4}
               value={reason}
-              onChange={(e) => setReason(e.target.value)}
+              onChange={e => setReason(e.target.value)}
               required
             />
             <p className="text-xs text-muted-foreground">
@@ -193,9 +197,9 @@ export function RemoteWorkRequestDialog({
           </div>
 
           {/* Informations complémentaires */}
-          <div className="bg-muted/50 rounded-lg p-4 space-y-2 text-sm">
+          <div className="space-y-2 rounded-lg bg-muted/50 p-4 text-sm">
             <p className="font-medium">Rappel des conditions :</p>
-            <ul className="list-disc list-inside space-y-1 text-muted-foreground">
+            <ul className="list-inside list-disc space-y-1 text-muted-foreground">
               <li>Connexion internet stable requise</li>
               <li>Disponibilité pendant les heures de travail</li>
               <li>Participation aux réunions en visio</li>
@@ -213,10 +217,7 @@ export function RemoteWorkRequestDialog({
             >
               Annuler
             </Button>
-            <Button
-              type="submit"
-              disabled={loading || !startDate || !reason}
-            >
+            <Button type="submit" disabled={loading || !startDate || !reason}>
               {loading ? 'Envoi en cours...' : 'Soumettre la demande'}
             </Button>
           </div>

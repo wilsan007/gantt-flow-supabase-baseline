@@ -1,17 +1,17 @@
-import { Task , type Task } from '@/hooks/useTasksEnterprise';
+import { Task, type Task } from '@/hooks/useTasksEnterprise';
 
 export const priorityColors = {
   low: 'bg-success/10 text-success border-success/20',
   medium: 'bg-warning/10 text-warning border-warning/20',
   high: 'bg-info/10 text-info border-info/20',
-  urgent: 'bg-danger/10 text-danger border-danger/20'
+  urgent: 'bg-danger/10 text-danger border-danger/20',
 };
 
 export const statusColors = {
   todo: 'bg-muted text-muted-foreground border-border',
   doing: 'bg-tech-blue/10 text-tech-blue border-tech-blue/20',
   blocked: 'bg-danger/10 text-danger border-danger/20',
-  done: 'bg-success/10 text-success border-success/20'
+  done: 'bg-success/10 text-success border-success/20',
 };
 
 export const formatDate = (dateString: string) => {

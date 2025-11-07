@@ -8,8 +8,20 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { FileText, Upload } from 'lucide-react';
 
 const REQUEST_TYPES = [
@@ -17,7 +29,7 @@ const REQUEST_TYPES = [
   { value: 'salary_advance', label: 'Avance sur salaire' },
   { value: 'tax_certificate', label: 'Certificat fiscal' },
   { value: 'rib_change', label: 'Changement RIB' },
-  { value: 'address_change', label: 'Changement d\'adresse' },
+  { value: 'address_change', label: "Changement d'adresse" },
   { value: 'equipment_request', label: 'Demande de matériel' },
   { value: 'training_request', label: 'Demande de formation' },
   { value: 'other', label: 'Autre demande' },
@@ -92,9 +104,7 @@ export function AdministrativeRequestDialog({
             <FileText className="h-5 w-5" />
             Demande Administrative
           </DialogTitle>
-          <DialogDescription>
-            Faites une demande auprès du service RH
-          </DialogDescription>
+          <DialogDescription>Faites une demande auprès du service RH</DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -106,7 +116,7 @@ export function AdministrativeRequestDialog({
                 <SelectValue placeholder="Sélectionner un type" />
               </SelectTrigger>
               <SelectContent>
-                {REQUEST_TYPES.map((type) => (
+                {REQUEST_TYPES.map(type => (
                   <SelectItem key={type.value} value={type.value}>
                     {type.label}
                   </SelectItem>
@@ -123,7 +133,7 @@ export function AdministrativeRequestDialog({
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {PRIORITIES.map((p) => (
+                {PRIORITIES.map(p => (
                   <SelectItem key={p.value} value={p.value}>
                     <span className={p.color}>{p.label}</span>
                   </SelectItem>
@@ -139,7 +149,7 @@ export function AdministrativeRequestDialog({
               id="subject"
               placeholder="Résumé de votre demande"
               value={subject}
-              onChange={(e) => setSubject(e.target.value)}
+              onChange={e => setSubject(e.target.value)}
               required
             />
           </div>
@@ -152,7 +162,7 @@ export function AdministrativeRequestDialog({
               placeholder="Décrivez votre demande en détail..."
               rows={5}
               value={description}
-              onChange={(e) => setDescription(e.target.value)}
+              onChange={e => setDescription(e.target.value)}
               required
             />
             {requestType === 'salary_advance' && (
@@ -167,7 +177,8 @@ export function AdministrativeRequestDialog({
             )}
             {requestType === 'equipment_request' && (
               <p className="text-xs text-blue-600">
-                Détaillez le matériel demandé (ordinateur, écran, clavier, etc.) et la justification.
+                Détaillez le matériel demandé (ordinateur, écran, clavier, etc.) et la
+                justification.
               </p>
             )}
           </div>
@@ -181,7 +192,7 @@ export function AdministrativeRequestDialog({
                 type="url"
                 placeholder="https://... (URL du document)"
                 value={attachmentUrl}
-                onChange={(e) => setAttachmentUrl(e.target.value)}
+                onChange={e => setAttachmentUrl(e.target.value)}
               />
               <Button type="button" variant="outline" size="icon">
                 <Upload className="h-4 w-4" />
@@ -193,9 +204,9 @@ export function AdministrativeRequestDialog({
           </div>
 
           {/* Informations */}
-          <div className="bg-muted/50 rounded-lg p-4 text-sm">
-            <p className="font-medium mb-2">Délais de traitement :</p>
-            <ul className="list-disc list-inside space-y-1 text-muted-foreground">
+          <div className="rounded-lg bg-muted/50 p-4 text-sm">
+            <p className="mb-2 font-medium">Délais de traitement :</p>
+            <ul className="list-inside list-disc space-y-1 text-muted-foreground">
               <li>Attestations : 48h ouvrées</li>
               <li>Changements administratifs : 5 jours ouvrés</li>
               <li>Avances sur salaire : Traitement au cas par cas</li>
@@ -213,10 +224,7 @@ export function AdministrativeRequestDialog({
             >
               Annuler
             </Button>
-            <Button
-              type="submit"
-              disabled={loading || !requestType || !subject || !description}
-            >
+            <Button type="submit" disabled={loading || !requestType || !subject || !description}>
               {loading ? 'Envoi en cours...' : 'Soumettre la demande'}
             </Button>
           </div>

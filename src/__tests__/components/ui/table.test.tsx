@@ -1,6 +1,14 @@
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell, TableCaption } from '@/components/ui/table';
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableRow,
+  TableHead,
+  TableCell,
+  TableCaption,
+} from '@/components/ui/table';
 
 describe('Table Components', () => {
   it('should render complete table structure', () => {
@@ -21,7 +29,7 @@ describe('Table Components', () => {
         </TableBody>
       </Table>
     );
-    
+
     expect(screen.getByText('Test Caption')).toBeInTheDocument();
     expect(screen.getByText('Header 1')).toBeInTheDocument();
     expect(screen.getByText('Cell 1')).toBeInTheDocument();
@@ -37,7 +45,7 @@ describe('Table Components', () => {
         </TableBody>
       </Table>
     );
-    
+
     expect(screen.getByText('Data')).toBeInTheDocument();
   });
 
@@ -51,7 +59,7 @@ describe('Table Components', () => {
         </TableBody>
       </Table>
     );
-    
+
     expect(container.querySelector('.custom-table')).toBeInTheDocument();
   });
 });

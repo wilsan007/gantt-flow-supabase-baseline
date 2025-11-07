@@ -1,22 +1,17 @@
 import React from 'react';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { 
-  Calendar, 
-  Clock, 
-  Users, 
-  Building2, 
-  FolderOpen, 
+import {
+  Calendar,
+  Clock,
+  Users,
+  Building2,
+  FolderOpen,
   AlertTriangle,
   CheckSquare,
   MessageCircle,
@@ -24,7 +19,7 @@ import {
   Euro,
   TrendingUp,
   Link,
-  History
+  History,
 } from 'lucide-react';
 import { type Task } from '@/hooks/optimized';
 import { TaskHistorySection } from '@/components/task/TaskHistorySection';
@@ -38,13 +33,13 @@ interface TaskDetailsDialogProps {
 
 export const TaskDetailsDialog = ({ open, onOpenChange, task }: TaskDetailsDialogProps) => {
   // TODO: Réactiver quand useTaskDetails sera créé
-  // const { 
-  //   taskDetails, 
-  //   loading, 
-  //   department, 
-  //   subtasks, 
-  //   comments, 
-  //   risks, 
+  // const {
+  //   taskDetails,
+  //   loading,
+  //   department,
+  //   subtasks,
+  //   comments,
+  //   risks,
   //   dependencies,
   //   totalEffort,
   //   participants
@@ -67,10 +62,10 @@ export const TaskDetailsDialog = ({ open, onOpenChange, task }: TaskDetailsDialo
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden">
+      <DialogContent className="max-h-[90vh] max-w-4xl overflow-hidden">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-3">
-            <span className="text-muted-foreground text-sm">#{task.display_order}</span>
+            <span className="text-sm text-muted-foreground">#{task.display_order}</span>
             <span>{task.title}</span>
             <Badge className={priorityColors[task.priority]} variant="outline">
               {task.priority}
@@ -91,7 +86,7 @@ export const TaskDetailsDialog = ({ open, onOpenChange, task }: TaskDetailsDialo
                   Informations générales
                 </CardTitle>
               </CardHeader>
-              <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <CardContent className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <div className="space-y-3">
                   <div className="flex items-center gap-3">
                     <Users className="h-4 w-4 text-muted-foreground" />
@@ -116,7 +111,7 @@ export const TaskDetailsDialog = ({ open, onOpenChange, task }: TaskDetailsDialo
                 </div>
                 <div className="space-y-3">
                   <div>
-                    <div className="flex items-center gap-2 mb-2">
+                    <div className="mb-2 flex items-center gap-2">
                       <TrendingUp className="h-4 w-4 text-muted-foreground" />
                       <span className="font-medium">Progression: {task.progress}%</span>
                     </div>
@@ -143,13 +138,13 @@ export const TaskDetailsDialog = ({ open, onOpenChange, task }: TaskDetailsDialo
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div className="bg-muted p-3 rounded-lg">
+                  <div className="rounded-lg bg-muted p-3">
                     <p className="font-medium">{department.name}</p>
                     {department.description && (
-                      <p className="text-sm text-muted-foreground mt-1">{department.description}</p>
+                      <p className="mt-1 text-sm text-muted-foreground">{department.description}</p>
                     )}
                     {department.budget && (
-                      <div className="flex items-center gap-2 mt-2">
+                      <div className="mt-2 flex items-center gap-2">
                         <Euro className="h-4 w-4 text-muted-foreground" />
                         <span className="text-sm">Budget: {department.budget}€</span>
                       </div>
@@ -171,14 +166,16 @@ export const TaskDetailsDialog = ({ open, onOpenChange, task }: TaskDetailsDialo
                 <CardContent className="space-y-4">
                   {taskDetails?.description && (
                     <div>
-                      <h4 className="font-medium mb-2">Description</h4>
-                      <p className="text-sm bg-muted p-3 rounded-lg">{taskDetails.description}</p>
+                      <h4 className="mb-2 font-medium">Description</h4>
+                      <p className="rounded-lg bg-muted p-3 text-sm">{taskDetails.description}</p>
                     </div>
                   )}
                   {taskDetails?.acceptance_criteria && (
                     <div>
-                      <h4 className="font-medium mb-2">Critères d'acceptation</h4>
-                      <p className="text-sm bg-muted p-3 rounded-lg">{taskDetails.acceptance_criteria}</p>
+                      <h4 className="mb-2 font-medium">Critères d'acceptation</h4>
+                      <p className="rounded-lg bg-muted p-3 text-sm">
+                        {taskDetails.acceptance_criteria}
+                      </p>
                     </div>
                   )}
                 </CardContent>
@@ -196,13 +193,24 @@ export const TaskDetailsDialog = ({ open, onOpenChange, task }: TaskDetailsDialo
               <CardContent className="space-y-4">
                 {task.task_actions && task.task_actions.length > 0 && (
                   <div>
-                    <h4 className="font-medium mb-3">Actions ({task.task_actions.length})</h4>
+                    <h4 className="mb-3 font-medium">Actions ({task.task_actions.length})</h4>
                     <div className="space-y-2">
-                      {task.task_actions.map((action) => (
-                        <div key={action.id} className="flex items-center gap-3 p-2 bg-muted rounded-lg">
-                          <div className={`h-3 w-3 rounded-full ${action.is_done ? 'bg-green-500' : 'bg-gray-300'}`} />
-                          <span className={action.is_done ? 'line-through text-muted-foreground' : ''}>{action.title}</span>
-                          <Badge variant="outline" className="ml-auto">{action.weight_percentage}%</Badge>
+                      {task.task_actions.map(action => (
+                        <div
+                          key={action.id}
+                          className="flex items-center gap-3 rounded-lg bg-muted p-2"
+                        >
+                          <div
+                            className={`h-3 w-3 rounded-full ${action.is_done ? 'bg-green-500' : 'bg-gray-300'}`}
+                          />
+                          <span
+                            className={action.is_done ? 'text-muted-foreground line-through' : ''}
+                          >
+                            {action.title}
+                          </span>
+                          <Badge variant="outline" className="ml-auto">
+                            {action.weight_percentage}%
+                          </Badge>
                         </div>
                       ))}
                     </div>
@@ -211,14 +219,21 @@ export const TaskDetailsDialog = ({ open, onOpenChange, task }: TaskDetailsDialo
 
                 {subtasks && subtasks.length > 0 && (
                   <div>
-                    <h4 className="font-medium mb-3">Sous-tâches ({subtasks.length})</h4>
+                    <h4 className="mb-3 font-medium">Sous-tâches ({subtasks.length})</h4>
                     <div className="space-y-2">
-                      {subtasks.map((subtask) => (
-                        <div key={subtask.id} className="flex items-center gap-3 p-2 bg-muted rounded-lg">
-                          <Badge className={statusColors[subtask.status]} variant="outline">{subtask.status}</Badge>
+                      {subtasks.map(subtask => (
+                        <div
+                          key={subtask.id}
+                          className="flex items-center gap-3 rounded-lg bg-muted p-2"
+                        >
+                          <Badge className={statusColors[subtask.status]} variant="outline">
+                            {subtask.status}
+                          </Badge>
                           <span>{subtask.title}</span>
                           <div className="ml-auto flex items-center gap-2">
-                            <span className="text-sm text-muted-foreground">{subtask.effort_estimate_h}h</span>
+                            <span className="text-sm text-muted-foreground">
+                              {subtask.effort_estimate_h}h
+                            </span>
                             <Progress value={subtask.progress} className="w-16" />
                             <span className="text-sm">{subtask.progress}%</span>
                           </div>
@@ -238,7 +253,7 @@ export const TaskDetailsDialog = ({ open, onOpenChange, task }: TaskDetailsDialo
                   Statistiques
                 </CardTitle>
               </CardHeader>
-              <CardContent className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <CardContent className="grid grid-cols-2 gap-4 md:grid-cols-4">
                 <div className="text-center">
                   <div className="text-2xl font-bold text-primary">{totalEffort}h</div>
                   <div className="text-sm text-muted-foreground">Effort total</div>
@@ -252,7 +267,9 @@ export const TaskDetailsDialog = ({ open, onOpenChange, task }: TaskDetailsDialo
                   <div className="text-sm text-muted-foreground">Participants</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-primary">{task.task_actions?.length || 0}</div>
+                  <div className="text-2xl font-bold text-primary">
+                    {task.task_actions?.length || 0}
+                  </div>
                   <div className="text-sm text-muted-foreground">Actions</div>
                 </div>
               </CardContent>
@@ -270,7 +287,7 @@ export const TaskDetailsDialog = ({ open, onOpenChange, task }: TaskDetailsDialo
                 <CardContent>
                   <div className="flex flex-wrap gap-3">
                     {participants.map((participant, index) => (
-                      <div key={index} className="flex items-center gap-2 bg-muted p-2 rounded-lg">
+                      <div key={index} className="flex items-center gap-2 rounded-lg bg-muted p-2">
                         <Avatar className="h-8 w-8">
                           <AvatarFallback>{participant.charAt(0).toUpperCase()}</AvatarFallback>
                         </Avatar>
@@ -293,8 +310,8 @@ export const TaskDetailsDialog = ({ open, onOpenChange, task }: TaskDetailsDialo
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-2">
-                    {dependencies.map((dep) => (
-                      <div key={dep.id} className="flex items-center gap-3 p-2 bg-muted rounded-lg">
+                    {dependencies.map(dep => (
+                      <div key={dep.id} className="flex items-center gap-3 rounded-lg bg-muted p-2">
                         <Badge variant="outline">{dep.dependency_type}</Badge>
                         <span>{dep.depends_on_task_title}</span>
                       </div>
@@ -315,14 +332,14 @@ export const TaskDetailsDialog = ({ open, onOpenChange, task }: TaskDetailsDialo
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
-                    {risks.map((risk) => (
-                      <div key={risk.id} className="border rounded-lg p-3">
-                        <div className="flex items-center gap-2 mb-2">
+                    {risks.map(risk => (
+                      <div key={risk.id} className="rounded-lg border p-3">
+                        <div className="mb-2 flex items-center gap-2">
                           <Badge variant="destructive">{risk.impact}</Badge>
                           <Badge variant="outline">{risk.probability}</Badge>
                           <Badge variant="secondary">{risk.status}</Badge>
                         </div>
-                        <p className="text-sm mb-2">{risk.risk_description}</p>
+                        <p className="mb-2 text-sm">{risk.risk_description}</p>
                         {risk.mitigation_plan && (
                           <p className="text-sm text-muted-foreground">
                             <strong>Plan d'atténuation:</strong> {risk.mitigation_plan}
@@ -346,9 +363,9 @@ export const TaskDetailsDialog = ({ open, onOpenChange, task }: TaskDetailsDialo
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
-                    {comments.map((comment) => (
+                    {comments.map(comment => (
                       <div key={comment.id} className="border-l-2 border-primary pl-4">
-                        <div className="flex items-center gap-2 mb-1">
+                        <div className="mb-1 flex items-center gap-2">
                           <Badge variant="outline">{comment.comment_type}</Badge>
                           <span className="text-sm text-muted-foreground">
                             {formatDate(comment.created_at)}

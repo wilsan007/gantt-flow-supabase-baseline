@@ -54,7 +54,7 @@ export const ScheduleForm: React.FC<ScheduleFormProps> = ({ value, onChange, act
   useEffect(() => {
     if (value.rrule) {
       const rrule = value.rrule;
-      
+
       if (rrule.startsWith('FREQ=DAILY')) {
         setFrequency('daily');
       } else if (rrule.startsWith('FREQ=WEEKLY')) {
@@ -127,7 +127,10 @@ export const ScheduleForm: React.FC<ScheduleFormProps> = ({ value, onChange, act
         break;
 
       case 'monthly':
-        const days = monthDays.split(',').map(d => parseInt(d.trim())).filter(d => !isNaN(d));
+        const days = monthDays
+          .split(',')
+          .map(d => parseInt(d.trim()))
+          .filter(d => !isNaN(d));
         let monthsChecked = 0;
         while (occurrences.length < maxOccurrences && monthsChecked < 12) {
           for (const day of days) {
@@ -190,16 +193,16 @@ export const ScheduleForm: React.FC<ScheduleFormProps> = ({ value, onChange, act
         <div className="space-y-3">
           <Label>Jours de la semaine</Label>
           <div className="grid grid-cols-7 gap-2">
-            {WEEK_DAYS.map((day) => (
+            {WEEK_DAYS.map(day => (
               <div key={day.value} className="flex flex-col items-center">
                 <Checkbox
                   id={`day-${day.value}`}
                   checked={weekDays.includes(day.value)}
-                  onCheckedChange={(checked) => handleWeekDayToggle(day.value, checked as boolean)}
+                  onCheckedChange={checked => handleWeekDayToggle(day.value, checked as boolean)}
                 />
                 <Label
                   htmlFor={`day-${day.value}`}
-                  className="text-xs cursor-pointer mt-1"
+                  className="mt-1 cursor-pointer text-xs"
                   title={day.fullLabel}
                 >
                   {day.label}
@@ -220,7 +223,7 @@ export const ScheduleForm: React.FC<ScheduleFormProps> = ({ value, onChange, act
           <Input
             id="monthDays"
             value={monthDays}
-            onChange={(e) => setMonthDays(e.target.value)}
+            onChange={e => setMonthDays(e.target.value)}
             placeholder="Ex: 1,15,30"
           />
           <p className="text-xs text-muted-foreground">
@@ -241,7 +244,12 @@ export const ScheduleForm: React.FC<ScheduleFormProps> = ({ value, onChange, act
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0">
-              <Calendar mode="single" selected={startDate} onSelect={(date) => date && setStartDate(date)} initialFocus />
+              <Calendar
+                mode="single"
+                selected={startDate}
+                onSelect={date => date && setStartDate(date)}
+                initialFocus
+              />
             </PopoverContent>
           </Popover>
         </div>
@@ -271,7 +279,7 @@ export const ScheduleForm: React.FC<ScheduleFormProps> = ({ value, onChange, act
           min="1"
           max="365"
           value={windowDays}
-          onChange={(e) => setWindowDays(parseInt(e.target.value) || 30)}
+          onChange={e => setWindowDays(parseInt(e.target.value) || 30)}
         />
         <p className="text-xs text-muted-foreground">
           Les tâches seront générées jusqu'à {windowDays} jours à l'avance
@@ -279,18 +287,18 @@ export const ScheduleForm: React.FC<ScheduleFormProps> = ({ value, onChange, act
       </div>
 
       {/* Aperçu RRULE */}
-      <div className="bg-muted p-4 rounded-lg space-y-2">
+      <div className="space-y-2 rounded-lg bg-muted p-4">
         <div className="flex items-center gap-2">
           <Info className="h-4 w-4 text-muted-foreground" />
           <span className="text-sm font-medium">Règle de récurrence (RRULE)</span>
         </div>
-        <code className="text-xs block bg-background p-2 rounded">
+        <code className="block rounded bg-background p-2 text-xs">
           {generateRRule() || 'Aucune règle définie'}
         </code>
       </div>
 
       {/* Preview des occurrences */}
-      <div className="bg-blue-50 dark:bg-blue-950 p-4 rounded-lg space-y-2">
+      <div className="space-y-2 rounded-lg bg-blue-50 p-4 dark:bg-blue-950">
         <h4 className="text-sm font-semibold text-blue-900 dark:text-blue-100">
           📅 Aperçu des 5 prochaines occurrences
         </h4>

@@ -59,8 +59,10 @@ export const TenantProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       try {
         // console.log('🏢 TenantProvider: Fetching tenant data...');
         setLoading(true);
-        
-        const { data: { user } } = await supabase.auth.getUser();
+
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
         if (!user) {
           setLoading(false);
           return;
@@ -86,11 +88,11 @@ export const TenantProvider: React.FC<{ children: ReactNode }> = ({ children }) 
         }
 
         if (profile && profile.tenant_id) {
-          const defaultTenant = { 
-            id: profile.tenant_id, 
-            name: 'Wadashaqeen SaaS', 
+          const defaultTenant = {
+            id: profile.tenant_id,
+            name: 'Wadashaqeen SaaS',
             slug: 'wadashaqeen',
-            status: 'active'
+            status: 'active',
           };
 
           const membership = {
@@ -100,7 +102,7 @@ export const TenantProvider: React.FC<{ children: ReactNode }> = ({ children }) 
             role: profile.role || 'admin',
             status: 'active',
             permissions: { admin: true, manage_all: true },
-            tenant: defaultTenant
+            tenant: defaultTenant,
           };
 
           // Mettre en cache
@@ -108,7 +110,7 @@ export const TenantProvider: React.FC<{ children: ReactNode }> = ({ children }) 
             currentTenant: defaultTenant as Tenant,
             userMembership: membership,
             tenantId: profile.tenant_id,
-            loading: false
+            loading: false,
           };
 
           if (isMounted) {

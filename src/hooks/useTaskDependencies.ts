@@ -19,7 +19,7 @@ export function useTaskDependencies() {
         .order('created_at', { ascending: false });
 
       if (fetchError) throw fetchError;
-      
+
       setDependencies(data || []);
       setError(null);
     } catch (err: any) {
@@ -42,7 +42,7 @@ export function useTaskDependencies() {
       if (predecessorTaskId === successorTaskId) {
         toast({
           title: 'Erreur',
-          description: 'Une tâche ne peut pas dépendre d\'elle-même',
+          description: "Une tâche ne peut pas dépendre d'elle-même",
           variant: 'destructive',
         });
         return false;
@@ -50,7 +50,7 @@ export function useTaskDependencies() {
 
       // Vérifier qu'une dépendance similaire n'existe pas déjà
       const existing = dependencies.find(
-        (d) =>
+        d =>
           d.depends_on_task_id === predecessorTaskId &&
           d.task_id === successorTaskId &&
           d.dependency_type === dependencyType
@@ -80,7 +80,7 @@ export function useTaskDependencies() {
 
       // Ajouter à l'état local
       if (data) {
-        setDependencies((prev) => [data, ...prev]);
+        setDependencies(prev => [data, ...prev]);
         toast({
           title: 'Dépendance créée',
           description: 'La dépendance entre les tâches a été créée avec succès',
@@ -110,8 +110,8 @@ export function useTaskDependencies() {
       if (deleteError) throw deleteError;
 
       // Supprimer de l'état local
-      setDependencies((prev) => prev.filter((d) => d.id !== dependencyId));
-      
+      setDependencies(prev => prev.filter(d => d.id !== dependencyId));
+
       toast({
         title: 'Dépendance supprimée',
         description: 'La dépendance a été supprimée avec succès',
@@ -132,23 +132,20 @@ export function useTaskDependencies() {
   // Obtenir les dépendances d'une tâche
   const getTaskDependencies = (taskId: string) => {
     return {
-      predecessors: dependencies.filter((d) => d.task_id === taskId),
-      successors: dependencies.filter((d) => d.depends_on_task_id === taskId),
+      predecessors: dependencies.filter(d => d.task_id === taskId),
+      successors: dependencies.filter(d => d.depends_on_task_id === taskId),
     };
   };
 
   // Vérifier si une dépendance créerait un cycle
-  const wouldCreateCycle = (
-    predecessorTaskId: string,
-    successorTaskId: string
-  ): boolean => {
+  const wouldCreateCycle = (predecessorTaskId: string, successorTaskId: string): boolean => {
     // Parcourir le graphe pour détecter les cycles
     const visited = new Set<string>();
     const stack = [successorTaskId];
 
     while (stack.length > 0) {
       const current = stack.pop()!;
-      
+
       if (current === predecessorTaskId) {
         return true; // Cycle détecté
       }
@@ -161,8 +158,8 @@ export function useTaskDependencies() {
 
       // Ajouter les successeurs de la tâche courante
       const successors = dependencies
-        .filter((d) => d.depends_on_task_id === current)
-        .map((d) => d.task_id);
+        .filter(d => d.depends_on_task_id === current)
+        .map(d => d.task_id);
 
       stack.push(...successors);
     }

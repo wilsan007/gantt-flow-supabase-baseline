@@ -19,7 +19,7 @@ interface DependencyLinesProps {
 export const DependencyLines: React.FC<DependencyLinesProps> = ({
   dependencies,
   taskPositions,
-  onDeleteDependency
+  onDeleteDependency,
 }) => {
   const [hoveredLine, setHoveredLine] = React.useState<string | null>(null);
 
@@ -80,14 +80,14 @@ export const DependencyLines: React.FC<DependencyLinesProps> = ({
     const verticalGap = 10;
 
     // Si les tâches se chevauchent verticalement, ajouter un détour
-    const tasksOverlap = 
-      (fromPos.top < toPos.top + toPos.height) && 
-      (toPos.top < fromPos.top + fromPos.height);
+    const tasksOverlap =
+      fromPos.top < toPos.top + toPos.height && toPos.top < fromPos.top + fromPos.height;
 
     if (tasksOverlap && startX > endX) {
       // Détour par le bas ou le haut
-      const detourY = Math.max(fromPos.top + fromPos.height, toPos.top + toPos.height) + verticalGap;
-      
+      const detourY =
+        Math.max(fromPos.top + fromPos.height, toPos.top + toPos.height) + verticalGap;
+
       return `
         M ${startX} ${startY}
         L ${startX + horizontalGap} ${startY}
@@ -110,29 +110,36 @@ export const DependencyLines: React.FC<DependencyLinesProps> = ({
 
   const getLineColor = (type: string): string => {
     switch (type) {
-      case 'finish-to-start': return '#3b82f6'; // blue
-      case 'start-to-start': return '#10b981'; // green
-      case 'finish-to-finish': return '#f59e0b'; // amber
-      case 'start-to-finish': return '#8b5cf6'; // violet
-      default: return '#6b7280'; // gray
+      case 'finish-to-start':
+        return '#3b82f6'; // blue
+      case 'start-to-start':
+        return '#10b981'; // green
+      case 'finish-to-finish':
+        return '#f59e0b'; // amber
+      case 'start-to-finish':
+        return '#8b5cf6'; // violet
+      default:
+        return '#6b7280'; // gray
     }
   };
 
   const getTypeLabel = (type: string): string => {
     switch (type) {
-      case 'finish-to-start': return 'FS';
-      case 'start-to-start': return 'SS';
-      case 'finish-to-finish': return 'FF';
-      case 'start-to-finish': return 'SF';
-      default: return '?';
+      case 'finish-to-start':
+        return 'FS';
+      case 'start-to-start':
+        return 'SS';
+      case 'finish-to-finish':
+        return 'FF';
+      case 'start-to-finish':
+        return 'SF';
+      default:
+        return '?';
     }
   };
 
   return (
-    <svg
-      className="absolute inset-0 pointer-events-none"
-      style={{ zIndex: 1 }}
-    >
+    <svg className="pointer-events-none absolute inset-0" style={{ zIndex: 1 }}>
       <defs>
         {/* Marqueurs de flèches pour chaque couleur */}
         <marker
@@ -177,7 +184,7 @@ export const DependencyLines: React.FC<DependencyLinesProps> = ({
         </marker>
       </defs>
 
-      {dependencies.map((dep) => {
+      {dependencies.map(dep => {
         const fromPos = taskPositions.get(dep.depends_on_task_id);
         const toPos = taskPositions.get(dep.task_id);
 
@@ -193,7 +200,7 @@ export const DependencyLines: React.FC<DependencyLinesProps> = ({
           'finish-to-start': 'url(#arrowhead-blue)',
           'start-to-start': 'url(#arrowhead-green)',
           'finish-to-finish': 'url(#arrowhead-amber)',
-          'start-to-finish': 'url(#arrowhead-violet)'
+          'start-to-finish': 'url(#arrowhead-violet)',
         };
 
         return (
@@ -217,7 +224,7 @@ export const DependencyLines: React.FC<DependencyLinesProps> = ({
               strokeWidth={isHovered ? 3 : 2}
               strokeDasharray={isHovered ? '0' : '5,5'}
               markerEnd={markerMap[dep.dependency_type] || markerMap['finish-to-start']}
-              className="transition-all duration-200 pointer-events-none"
+              className="pointer-events-none transition-all duration-200"
               opacity={isHovered ? 1 : 0.7}
             />
 
@@ -240,24 +247,17 @@ export const DependencyLines: React.FC<DependencyLinesProps> = ({
                 {/* Bouton supprimer */}
                 <g
                   className="pointer-events-auto cursor-pointer"
-                  onClick={(e) => {
+                  onClick={e => {
                     e.stopPropagation();
                     onDeleteDependency(dep.id);
                   }}
-                  transform={`translate(${
-                    (fromPos.left + fromPos.width + toPos.left) / 2 - 10
-                  }, ${
+                  transform={`translate(${(fromPos.left + fromPos.width + toPos.left) / 2 - 10}, ${
                     (fromPos.top + fromPos.height / 2 + toPos.top + toPos.height / 2) / 2 + 5
                   })`}
                 >
-                  <circle
-                    r="10"
-                    fill="white"
-                    stroke={color}
-                    strokeWidth="2"
-                  />
+                  <circle r="10" fill="white" stroke={color} strokeWidth="2" />
                   <foreignObject x="-8" y="-8" width="16" height="16">
-                    <X className="w-4 h-4" style={{ color }} />
+                    <X className="h-4 w-4" style={{ color }} />
                   </foreignObject>
                 </g>
               </>

@@ -29,9 +29,9 @@ export const DependencyHandle: React.FC<DependencyHandleProps> = ({
   return (
     <div
       className={cn(
-        "dependency-handle absolute top-1/2 -translate-y-1/2 z-20",
-        "cursor-grab active:cursor-grabbing transition-all duration-200",
-        "opacity-60 hover:opacity-100 group-hover:opacity-100",
+        'dependency-handle absolute top-1/2 z-20 -translate-y-1/2',
+        'cursor-grab transition-all duration-200 active:cursor-grabbing',
+        'opacity-60 hover:opacity-100 group-hover:opacity-100',
         position === 'start' ? '-left-5' : '-right-5',
         className
       )}
@@ -40,7 +40,11 @@ export const DependencyHandle: React.FC<DependencyHandleProps> = ({
       onMouseLeave={() => setIsHovered(false)}
       data-task-id={taskId}
       data-position={position}
-      title={position === 'start' ? 'Tirer pour créer une dépendance depuis le début' : 'Tirer pour créer une dépendance depuis la fin'}
+      title={
+        position === 'start'
+          ? 'Tirer pour créer une dépendance depuis le début'
+          : 'Tirer pour créer une dépendance depuis la fin'
+      }
     >
       {/* Crochet SVG visible qui sort de la barre */}
       <svg
@@ -48,11 +52,11 @@ export const DependencyHandle: React.FC<DependencyHandleProps> = ({
         height="36"
         viewBox="0 0 28 36"
         className={cn(
-          "transition-all duration-200",
-          isHovered && "drop-shadow-[0_4px_12px_rgba(59,130,246,0.5)]"
+          'transition-all duration-200',
+          isHovered && 'drop-shadow-[0_4px_12px_rgba(59,130,246,0.5)]'
         )}
         style={{
-          transform: position === 'start' ? 'scaleX(-1)' : 'scaleX(1)'
+          transform: position === 'start' ? 'scaleX(-1)' : 'scaleX(1)',
         }}
       >
         {/* Fond blanc pour contraste */}
@@ -63,7 +67,7 @@ export const DependencyHandle: React.FC<DependencyHandleProps> = ({
           strokeWidth="7"
           strokeLinecap="round"
         />
-        
+
         {/* Crochet coloré */}
         <path
           d="M 6 10 L 6 26 Q 6 30 10 30 L 20 30"
@@ -72,7 +76,7 @@ export const DependencyHandle: React.FC<DependencyHandleProps> = ({
           strokeWidth="4"
           strokeLinecap="round"
         />
-        
+
         {/* Cercle à l'extrémité pour faciliter le clic */}
         <circle
           cx="20"
@@ -83,7 +87,7 @@ export const DependencyHandle: React.FC<DependencyHandleProps> = ({
           strokeWidth="2"
           className="transition-all duration-200"
         />
-        
+
         {/* Indicateur visuel au centre */}
         <circle
           cx="6"

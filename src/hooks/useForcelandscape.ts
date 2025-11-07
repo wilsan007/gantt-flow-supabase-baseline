@@ -22,7 +22,7 @@ export const useForceLandscape = (): UseForceLandscapeReturn => {
     const checkOrientation = () => {
       const width = window.innerWidth;
       const height = window.innerHeight;
-      
+
       // Détection du type d'appareil
       if (width < 640) {
         setDeviceType('mobile');
@@ -45,7 +45,7 @@ export const useForceLandscape = (): UseForceLandscapeReturn => {
           width,
           height,
           landscape,
-          deviceType: width < 640 ? 'mobile' : width < 1024 ? 'tablet' : 'desktop'
+          deviceType: width < 640 ? 'mobile' : width < 1024 ? 'tablet' : 'desktop',
         });
       }
     };
@@ -73,6 +73,6 @@ export const useForceLandscape = (): UseForceLandscapeReturn => {
     isLandscape,
     isMobileOrTablet,
     shouldShowRotateMessage,
-    deviceType
+    deviceType,
   };
 };

@@ -28,7 +28,10 @@ export const useOrientationPreference = (): UseOrientationPreferenceReturn => {
   useEffect(() => {
     try {
       const savedPref = localStorage.getItem(PREFERENCE_KEY) as OrientationPreference;
-      if (savedPref && ['auto', 'always-landscape', 'always-portrait', 'never-ask'].includes(savedPref)) {
+      if (
+        savedPref &&
+        ['auto', 'always-landscape', 'always-portrait', 'never-ask'].includes(savedPref)
+      ) {
         setPreferenceState(savedPref);
       }
 
@@ -100,6 +103,6 @@ export const useOrientationPreference = (): UseOrientationPreferenceReturn => {
     shouldForceOrientation,
     dismissedViews,
     dismissView,
-    resetDismissed
+    resetDismissed,
   };
 };

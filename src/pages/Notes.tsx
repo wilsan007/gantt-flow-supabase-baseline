@@ -100,38 +100,43 @@ export default function Notes() {
     });
   };
 
-  const filteredNotes = notes.filter(note =>
-    note.title.toLowerCase().includes(search.toLowerCase()) ||
-    note.content.toLowerCase().includes(search.toLowerCase())
+  const filteredNotes = notes.filter(
+    note =>
+      note.title.toLowerCase().includes(search.toLowerCase()) ||
+      note.content.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto p-6">
         {/* Header */}
-        <div className="flex items-center justify-between mb-6">
+        <div className="mb-6 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Button variant="outline" onClick={() => navigate('/')}>
-              <ArrowLeft className="h-4 w-4 mr-2" />
+              <ArrowLeft className="mr-2 h-4 w-4" />
               Retour
             </Button>
             <div>
-              <h1 className="text-3xl font-bold flex items-center gap-2">
+              <h1 className="flex items-center gap-2 text-3xl font-bold">
                 <FileText className="h-8 w-8" />
                 Bloc-notes
               </h1>
-              <p className="text-muted-foreground">
-                Vos notes personnelles
-              </p>
+              <p className="text-muted-foreground">Vos notes personnelles</p>
             </div>
           </div>
-          <Button onClick={() => { setSelectedNote(null); setTitle(''); setContent(''); }}>
-            <Plus className="h-4 w-4 mr-2" />
+          <Button
+            onClick={() => {
+              setSelectedNote(null);
+              setTitle('');
+              setContent('');
+            }}
+          >
+            <Plus className="mr-2 h-4 w-4" />
             Nouvelle note
           </Button>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
           {/* Liste des notes */}
           <div className="lg:col-span-1">
             <Card>
@@ -141,34 +146,34 @@ export default function Notes() {
                   <Input
                     placeholder="Rechercher..."
                     value={search}
-                    onChange={(e) => setSearch(e.target.value)}
+                    onChange={e => setSearch(e.target.value)}
                     className="border-0 focus-visible:ring-0"
                   />
                 </div>
               </CardHeader>
               <CardContent className="p-0">
                 {filteredNotes.length === 0 ? (
-                  <div className="text-center py-8 px-4">
-                    <FileText className="h-12 w-12 mx-auto text-muted-foreground mb-2" />
+                  <div className="px-4 py-8 text-center">
+                    <FileText className="mx-auto mb-2 h-12 w-12 text-muted-foreground" />
                     <p className="text-muted-foreground">Aucune note</p>
                   </div>
                 ) : (
                   <div className="divide-y">
-                    {filteredNotes.map((note) => (
+                    {filteredNotes.map(note => (
                       <div
                         key={note.id}
-                        className={`p-4 cursor-pointer hover:bg-accent transition-colors ${
+                        className={`cursor-pointer p-4 transition-colors hover:bg-accent ${
                           selectedNote?.id === note.id ? 'bg-accent' : ''
                         }`}
                         onClick={() => handleSelectNote(note)}
                       >
-                        <div className="flex items-start justify-between mb-2">
-                          <h3 className="font-medium line-clamp-1">{note.title}</h3>
+                        <div className="mb-2 flex items-start justify-between">
+                          <h3 className="line-clamp-1 font-medium">{note.title}</h3>
                           <Button
                             variant="ghost"
                             size="sm"
                             className="h-6 w-6 p-0"
-                            onClick={(e) => {
+                            onClick={e => {
                               e.stopPropagation();
                               handleDelete(note.id);
                             }}
@@ -176,7 +181,7 @@ export default function Notes() {
                             <Trash2 className="h-3 w-3" />
                           </Button>
                         </div>
-                        <p className="text-sm text-muted-foreground line-clamp-2 mb-2">
+                        <p className="mb-2 line-clamp-2 text-sm text-muted-foreground">
                           {note.content}
                         </p>
                         <div className="flex items-center gap-1 text-xs text-muted-foreground">
@@ -195,9 +200,7 @@ export default function Notes() {
           <div className="lg:col-span-2">
             <Card>
               <CardHeader>
-                <CardTitle>
-                  {selectedNote ? 'Modifier la note' : 'Nouvelle note'}
-                </CardTitle>
+                <CardTitle>{selectedNote ? 'Modifier la note' : 'Nouvelle note'}</CardTitle>
                 <CardDescription>
                   {selectedNote ? 'Modifiez votre note existante' : 'Créez une nouvelle note'}
                 </CardDescription>
@@ -207,7 +210,7 @@ export default function Notes() {
                   <Input
                     placeholder="Titre de la note"
                     value={title}
-                    onChange={(e) => setTitle(e.target.value)}
+                    onChange={e => setTitle(e.target.value)}
                     className="text-lg font-medium"
                   />
                 </div>
@@ -215,18 +218,22 @@ export default function Notes() {
                   <Textarea
                     placeholder="Contenu de la note..."
                     value={content}
-                    onChange={(e) => setContent(e.target.value)}
+                    onChange={e => setContent(e.target.value)}
                     className="min-h-[400px] resize-none"
                   />
                 </div>
                 <div className="flex gap-2">
                   <Button onClick={handleSave} disabled={loading}>
-                    <FileText className="h-4 w-4 mr-2" />
+                    <FileText className="mr-2 h-4 w-4" />
                     Enregistrer
                   </Button>
                   <Button
                     variant="outline"
-                    onClick={() => { setTitle(''); setContent(''); setSelectedNote(null); }}
+                    onClick={() => {
+                      setTitle('');
+                      setContent('');
+                      setSelectedNote(null);
+                    }}
                   >
                     Annuler
                   </Button>

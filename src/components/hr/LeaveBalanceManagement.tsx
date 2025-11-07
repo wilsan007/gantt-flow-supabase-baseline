@@ -3,8 +3,20 @@ import { useHRMinimal } from '@/hooks/useHRMinimal';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Progress } from '@/components/ui/progress';
 import { Plus, Calendar, Wallet } from 'lucide-react';
@@ -25,9 +37,7 @@ export const LeaveBalanceManagement = () => {
   const currentYear = new Date().getFullYear();
   const years = [currentYear - 1, currentYear, currentYear + 1];
 
-  const filteredBalances = leaveBalances.filter(balance => 
-    balance.year === selectedYear
-  );
+  const filteredBalances = leaveBalances.filter(balance => balance.year === selectedYear);
 
   const onSubmit = async (data: any) => {
     try {
@@ -37,18 +47,16 @@ export const LeaveBalanceManagement = () => {
         year: parseInt(data.year),
         total_days: parseFloat(data.total_days),
         used_days: 0,
-        remaining_days: parseFloat(data.total_days)
+        remaining_days: parseFloat(data.total_days),
       };
 
-      const { error } = await supabase
-        .from('leave_balances')
-        .insert(balanceData);
+      const { error } = await supabase.from('leave_balances').insert(balanceData);
 
       if (error) throw error;
 
       toast({
-        title: "Succès",
-        description: "Solde de congés créé avec succès"
+        title: 'Succès',
+        description: 'Solde de congés créé avec succès',
       });
 
       reset();
@@ -57,9 +65,9 @@ export const LeaveBalanceManagement = () => {
     } catch (error: any) {
       console.error('Error creating leave balance:', error);
       toast({
-        title: "Erreur",
-        description: "Impossible de créer le solde de congés",
-        variant: "destructive"
+        title: 'Erreur',
+        description: 'Impossible de créer le solde de congés',
+        variant: 'destructive',
       });
     }
   };
@@ -73,26 +81,26 @@ export const LeaveBalanceManagement = () => {
 
       const { error } = await supabase
         .from('leave_balances')
-        .update({ 
+        .update({
           total_days: newTotalDays,
-          remaining_days: remaining 
+          remaining_days: remaining,
         })
         .eq('id', balanceId);
 
       if (error) throw error;
 
       toast({
-        title: "Succès",
-        description: "Solde mis à jour avec succès"
+        title: 'Succès',
+        description: 'Solde mis à jour avec succès',
       });
 
       refresh();
     } catch (error: any) {
       console.error('Error updating balance:', error);
       toast({
-        title: "Erreur",
-        description: "Impossible de mettre à jour le solde",
-        variant: "destructive"
+        title: 'Erreur',
+        description: 'Impossible de mettre à jour le solde',
+        variant: 'destructive',
       });
     }
   };
@@ -102,16 +110,16 @@ export const LeaveBalanceManagement = () => {
   }
 
   return (
-    <div className="p-6 space-y-6">
-      <div className="flex justify-between items-center">
-        <h2 className="text-3xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+    <div className="space-y-6 p-6">
+      <div className="flex items-center justify-between">
+        <h2 className="bg-gradient-to-r from-primary to-accent bg-clip-text text-3xl font-bold text-transparent">
           Soldes de Congés
         </h2>
-        
+
         <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
           <DialogTrigger asChild>
             <Button className="hover-glow">
-              <Plus className="h-4 w-4 mr-2" />
+              <Plus className="mr-2 h-4 w-4" />
               Nouveau solde
             </Button>
           </DialogTrigger>
@@ -122,7 +130,7 @@ export const LeaveBalanceManagement = () => {
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
               <div>
                 <Label htmlFor="employee_id">Employé</Label>
-                <Select onValueChange={(value) => setValue('employee_id', value)}>
+                <Select onValueChange={value => setValue('employee_id', value)}>
                   <SelectTrigger>
                     <SelectValue placeholder="Sélectionner un employé" />
                   </SelectTrigger>
@@ -138,7 +146,7 @@ export const LeaveBalanceManagement = () => {
 
               <div>
                 <Label htmlFor="absence_type_id">Type d'absence</Label>
-                <Select onValueChange={(value) => setValue('absence_type_id', value)}>
+                <Select onValueChange={value => setValue('absence_type_id', value)}>
                   <SelectTrigger>
                     <SelectValue placeholder="Sélectionner un type" />
                   </SelectTrigger>
@@ -154,7 +162,7 @@ export const LeaveBalanceManagement = () => {
 
               <div>
                 <Label htmlFor="year">Année</Label>
-                <Select onValueChange={(value) => setValue('year', value)}>
+                <Select onValueChange={value => setValue('year', value)}>
                   <SelectTrigger>
                     <SelectValue placeholder="Sélectionner une année" />
                   </SelectTrigger>
@@ -180,10 +188,12 @@ export const LeaveBalanceManagement = () => {
               </div>
 
               <div className="flex gap-2">
-                <Button type="submit" className="flex-1">Créer</Button>
-                <Button 
-                  type="button" 
-                  variant="outline" 
+                <Button type="submit" className="flex-1">
+                  Créer
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
                   onClick={() => setIsCreateDialogOpen(false)}
                 >
                   Annuler
@@ -195,9 +205,12 @@ export const LeaveBalanceManagement = () => {
       </div>
 
       {/* Year Filter */}
-      <div className="flex gap-4 items-center">
+      <div className="flex items-center gap-4">
         <Label>Année :</Label>
-        <Select value={selectedYear.toString()} onValueChange={(value) => setSelectedYear(parseInt(value))}>
+        <Select
+          value={selectedYear.toString()}
+          onValueChange={value => setSelectedYear(parseInt(value))}
+        >
           <SelectTrigger className="w-32">
             <SelectValue />
           </SelectTrigger>
@@ -216,7 +229,7 @@ export const LeaveBalanceManagement = () => {
         {filteredBalances.length === 0 ? (
           <Card className="modern-card">
             <CardContent className="p-8 text-center">
-              <Wallet className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+              <Wallet className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
               <p className="text-muted-foreground">
                 Aucun solde de congés configuré pour {selectedYear}
               </p>
@@ -224,17 +237,18 @@ export const LeaveBalanceManagement = () => {
           </Card>
         ) : (
           <div className={`grid gap-4 ${isMobile ? 'grid-cols-1' : 'grid-cols-2 lg:grid-cols-3'}`}>
-            {filteredBalances.map((balance) => {
+            {filteredBalances.map(balance => {
               const employee = employees.find(emp => emp.user_id === balance.employee_id);
               const absenceType = absenceTypes.find(type => type.id === balance.absence_type_id);
-              const usagePercentage = balance.total_days > 0 ? (balance.used_days / balance.total_days) * 100 : 0;
-              
+              const usagePercentage =
+                balance.total_days > 0 ? (balance.used_days / balance.total_days) * 100 : 0;
+
               return (
                 <Card key={balance.id} className="modern-card hover-glow">
                   <CardContent className="p-6">
                     <div className="space-y-4">
                       <div>
-                        <h3 className="font-semibold text-lg">
+                        <h3 className="text-lg font-semibold">
                           {employee?.full_name || 'Employé inconnu'}
                         </h3>
                         <p className="text-sm text-muted-foreground">
@@ -245,7 +259,9 @@ export const LeaveBalanceManagement = () => {
                       <div className="space-y-2">
                         <div className="flex justify-between text-sm">
                           <span>Utilisé</span>
-                          <span>{balance.used_days} / {balance.total_days} jours</span>
+                          <span>
+                            {balance.used_days} / {balance.total_days} jours
+                          </span>
                         </div>
                         <Progress value={usagePercentage} className="h-2" />
                         <div className="text-sm text-muted-foreground">
@@ -263,7 +279,7 @@ export const LeaveBalanceManagement = () => {
                           step="0.5"
                           defaultValue={balance.total_days}
                           className="h-8 text-sm"
-                          onBlur={(e) => {
+                          onBlur={e => {
                             const newValue = parseFloat(e.target.value);
                             if (newValue !== balance.total_days && newValue > 0) {
                               updateBalance(balance.id, newValue);

@@ -11,7 +11,7 @@ describe('Input Component', () => {
   it('should handle value changes', () => {
     const { container } = render(<Input />);
     const input = container.querySelector('input')!;
-    
+
     fireEvent.change(input, { target: { value: 'test value' } });
     expect(input.value).toBe('test value');
   });

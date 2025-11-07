@@ -1,10 +1,5 @@
 import React, { useState } from 'react';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -13,7 +8,13 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Slider } from '@/components/ui/slider';
 import { Textarea } from '@/components/ui/textarea';
 import { Separator } from '@/components/ui/separator';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { CalendarIcon, Plus, Trash2, Target, Link, User } from 'lucide-react';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
@@ -31,40 +32,48 @@ interface SubtaskCreationDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   parentTask: Task;
-  onCreateSubtask: (parentId: string, linkedActionId?: string, customData?: {
-    title: string;
-    start_date: string;
-    due_date: string;
-    effort_estimate_h: number;
-  }) => void;
-  onCreateSubtaskWithActions?: (parentId: string, customData: {
-    title: string;
-    start_date: string;
-    due_date: string;
-    effort_estimate_h: number;
-  }, actions: ActionData[]) => void;
+  onCreateSubtask: (
+    parentId: string,
+    linkedActionId?: string,
+    customData?: {
+      title: string;
+      start_date: string;
+      due_date: string;
+      effort_estimate_h: number;
+    }
+  ) => void;
+  onCreateSubtaskWithActions?: (
+    parentId: string,
+    customData: {
+      title: string;
+      start_date: string;
+      due_date: string;
+      effort_estimate_h: number;
+    },
+    actions: ActionData[]
+  ) => void;
   linkedActionId?: string;
 }
 
-export const SubtaskCreationDialog = ({ 
-  open, 
-  onOpenChange, 
-  parentTask, 
+export const SubtaskCreationDialog = ({
+  open,
+  onOpenChange,
+  parentTask,
   onCreateSubtask,
   onCreateSubtaskWithActions,
-  linkedActionId 
+  linkedActionId,
 }: SubtaskCreationDialogProps) => {
   const [title, setTitle] = useState(`Sous-tâche de ${parentTask.title}`);
   const [startDate, setStartDate] = useState<Date>(new Date(parentTask.start_date));
   const [dueDate, setDueDate] = useState<Date>(new Date(parentTask.due_date));
   const [effort, setEffort] = useState(1);
   const [assignee, setAssignee] = useState(
-    parentTask.assignee && parentTask.assignee !== 'Non assigné' 
-      ? parentTask.assignee 
+    parentTask.assignee && parentTask.assignee !== 'Non assigné'
+      ? parentTask.assignee
       : 'Ahmed Waleh' // Valeur par défaut si parent non assigné
   );
   const [selectedActionId, setSelectedActionId] = useState<string>('none');
-  
+
   // État pour les actions
   const [actions, setActions] = useState<ActionData[]>([]);
   const [newActionTitle, setNewActionTitle] = useState('');
@@ -75,10 +84,10 @@ export const SubtaskCreationDialog = ({
   // Liste des responsables possibles (assignation obligatoire pour les sous-tâches)
   const availableAssignees = [
     'Ahmed Waleh',
-    'Sarah Martin', 
+    'Sarah Martin',
     'Jean Dupont',
     'Marie Dubois',
-    'Pierre Moreau'
+    'Pierre Moreau',
   ];
 
   // Fonctions pour gérer les actions
@@ -94,18 +103,18 @@ export const SubtaskCreationDialog = ({
     };
 
     const updatedActions = [...actions, newAction];
-    
+
     // Redistribution automatique des poids pour atteindre 100%
     const equalWeight = Math.floor(100 / updatedActions.length);
-    const remainder = 100 - (equalWeight * updatedActions.length);
-    
+    const remainder = 100 - equalWeight * updatedActions.length;
+
     const redistributedActions = updatedActions.map((action, index) => ({
       ...action,
-      weight_percentage: index === 0 ? equalWeight + remainder : equalWeight
+      weight_percentage: index === 0 ? equalWeight + remainder : equalWeight,
     }));
-    
+
     setActions(redistributedActions);
-    
+
     // Reset form
     setNewActionTitle('');
     setNewActionWeight([25]);
@@ -115,17 +124,17 @@ export const SubtaskCreationDialog = ({
 
   const removeAction = (actionId: string) => {
     const updatedActions = actions.filter(action => action.id !== actionId);
-    
+
     // Redistribution automatique des poids après suppression
     if (updatedActions.length > 0) {
       const equalWeight = Math.floor(100 / updatedActions.length);
-      const remainder = 100 - (equalWeight * updatedActions.length);
-      
+      const remainder = 100 - equalWeight * updatedActions.length;
+
       const redistributedActions = updatedActions.map((action, index) => ({
         ...action,
-        weight_percentage: index === 0 ? equalWeight + remainder : equalWeight
+        weight_percentage: index === 0 ? equalWeight + remainder : equalWeight,
       }));
-      
+
       setActions(redistributedActions);
     } else {
       setActions([]);
@@ -134,15 +143,15 @@ export const SubtaskCreationDialog = ({
 
   const redistributeWeights = () => {
     if (actions.length === 0) return;
-    
+
     const equalWeight = Math.floor(100 / actions.length);
-    const remainder = 100 - (equalWeight * actions.length);
-    
+    const remainder = 100 - equalWeight * actions.length;
+
     const updatedActions = actions.map((action, index) => ({
       ...action,
-      weight_percentage: index === 0 ? equalWeight + remainder : equalWeight
+      weight_percentage: index === 0 ? equalWeight + remainder : equalWeight,
     }));
-    
+
     setActions(updatedActions);
   };
 
@@ -157,7 +166,9 @@ export const SubtaskCreationDialog = ({
     if (actions.length > 0) {
       const totalWeight = actions.reduce((sum, action) => sum + action.weight_percentage, 0);
       if (totalWeight !== 100) {
-        alert(`La somme des pourcentages des actions doit être égale à 100% (actuellement: ${totalWeight}%)`);
+        alert(
+          `La somme des pourcentages des actions doit être égale à 100% (actuellement: ${totalWeight}%)`
+        );
         return;
       }
     }
@@ -175,7 +186,8 @@ export const SubtaskCreationDialog = ({
       onCreateSubtaskWithActions(parentTask.id, subtaskData, actions);
     } else {
       // Sinon, création normale avec l'action liée si sélectionnée
-      const linkedAction = selectedActionId && selectedActionId !== 'none' ? selectedActionId : undefined;
+      const linkedAction =
+        selectedActionId && selectedActionId !== 'none' ? selectedActionId : undefined;
       onCreateSubtask(parentTask.id, linkedAction, subtaskData);
     }
 
@@ -190,26 +202,26 @@ export const SubtaskCreationDialog = ({
     setEffort(1);
     setAssignee(parentTask.assignee || '');
     setSelectedActionId('none');
-    
+
     // Reset actions
     setActions([]);
     setNewActionTitle('');
     setNewActionWeight([25]);
     setNewActionDueDate(undefined);
     setNewActionNotes('');
-    
+
     onOpenChange(false);
   };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-[700px]">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Target className="h-5 w-5" />
             Créer une Sous-tâche
             {linkedActionId && (
-              <span className="text-sm text-muted-foreground block mt-1">
+              <span className="mt-1 block text-sm text-muted-foreground">
                 Liée à une action spécifique
               </span>
             )}
@@ -222,13 +234,11 @@ export const SubtaskCreationDialog = ({
             <Input
               id="title"
               value={title}
-              onChange={(e) => setTitle(e.target.value)}
+              onChange={e => setTitle(e.target.value)}
               placeholder="Nom de la sous-tâche..."
               maxLength={100}
             />
-            <p className="text-xs text-muted-foreground">
-              {title.length}/100 caractères
-            </p>
+            <p className="text-xs text-muted-foreground">{title.length}/100 caractères</p>
           </div>
 
           {/* Dates */}
@@ -237,10 +247,7 @@ export const SubtaskCreationDialog = ({
               <Label>Date de début</Label>
               <Popover>
                 <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className="w-full justify-start text-left font-normal"
-                  >
+                  <Button variant="outline" className="w-full justify-start text-left font-normal">
                     <CalendarIcon className="mr-2 h-4 w-4" />
                     {format(startDate, 'PPP', { locale: fr })}
                   </Button>
@@ -249,7 +256,7 @@ export const SubtaskCreationDialog = ({
                   <Calendar
                     mode="single"
                     selected={startDate}
-                    onSelect={(date) => date && setStartDate(date)}
+                    onSelect={date => date && setStartDate(date)}
                     initialFocus
                   />
                 </PopoverContent>
@@ -260,10 +267,7 @@ export const SubtaskCreationDialog = ({
               <Label>Date d'échéance</Label>
               <Popover>
                 <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className="w-full justify-start text-left font-normal"
-                  >
+                  <Button variant="outline" className="w-full justify-start text-left font-normal">
                     <CalendarIcon className="mr-2 h-4 w-4" />
                     {format(dueDate, 'PPP', { locale: fr })}
                   </Button>
@@ -272,7 +276,7 @@ export const SubtaskCreationDialog = ({
                   <Calendar
                     mode="single"
                     selected={dueDate}
-                    onSelect={(date) => date && setDueDate(date)}
+                    onSelect={date => date && setDueDate(date)}
                     initialFocus
                   />
                 </PopoverContent>
@@ -290,7 +294,7 @@ export const SubtaskCreationDialog = ({
                 min="0.5"
                 step="0.5"
                 value={effort}
-                onChange={(e) => setEffort(parseFloat(e.target.value) || 1)}
+                onChange={e => setEffort(parseFloat(e.target.value) || 1)}
               />
             </div>
 
@@ -304,7 +308,7 @@ export const SubtaskCreationDialog = ({
                   <SelectValue placeholder="Choisir un responsable" />
                 </SelectTrigger>
                 <SelectContent>
-                  {availableAssignees.map((person) => (
+                  {availableAssignees.map(person => (
                     <SelectItem key={person} value={person}>
                       {person}
                     </SelectItem>
@@ -327,7 +331,7 @@ export const SubtaskCreationDialog = ({
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="none">Aucune liaison</SelectItem>
-                  {parentTask.task_actions.map((action) => (
+                  {parentTask.task_actions.map(action => (
                     <SelectItem key={action.id} value={action.id}>
                       {action.title} ({action.weight_percentage}%)
                     </SelectItem>
@@ -343,7 +347,7 @@ export const SubtaskCreationDialog = ({
           )}
 
           {/* Info parent */}
-          <div className="bg-muted p-3 rounded-md">
+          <div className="rounded-md bg-muted p-3">
             <p className="text-sm text-muted-foreground">
               <strong>Tâche parent:</strong> {parentTask.title}
             </p>
@@ -357,7 +361,7 @@ export const SubtaskCreationDialog = ({
           {/* Section Actions */}
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <Label className="text-base font-semibold flex items-center gap-2">
+              <Label className="flex items-center gap-2 text-base font-semibold">
                 <Target className="h-4 w-4" />
                 Actions de la sous-tâche ({actions.length})
               </Label>
@@ -376,13 +380,16 @@ export const SubtaskCreationDialog = ({
 
             {/* Liste des actions existantes */}
             {actions.length > 0 && (
-              <div className="space-y-2 max-h-32 overflow-y-auto">
-                {actions.map((action) => (
-                  <div key={action.id} className="flex items-center justify-between p-2 bg-muted/50 rounded-md">
+              <div className="max-h-32 space-y-2 overflow-y-auto">
+                {actions.map(action => (
+                  <div
+                    key={action.id}
+                    className="flex items-center justify-between rounded-md bg-muted/50 p-2"
+                  >
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
-                        <span className="font-medium text-sm">{action.title}</span>
-                        <span className="text-xs bg-primary/20 text-primary px-2 py-1 rounded">
+                        <span className="text-sm font-medium">{action.title}</span>
+                        <span className="rounded bg-primary/20 px-2 py-1 text-xs text-primary">
                           {action.weight_percentage}%
                         </span>
                       </div>
@@ -392,9 +399,7 @@ export const SubtaskCreationDialog = ({
                         </p>
                       )}
                       {action.notes && (
-                        <p className="text-xs text-muted-foreground truncate">
-                          {action.notes}
-                        </p>
+                        <p className="truncate text-xs text-muted-foreground">{action.notes}</p>
                       )}
                     </div>
                     <Button
@@ -412,9 +417,9 @@ export const SubtaskCreationDialog = ({
             )}
 
             {/* Formulaire d'ajout d'action */}
-            <div className="border rounded-md p-4 space-y-4 bg-muted/20">
+            <div className="space-y-4 rounded-md border bg-muted/20 p-4">
               <div className="flex items-center justify-between">
-                <Label className="text-sm font-medium flex items-center gap-2">
+                <Label className="flex items-center gap-2 text-sm font-medium">
                   <Plus className="h-4 w-4" />
                   Ajouter une action à cette sous-tâche
                 </Label>
@@ -426,11 +431,11 @@ export const SubtaskCreationDialog = ({
                   disabled={!newActionTitle.trim()}
                   className="text-xs"
                 >
-                  <Plus className="h-3 w-3 mr-1" />
+                  <Plus className="mr-1 h-3 w-3" />
                   Ajouter
                 </Button>
               </div>
-              
+
               <div className="grid gap-3">
                 {/* Titre de l'action */}
                 <div className="grid gap-1">
@@ -438,8 +443,8 @@ export const SubtaskCreationDialog = ({
                   <Input
                     placeholder="Titre de l'action"
                     value={newActionTitle}
-                    onChange={(e) => setNewActionTitle(e.target.value)}
-                    onKeyPress={(e) => e.key === 'Enter' && newActionTitle.trim() && addAction()}
+                    onChange={e => setNewActionTitle(e.target.value)}
+                    onKeyPress={e => e.key === 'Enter' && newActionTitle.trim() && addAction()}
                     className="text-sm"
                     maxLength={40}
                   />
@@ -475,10 +480,12 @@ export const SubtaskCreationDialog = ({
                         <Button
                           variant="outline"
                           size="sm"
-                          className="w-full justify-start text-left font-normal text-xs"
+                          className="w-full justify-start text-left text-xs font-normal"
                         >
                           <CalendarIcon className="mr-2 h-3 w-3" />
-                          {newActionDueDate ? format(newActionDueDate, 'dd/MM', { locale: fr }) : "Choisir"}
+                          {newActionDueDate
+                            ? format(newActionDueDate, 'dd/MM', { locale: fr })
+                            : 'Choisir'}
                         </Button>
                       </PopoverTrigger>
                       <PopoverContent className="w-auto p-0">
@@ -499,7 +506,7 @@ export const SubtaskCreationDialog = ({
                   <Textarea
                     placeholder="Détails, instructions spécifiques..."
                     value={newActionNotes}
-                    onChange={(e) => setNewActionNotes(e.target.value)}
+                    onChange={e => setNewActionNotes(e.target.value)}
                     rows={2}
                     className="text-sm"
                   />
@@ -507,7 +514,7 @@ export const SubtaskCreationDialog = ({
               </div>
 
               {/* Bouton permanent pour ajouter une autre action */}
-              <div className="pt-2 border-t">
+              <div className="border-t pt-2">
                 <Button
                   type="button"
                   variant="ghost"
@@ -521,29 +528,34 @@ export const SubtaskCreationDialog = ({
                   }}
                   className="w-full text-xs text-muted-foreground hover:text-foreground"
                 >
-                  <Plus className="h-3 w-3 mr-2" />
+                  <Plus className="mr-2 h-3 w-3" />
                   Ajouter une autre action
                 </Button>
               </div>
             </div>
 
-            {actions.length > 0 && (() => {
-              const totalWeight = actions.reduce((sum, action) => sum + action.weight_percentage, 0);
-              const isValid = totalWeight === 100;
-              return (
-                <div className={`text-xs p-2 rounded ${
-                  isValid 
-                    ? 'text-green-700 bg-green-50 border border-green-200' 
-                    : 'text-red-700 bg-red-50 border border-red-200'
-                }`}>
-                  {isValid ? '✅' : '⚠️'} <strong>Total des poids: {totalWeight}%</strong>
-                  {isValid 
-                    ? ' (Parfait ! Les actions totalisent 100%)' 
-                    : ' (Doit être égal à 100% pour valider)'
-                  }
-                </div>
-              );
-            })()}
+            {actions.length > 0 &&
+              (() => {
+                const totalWeight = actions.reduce(
+                  (sum, action) => sum + action.weight_percentage,
+                  0
+                );
+                const isValid = totalWeight === 100;
+                return (
+                  <div
+                    className={`rounded p-2 text-xs ${
+                      isValid
+                        ? 'border border-green-200 bg-green-50 text-green-700'
+                        : 'border border-red-200 bg-red-50 text-red-700'
+                    }`}
+                  >
+                    {isValid ? '✅' : '⚠️'} <strong>Total des poids: {totalWeight}%</strong>
+                    {isValid
+                      ? ' (Parfait ! Les actions totalisent 100%)'
+                      : ' (Doit être égal à 100% pour valider)'}
+                  </div>
+                );
+              })()}
           </div>
         </div>
 
@@ -551,13 +563,14 @@ export const SubtaskCreationDialog = ({
           <Button variant="outline" onClick={handleCancel}>
             Annuler
           </Button>
-          <Button 
-            onClick={handleSubmit} 
+          <Button
+            onClick={handleSubmit}
             disabled={
-              !title.trim() || 
-              !assignee || 
+              !title.trim() ||
+              !assignee ||
               assignee === 'Non assigné' ||
-              (actions.length > 0 && actions.reduce((sum, action) => sum + action.weight_percentage, 0) !== 100)
+              (actions.length > 0 &&
+                actions.reduce((sum, action) => sum + action.weight_percentage, 0) !== 100)
             }
           >
             Créer la Sous-tâche

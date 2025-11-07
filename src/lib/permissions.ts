@@ -5,7 +5,7 @@
 
 import { supabase } from '@/integrations/supabase/client';
 
-export type RoleName = 
+export type RoleName =
   | 'super_admin'
   | 'tenant_admin'
   | 'hr_manager'
@@ -16,7 +16,7 @@ export type RoleName =
   | 'intern'
   | 'viewer';
 
-export type ResourceType = 
+export type ResourceType =
   | 'tasks'
   | 'projects'
   | 'employees'
@@ -29,16 +29,16 @@ export interface UserContext {
   userId: string;
   tenantId: string | null;
   roles: RoleName[];
-  projectIds: string[];  // Projets dont l'utilisateur est membre
+  projectIds: string[]; // Projets dont l'utilisateur est membre
 }
 
 export interface FilterResult {
-  canViewAll: boolean;  // Peut voir toutes les données du tenant
-  canViewAssigned: boolean;  // Peut voir ce qui lui est assigné
-  canViewTeam: boolean;  // Peut voir l'équipe/projets
-  mustFilterByUser: boolean;  // Doit filtrer par user_id
-  mustFilterByProjects: boolean;  // Doit filtrer par project_id
-  allowedProjectIds: string[];  // IDs des projets accessibles
+  canViewAll: boolean; // Peut voir toutes les données du tenant
+  canViewAssigned: boolean; // Peut voir ce qui lui est assigné
+  canViewTeam: boolean; // Peut voir l'équipe/projets
+  mustFilterByUser: boolean; // Doit filtrer par user_id
+  mustFilterByProjects: boolean; // Doit filtrer par project_id
+  allowedProjectIds: string[]; // IDs des projets accessibles
 }
 
 /**
@@ -51,10 +51,7 @@ export interface FilterResult {
  * - Employee/Contractor → Voit uniquement tâches assignées
  * - Intern/Viewer → Lecture seule limitée
  */
-export function getResourceFilter(
-  resource: ResourceType,
-  userContext: UserContext
-): FilterResult {
+export function getResourceFilter(resource: ResourceType, userContext: UserContext): FilterResult {
   const { roles, projectIds } = userContext;
 
   // 🔓 Super Admin : Accès total cross-tenant
@@ -180,7 +177,7 @@ export function getResourceFilter(
       canViewAll: false,
       canViewAssigned: true,
       canViewTeam: false,
-      mustFilterByUser: true,  // ⚠️ CRITIQUE : Filtrer par user_id
+      mustFilterByUser: true, // ⚠️ CRITIQUE : Filtrer par user_id
       mustFilterByProjects: false,
       allowedProjectIds: [],
     };
@@ -192,7 +189,7 @@ export function getResourceFilter(
       canViewAll: false,
       canViewAssigned: true,
       canViewTeam: false,
-      mustFilterByUser: true,  // Uniquement assigné
+      mustFilterByUser: true, // Uniquement assigné
       mustFilterByProjects: false,
       allowedProjectIds: [],
     };
@@ -215,17 +212,21 @@ export function getResourceFilter(
 export async function getUserContext(): Promise<UserContext | null> {
   try {
     // 1. Récupérer l'utilisateur
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     if (!user) return null;
 
     // 2. Récupérer les rôles actifs
     const { data: userRoles, error: rolesError } = await supabase
       .from('user_roles')
-      .select(`
+      .select(
+        `
         *,
         roles:role_id(name),
         tenants:tenant_id(id)
-      `)
+      `
+      )
       .eq('user_id', user.id)
       .eq('status', 'active');
 
@@ -234,9 +235,7 @@ export async function getUserContext(): Promise<UserContext | null> {
     }
 
     // 3. Extraire les noms de rôles
-    const roles: RoleName[] = userRoles
-      .map(ur => ur.roles?.name as RoleName)
-      .filter(Boolean);
+    const roles: RoleName[] = userRoles.map(ur => ur.roles?.name as RoleName).filter(Boolean);
 
     // 4. Récupérer les projets de l'utilisateur
     const { data: projectMemberships } = await supabase
@@ -265,10 +264,7 @@ export async function getUserContext(): Promise<UserContext | null> {
 /**
  * Vérifier si l'utilisateur a une permission spécifique
  */
-export function hasPermission(
-  userContext: UserContext,
-  permission: string
-): boolean {
+export function hasPermission(userContext: UserContext, permission: string): boolean {
   const { roles } = userContext;
 
   // Super Admin et Tenant Admin : toutes les permissions
@@ -315,16 +311,8 @@ export function hasPermission(
       'documents_upload',
       'documents_view',
     ],
-    intern: [
-      'projects_view_assigned',
-      'tasks_view_assigned',
-      'documents_view',
-      'comments_view',
-    ],
-    viewer: [
-      'projects_view_assigned',
-      'tasks_view_assigned',
-    ],
+    intern: ['projects_view_assigned', 'tasks_view_assigned', 'documents_view', 'comments_view'],
+    viewer: ['projects_view_assigned', 'tasks_view_assigned'],
   };
 
   // Vérifier si au moins un rôle a la permission

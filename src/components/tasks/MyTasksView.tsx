@@ -1,6 +1,6 @@
 /**
  * MyTasksView - Vue personnalisée des tâches de l'utilisateur
- * 
+ *
  * Affiche les tâches organisées par urgence :
  * - 🔥 Urgent (échéance < 24h ou priorité haute)
  */
@@ -20,16 +20,16 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { 
-  CheckCircle2, 
-  Clock, 
-  AlertTriangle, 
+import {
+  CheckCircle2,
+  Clock,
+  AlertTriangle,
   Calendar,
   ChevronRight,
   Flame,
   CalendarDays,
   User,
-  RefreshCw
+  RefreshCw,
 } from 'lucide-react';
 import { useTasks, type Task } from '@/hooks/optimized';
 import { supabase } from '@/integrations/supabase/client';
@@ -80,7 +80,7 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, onComplete, onPostpone, onDel
   const isOverdue = dueDate && isBefore(dueDate, startOfDay(new Date()));
 
   return (
-    <div className="p-4 border rounded-lg hover:bg-accent/50 transition-colors">
+    <div className="rounded-lg border p-4 transition-colors hover:bg-accent/50">
       <div className="flex items-start justify-between gap-4">
         <div className="flex-1 space-y-2">
           <div className="flex items-center gap-2">
@@ -91,33 +91,25 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, onComplete, onPostpone, onDel
               </Badge>
             )}
           </div>
-          
+
           {task.description && (
-            <p className="text-sm text-muted-foreground line-clamp-2">
-              {task.description}
-            </p>
+            <p className="line-clamp-2 text-sm text-muted-foreground">{task.description}</p>
           )}
-          
-          <div className="flex items-center gap-2 flex-wrap text-xs">
+
+          <div className="flex flex-wrap items-center gap-2 text-xs">
             {dueDate && (
               <Badge variant="outline" className="gap-1">
                 <Clock className="h-3 w-3" />
                 {format(dueDate, 'dd MMM HH:mm', { locale: fr })}
               </Badge>
             )}
-            
+
             {task.priority && (
-              <Badge className={getPriorityColor(task.priority)}>
-                {task.priority}
-              </Badge>
+              <Badge className={getPriorityColor(task.priority)}>{task.priority}</Badge>
             )}
-            
-            {task.status && (
-              <Badge className={getStatusColor(task.status)}>
-                {task.status}
-              </Badge>
-            )}
-            
+
+            {task.status && <Badge className={getStatusColor(task.status)}>{task.status}</Badge>}
+
             {task.project_id && (
               <Badge variant="secondary" className="gap-1">
                 Projet #{task.project_id.slice(0, 8)}
@@ -125,7 +117,7 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, onComplete, onPostpone, onDel
             )}
           </div>
         </div>
-        
+
         <div className="flex gap-1">
           <Button
             size="sm"
@@ -135,20 +127,10 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, onComplete, onPostpone, onDel
           >
             <CheckCircle2 className="h-4 w-4" />
           </Button>
-          <Button
-            size="sm"
-            variant="ghost"
-            onClick={() => onPostpone(task.id)}
-            title="Reporter"
-          >
+          <Button size="sm" variant="ghost" onClick={() => onPostpone(task.id)} title="Reporter">
             <Clock className="h-4 w-4" />
           </Button>
-          <Button
-            size="sm"
-            variant="ghost"
-            onClick={() => onDelegate(task.id)}
-            title="Déléguer"
-          >
+          <Button size="sm" variant="ghost" onClick={() => onDelegate(task.id)} title="Déléguer">
             <User className="h-4 w-4" />
           </Button>
         </div>
@@ -175,8 +157,10 @@ export const MyTasksView: React.FC = () => {
   const myTasks = useMemo(() => {
     if (!user) return [];
     return tasks.filter(
-      task => (task.assigned_to || task.assignee_id) === user.id && 
-              task.status !== 'completed' && task.status !== 'done'
+      task =>
+        (task.assigned_to || task.assignee_id) === user.id &&
+        task.status !== 'completed' &&
+        task.status !== 'done'
     );
   }, [tasks, user]);
 
@@ -184,8 +168,8 @@ export const MyTasksView: React.FC = () => {
     if (!user) return [];
     const twoDaysAgo = addDays(new Date(), -2);
     return tasks.filter(
-      task => 
-        (task.assigned_to || task.assignee_id) === user.id && 
+      task =>
+        (task.assigned_to || task.assignee_id) === user.id &&
         (task.status === 'completed' || task.status === 'done') &&
         task.updated_at &&
         parseISO(task.updated_at) > twoDaysAgo
@@ -203,7 +187,8 @@ export const MyTasksView: React.FC = () => {
 
     myTasks.forEach(task => {
       const dueDate = task.due_date ? parseISO(task.due_date) : null;
-      const isHighPriority = task.priority?.toLowerCase() === 'high' || task.priority?.toLowerCase() === 'haute';
+      const isHighPriority =
+        task.priority?.toLowerCase() === 'high' || task.priority?.toLowerCase() === 'haute';
       const isDueSoon = dueDate && isBefore(dueDate, tomorrow);
 
       if (isHighPriority || isDueSoon) {
@@ -265,7 +250,8 @@ export const MyTasksView: React.FC = () => {
       <Alert variant="destructive">
         <AlertTriangle className="h-4 w-4" />
         <AlertDescription>
-          Erreur lors du chargement des tâches: {typeof error === 'string' ? error : error?.message || 'Erreur inconnue'}
+          Erreur lors du chargement des tâches:{' '}
+          {typeof error === 'string' ? error : error?.message || 'Erreur inconnue'}
         </AlertDescription>
       </Alert>
     );
@@ -282,13 +268,13 @@ export const MyTasksView: React.FC = () => {
           </p>
         </div>
         <Button variant="outline" size="sm" onClick={refresh}>
-          <RefreshCw className="h-4 w-4 mr-2" />
+          <RefreshCw className="mr-2 h-4 w-4" />
           Actualiser
         </Button>
       </div>
 
       {/* Statistiques rapides */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
         <Card>
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
@@ -340,7 +326,7 @@ export const MyTasksView: React.FC = () => {
 
       {/* Section Urgent */}
       <Card>
-        <CardHeader 
+        <CardHeader
           className="cursor-pointer hover:bg-accent/50"
           onClick={() => toggleSection('urgent')}
         >
@@ -350,17 +336,15 @@ export const MyTasksView: React.FC = () => {
               <span>🔥 URGENT</span>
               <Badge variant="destructive">{categorizedTasks.urgent.length}</Badge>
             </div>
-            <ChevronRight 
-              className={`h-5 w-5 transition-transform ${expandedSections.urgent ? 'rotate-90' : ''}`} 
+            <ChevronRight
+              className={`h-5 w-5 transition-transform ${expandedSections.urgent ? 'rotate-90' : ''}`}
             />
           </CardTitle>
         </CardHeader>
         {expandedSections.urgent && (
           <CardContent className="space-y-3">
             {categorizedTasks.urgent.length === 0 ? (
-              <p className="text-muted-foreground text-center py-4">
-                Aucune tâche urgente 🎉
-              </p>
+              <p className="py-4 text-center text-muted-foreground">Aucune tâche urgente 🎉</p>
             ) : (
               categorizedTasks.urgent.map(task => (
                 <TaskItem
@@ -378,7 +362,7 @@ export const MyTasksView: React.FC = () => {
 
       {/* Section Aujourd'hui */}
       <Card>
-        <CardHeader 
+        <CardHeader
           className="cursor-pointer hover:bg-accent/50"
           onClick={() => toggleSection('today')}
         >
@@ -388,15 +372,15 @@ export const MyTasksView: React.FC = () => {
               <span>📅 AUJOURD'HUI</span>
               <Badge variant="secondary">{categorizedTasks.today.length}</Badge>
             </div>
-            <ChevronRight 
-              className={`h-5 w-5 transition-transform ${expandedSections.today ? 'rotate-90' : ''}`} 
+            <ChevronRight
+              className={`h-5 w-5 transition-transform ${expandedSections.today ? 'rotate-90' : ''}`}
             />
           </CardTitle>
         </CardHeader>
         {expandedSections.today && (
           <CardContent className="space-y-3">
             {categorizedTasks.today.length === 0 ? (
-              <p className="text-muted-foreground text-center py-4">
+              <p className="py-4 text-center text-muted-foreground">
                 Aucune tâche pour aujourd'hui
               </p>
             ) : (
@@ -416,7 +400,7 @@ export const MyTasksView: React.FC = () => {
 
       {/* Section Cette Semaine */}
       <Card>
-        <CardHeader 
+        <CardHeader
           className="cursor-pointer hover:bg-accent/50"
           onClick={() => toggleSection('week')}
         >
@@ -426,17 +410,15 @@ export const MyTasksView: React.FC = () => {
               <span>📆 CETTE SEMAINE</span>
               <Badge variant="outline">{categorizedTasks.thisWeek.length}</Badge>
             </div>
-            <ChevronRight 
-              className={`h-5 w-5 transition-transform ${expandedSections.week ? 'rotate-90' : ''}`} 
+            <ChevronRight
+              className={`h-5 w-5 transition-transform ${expandedSections.week ? 'rotate-90' : ''}`}
             />
           </CardTitle>
         </CardHeader>
         {expandedSections.week && (
           <CardContent className="space-y-3">
             {categorizedTasks.thisWeek.length === 0 ? (
-              <p className="text-muted-foreground text-center py-4">
-                Aucune tâche cette semaine
-              </p>
+              <p className="py-4 text-center text-muted-foreground">Aucune tâche cette semaine</p>
             ) : (
               categorizedTasks.thisWeek.map(task => (
                 <TaskItem
@@ -454,7 +436,7 @@ export const MyTasksView: React.FC = () => {
 
       {/* Section Terminées Récemment */}
       <Card>
-        <CardHeader 
+        <CardHeader
           className="cursor-pointer hover:bg-accent/50"
           onClick={() => toggleSection('completed')}
         >
@@ -464,25 +446,27 @@ export const MyTasksView: React.FC = () => {
               <span>✅ TERMINÉES RÉCEMMENT</span>
               <Badge variant="secondary">{completedTasks.length}</Badge>
             </div>
-            <ChevronRight 
-              className={`h-5 w-5 transition-transform ${expandedSections.completed ? 'rotate-90' : ''}`} 
+            <ChevronRight
+              className={`h-5 w-5 transition-transform ${expandedSections.completed ? 'rotate-90' : ''}`}
             />
           </CardTitle>
         </CardHeader>
         {expandedSections.completed && (
           <CardContent className="space-y-3">
             {completedTasks.length === 0 ? (
-              <p className="text-muted-foreground text-center py-4">
+              <p className="py-4 text-center text-muted-foreground">
                 Aucune tâche terminée récemment
               </p>
             ) : (
               completedTasks.slice(0, 10).map(task => (
-                <div key={task.id} className="p-4 border rounded-lg opacity-60">
+                <div key={task.id} className="rounded-lg border p-4 opacity-60">
                   <div className="flex items-center justify-between">
                     <div>
                       <h4 className="font-medium line-through">{task.title}</h4>
                       <p className="text-xs text-muted-foreground">
-                        Terminée {task.updated_at && format(parseISO(task.updated_at), 'PPp', { locale: fr })}
+                        Terminée{' '}
+                        {task.updated_at &&
+                          format(parseISO(task.updated_at), 'PPp', { locale: fr })}
                       </p>
                     </div>
                     <CheckCircle2 className="h-5 w-5 text-green-500" />

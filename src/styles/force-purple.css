@@ -1,16 +1,16 @@
 /* CSS D'URGENCE - FORCE LE VIOLET SUR TOUT */
 
 /* Sélecteurs ultra-agressifs pour forcer le violet */
-*[class*="action-header"],
-*[class*="action-table"],
-div[style*="position: sticky"],
-div[style*="z-index: 95"],
-div[style*="backdrop-filter: blur"],
+*[class*='action-header'],
+*[class*='action-table'],
+div[style*='position: sticky'],
+div[style*='z-index: 95'],
+div[style*='backdrop-filter: blur'],
 .action-table-container > div,
 .action-table-container div:first-child,
 .action-table-container > div:first-child,
-[class*="action-table-container"] > div,
-[class*="action-table-container"] div:first-child {
+[class*='action-table-container'] > div,
+[class*='action-table-container'] div:first-child {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
   background-color: #667eea !important;
   background-image: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
@@ -19,30 +19,30 @@ div[style*="backdrop-filter: blur"],
 }
 
 /* Force sur tous les en-têtes de table */
-*[class*="action"] th,
-*[class*="action"] thead th,
-*[class*="action"] .action-header-cell,
+*[class*='action'] th,
+*[class*='action'] thead th,
+*[class*='action'] .action-header-cell,
 .action-table-container th,
 .action-table-container thead th,
 .action-table-container table th,
 .action-table-container .action-header-cell {
   color: #ffffff !important;
-  text-shadow: 0 1px 3px rgba(0,0,0,0.4) !important;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4) !important;
   font-weight: 700 !important;
   background: transparent !important;
 }
 
 /* Sélecteur par attribut style */
-div[style*="linear-gradient(135deg, #4facfe"],
-div[style*="linear-gradient(135deg, #f093fb"] {
+div[style*='linear-gradient(135deg, #4facfe'],
+div[style*='linear-gradient(135deg, #f093fb'] {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
   border-bottom: 2px solid rgba(102, 126, 234, 0.4) !important;
   box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2) !important;
 }
 
 /* Force absolue sur les conteneurs React */
-[data-testid*="action"],
-[data-component*="action"],
+[data-testid*='action'],
+[data-component*='action'],
 .action-header-fixed,
 div.action-header-fixed,
 span.action-header-fixed {
@@ -61,7 +61,7 @@ span.action-header-fixed {
 }
 
 /* Force sur les éléments avec flex */
-div[style*="flex-shrink: 0"] {
+div[style*='flex-shrink: 0'] {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
   border-bottom: 2px solid rgba(102, 126, 234, 0.4) !important;
   box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2) !important;
@@ -75,4 +75,3 @@ div[style*="flex-shrink: 0"] {
 .action-table-container div[style] {
   background: var(--action-bg, linear-gradient(135deg, #667eea 0%, #764ba2 100%)) !important;
 }
-

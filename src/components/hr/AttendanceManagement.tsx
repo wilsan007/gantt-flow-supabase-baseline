@@ -4,8 +4,20 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Clock, Plus, Calendar } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -19,9 +31,7 @@ export const AttendanceManagement = () => {
 
   const { register, handleSubmit, reset, setValue } = useForm();
 
-  const filteredAttendances = attendances.filter(attendance => 
-    attendance.date === selectedDate
-  );
+  const filteredAttendances = attendances.filter(attendance => attendance.date === selectedDate);
 
   const onSubmit = async (data: any) => {
     try {
@@ -43,7 +53,7 @@ export const AttendanceManagement = () => {
         break_duration: parseInt(data.break_duration) || 0,
         total_hours: totalHours,
         status: data.status,
-        notes: data.notes || null
+        notes: data.notes || null,
       });
 
       reset();
@@ -55,21 +65,31 @@ export const AttendanceManagement = () => {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'present': return 'default';
-      case 'absent': return 'destructive';
-      case 'late': return 'secondary';
-      case 'partial': return 'outline';
-      default: return 'secondary';
+      case 'present':
+        return 'default';
+      case 'absent':
+        return 'destructive';
+      case 'late':
+        return 'secondary';
+      case 'partial':
+        return 'outline';
+      default:
+        return 'secondary';
     }
   };
 
   const getStatusLabel = (status: string) => {
     switch (status) {
-      case 'present': return 'Présent';
-      case 'absent': return 'Absent';
-      case 'late': return 'En retard';
-      case 'partial': return 'Partiel';
-      default: return status;
+      case 'present':
+        return 'Présent';
+      case 'absent':
+        return 'Absent';
+      case 'late':
+        return 'En retard';
+      case 'partial':
+        return 'Partiel';
+      default:
+        return status;
     }
   };
 
@@ -78,16 +98,16 @@ export const AttendanceManagement = () => {
   }
 
   return (
-    <div className="p-6 space-y-6">
-      <div className="flex justify-between items-center">
-        <h2 className="text-3xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+    <div className="space-y-6 p-6">
+      <div className="flex items-center justify-between">
+        <h2 className="bg-gradient-to-r from-primary to-accent bg-clip-text text-3xl font-bold text-transparent">
           Gestion des Présences
         </h2>
-        
+
         <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
           <DialogTrigger asChild>
             <Button className="hover-glow">
-              <Plus className="h-4 w-4 mr-2" />
+              <Plus className="mr-2 h-4 w-4" />
               Nouvelle présence
             </Button>
           </DialogTrigger>
@@ -98,7 +118,7 @@ export const AttendanceManagement = () => {
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
               <div>
                 <Label htmlFor="employee_id">Employé</Label>
-                <Select onValueChange={(value) => setValue('employee_id', value)}>
+                <Select onValueChange={value => setValue('employee_id', value)}>
                   <SelectTrigger>
                     <SelectValue placeholder="Sélectionner un employé" />
                   </SelectTrigger>
@@ -124,7 +144,7 @@ export const AttendanceManagement = () => {
 
               <div>
                 <Label htmlFor="status">Statut</Label>
-                <Select onValueChange={(value) => setValue('status', value)}>
+                <Select onValueChange={value => setValue('status', value)}>
                   <SelectTrigger>
                     <SelectValue placeholder="Sélectionner un statut" />
                   </SelectTrigger>
@@ -140,19 +160,11 @@ export const AttendanceManagement = () => {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="check_in">Arrivée</Label>
-                  <Input
-                    id="check_in"
-                    type="time"
-                    {...register('check_in')}
-                  />
+                  <Input id="check_in" type="time" {...register('check_in')} />
                 </div>
                 <div>
                   <Label htmlFor="check_out">Départ</Label>
-                  <Input
-                    id="check_out"
-                    type="time"
-                    {...register('check_out')}
-                  />
+                  <Input id="check_out" type="time" {...register('check_out')} />
                 </div>
               </div>
 
@@ -168,18 +180,16 @@ export const AttendanceManagement = () => {
 
               <div>
                 <Label htmlFor="notes">Notes (optionnel)</Label>
-                <Input
-                  id="notes"
-                  placeholder="Notes..."
-                  {...register('notes')}
-                />
+                <Input id="notes" placeholder="Notes..." {...register('notes')} />
               </div>
 
               <div className="flex gap-2">
-                <Button type="submit" className="flex-1">Enregistrer</Button>
-                <Button 
-                  type="button" 
-                  variant="outline" 
+                <Button type="submit" className="flex-1">
+                  Enregistrer
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
                   onClick={() => setIsCreateDialogOpen(false)}
                 >
                   Annuler
@@ -191,13 +201,13 @@ export const AttendanceManagement = () => {
       </div>
 
       {/* Date Filter */}
-      <div className="flex gap-4 items-center">
+      <div className="flex items-center gap-4">
         <Label htmlFor="date-filter">Date :</Label>
         <Input
           id="date-filter"
           type="date"
           value={selectedDate}
-          onChange={(e) => setSelectedDate(e.target.value)}
+          onChange={e => setSelectedDate(e.target.value)}
           className="w-48"
         />
       </div>
@@ -207,46 +217,61 @@ export const AttendanceManagement = () => {
         {filteredAttendances.length === 0 ? (
           <Card className="modern-card">
             <CardContent className="p-8 text-center">
-              <Clock className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+              <Clock className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
               <p className="text-muted-foreground">
                 Aucune présence enregistrée pour le {new Date(selectedDate).toLocaleDateString()}
               </p>
             </CardContent>
           </Card>
         ) : (
-          filteredAttendances.map((attendance) => {
+          filteredAttendances.map(attendance => {
             const employee = employees.find(emp => emp.user_id === attendance.employee_id);
-            
+
             return (
               <Card key={attendance.id} className="modern-card hover-glow">
                 <CardContent className="p-6">
-                  <div className={`${isMobile ? 'space-y-4' : 'flex items-center justify-between'}`}>
+                  <div
+                    className={`${isMobile ? 'space-y-4' : 'flex items-center justify-between'}`}
+                  >
                     <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-2">
-                        <h3 className="font-semibold text-lg">
+                      <div className="mb-2 flex items-center gap-3">
+                        <h3 className="text-lg font-semibold">
                           {employee?.full_name || 'Employé inconnu'}
                         </h3>
                         <Badge variant={getStatusColor(attendance.status)}>
                           {getStatusLabel(attendance.status)}
                         </Badge>
                       </div>
-                      
-                      <div className="text-sm text-muted-foreground space-y-1">
-                        <p><strong>Date:</strong> {new Date(attendance.date).toLocaleDateString()}</p>
+
+                      <div className="space-y-1 text-sm text-muted-foreground">
+                        <p>
+                          <strong>Date:</strong> {new Date(attendance.date).toLocaleDateString()}
+                        </p>
                         {attendance.check_in && (
-                          <p><strong>Arrivée:</strong> {attendance.check_in}</p>
+                          <p>
+                            <strong>Arrivée:</strong> {attendance.check_in}
+                          </p>
                         )}
                         {attendance.check_out && (
-                          <p><strong>Départ:</strong> {attendance.check_out}</p>
+                          <p>
+                            <strong>Départ:</strong> {attendance.check_out}
+                          </p>
                         )}
                         {attendance.total_hours && (
-                          <p><strong>Heures travaillées:</strong> {attendance.total_hours.toFixed(2)}h</p>
+                          <p>
+                            <strong>Heures travaillées:</strong> {attendance.total_hours.toFixed(2)}
+                            h
+                          </p>
                         )}
                         {attendance.break_duration && attendance.break_duration > 0 && (
-                          <p><strong>Pause:</strong> {attendance.break_duration} min</p>
+                          <p>
+                            <strong>Pause:</strong> {attendance.break_duration} min
+                          </p>
                         )}
                         {attendance.notes && (
-                          <p><strong>Notes:</strong> {attendance.notes}</p>
+                          <p>
+                            <strong>Notes:</strong> {attendance.notes}
+                          </p>
                         )}
                       </div>
                     </div>

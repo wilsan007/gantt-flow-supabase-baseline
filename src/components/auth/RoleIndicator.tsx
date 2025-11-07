@@ -2,20 +2,16 @@ import React, { useState } from 'react';
 import { useRoleBasedAccess } from '@/hooks/useRoleBasedAccess';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
-import { 
-  Crown, 
-  Shield, 
-  Users, 
-  Briefcase, 
-  User, 
+  Crown,
+  Shield,
+  Users,
+  Briefcase,
+  User,
   ChevronDown,
   CheckCircle,
-  XCircle
+  XCircle,
 } from 'lucide-react';
 
 /**
@@ -32,7 +28,7 @@ export const RoleIndicator = () => {
     getAccessLevel,
     getAvailableFeatures,
     getAccessRestrictions,
-    accessRights
+    accessRights,
   } = useRoleBasedAccess();
 
   const [isOpen, setIsOpen] = useState(false);
@@ -40,7 +36,7 @@ export const RoleIndicator = () => {
   if (isLoading) {
     return (
       <div className="animate-pulse">
-        <div className="h-6 w-20 bg-muted rounded"></div>
+        <div className="h-6 w-20 rounded bg-muted"></div>
       </div>
     );
   }
@@ -52,7 +48,7 @@ export const RoleIndicator = () => {
         icon: Crown,
         label: 'Super Admin',
         variant: 'default' as const,
-        color: 'text-yellow-600'
+        color: 'text-yellow-600',
       };
     }
     if (isTenantAdmin) {
@@ -60,7 +56,7 @@ export const RoleIndicator = () => {
         icon: Shield,
         label: 'Admin',
         variant: 'secondary' as const,
-        color: 'text-blue-600'
+        color: 'text-blue-600',
       };
     }
     if (isHRManager) {
@@ -68,7 +64,7 @@ export const RoleIndicator = () => {
         icon: Users,
         label: 'RH Manager',
         variant: 'outline' as const,
-        color: 'text-green-600'
+        color: 'text-green-600',
       };
     }
     if (isProjectManager) {
@@ -76,14 +72,14 @@ export const RoleIndicator = () => {
         icon: Briefcase,
         label: 'Chef de Projet',
         variant: 'outline' as const,
-        color: 'text-purple-600'
+        color: 'text-purple-600',
       };
     }
     return {
       icon: User,
       label: 'Employé',
       variant: 'outline' as const,
-      color: 'text-gray-600'
+      color: 'text-gray-600',
     };
   };
 
@@ -94,23 +90,21 @@ export const RoleIndicator = () => {
     <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild>
         <Button variant="ghost" size="sm" className="h-8 px-2">
-          <IconComponent className={`h-4 w-4 mr-1 ${roleDisplay.color}`} />
+          <IconComponent className={`mr-1 h-4 w-4 ${roleDisplay.color}`} />
           <span className="text-sm font-medium">{roleDisplay.label}</span>
-          <ChevronDown className="h-3 w-3 ml-1 opacity-50" />
+          <ChevronDown className="ml-1 h-3 w-3 opacity-50" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-80 p-0" align="end">
-        <div className="p-4 space-y-4">
+        <div className="space-y-4 p-4">
           {/* En-tête avec rôle principal */}
-          <div className="flex items-center gap-3 pb-3 border-b">
-            <div className={`p-2 rounded-full bg-muted ${roleDisplay.color}`}>
+          <div className="flex items-center gap-3 border-b pb-3">
+            <div className={`rounded-full bg-muted p-2 ${roleDisplay.color}`}>
               <IconComponent className="h-4 w-4" />
             </div>
             <div>
               <p className="font-medium">{roleDisplay.label}</p>
-              <p className="text-xs text-muted-foreground">
-                Niveau : {getAccessLevel()}
-              </p>
+              <p className="text-xs text-muted-foreground">Niveau : {getAccessLevel()}</p>
             </div>
           </div>
 
@@ -118,7 +112,7 @@ export const RoleIndicator = () => {
           <div className="space-y-2">
             <p className="text-sm font-medium">Rôles assignés :</p>
             <div className="flex flex-wrap gap-1">
-              {getUserRoleNames().map((role) => (
+              {getUserRoleNames().map(role => (
                 <Badge key={role} variant="secondary" className="text-xs">
                   {role}
                 </Badge>
@@ -130,7 +124,7 @@ export const RoleIndicator = () => {
           <div className="space-y-2">
             <p className="text-sm font-medium">Accès autorisé :</p>
             <div className="space-y-1">
-              {getAvailableFeatures().map((feature) => (
+              {getAvailableFeatures().map(feature => (
                 <div key={feature} className="flex items-center gap-2 text-xs">
                   <CheckCircle className="h-3 w-3 text-green-500" />
                   <span>{feature}</span>
@@ -145,7 +139,10 @@ export const RoleIndicator = () => {
               <p className="text-sm font-medium">Restrictions :</p>
               <div className="space-y-1">
                 {getAccessRestrictions().map((restriction, index) => (
-                  <div key={index} className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <div
+                    key={index}
+                    className="flex items-center gap-2 text-xs text-muted-foreground"
+                  >
                     <XCircle className="h-3 w-3 text-red-500" />
                     <span>{restriction}</span>
                   </div>
@@ -155,7 +152,7 @@ export const RoleIndicator = () => {
           )}
 
           {/* Permissions spécifiques */}
-          <div className="space-y-2 pt-2 border-t">
+          <div className="space-y-2 border-t pt-2">
             <p className="text-xs font-medium text-muted-foreground">Permissions détaillées :</p>
             <div className="grid grid-cols-2 gap-1 text-xs">
               <div className="flex items-center gap-1">

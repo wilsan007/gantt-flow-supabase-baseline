@@ -24,7 +24,7 @@ export default function MyAbsencesPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedTab, setSelectedTab] = useState('all');
 
-  const filtered = absenceJustifications.filter((absence) => {
+  const filtered = absenceJustifications.filter(absence => {
     if (selectedTab === 'all') return true;
     return absence.status === selectedTab;
   });
@@ -37,32 +37,30 @@ export default function MyAbsencesPage() {
   };
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
+    <div className="container mx-auto space-y-6 p-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold flex items-center gap-2">
+          <h1 className="flex items-center gap-2 text-3xl font-bold">
             <AlertCircle className="h-8 w-8" />
             Mes Justificatifs d'Absence
           </h1>
-          <p className="text-muted-foreground mt-1">
+          <p className="mt-1 text-muted-foreground">
             Gérez vos justificatifs d'absence et certificats médicaux
           </p>
         </div>
 
         <Button onClick={() => setIsDialogOpen(true)}>
-          <Plus className="h-4 w-4 mr-2" />
+          <Plus className="mr-2 h-4 w-4" />
           Nouveau Justificatif
         </Button>
       </div>
 
       {/* Statistiques */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              Total
-            </CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">Total</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold">{stats.total}</div>
@@ -71,9 +69,7 @@ export default function MyAbsencesPage() {
 
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              En Attente
-            </CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">En Attente</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-blue-600">{stats.pending}</div>
@@ -82,9 +78,7 @@ export default function MyAbsencesPage() {
 
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              Approuvés
-            </CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">Approuvés</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-green-600">{stats.approved}</div>
@@ -93,9 +87,7 @@ export default function MyAbsencesPage() {
 
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              Rejetés
-            </CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">Rejetés</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-red-600">{stats.rejected}</div>
@@ -107,9 +99,7 @@ export default function MyAbsencesPage() {
       <Card>
         <CardHeader>
           <CardTitle>Historique</CardTitle>
-          <CardDescription>
-            Tous vos justificatifs d'absence
-          </CardDescription>
+          <CardDescription>Tous vos justificatifs d'absence</CardDescription>
         </CardHeader>
         <CardContent>
           <Tabs value={selectedTab} onValueChange={setSelectedTab}>
@@ -120,15 +110,15 @@ export default function MyAbsencesPage() {
               <TabsTrigger value="rejected">Rejetés ({stats.rejected})</TabsTrigger>
             </TabsList>
 
-            <TabsContent value={selectedTab} className="space-y-4 mt-4">
+            <TabsContent value={selectedTab} className="mt-4 space-y-4">
               {loading ? (
-                <div className="text-center py-8 text-muted-foreground">Chargement...</div>
+                <div className="py-8 text-center text-muted-foreground">Chargement...</div>
               ) : filtered.length === 0 ? (
-                <div className="text-center py-8 text-muted-foreground">
+                <div className="py-8 text-center text-muted-foreground">
                   Aucun justificatif pour le moment
                 </div>
               ) : (
-                filtered.map((absence) => {
+                filtered.map(absence => {
                   const statusConfig = STATUS_CONFIG[absence.status as keyof typeof STATUS_CONFIG];
                   const StatusIcon = statusConfig?.icon || Clock;
 
@@ -137,27 +127,31 @@ export default function MyAbsencesPage() {
                       <CardContent className="pt-6">
                         <div className="flex items-start justify-between">
                           <div className="flex-1">
-                            <div className="flex items-center gap-3 mb-2">
-                              <h3 className="font-semibold text-lg capitalize">
+                            <div className="mb-2 flex items-center gap-3">
+                              <h3 className="text-lg font-semibold capitalize">
                                 {absence.absence_type?.replace(/_/g, ' ')}
                               </h3>
                               <Badge className={statusConfig?.color}>
-                                <StatusIcon className="h-3 w-3 mr-1" />
+                                <StatusIcon className="mr-1 h-3 w-3" />
                                 {statusConfig?.label}
                               </Badge>
                             </div>
-                            
-                            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm mt-3">
+
+                            <div className="mt-3 grid grid-cols-2 gap-4 text-sm md:grid-cols-3">
                               <div>
                                 <p className="text-muted-foreground">Date absence</p>
                                 <p className="font-medium">
-                                  {format(new Date(absence.absence_date), 'dd MMMM yyyy', { locale: fr })}
+                                  {format(new Date(absence.absence_date), 'dd MMMM yyyy', {
+                                    locale: fr,
+                                  })}
                                 </p>
                               </div>
                               <div>
                                 <p className="text-muted-foreground">Soumis le</p>
                                 <p className="font-medium">
-                                  {format(new Date(absence.created_at), 'dd MMM yyyy', { locale: fr })}
+                                  {format(new Date(absence.created_at), 'dd MMM yyyy', {
+                                    locale: fr,
+                                  })}
                                 </p>
                               </div>
                               {absence.document_url && (
@@ -167,7 +161,7 @@ export default function MyAbsencesPage() {
                                     href={absence.document_url}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="text-primary hover:underline flex items-center gap-1"
+                                    className="flex items-center gap-1 text-primary hover:underline"
                                   >
                                     <FileText className="h-4 w-4" />
                                     Voir document
@@ -177,13 +171,11 @@ export default function MyAbsencesPage() {
                             </div>
 
                             {absence.reason && (
-                              <p className="text-sm text-muted-foreground mt-3">
-                                {absence.reason}
-                              </p>
+                              <p className="mt-3 text-sm text-muted-foreground">{absence.reason}</p>
                             )}
 
                             {absence.rejection_reason && (
-                              <div className="mt-3 p-3 bg-red-50 border border-red-200 rounded-md">
+                              <div className="mt-3 rounded-md border border-red-200 bg-red-50 p-3">
                                 <p className="text-sm font-medium text-red-800">Raison du refus:</p>
                                 <p className="text-sm text-red-700">{absence.rejection_reason}</p>
                               </div>

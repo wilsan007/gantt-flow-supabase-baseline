@@ -11,8 +11,8 @@ const CACHE_CONFIG = {
     'permission_changed',
     'user_role_assigned',
     'user_role_revoked',
-    'tenant_changed'
-  ]
+    'tenant_changed',
+  ],
 };
 
 describe('Role Cache System', () => {
@@ -77,11 +77,16 @@ describe('Role Cache System', () => {
           expiresAt: now + ttl,
           version: '1.0.0',
           userId,
-          tenantId
+          tenantId,
         };
       };
 
-      const entry = createCacheEntry({ roles: ['admin'] }, 'user1', CACHE_CONFIG.TTL_ROLES, 'tenant1');
+      const entry = createCacheEntry(
+        { roles: ['admin'] },
+        'user1',
+        CACHE_CONFIG.TTL_ROLES,
+        'tenant1'
+      );
 
       expect(entry.data).toEqual({ roles: ['admin'] });
       expect(entry.userId).toBe('user1');
@@ -98,13 +103,13 @@ describe('Role Cache System', () => {
           timestamp: now,
           expiresAt: now + ttl,
           version: '1.0.0',
-          userId
+          userId,
         };
       };
 
       const ttl = 60000; // 1 minute
       const entry = createCacheEntry({ test: 'data' }, 'user1', ttl);
-      
+
       const expectedExpiry = entry.timestamp + ttl;
       expect(entry.expiresAt).toBe(expectedExpiry);
     });
@@ -163,7 +168,7 @@ describe('Role Cache System', () => {
 
     it('should invalidate on user role change', () => {
       const events = ['user_role_assigned', 'user_role_revoked'];
-      
+
       events.forEach(event => {
         expect(CACHE_CONFIG.INVALIDATION_EVENTS).toContain(event);
       });
@@ -190,7 +195,7 @@ describe('Role Cache System', () => {
 
     it('should handle storage with prefix', () => {
       const prefix = CACHE_CONFIG.STORAGE_PREFIX;
-      
+
       expect(prefix.endsWith('_')).toBe(true);
       expect(prefix.startsWith('wadashaqeen')).toBe(true);
     });
@@ -203,7 +208,7 @@ describe('Role Cache System', () => {
         userPermissions: [{ id: '1', name: 'read' }],
         accessRights: { canRead: true, canWrite: false },
         accessLevel: 'admin',
-        lastUpdated: Date.now()
+        lastUpdated: Date.now(),
       };
 
       expect(cacheData.userRoles).toBeInstanceOf(Array);
@@ -219,7 +224,7 @@ describe('Role Cache System', () => {
         userPermissions: [],
         accessRights: {},
         accessLevel: 'none',
-        lastUpdated: Date.now()
+        lastUpdated: Date.now(),
       };
 
       expect(emptyCacheData.userRoles).toHaveLength(0);
@@ -231,7 +236,7 @@ describe('Role Cache System', () => {
   describe('Cache Versioning', () => {
     it('should track cache version', () => {
       const version = '1.0.0';
-      
+
       const isCompatibleVersion = (v: string) => {
         const [major] = v.split('.');
         return major === '1';

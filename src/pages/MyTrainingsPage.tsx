@@ -22,41 +22,39 @@ export default function MyTrainingsPage() {
   const { trainings, enrollments, loading } = useTrainings();
   const navigate = useNavigate();
 
-  const myEnrollments = enrollments.map((enrollment) => ({
-    ...enrollment,
-    training: trainings.find(t => t.id === enrollment.training_id),
-  })).filter(e => e.training);
+  const myEnrollments = enrollments
+    .map(enrollment => ({
+      ...enrollment,
+      training: trainings.find(t => t.id === enrollment.training_id),
+    }))
+    .filter(e => e.training);
 
   const enrolled = myEnrollments.filter(e => e.status === 'enrolled');
   const completed = myEnrollments.filter(e => e.status === 'completed');
   const cancelled = myEnrollments.filter(e => e.status === 'cancelled');
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
+    <div className="container mx-auto space-y-6 p-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold flex items-center gap-2">
+          <h1 className="flex items-center gap-2 text-3xl font-bold">
             <BookOpen className="h-8 w-8" />
             Mes Formations
           </h1>
-          <p className="text-muted-foreground mt-1">
+          <p className="mt-1 text-muted-foreground">
             Suivez votre progression et vos certifications
           </p>
         </div>
 
-        <Button onClick={() => navigate('/training-catalog')}>
-          Parcourir le catalogue
-        </Button>
+        <Button onClick={() => navigate('/training-catalog')}>Parcourir le catalogue</Button>
       </div>
 
       {/* Statistiques */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              Total
-            </CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">Total</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold">{myEnrollments.length}</div>
@@ -65,9 +63,7 @@ export default function MyTrainingsPage() {
 
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              En Cours
-            </CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">En Cours</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-blue-600">{enrolled.length}</div>
@@ -76,9 +72,7 @@ export default function MyTrainingsPage() {
 
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              Terminées
-            </CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">Terminées</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-green-600">{completed.length}</div>
@@ -103,9 +97,7 @@ export default function MyTrainingsPage() {
       <Card>
         <CardHeader>
           <CardTitle>Mes Inscriptions</CardTitle>
-          <CardDescription>
-            Toutes vos formations et leur progression
-          </CardDescription>
+          <CardDescription>Toutes vos formations et leur progression</CardDescription>
         </CardHeader>
         <CardContent>
           <Tabs defaultValue="enrolled">
@@ -115,14 +107,15 @@ export default function MyTrainingsPage() {
               <TabsTrigger value="cancelled">Annulées ({cancelled.length})</TabsTrigger>
             </TabsList>
 
-            <TabsContent value="enrolled" className="space-y-4 mt-4">
+            <TabsContent value="enrolled" className="mt-4 space-y-4">
               {enrolled.length === 0 ? (
-                <div className="text-center py-8 text-muted-foreground">
+                <div className="py-8 text-center text-muted-foreground">
                   Aucune formation en cours
                 </div>
               ) : (
-                enrolled.map((enrollment) => {
-                  const statusConfig = STATUS_CONFIG[enrollment.status as keyof typeof STATUS_CONFIG];
+                enrolled.map(enrollment => {
+                  const statusConfig =
+                    STATUS_CONFIG[enrollment.status as keyof typeof STATUS_CONFIG];
                   const StatusIcon = statusConfig?.icon || PlayCircle;
 
                   return (
@@ -130,43 +123,49 @@ export default function MyTrainingsPage() {
                       <CardContent className="pt-6">
                         <div className="flex items-start justify-between">
                           <div className="flex-1">
-                            <div className="flex items-center gap-3 mb-2">
+                            <div className="mb-2 flex items-center gap-3">
                               <BookOpen className="h-5 w-5 text-primary" />
-                              <h3 className="font-semibold text-lg">{enrollment.training?.title}</h3>
+                              <h3 className="text-lg font-semibold">
+                                {enrollment.training?.title}
+                              </h3>
                               <Badge className={statusConfig?.color}>
-                                <StatusIcon className="h-3 w-3 mr-1" />
+                                <StatusIcon className="mr-1 h-3 w-3" />
                                 {statusConfig?.label}
                               </Badge>
                             </div>
 
                             {enrollment.training?.description && (
-                              <p className="text-sm text-muted-foreground mb-3">
+                              <p className="mb-3 text-sm text-muted-foreground">
                                 {enrollment.training.description}
                               </p>
                             )}
 
-                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                            <div className="grid grid-cols-2 gap-4 text-sm md:grid-cols-4">
                               <div>
                                 <p className="text-muted-foreground">Durée</p>
-                                <p className="font-medium flex items-center gap-1">
+                                <p className="flex items-center gap-1 font-medium">
                                   <Clock className="h-4 w-4" />
                                   {enrollment.training?.duration_hours}h
                                 </p>
                               </div>
                               <div>
                                 <p className="text-muted-foreground">Niveau</p>
-                                <p className="font-medium capitalize">{enrollment.training?.level}</p>
+                                <p className="font-medium capitalize">
+                                  {enrollment.training?.level}
+                                </p>
                               </div>
                               <div>
                                 <p className="text-muted-foreground">Inscription</p>
                                 <p className="font-medium">
-                                  {format(new Date(enrollment.enrollment_date), 'dd MMM yyyy', { locale: fr })}
+                                  {format(new Date(enrollment.enrollment_date), 'dd MMM yyyy', {
+                                    locale: fr,
+                                  })}
                                 </p>
                               </div>
                               {enrollment.training?.certifiable && (
                                 <div>
                                   <p className="text-muted-foreground">Certification</p>
-                                  <p className="font-medium text-primary flex items-center gap-1">
+                                  <p className="flex items-center gap-1 font-medium text-primary">
                                     <Award className="h-4 w-4" />
                                     Disponible
                                   </p>
@@ -195,13 +194,13 @@ export default function MyTrainingsPage() {
               )}
             </TabsContent>
 
-            <TabsContent value="completed" className="space-y-4 mt-4">
+            <TabsContent value="completed" className="mt-4 space-y-4">
               {completed.length === 0 ? (
-                <div className="text-center py-8 text-muted-foreground">
+                <div className="py-8 text-center text-muted-foreground">
                   Aucune formation terminée
                 </div>
               ) : (
-                completed.map((enrollment) => {
+                completed.map(enrollment => {
                   const statusConfig = STATUS_CONFIG.completed;
                   const StatusIcon = statusConfig.icon;
 
@@ -210,34 +209,39 @@ export default function MyTrainingsPage() {
                       <CardContent className="pt-6">
                         <div className="flex items-start justify-between">
                           <div className="flex-1">
-                            <div className="flex items-center gap-3 mb-2">
+                            <div className="mb-2 flex items-center gap-3">
                               <BookOpen className="h-5 w-5 text-primary" />
-                              <h3 className="font-semibold text-lg">{enrollment.training?.title}</h3>
+                              <h3 className="text-lg font-semibold">
+                                {enrollment.training?.title}
+                              </h3>
                               <Badge className={statusConfig.color}>
-                                <StatusIcon className="h-3 w-3 mr-1" />
+                                <StatusIcon className="mr-1 h-3 w-3" />
                                 {statusConfig.label}
                               </Badge>
                             </div>
 
-                            <div className="grid grid-cols-3 gap-4 text-sm mt-3">
+                            <div className="mt-3 grid grid-cols-3 gap-4 text-sm">
                               <div>
                                 <p className="text-muted-foreground">Terminée le</p>
                                 <p className="font-medium">
-                                  {enrollment.completion_date 
-                                    ? format(new Date(enrollment.completion_date), 'dd MMM yyyy', { locale: fr })
-                                    : '-'
-                                  }
+                                  {enrollment.completion_date
+                                    ? format(new Date(enrollment.completion_date), 'dd MMM yyyy', {
+                                        locale: fr,
+                                      })
+                                    : '-'}
                                 </p>
                               </div>
                               <div>
                                 <p className="text-muted-foreground">Durée</p>
-                                <p className="font-medium">{enrollment.training?.duration_hours}h</p>
+                                <p className="font-medium">
+                                  {enrollment.training?.duration_hours}h
+                                </p>
                               </div>
                               {enrollment.training?.certifiable && (
                                 <div>
                                   <p className="text-muted-foreground">Certification</p>
                                   <Button size="sm" variant="outline">
-                                    <Award className="h-4 w-4 mr-1" />
+                                    <Award className="mr-1 h-4 w-4" />
                                     Télécharger
                                   </Button>
                                 </div>
@@ -252,13 +256,13 @@ export default function MyTrainingsPage() {
               )}
             </TabsContent>
 
-            <TabsContent value="cancelled" className="space-y-4 mt-4">
+            <TabsContent value="cancelled" className="mt-4 space-y-4">
               {cancelled.length === 0 ? (
-                <div className="text-center py-8 text-muted-foreground">
+                <div className="py-8 text-center text-muted-foreground">
                   Aucune formation annulée
                 </div>
               ) : (
-                cancelled.map((enrollment) => (
+                cancelled.map(enrollment => (
                   <Card key={enrollment.id}>
                     <CardContent className="pt-6">
                       <div className="flex items-center gap-3">

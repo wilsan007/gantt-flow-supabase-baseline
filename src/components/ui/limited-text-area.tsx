@@ -12,14 +12,14 @@ interface LimitedTextAreaProps {
 export const LimitedTextArea: React.FC<LimitedTextAreaProps> = ({
   value,
   onChange,
-  placeholder = "Tapez votre texte...",
-  className = "",
-  disabled = false
+  placeholder = 'Tapez votre texte...',
+  className = '',
+  disabled = false,
 }) => {
-  const [dimensions, setDimensions] = useState({ 
-    width: 120, 
-    maxCharsPerLine: 14, 
-    maxTotalChars: 28 
+  const [dimensions, setDimensions] = useState({
+    width: 120,
+    maxCharsPerLine: 14,
+    maxTotalChars: 28,
   });
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -34,19 +34,19 @@ export const LimitedTextArea: React.FC<LimitedTextAreaProps> = ({
     if (text.length <= dimensions.maxCharsPerLine) {
       return text;
     }
-    
+
     // Première ligne : 14 caractères max
     const firstLine = text.substring(0, dimensions.maxCharsPerLine);
     // Deuxième ligne : 14 caractères max
     const secondLine = text.substring(dimensions.maxCharsPerLine, dimensions.maxTotalChars);
-    
+
     return firstLine + (secondLine ? '\n' + secondLine : '');
   };
 
   // Gérer le changement de texte avec limitation et retour automatique
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     let newValue = e.target.value.replace(/\n/g, ''); // Supprimer les retours manuels
-    
+
     // Limiter le nombre total de caractères
     if (newValue.length <= dimensions.maxTotalChars) {
       const formattedValue = formatTextWithLineBreaks(newValue);
@@ -56,27 +56,31 @@ export const LimitedTextArea: React.FC<LimitedTextAreaProps> = ({
       const truncatedValue = newValue.substring(0, dimensions.maxTotalChars);
       const formattedValue = formatTextWithLineBreaks(truncatedValue);
       onChange(formattedValue);
-      
-      console.warn(`📝 Texte tronqué à ${dimensions.maxTotalChars} caractères maximum (2 lignes de ${dimensions.maxCharsPerLine})`);
+
+      console.warn(
+        `📝 Texte tronqué à ${dimensions.maxTotalChars} caractères maximum (2 lignes de ${dimensions.maxCharsPerLine})`
+      );
     }
   };
 
   // Gérer les touches spéciales
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     const currentLength = value.replace(/\n/g, '').length; // Compter sans les retours à la ligne
-    
+
     // Empêcher l'ajout de caractères si la limite totale est atteinte
-    if (currentLength >= dimensions.maxTotalChars && 
-        e.key !== 'Backspace' && 
-        e.key !== 'Delete' && 
-        e.key !== 'ArrowLeft' && 
-        e.key !== 'ArrowRight' && 
-        e.key !== 'ArrowUp' && 
-        e.key !== 'ArrowDown' &&
-        e.key !== 'Tab') {
+    if (
+      currentLength >= dimensions.maxTotalChars &&
+      e.key !== 'Backspace' &&
+      e.key !== 'Delete' &&
+      e.key !== 'ArrowLeft' &&
+      e.key !== 'ArrowRight' &&
+      e.key !== 'ArrowUp' &&
+      e.key !== 'ArrowDown' &&
+      e.key !== 'Tab'
+    ) {
       e.preventDefault();
     }
-    
+
     // Empêcher les retours à la ligne manuels (géré automatiquement)
     if (e.key === 'Enter') {
       e.preventDefault();
@@ -84,7 +88,7 @@ export const LimitedTextArea: React.FC<LimitedTextAreaProps> = ({
   };
 
   return (
-    <div 
+    <div
       className="limited-text-area-container"
       style={{
         display: 'flex',
@@ -92,7 +96,7 @@ export const LimitedTextArea: React.FC<LimitedTextAreaProps> = ({
         alignItems: 'center',
         justifyContent: 'center',
         width: '100%',
-        height: '100%'
+        height: '100%',
       }}
     >
       <textarea
@@ -123,31 +127,33 @@ export const LimitedTextArea: React.FC<LimitedTextAreaProps> = ({
           outline: 'none',
           transition: 'border-color 0.2s ease',
           backgroundColor: disabled ? '#f8fafc' : '#ffffff',
-          textAlign: 'center' // Centrer le texte à l'intérieur
+          textAlign: 'center', // Centrer le texte à l'intérieur
         }}
-        onFocus={(e) => {
+        onFocus={e => {
           e.target.style.borderColor = '#3b82f6';
           e.target.style.boxShadow = '0 0 0 3px rgba(59, 130, 246, 0.1)';
         }}
-        onBlur={(e) => {
+        onBlur={e => {
           e.target.style.borderColor = '#e2e8f0';
           e.target.style.boxShadow = 'none';
         }}
       />
-      
+
       {/* Compteur de caractères centré */}
-      <div 
+      <div
         className="char-counter"
         style={{
           fontSize: '11px',
-          color: value.replace(/\n/g, '').length >= dimensions.maxTotalChars ? '#ef4444' : '#64748b',
+          color:
+            value.replace(/\n/g, '').length >= dimensions.maxTotalChars ? '#ef4444' : '#64748b',
           textAlign: 'center',
           marginTop: '4px',
           fontFamily: 'Inter, system-ui, sans-serif',
-          width: `${dimensions.width}px`
+          width: `${dimensions.width}px`,
         }}
       >
-        {value.replace(/\n/g, '').length}/{dimensions.maxTotalChars} ({dimensions.maxCharsPerLine}/ligne)
+        {value.replace(/\n/g, '').length}/{dimensions.maxTotalChars} ({dimensions.maxCharsPerLine}
+        /ligne)
       </div>
     </div>
   );

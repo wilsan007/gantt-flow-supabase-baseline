@@ -1,13 +1,16 @@
 import React, { useState } from 'react';
-import {
-  Dialog,
-  DialogContent,
-} from '@/components/ui/dialog';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Badge } from '@/components/ui/badge';
@@ -67,21 +70,33 @@ export const ModernTaskCreationDialog: React.FC<ModernTaskCreationDialogProps> =
   const [effortEstimate, setEffortEstimate] = useState<number>(0);
   const [department, setDepartment] = useState('');
   const [project, setProject] = useState('');
-  
+
   // Actions de la tâche
   const [actions, setActions] = useState<TaskAction[]>([]);
   const [newActionName, setNewActionName] = useState('');
   const [newActionDescription, setNewActionDescription] = useState('');
-  
+
   // UI States
   const [showDescription, setShowDescription] = useState(false);
   const [showActions, setShowActions] = useState(false);
   const [loading, setLoading] = useState(false);
 
   // Listes de données
-  const availableAssignees = ['Ahmed Waleh', 'Sarah Martin', 'Jean Dupont', 'Marie Dubois', 'Pierre Moreau'];
+  const availableAssignees = [
+    'Ahmed Waleh',
+    'Sarah Martin',
+    'Jean Dupont',
+    'Marie Dubois',
+    'Pierre Moreau',
+  ];
   const availableDepartments = ['Développement', 'Marketing', 'Ventes', 'RH', 'Finance', 'Support'];
-  const availableProjects = ['Gantt Flow Next', 'Site Web Corporate', 'App Mobile', 'Migration DB', 'Formation'];
+  const availableProjects = [
+    'Gantt Flow Next',
+    'Site Web Corporate',
+    'App Mobile',
+    'Migration DB',
+    'Formation',
+  ];
 
   // Gestion des tags
   const addTag = () => {
@@ -116,28 +131,28 @@ export const ModernTaskCreationDialog: React.FC<ModernTaskCreationDialogProps> =
   // Validation des dates par rapport à la tâche parente
   const validateDate = (date: Date | undefined, type: 'start' | 'due'): boolean => {
     if (!date || !parentTask) return true;
-    
+
     if (type === 'start' && parentTask.start_date) {
       if (date < parentTask.start_date) {
         return false;
       }
     }
-    
+
     if (type === 'due' && parentTask.due_date) {
       if (date > parentTask.due_date) {
         return false;
       }
     }
-    
+
     // Vérifier que la date de début est avant la date de fin
     if (type === 'start' && dueDate && date > dueDate) {
       return false;
     }
-    
+
     if (type === 'due' && startDate && date < startDate) {
       return false;
     }
-    
+
     return true;
   };
 
@@ -150,16 +165,20 @@ export const ModernTaskCreationDialog: React.FC<ModernTaskCreationDialogProps> =
 
     // Validation des dates
     if (startDate && !validateDate(startDate, 'start')) {
-      alert(parentTask?.start_date 
-        ? `La date de début ne peut pas être avant ${format(parentTask.start_date, 'dd/MM/yyyy', { locale: fr })}`
-        : 'Date de début invalide');
+      alert(
+        parentTask?.start_date
+          ? `La date de début ne peut pas être avant ${format(parentTask.start_date, 'dd/MM/yyyy', { locale: fr })}`
+          : 'Date de début invalide'
+      );
       return;
     }
 
     if (dueDate && !validateDate(dueDate, 'due')) {
-      alert(parentTask?.due_date 
-        ? `La date d'échéance ne peut pas être après ${format(parentTask.due_date, 'dd/MM/yyyy', { locale: fr })}`
-        : 'Date d\'échéance invalide');
+      alert(
+        parentTask?.due_date
+          ? `La date d'échéance ne peut pas être après ${format(parentTask.due_date, 'dd/MM/yyyy', { locale: fr })}`
+          : "Date d'échéance invalide"
+      );
       return;
     }
 
@@ -179,7 +198,7 @@ export const ModernTaskCreationDialog: React.FC<ModernTaskCreationDialogProps> =
         effort_estimate_h: effortEstimate > 0 ? effortEstimate : undefined,
         actions: actions.length > 0 ? actions : undefined,
       });
-      
+
       // Reset
       resetForm();
       onOpenChange(false);
@@ -224,19 +243,19 @@ export const ModernTaskCreationDialog: React.FC<ModernTaskCreationDialogProps> =
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto p-0">
-        <div className="p-6 space-y-4">
+      <DialogContent className="max-h-[90vh] max-w-4xl overflow-y-auto p-0">
+        <div className="space-y-4 p-6">
           {/* Titre de la tâche - Style Notion */}
           <div className="space-y-2">
             <Input
               value={title}
-              onChange={(e) => setTitle(e.target.value)}
+              onChange={e => setTitle(e.target.value)}
               placeholder="Nom de la tâche"
-              className="text-3xl font-bold border-none shadow-none focus-visible:ring-0 px-0 h-auto"
+              className="h-auto border-none px-0 text-3xl font-bold shadow-none focus-visible:ring-0"
               autoFocus
             />
             {parentTask?.title && (
-              <p className="text-sm text-muted-foreground flex items-center gap-2">
+              <p className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Link2 className="h-4 w-4" />
                 Sous-tâche de: {parentTask.title}
               </p>
@@ -249,7 +268,7 @@ export const ModernTaskCreationDialog: React.FC<ModernTaskCreationDialogProps> =
             <div className="space-y-3">
               {/* Statut */}
               <div className="flex items-center gap-3">
-                <Label className="w-32 text-sm text-muted-foreground flex items-center gap-2">
+                <Label className="flex w-32 items-center gap-2 text-sm text-muted-foreground">
                   <FileText className="h-4 w-4" />
                   Statut
                 </Label>
@@ -268,7 +287,7 @@ export const ModernTaskCreationDialog: React.FC<ModernTaskCreationDialogProps> =
 
               {/* Date de début */}
               <div className="flex items-center gap-3">
-                <Label className="w-32 text-sm text-muted-foreground flex items-center gap-2">
+                <Label className="flex w-32 items-center gap-2 text-sm text-muted-foreground">
                   <CalendarIcon className="h-4 w-4" />
                   Début
                 </Label>
@@ -277,12 +296,12 @@ export const ModernTaskCreationDialog: React.FC<ModernTaskCreationDialogProps> =
                     <Button
                       variant="outline"
                       className={cn(
-                        "flex-1 justify-start text-left font-normal",
-                        !startDate && "text-muted-foreground"
+                        'flex-1 justify-start text-left font-normal',
+                        !startDate && 'text-muted-foreground'
                       )}
                     >
                       <CalendarIcon className="mr-2 h-4 w-4" />
-                      {startDate ? format(startDate, 'PPP', { locale: fr }) : "Sélectionner"}
+                      {startDate ? format(startDate, 'PPP', { locale: fr }) : 'Sélectionner'}
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0" align="start">
@@ -291,7 +310,9 @@ export const ModernTaskCreationDialog: React.FC<ModernTaskCreationDialogProps> =
                       selected={startDate}
                       onSelect={setStartDate}
                       initialFocus
-                      disabled={(date) => parentTask?.start_date ? date < parentTask.start_date : false}
+                      disabled={date =>
+                        parentTask?.start_date ? date < parentTask.start_date : false
+                      }
                     />
                   </PopoverContent>
                 </Popover>
@@ -299,7 +320,7 @@ export const ModernTaskCreationDialog: React.FC<ModernTaskCreationDialogProps> =
 
               {/* Date d'échéance */}
               <div className="flex items-center gap-3">
-                <Label className="w-32 text-sm text-muted-foreground flex items-center gap-2">
+                <Label className="flex w-32 items-center gap-2 text-sm text-muted-foreground">
                   <CalendarIcon className="h-4 w-4" />
                   Échéance
                 </Label>
@@ -308,12 +329,12 @@ export const ModernTaskCreationDialog: React.FC<ModernTaskCreationDialogProps> =
                     <Button
                       variant="outline"
                       className={cn(
-                        "flex-1 justify-start text-left font-normal",
-                        !dueDate && "text-muted-foreground"
+                        'flex-1 justify-start text-left font-normal',
+                        !dueDate && 'text-muted-foreground'
                       )}
                     >
                       <CalendarIcon className="mr-2 h-4 w-4" />
-                      {dueDate ? format(dueDate, 'PPP', { locale: fr }) : "Sélectionner"}
+                      {dueDate ? format(dueDate, 'PPP', { locale: fr }) : 'Sélectionner'}
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0" align="start">
@@ -322,7 +343,7 @@ export const ModernTaskCreationDialog: React.FC<ModernTaskCreationDialogProps> =
                       selected={dueDate}
                       onSelect={setDueDate}
                       initialFocus
-                      disabled={(date) => {
+                      disabled={date => {
                         if (parentTask?.due_date && date > parentTask.due_date) return true;
                         if (startDate && date < startDate) return true;
                         return false;
@@ -334,7 +355,7 @@ export const ModernTaskCreationDialog: React.FC<ModernTaskCreationDialogProps> =
 
               {/* Temps estimé */}
               <div className="flex items-center gap-3">
-                <Label className="w-32 text-sm text-muted-foreground flex items-center gap-2">
+                <Label className="flex w-32 items-center gap-2 text-sm text-muted-foreground">
                   <Clock className="h-4 w-4" />
                   Temps (h)
                 </Label>
@@ -343,7 +364,7 @@ export const ModernTaskCreationDialog: React.FC<ModernTaskCreationDialogProps> =
                   min="0"
                   step="0.5"
                   value={effortEstimate || ''}
-                  onChange={(e) => setEffortEstimate(parseFloat(e.target.value) || 0)}
+                  onChange={e => setEffortEstimate(parseFloat(e.target.value) || 0)}
                   placeholder="0"
                   className="flex-1"
                 />
@@ -354,7 +375,7 @@ export const ModernTaskCreationDialog: React.FC<ModernTaskCreationDialogProps> =
             <div className="space-y-3">
               {/* Assigné */}
               <div className="flex items-center gap-3">
-                <Label className="w-32 text-sm text-muted-foreground flex items-center gap-2">
+                <Label className="flex w-32 items-center gap-2 text-sm text-muted-foreground">
                   <User className="h-4 w-4" />
                   Assigné
                 </Label>
@@ -363,8 +384,10 @@ export const ModernTaskCreationDialog: React.FC<ModernTaskCreationDialogProps> =
                     <SelectValue placeholder="Vide" />
                   </SelectTrigger>
                   <SelectContent>
-                    {availableAssignees.map((person) => (
-                      <SelectItem key={person} value={person}>{person}</SelectItem>
+                    {availableAssignees.map(person => (
+                      <SelectItem key={person} value={person}>
+                        {person}
+                      </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -372,7 +395,7 @@ export const ModernTaskCreationDialog: React.FC<ModernTaskCreationDialogProps> =
 
               {/* Priorité */}
               <div className="flex items-center gap-3">
-                <Label className="w-32 text-sm text-muted-foreground flex items-center gap-2">
+                <Label className="flex w-32 items-center gap-2 text-sm text-muted-foreground">
                   <Flag className="h-4 w-4" />
                   Priorité
                 </Label>
@@ -391,7 +414,7 @@ export const ModernTaskCreationDialog: React.FC<ModernTaskCreationDialogProps> =
 
               {/* Département */}
               <div className="flex items-center gap-3">
-                <Label className="w-32 text-sm text-muted-foreground flex items-center gap-2">
+                <Label className="flex w-32 items-center gap-2 text-sm text-muted-foreground">
                   <Building2 className="h-4 w-4" />
                   Département
                 </Label>
@@ -400,8 +423,10 @@ export const ModernTaskCreationDialog: React.FC<ModernTaskCreationDialogProps> =
                     <SelectValue placeholder="Vide" />
                   </SelectTrigger>
                   <SelectContent>
-                    {availableDepartments.map((dept) => (
-                      <SelectItem key={dept} value={dept}>{dept}</SelectItem>
+                    {availableDepartments.map(dept => (
+                      <SelectItem key={dept} value={dept}>
+                        {dept}
+                      </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -409,7 +434,7 @@ export const ModernTaskCreationDialog: React.FC<ModernTaskCreationDialogProps> =
 
               {/* Projet */}
               <div className="flex items-center gap-3">
-                <Label className="w-32 text-sm text-muted-foreground flex items-center gap-2">
+                <Label className="flex w-32 items-center gap-2 text-sm text-muted-foreground">
                   <FolderKanban className="h-4 w-4" />
                   Projet
                 </Label>
@@ -418,8 +443,10 @@ export const ModernTaskCreationDialog: React.FC<ModernTaskCreationDialogProps> =
                     <SelectValue placeholder="Vide" />
                   </SelectTrigger>
                   <SelectContent>
-                    {availableProjects.map((proj) => (
-                      <SelectItem key={proj} value={proj}>{proj}</SelectItem>
+                    {availableProjects.map(proj => (
+                      <SelectItem key={proj} value={proj}>
+                        {proj}
+                      </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -430,12 +457,12 @@ export const ModernTaskCreationDialog: React.FC<ModernTaskCreationDialogProps> =
           {/* Étiquettes */}
           <div className="space-y-2">
             <div className="flex items-center gap-3">
-              <Label className="w-32 text-sm text-muted-foreground flex items-center gap-2">
+              <Label className="flex w-32 items-center gap-2 text-sm text-muted-foreground">
                 <Tag className="h-4 w-4" />
                 Étiquettes
               </Label>
-              <div className="flex-1 flex flex-wrap gap-2">
-                {tags.map((tag) => (
+              <div className="flex flex-1 flex-wrap gap-2">
+                {tags.map(tag => (
                   <Badge key={tag} variant="secondary" className="flex items-center gap-1">
                     {tag}
                     <X
@@ -444,13 +471,13 @@ export const ModernTaskCreationDialog: React.FC<ModernTaskCreationDialogProps> =
                     />
                   </Badge>
                 ))}
-                <div className="flex gap-2 items-center">
+                <div className="flex items-center gap-2">
                   <Input
                     value={newTag}
-                    onChange={(e) => setNewTag(e.target.value)}
-                    onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addTag())}
+                    onChange={e => setNewTag(e.target.value)}
+                    onKeyPress={e => e.key === 'Enter' && (e.preventDefault(), addTag())}
                     placeholder="Ajouter..."
-                    className="w-32 h-7 text-sm"
+                    className="h-7 w-32 text-sm"
                   />
                   {newTag && (
                     <Button size="sm" variant="ghost" onClick={addTag} className="h-7 px-2">
@@ -473,13 +500,13 @@ export const ModernTaskCreationDialog: React.FC<ModernTaskCreationDialogProps> =
                 onClick={() => setShowDescription(true)}
                 className="text-muted-foreground"
               >
-                <Plus className="h-4 w-4 mr-2" />
+                <Plus className="mr-2 h-4 w-4" />
                 Ajouter une description
               </Button>
             ) : (
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <Label className="text-sm flex items-center gap-2">
+                  <Label className="flex items-center gap-2 text-sm">
                     <FileText className="h-4 w-4" />
                     Description
                   </Label>
@@ -496,7 +523,7 @@ export const ModernTaskCreationDialog: React.FC<ModernTaskCreationDialogProps> =
                 </div>
                 <Textarea
                   value={description}
-                  onChange={(e) => setDescription(e.target.value)}
+                  onChange={e => setDescription(e.target.value)}
                   placeholder="Décrivez la tâche..."
                   className="min-h-[100px]"
                 />
@@ -513,13 +540,13 @@ export const ModernTaskCreationDialog: React.FC<ModernTaskCreationDialogProps> =
                 onClick={() => setShowActions(true)}
                 className="text-muted-foreground"
               >
-                <Plus className="h-4 w-4 mr-2" />
+                <Plus className="mr-2 h-4 w-4" />
                 Ajouter des actions
               </Button>
             ) : (
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <Label className="text-sm flex items-center gap-2">
+                  <Label className="flex items-center gap-2 text-sm">
                     <Target className="h-4 w-4" />
                     Actions de la tâche
                   </Label>
@@ -538,15 +565,15 @@ export const ModernTaskCreationDialog: React.FC<ModernTaskCreationDialogProps> =
                 {/* Liste des actions */}
                 {actions.length > 0 && (
                   <div className="space-y-2">
-                    {actions.map((action) => (
+                    {actions.map(action => (
                       <div
                         key={action.id}
-                        className="flex items-start gap-2 p-3 border rounded-lg bg-muted/30"
+                        className="flex items-start gap-2 rounded-lg border bg-muted/30 p-3"
                       >
                         <div className="flex-1">
-                          <p className="font-medium text-sm">{action.name}</p>
+                          <p className="text-sm font-medium">{action.name}</p>
                           {action.description && (
-                            <p className="text-xs text-muted-foreground mt-1">
+                            <p className="mt-1 text-xs text-muted-foreground">
                               {action.description}
                             </p>
                           )}
@@ -565,16 +592,16 @@ export const ModernTaskCreationDialog: React.FC<ModernTaskCreationDialogProps> =
                 )}
 
                 {/* Formulaire d'ajout d'action */}
-                <div className="space-y-2 p-3 border rounded-lg bg-muted/10">
+                <div className="space-y-2 rounded-lg border bg-muted/10 p-3">
                   <Input
                     value={newActionName}
-                    onChange={(e) => setNewActionName(e.target.value)}
+                    onChange={e => setNewActionName(e.target.value)}
                     placeholder="Nom de l'action"
                     className="font-medium"
                   />
                   <Textarea
                     value={newActionDescription}
-                    onChange={(e) => setNewActionDescription(e.target.value)}
+                    onChange={e => setNewActionDescription(e.target.value)}
                     placeholder="Description (optionnel)"
                     className="min-h-[60px] text-sm"
                   />
@@ -584,7 +611,7 @@ export const ModernTaskCreationDialog: React.FC<ModernTaskCreationDialogProps> =
                     disabled={!newActionName.trim()}
                     className="w-full"
                   >
-                    <Plus className="h-4 w-4 mr-2" />
+                    <Plus className="mr-2 h-4 w-4" />
                     Ajouter l'action
                   </Button>
                 </div>
@@ -603,10 +630,7 @@ export const ModernTaskCreationDialog: React.FC<ModernTaskCreationDialogProps> =
               <Button variant="outline" onClick={() => onOpenChange(false)}>
                 Annuler
               </Button>
-              <Button 
-                onClick={handleSubmit} 
-                disabled={loading || !title.trim()}
-              >
+              <Button onClick={handleSubmit} disabled={loading || !title.trim()}>
                 {loading ? 'Création...' : 'Créer la Tâche'}
               </Button>
             </div>

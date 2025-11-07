@@ -5,7 +5,7 @@ import { useToast } from '@/hooks/use-toast';
 /**
  * 🎯 Hook: useCollaboratorInvitation
  * Pattern: Stripe, Notion, Linear - Gestion invitations collaborateurs
- * 
+ *
  * Fonctionnalités:
  * - Envoi invitations avec validation
  * - Liste invitations en attente
@@ -51,16 +51,16 @@ interface UseCollaboratorInvitationReturn {
   sendInvitation: (form: CollaboratorInvitationForm) => Promise<boolean>;
   revokeInvitation: (invitationId: string) => Promise<boolean>;
   refreshInvitations: () => Promise<void>;
-  
+
   // Données
   pendingInvitations: PendingInvitation[];
   stats: InvitationStats | null;
-  
+
   // États
   isLoading: boolean;
   isSending: boolean;
   error: string | null;
-  
+
   // Utilitaires
   canInvite: boolean;
   remainingSlots: number | null;
@@ -72,7 +72,7 @@ interface UseCollaboratorInvitationReturn {
 
 export const useCollaboratorInvitation = (): UseCollaboratorInvitationReturn => {
   const { toast } = useToast();
-  
+
   // États
   const [pendingInvitations, setPendingInvitations] = useState<PendingInvitation[]>([]);
   const [stats, setStats] = useState<InvitationStats | null>(null);
@@ -85,10 +85,12 @@ export const useCollaboratorInvitation = (): UseCollaboratorInvitationReturn => 
   // ============================================================================
   // VÉRIFICATION PERMISSIONS
   // ============================================================================
-  
+
   const checkPermissions = useCallback(async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) {
         setCanInvite(false);
         return;
@@ -101,7 +103,7 @@ export const useCollaboratorInvitation = (): UseCollaboratorInvitationReturn => 
         .eq('user_id', user.id)
         .eq('is_active', true)
         .single();
-      
+
       if (error) {
         console.error('Erreur vérification permissions:', error);
         setCanInvite(false);
@@ -121,10 +123,12 @@ export const useCollaboratorInvitation = (): UseCollaboratorInvitationReturn => 
   // ============================================================================
   // CHARGEMENT INVITATIONS EN ATTENTE
   // ============================================================================
-  
+
   const loadPendingInvitations = useCallback(async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) return;
 
       // Récupérer le tenant_id de l'utilisateur
@@ -135,9 +139,9 @@ export const useCollaboratorInvitation = (): UseCollaboratorInvitationReturn => 
         .eq('is_active', true)
         .not('tenant_id', 'is', null)
         .single();
-      
+
       const tenantId = userRole?.tenant_id;
-      
+
       if (!tenantId) return;
 
       // Récupérer les invitations en attente
@@ -149,7 +153,7 @@ export const useCollaboratorInvitation = (): UseCollaboratorInvitationReturn => 
         .eq('status', 'pending')
         .gt('expires_at', new Date().toISOString())
         .order('created_at', { ascending: false });
-      
+
       if (error) {
         console.error('Erreur chargement invitations:', error);
         setError(error.message);
@@ -167,9 +171,9 @@ export const useCollaboratorInvitation = (): UseCollaboratorInvitationReturn => 
         job_position: inv.job_position,
         created_at: inv.created_at,
         expires_at: inv.expires_at,
-        status: inv.status
+        status: inv.status,
       }));
-      
+
       setPendingInvitations(invitations);
     } catch (err: any) {
       console.error('Exception chargement invitations:', err);
@@ -180,10 +184,12 @@ export const useCollaboratorInvitation = (): UseCollaboratorInvitationReturn => 
   // ============================================================================
   // CHARGEMENT STATISTIQUES
   // ============================================================================
-  
+
   const loadStats = useCallback(async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) return;
 
       const { data: userRole } = await supabase
@@ -193,9 +199,9 @@ export const useCollaboratorInvitation = (): UseCollaboratorInvitationReturn => 
         .eq('is_active', true)
         .not('tenant_id', 'is', null)
         .single();
-      
+
       const tenantId = userRole?.tenant_id;
-      
+
       if (!tenantId) return;
 
       // Compter par statut
@@ -204,7 +210,7 @@ export const useCollaboratorInvitation = (): UseCollaboratorInvitationReturn => 
         .select('status')
         .eq('tenant_id', tenantId)
         .eq('invitation_type', 'collaborator');
-      
+
       if (error) {
         console.error('Erreur chargement stats:', error);
         return;
@@ -227,17 +233,13 @@ export const useCollaboratorInvitation = (): UseCollaboratorInvitationReturn => 
   // ============================================================================
   // REFRESH COMPLET
   // ============================================================================
-  
+
   const refreshInvitations = useCallback(async () => {
     setIsLoading(true);
     setError(null);
-    
+
     try {
-      await Promise.all([
-        checkPermissions(),
-        loadPendingInvitations(),
-        loadStats()
-      ]);
+      await Promise.all([checkPermissions(), loadPendingInvitations(), loadStats()]);
     } finally {
       setIsLoading(false);
     }
@@ -246,55 +248,57 @@ export const useCollaboratorInvitation = (): UseCollaboratorInvitationReturn => 
   // ============================================================================
   // ENVOI INVITATION (Pattern Stripe: Validation + Feedback)
   // ============================================================================
-  
-  const sendInvitation = useCallback(async (form: CollaboratorInvitationForm): Promise<boolean> => {
-    if (!canInvite) {
-      toast({
-        title: '🔒 Permissions insuffisantes',
-        description: 'Vous n\'avez pas les permissions pour inviter des collaborateurs',
-        variant: 'destructive'
-      });
-      return false;
-    }
 
-    // Validation locale
-    if (!form.email || !form.fullName || !form.roleToAssign) {
-      toast({
-        title: '❌ Données incomplètes',
-        description: 'Email, nom complet et rôle sont requis',
-        variant: 'destructive'
-      });
-      return false;
-    }
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(form.email)) {
-      toast({
-        title: '❌ Email invalide',
-        description: 'Veuillez saisir une adresse email valide',
-        variant: 'destructive'
-      });
-      return false;
-    }
-
-    setIsSending(true);
-    setError(null);
-
-    try {
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      if (!session?.access_token) {
-        throw new Error('Session non trouvée');
+  const sendInvitation = useCallback(
+    async (form: CollaboratorInvitationForm): Promise<boolean> => {
+      if (!canInvite) {
+        toast({
+          title: '🔒 Permissions insuffisantes',
+          description: "Vous n'avez pas les permissions pour inviter des collaborateurs",
+          variant: 'destructive',
+        });
+        return false;
       }
 
-      // Appeler la Edge Function
-      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://qliinxtanjdnwxlvnxji.supabase.co';
-      const response = await fetch(
-        `${supabaseUrl}/functions/v1/send-collaborator-invitation`,
-        {
+      // Validation locale
+      if (!form.email || !form.fullName || !form.roleToAssign) {
+        toast({
+          title: '❌ Données incomplètes',
+          description: 'Email, nom complet et rôle sont requis',
+          variant: 'destructive',
+        });
+        return false;
+      }
+
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(form.email)) {
+        toast({
+          title: '❌ Email invalide',
+          description: 'Veuillez saisir une adresse email valide',
+          variant: 'destructive',
+        });
+        return false;
+      }
+
+      setIsSending(true);
+      setError(null);
+
+      try {
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
+
+        if (!session?.access_token) {
+          throw new Error('Session non trouvée');
+        }
+
+        // Appeler la Edge Function
+        const supabaseUrl =
+          import.meta.env.VITE_SUPABASE_URL || 'https://qliinxtanjdnwxlvnxji.supabase.co';
+        const response = await fetch(`${supabaseUrl}/functions/v1/send-collaborator-invitation`, {
           method: 'POST',
           headers: {
-            'Authorization': `Bearer ${session.access_token}`,
+            Authorization: `Bearer ${session.access_token}`,
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
@@ -303,140 +307,141 @@ export const useCollaboratorInvitation = (): UseCollaboratorInvitationReturn => 
             roleToAssign: form.roleToAssign,
             department: form.department?.trim() || null,
             jobPosition: form.jobPosition?.trim() || null,
-            siteUrl: window.location.origin
+            siteUrl: window.location.origin,
           }),
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+          // Créer une erreur enrichie avec les détails du backend
+          const error: any = new Error(result.error || "Erreur lors de l'envoi de l'invitation");
+          error.errorCode = result.errorCode;
+          error.suggestion = result.suggestion;
+          error.technicalDetails = result.technicalDetails;
+          throw error;
         }
-      );
 
-      const result = await response.json();
+        // Succès - Pattern Notion: Feedback positif immédiat
+        toast({
+          title: '✅ Invitation envoyée !',
+          description: `${form.fullName} recevra un email à ${form.email}`,
+          variant: 'default',
+        });
 
-      if (!response.ok) {
-        // Créer une erreur enrichie avec les détails du backend
-        const error: any = new Error(result.error || 'Erreur lors de l\'envoi de l\'invitation');
-        error.errorCode = result.errorCode;
-        error.suggestion = result.suggestion;
-        error.technicalDetails = result.technicalDetails;
-        throw error;
-      }
+        // Rafraîchir les données
+        await refreshInvitations();
 
-      // Succès - Pattern Notion: Feedback positif immédiat
-      toast({
-        title: '✅ Invitation envoyée !',
-        description: `${form.fullName} recevra un email à ${form.email}`,
-        variant: 'default'
-      });
+        return true;
+      } catch (err: any) {
+        console.error('Erreur envoi invitation:', err);
 
-      // Rafraîchir les données
-      await refreshInvitations();
-      
-      return true;
+        // Pattern Linear + Stripe: Messages d'erreur contextuels basés sur errorCode
+        let errorTitle = "❌ Erreur d'invitation";
+        let errorMessage = err.message || 'Une erreur est survenue';
+        let errorDescription = err.suggestion || '';
 
-    } catch (err: any) {
-      console.error('Erreur envoi invitation:', err);
-      
-      // Pattern Linear + Stripe: Messages d'erreur contextuels basés sur errorCode
-      let errorTitle = '❌ Erreur d\'invitation';
-      let errorMessage = err.message || 'Une erreur est survenue';
-      let errorDescription = err.suggestion || '';
-      
-      // Utiliser errorCode si disponible (depuis le backend)
-      if (err.errorCode) {
-        switch (err.errorCode) {
-          case 'EMAIL_ALREADY_EXISTS':
-          case 'EMAIL_ALREADY_IN_TENANT':
-            errorTitle = '📧 Email déjà utilisé';
-            break;
-          case 'INSUFFICIENT_PERMISSIONS':
-            errorTitle = '🔒 Permissions insuffisantes';
-            break;
-          case 'UNAUTHORIZED':
-          case 'SESSION_EXPIRED':
-            errorTitle = '🔐 Session expirée';
-            break;
-          case 'NO_TENANT_FOUND':
-            errorTitle = '🏢 Compte incomplet';
-            break;
-          case 'MISSING_REQUIRED_FIELDS':
-            errorTitle = '📝 Informations manquantes';
-            break;
-          case 'RATE_LIMIT_EXCEEDED':
-            errorTitle = '⏱️ Limite atteinte';
-            break;
-          default:
-            errorTitle = '❌ Erreur';
+        // Utiliser errorCode si disponible (depuis le backend)
+        if (err.errorCode) {
+          switch (err.errorCode) {
+            case 'EMAIL_ALREADY_EXISTS':
+            case 'EMAIL_ALREADY_IN_TENANT':
+              errorTitle = '📧 Email déjà utilisé';
+              break;
+            case 'INSUFFICIENT_PERMISSIONS':
+              errorTitle = '🔒 Permissions insuffisantes';
+              break;
+            case 'UNAUTHORIZED':
+            case 'SESSION_EXPIRED':
+              errorTitle = '🔐 Session expirée';
+              break;
+            case 'NO_TENANT_FOUND':
+              errorTitle = '🏢 Compte incomplet';
+              break;
+            case 'MISSING_REQUIRED_FIELDS':
+              errorTitle = '📝 Informations manquantes';
+              break;
+            case 'RATE_LIMIT_EXCEEDED':
+              errorTitle = '⏱️ Limite atteinte';
+              break;
+            default:
+              errorTitle = '❌ Erreur';
+          }
         }
+
+        // Afficher le message d'erreur avec suggestion si disponible
+        const toastDescription = errorDescription
+          ? `${errorMessage}\n\n💡 ${errorDescription}`
+          : errorMessage;
+
+        toast({
+          title: errorTitle,
+          description: toastDescription,
+          variant: 'destructive',
+          duration: 7000, // Plus long pour lire la suggestion
+        });
+
+        setError(errorMessage);
+        return false;
+      } finally {
+        setIsSending(false);
       }
-
-      // Afficher le message d'erreur avec suggestion si disponible
-      const toastDescription = errorDescription 
-        ? `${errorMessage}\n\n💡 ${errorDescription}`
-        : errorMessage;
-
-      toast({
-        title: errorTitle,
-        description: toastDescription,
-        variant: 'destructive',
-        duration: 7000 // Plus long pour lire la suggestion
-      });
-
-      setError(errorMessage);
-      return false;
-
-    } finally {
-      setIsSending(false);
-    }
-  }, [canInvite, toast, refreshInvitations]);
+    },
+    [canInvite, toast, refreshInvitations]
+  );
 
   // ============================================================================
   // RÉVOCATION INVITATION (Pattern Stripe: Confirmation + Optimistic Update)
   // ============================================================================
-  
-  const revokeInvitation = useCallback(async (invitationId: string): Promise<boolean> => {
-    try {
-      // Optimistic update
-      const previousInvitations = [...pendingInvitations];
-      setPendingInvitations(prev => prev.filter(i => i.id !== invitationId));
 
-      const { error } = await supabase
-        .from('invitations')
-        .update({ 
-          status: 'cancelled',
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', invitationId);
+  const revokeInvitation = useCallback(
+    async (invitationId: string): Promise<boolean> => {
+      try {
+        // Optimistic update
+        const previousInvitations = [...pendingInvitations];
+        setPendingInvitations(prev => prev.filter(i => i.id !== invitationId));
 
-      if (error) {
-        // Rollback on error
-        setPendingInvitations(previousInvitations);
-        throw error;
+        const { error } = await supabase
+          .from('invitations')
+          .update({
+            status: 'cancelled',
+            updated_at: new Date().toISOString(),
+          })
+          .eq('id', invitationId);
+
+        if (error) {
+          // Rollback on error
+          setPendingInvitations(previousInvitations);
+          throw error;
+        }
+
+        toast({
+          title: '✅ Invitation révoquée',
+          description: "L'invitation a été annulée avec succès",
+          variant: 'default',
+        });
+
+        await loadStats();
+        return true;
+      } catch (err: any) {
+        console.error('Erreur révocation invitation:', err);
+
+        toast({
+          title: '❌ Erreur',
+          description: "Impossible d'annuler l'invitation",
+          variant: 'destructive',
+        });
+
+        return false;
       }
-
-      toast({
-        title: '✅ Invitation révoquée',
-        description: 'L\'invitation a été annulée avec succès',
-        variant: 'default'
-      });
-
-      await loadStats();
-      return true;
-
-    } catch (err: any) {
-      console.error('Erreur révocation invitation:', err);
-      
-      toast({
-        title: '❌ Erreur',
-        description: 'Impossible d\'annuler l\'invitation',
-        variant: 'destructive'
-      });
-
-      return false;
-    }
-  }, [pendingInvitations, toast, loadStats]);
+    },
+    [pendingInvitations, toast, loadStats]
+  );
 
   // ============================================================================
   // CHARGEMENT INITIAL
   // ============================================================================
-  
+
   useEffect(() => {
     refreshInvitations();
   }, [refreshInvitations]);
@@ -444,41 +449,39 @@ export const useCollaboratorInvitation = (): UseCollaboratorInvitationReturn => 
   // ============================================================================
   // NETTOYAGE AUTOMATIQUE DES INVITATIONS EXPIRÉES (Pattern Stripe)
   // ============================================================================
-  
+
   useEffect(() => {
     const cleanupExpired = () => {
-      setPendingInvitations(prev => 
-        prev.filter(inv => new Date(inv.expires_at) > new Date())
-      );
+      setPendingInvitations(prev => prev.filter(inv => new Date(inv.expires_at) > new Date()));
     };
 
     // Vérifier toutes les minutes
     const interval = setInterval(cleanupExpired, 60000);
-    
+
     return () => clearInterval(interval);
   }, []);
 
   // ============================================================================
   // RETOUR API
   // ============================================================================
-  
+
   return {
     // Actions
     sendInvitation,
     revokeInvitation,
     refreshInvitations,
-    
+
     // Données
     pendingInvitations,
     stats,
-    
+
     // États
     isLoading,
     isSending,
     error,
-    
+
     // Utilitaires
     canInvite,
-    remainingSlots
+    remainingSlots,
   };
 };

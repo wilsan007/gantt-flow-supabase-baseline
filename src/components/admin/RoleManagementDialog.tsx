@@ -1,23 +1,24 @@
 import React, { useState, useEffect } from 'react';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Checkbox } from '@/components/ui/checkbox';
-import { 
-  Users, 
-  UserPlus, 
-  Shield, 
+import {
+  Users,
+  UserPlus,
+  Shield,
   Settings,
   Crown,
   Briefcase,
@@ -25,7 +26,7 @@ import {
   Eye,
   Search,
   Calendar,
-  Building
+  Building,
 } from 'lucide-react';
 import { useRoleManagement } from '@/hooks/useRoleManagement';
 import { useEmployees } from '@/hooks/useEmployees';
@@ -39,22 +40,22 @@ interface RoleManagementDialogProps {
 
 export const RoleManagementDialog: React.FC<RoleManagementDialogProps> = ({
   open,
-  onOpenChange
+  onOpenChange,
 }) => {
-  const { 
-    roles, 
-    permissions, 
-    userRoles, 
+  const {
+    roles,
+    permissions,
+    userRoles,
     loading,
     assignUserRole,
     removeUserRole,
     getRolePermissions,
     updateRolePermissions,
-    getPermissionsByResource
+    getPermissionsByResource,
   } = useRoleManagement();
-  
+
   const { employees } = useEmployees();
-  
+
   const [selectedRole, setSelectedRole] = useState<string>('');
   const [selectedEmployee, setSelectedEmployee] = useState<string>('');
   const [contextType, setContextType] = useState<string>('global');
@@ -65,15 +66,24 @@ export const RoleManagementDialog: React.FC<RoleManagementDialogProps> = ({
 
   const getRoleIcon = (roleName: string) => {
     switch (roleName) {
-      case 'tenant_admin': return <Crown className="h-4 w-4 text-yellow-500" />;
-      case 'hr_manager': return <Users className="h-4 w-4 text-blue-500" />;
-      case 'project_manager': return <Briefcase className="h-4 w-4 text-green-500" />;
-      case 'team_lead': return <Users className="h-4 w-4 text-purple-500" />;
-      case 'employee': return <User className="h-4 w-4 text-gray-500" />;
-      case 'contractor': return <User className="h-4 w-4 text-orange-500" />;
-      case 'intern': return <User className="h-4 w-4 text-pink-500" />;
-      case 'viewer': return <Eye className="h-4 w-4 text-gray-400" />;
-      default: return <Shield className="h-4 w-4" />;
+      case 'tenant_admin':
+        return <Crown className="h-4 w-4 text-yellow-500" />;
+      case 'hr_manager':
+        return <Users className="h-4 w-4 text-blue-500" />;
+      case 'project_manager':
+        return <Briefcase className="h-4 w-4 text-green-500" />;
+      case 'team_lead':
+        return <Users className="h-4 w-4 text-purple-500" />;
+      case 'employee':
+        return <User className="h-4 w-4 text-gray-500" />;
+      case 'contractor':
+        return <User className="h-4 w-4 text-orange-500" />;
+      case 'intern':
+        return <User className="h-4 w-4 text-pink-500" />;
+      case 'viewer':
+        return <Eye className="h-4 w-4 text-gray-400" />;
+      default:
+        return <Shield className="h-4 w-4" />;
     }
   };
 
@@ -86,13 +96,15 @@ export const RoleManagementDialog: React.FC<RoleManagementDialogProps> = ({
 
   const filteredUserRoles = userRoles.filter(ur => {
     const employee = employees.find(e => e.user_id === ur.user_id);
-    return employee?.full_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-           ur.role.display_name.toLowerCase().includes(searchTerm.toLowerCase());
+    return (
+      employee?.full_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      ur.role.display_name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
   });
 
   const handleAssignRole = async () => {
     if (!selectedEmployee || !selectedRole) return;
-    
+
     await assignUserRole(
       selectedEmployee,
       selectedRole,
@@ -100,7 +112,7 @@ export const RoleManagementDialog: React.FC<RoleManagementDialogProps> = ({
       undefined, // context_id
       expiresAt || undefined
     );
-    
+
     // Reset form
     setSelectedEmployee('');
     setSelectedRole('');
@@ -116,7 +128,7 @@ export const RoleManagementDialog: React.FC<RoleManagementDialogProps> = ({
 
   const handleSaveRolePermissions = async () => {
     if (!editingRolePermissions) return;
-    
+
     await updateRolePermissions(editingRolePermissions, rolePermissions);
     setEditingRolePermissions('');
     setRolePermissions([]);
@@ -126,7 +138,7 @@ export const RoleManagementDialog: React.FC<RoleManagementDialogProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-6xl max-h-[90vh] overflow-hidden flex flex-col">
+      <DialogContent className="flex max-h-[90vh] max-w-6xl flex-col overflow-hidden">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Shield className="h-5 w-5" />
@@ -134,7 +146,7 @@ export const RoleManagementDialog: React.FC<RoleManagementDialogProps> = ({
           </DialogTitle>
         </DialogHeader>
 
-        <Tabs defaultValue="user-roles" className="flex-1 flex flex-col overflow-hidden">
+        <Tabs defaultValue="user-roles" className="flex flex-1 flex-col overflow-hidden">
           <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="user-roles">Rôles Utilisateurs</TabsTrigger>
             <TabsTrigger value="roles">Rôles Système</TabsTrigger>
@@ -142,8 +154,8 @@ export const RoleManagementDialog: React.FC<RoleManagementDialogProps> = ({
           </TabsList>
 
           {/* Onglet Rôles Utilisateurs */}
-          <TabsContent value="user-roles" className="flex-1 flex flex-col overflow-hidden">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 flex-1 overflow-hidden">
+          <TabsContent value="user-roles" className="flex flex-1 flex-col overflow-hidden">
+            <div className="grid flex-1 grid-cols-1 gap-6 overflow-hidden lg:grid-cols-2">
               {/* Assignation de rôles */}
               <Card>
                 <CardHeader>
@@ -160,7 +172,7 @@ export const RoleManagementDialog: React.FC<RoleManagementDialogProps> = ({
                         <SelectValue placeholder="Sélectionner un employé" />
                       </SelectTrigger>
                       <SelectContent>
-                        {employees.map((employee) => (
+                        {employees.map(employee => (
                           <SelectItem key={employee.id} value={employee.user_id || employee.id}>
                             {employee.full_name} - {employee.job_title}
                           </SelectItem>
@@ -176,7 +188,7 @@ export const RoleManagementDialog: React.FC<RoleManagementDialogProps> = ({
                         <SelectValue placeholder="Sélectionner un rôle" />
                       </SelectTrigger>
                       <SelectContent>
-                        {roles.map((role) => (
+                        {roles.map(role => (
                           <SelectItem key={role.id} value={role.id}>
                             <div className="flex items-center gap-2">
                               {getRoleIcon(role.name)}
@@ -208,11 +220,11 @@ export const RoleManagementDialog: React.FC<RoleManagementDialogProps> = ({
                       id="expires"
                       type="date"
                       value={expiresAt}
-                      onChange={(e) => setExpiresAt(e.target.value)}
+                      onChange={e => setExpiresAt(e.target.value)}
                     />
                   </div>
 
-                  <Button 
+                  <Button
                     onClick={handleAssignRole}
                     disabled={!selectedEmployee || !selectedRole || loading}
                     className="w-full"
@@ -231,18 +243,18 @@ export const RoleManagementDialog: React.FC<RoleManagementDialogProps> = ({
                     <Input
                       placeholder="Rechercher..."
                       value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      className="pl-8 w-64"
+                      onChange={e => setSearchTerm(e.target.value)}
+                      className="w-64 pl-8"
                     />
                   </div>
                 </div>
 
                 <ScrollArea className="h-[400px]">
                   <div className="space-y-2">
-                    {filteredUserRoles.map((userRole) => {
+                    {filteredUserRoles.map(userRole => {
                       const employee = employees.find(e => e.user_id === userRole.user_id);
                       const hierarchyBadge = getHierarchyBadge(userRole.role.hierarchy_level);
-                      
+
                       return (
                         <Card key={userRole.id} className="p-3">
                           <div className="flex items-center justify-between">
@@ -250,11 +262,15 @@ export const RoleManagementDialog: React.FC<RoleManagementDialogProps> = ({
                               <div className="flex items-center gap-2">
                                 {getRoleIcon(userRole.role.name)}
                                 <div>
-                                  <p className="font-medium">{employee?.full_name || 'Utilisateur inconnu'}</p>
-                                  <p className="text-sm text-muted-foreground">{employee?.job_title}</p>
+                                  <p className="font-medium">
+                                    {employee?.full_name || 'Utilisateur inconnu'}
+                                  </p>
+                                  <p className="text-sm text-muted-foreground">
+                                    {employee?.job_title}
+                                  </p>
                                 </div>
                               </div>
-                              
+
                               <div className="flex flex-col gap-1">
                                 <Badge variant={hierarchyBadge.variant}>
                                   {userRole.role.display_name}
@@ -265,17 +281,18 @@ export const RoleManagementDialog: React.FC<RoleManagementDialogProps> = ({
                                   </Badge>
                                   {userRole.expires_at && (
                                     <Badge variant="secondary" className="text-xs">
-                                      <Calendar className="h-3 w-3 mr-1" />
-                                      Expire {formatDistanceToNow(new Date(userRole.expires_at), { 
-                                        addSuffix: true, 
-                                        locale: fr 
+                                      <Calendar className="mr-1 h-3 w-3" />
+                                      Expire{' '}
+                                      {formatDistanceToNow(new Date(userRole.expires_at), {
+                                        addSuffix: true,
+                                        locale: fr,
                                       })}
                                     </Badge>
                                   )}
                                 </div>
                               </div>
                             </div>
-                            
+
                             <Button
                               size="sm"
                               variant="outline"
@@ -296,10 +313,10 @@ export const RoleManagementDialog: React.FC<RoleManagementDialogProps> = ({
           {/* Onglet Rôles Système */}
           <TabsContent value="roles" className="flex-1 overflow-hidden">
             <ScrollArea className="h-full">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {roles.map((role) => {
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+                {roles.map(role => {
                   const hierarchyBadge = getHierarchyBadge(role.hierarchy_level);
-                  
+
                   return (
                     <Card key={role.id}>
                       <CardHeader className="pb-3">
@@ -307,16 +324,16 @@ export const RoleManagementDialog: React.FC<RoleManagementDialogProps> = ({
                           {getRoleIcon(role.name)}
                           {role.display_name}
                           {role.is_system_role && (
-                            <Badge variant="outline" className="text-xs">Système</Badge>
+                            <Badge variant="outline" className="text-xs">
+                              Système
+                            </Badge>
                           )}
                         </CardTitle>
                       </CardHeader>
                       <CardContent>
                         <div className="space-y-3">
-                          <p className="text-sm text-muted-foreground">
-                            {role.description}
-                          </p>
-                          
+                          <p className="text-sm text-muted-foreground">{role.description}</p>
+
                           <div className="flex items-center justify-between">
                             <Badge variant={hierarchyBadge.variant} className="text-xs">
                               {hierarchyBadge.label}
@@ -325,18 +342,18 @@ export const RoleManagementDialog: React.FC<RoleManagementDialogProps> = ({
                               Niveau {role.hierarchy_level}
                             </span>
                           </div>
-                          
+
                           <div className="text-xs text-muted-foreground">
                             {userRoles.filter(ur => ur.role_id === role.id).length} utilisateur(s)
                           </div>
-                          
+
                           <Button
                             size="sm"
                             variant="outline"
                             onClick={() => handleEditRolePermissions(role.id)}
                             className="w-full"
                           >
-                            <Settings className="h-3 w-3 mr-1" />
+                            <Settings className="mr-1 h-3 w-3" />
                             Permissions
                           </Button>
                         </div>
@@ -358,15 +375,21 @@ export const RoleManagementDialog: React.FC<RoleManagementDialogProps> = ({
                       <CardTitle className="capitalize">{resource}</CardTitle>
                     </CardHeader>
                     <CardContent>
-                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                        {perms.map((permission) => (
-                          <div key={permission.id} className="border rounded p-3">
-                            <div className="font-medium text-sm">{permission.display_name}</div>
-                            <div className="text-xs text-muted-foreground">{permission.description}</div>
-                            <div className="flex gap-1 mt-2">
-                              <Badge variant="outline" className="text-xs">{permission.action}</Badge>
+                      <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
+                        {perms.map(permission => (
+                          <div key={permission.id} className="rounded border p-3">
+                            <div className="text-sm font-medium">{permission.display_name}</div>
+                            <div className="text-xs text-muted-foreground">
+                              {permission.description}
+                            </div>
+                            <div className="mt-2 flex gap-1">
+                              <Badge variant="outline" className="text-xs">
+                                {permission.action}
+                              </Badge>
                               {permission.context && (
-                                <Badge variant="secondary" className="text-xs">{permission.context}</Badge>
+                                <Badge variant="secondary" className="text-xs">
+                                  {permission.context}
+                                </Badge>
                               )}
                             </div>
                           </div>
@@ -382,13 +405,13 @@ export const RoleManagementDialog: React.FC<RoleManagementDialogProps> = ({
 
         {/* Dialog pour éditer les permissions de rôle */}
         <Dialog open={!!editingRolePermissions} onOpenChange={() => setEditingRolePermissions('')}>
-          <DialogContent className="max-w-4xl max-h-[80vh] overflow-hidden">
+          <DialogContent className="max-h-[80vh] max-w-4xl overflow-hidden">
             <DialogHeader>
               <DialogTitle>
                 Permissions - {roles.find(r => r.id === editingRolePermissions)?.display_name}
               </DialogTitle>
             </DialogHeader>
-            
+
             <ScrollArea className="flex-1">
               <div className="space-y-4">
                 {Object.entries(permissionsByResource).map(([resource, perms]) => (
@@ -398,22 +421,26 @@ export const RoleManagementDialog: React.FC<RoleManagementDialogProps> = ({
                     </CardHeader>
                     <CardContent>
                       <div className="space-y-2">
-                        {perms.map((permission) => (
+                        {perms.map(permission => (
                           <div key={permission.id} className="flex items-center space-x-2">
                             <Checkbox
                               id={permission.id}
                               checked={rolePermissions.includes(permission.id)}
-                              onCheckedChange={(checked) => {
+                              onCheckedChange={checked => {
                                 if (checked) {
                                   setRolePermissions(prev => [...prev, permission.id]);
                                 } else {
-                                  setRolePermissions(prev => prev.filter(id => id !== permission.id));
+                                  setRolePermissions(prev =>
+                                    prev.filter(id => id !== permission.id)
+                                  );
                                 }
                               }}
                             />
                             <label htmlFor={permission.id} className="flex-1">
-                              <div className="font-medium text-sm">{permission.display_name}</div>
-                              <div className="text-xs text-muted-foreground">{permission.description}</div>
+                              <div className="text-sm font-medium">{permission.display_name}</div>
+                              <div className="text-xs text-muted-foreground">
+                                {permission.description}
+                              </div>
                             </label>
                           </div>
                         ))}
@@ -423,14 +450,12 @@ export const RoleManagementDialog: React.FC<RoleManagementDialogProps> = ({
                 ))}
               </div>
             </ScrollArea>
-            
+
             <div className="flex justify-end gap-2 pt-4">
               <Button variant="outline" onClick={() => setEditingRolePermissions('')}>
                 Annuler
               </Button>
-              <Button onClick={handleSaveRolePermissions}>
-                Sauvegarder
-              </Button>
+              <Button onClick={handleSaveRolePermissions}>Sauvegarder</Button>
             </div>
           </DialogContent>
         </Dialog>

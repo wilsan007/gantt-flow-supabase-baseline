@@ -18,14 +18,14 @@ interface SubTaskRowProps {
   onAddSubTask: (parentId: string) => void;
 }
 
-export const SubTaskRow = ({ 
-  task, 
-  level, 
-  onDuplicate, 
-  onDelete, 
+export const SubTaskRow = ({
+  task,
+  level,
+  onDuplicate,
+  onDelete,
   onEdit,
   onUpdateAssignee,
-  onAddSubTask 
+  onAddSubTask,
 }: SubTaskRowProps) => {
   const paddingLeft = level * 20;
 
@@ -41,64 +41,62 @@ export const SubTaskRow = ({
           >
             <Plus className="h-3 w-3" />
           </Button>
-          <span className="text-xs text-muted-foreground mr-2">
-            {task.display_order}
-          </span>
+          <span className="mr-2 text-xs text-muted-foreground">{task.display_order}</span>
           {task.title}
         </div>
       </TableCell>
-      
+
       <TableCell>
         <div className="flex items-center gap-2 text-sm">
           <User className="h-3 w-3 text-muted-foreground" />
           <AssigneeSelect
             assignee={task.assignee}
-            onChange={(assignee) => onUpdateAssignee(task.id, assignee)}
+            onChange={assignee => onUpdateAssignee(task.id, assignee)}
             taskId={task.id}
           />
         </div>
       </TableCell>
-      
+
       <TableCell>
         <div className="flex items-center gap-2 text-sm">
           <CalendarDays className="h-3 w-3 text-muted-foreground" />
           {formatDate(task.start_date)}
         </div>
       </TableCell>
-      
+
       <TableCell>
         <div className="flex items-center gap-2 text-sm">
           <CalendarDays className="h-3 w-3 text-muted-foreground" />
           {formatDate(task.due_date)}
         </div>
       </TableCell>
-      
+
       <TableCell>
         <Badge variant="outline" className={priorityColors[task.priority]}>
           {task.priority}
         </Badge>
       </TableCell>
-      
+
       <TableCell>
         <Badge variant="outline" className={statusColors[task.status]}>
           {task.status}
         </Badge>
       </TableCell>
-      
+
       <TableCell>
         <div className="flex items-center gap-2 text-sm">
           <Clock className="h-3 w-3 text-muted-foreground" />
           {task.effort_estimate_h}h
         </div>
       </TableCell>
-      
+
       <TableCell>
         <div className="space-y-1">
           <Progress value={task.progress} className="h-2" />
           <span className="text-xs text-muted-foreground">{task.progress}%</span>
         </div>
       </TableCell>
-      
+
       <TableCell>
         <TaskRowActions
           taskId={task.id}

@@ -96,7 +96,7 @@ export const CompanySettings = () => {
       if (uploadError) throw uploadError;
 
       const { data } = supabase.storage.from('company-logos').getPublicUrl(filePath);
-      
+
       const { error: updateError } = await supabase
         .from('tenants')
         .update({ logo_url: data.publicUrl })
@@ -130,9 +130,7 @@ export const CompanySettings = () => {
             <Building2 className="h-5 w-5" />
             Informations de l'entreprise
           </CardTitle>
-          <CardDescription>
-            Gérez les informations de votre entreprise
-          </CardDescription>
+          <CardDescription>Gérez les informations de votre entreprise</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleUpdateCompanyName} className="space-y-4">
@@ -141,14 +139,16 @@ export const CompanySettings = () => {
               <Input
                 id="companyName"
                 value={companyName}
-                onChange={(e) => setCompanyName(e.target.value)}
+                onChange={e => setCompanyName(e.target.value)}
                 placeholder="Nom de votre entreprise"
               />
             </div>
 
             <Button type="submit" disabled={loading}>
               {loading ? (
-                <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Enregistrement...</>
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Enregistrement...
+                </>
               ) : (
                 'Enregistrer les modifications'
               )}
@@ -164,19 +164,13 @@ export const CompanySettings = () => {
             <ImageIcon className="h-5 w-5" />
             Logo de l'entreprise
           </CardTitle>
-          <CardDescription>
-            Téléchargez le logo de votre entreprise
-          </CardDescription>
+          <CardDescription>Téléchargez le logo de votre entreprise</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           {/* Aperçu du logo */}
           {logoUrl && (
-            <div className="flex items-center justify-center p-6 bg-muted rounded-lg">
-              <img
-                src={logoUrl}
-                alt="Logo de l'entreprise"
-                className="max-h-32 object-contain"
-              />
+            <div className="flex items-center justify-center rounded-lg bg-muted p-6">
+              <img src={logoUrl} alt="Logo de l'entreprise" className="max-h-32 object-contain" />
             </div>
           )}
 
@@ -186,9 +180,14 @@ export const CompanySettings = () => {
               <Button type="button" variant="outline" disabled={uploading} asChild>
                 <span>
                   {uploading ? (
-                    <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Téléchargement...</>
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Téléchargement...
+                    </>
                   ) : (
-                    <><Upload className="h-4 w-4 mr-2" /> {logoUrl ? 'Changer le logo' : 'Télécharger un logo'}</>
+                    <>
+                      <Upload className="mr-2 h-4 w-4" />{' '}
+                      {logoUrl ? 'Changer le logo' : 'Télécharger un logo'}
+                    </>
                   )}
                 </span>
               </Button>
@@ -212,15 +211,13 @@ export const CompanySettings = () => {
       <Card>
         <CardHeader>
           <CardTitle>Personnalisation avancée</CardTitle>
-          <CardDescription>
-            Couleurs de marque et personnalisation complète
-          </CardDescription>
+          <CardDescription>Couleurs de marque et personnalisation complète</CardDescription>
         </CardHeader>
         <CardContent>
           <p className="text-sm text-muted-foreground">
             Cette fonctionnalité sera bientôt disponible. Vous pourrez personnaliser :
           </p>
-          <ul className="list-disc list-inside mt-2 text-sm text-muted-foreground space-y-1">
+          <ul className="mt-2 list-inside list-disc space-y-1 text-sm text-muted-foreground">
             <li>Couleurs primaires et secondaires</li>
             <li>Polices personnalisées</li>
             <li>Favicon personnalisé</li>

@@ -9,7 +9,7 @@ import { Progress } from '@/components/ui/progress';
 import { Search, TrendingUp, Clock, Calendar } from 'lucide-react';
 import { useEmployees } from '@/hooks/useEmployees';
 import { useSkillsTraining } from '@/hooks/useSkillsTraining';
-import { useTasksEnterprise as useTasks , type Task } from '@/hooks/useTasksEnterprise';
+import { useTasksEnterprise as useTasks, type Task } from '@/hooks/useTasksEnterprise';
 
 interface SmartAssigneeSelectProps {
   open: boolean;
@@ -40,7 +40,7 @@ export const SmartAssigneeSelect: React.FC<SmartAssigneeSelectProps> = ({
   onAssigneeSelect,
   taskStartDate,
   taskEndDate,
-  taskSkills = []
+  taskSkills = [],
 }) => {
   const { employees } = useEmployees();
   const { skillAssessments } = useSkillsTraining();
@@ -58,16 +58,18 @@ export const SmartAssigneeSelect: React.FC<SmartAssigneeSelectProps> = ({
         const employeeSkills = skillAssessments.filter(
           assessment => assessment.employee_id === employee.id
         );
-        
+
         if (employeeSkills.length > 0) {
           const matchingSkills = employeeSkills.filter(skill =>
-            taskSkills.some(taskSkill => 
+            taskSkills.some(taskSkill =>
               skill.employee_name.toLowerCase().includes(taskSkill.toLowerCase())
             )
           );
-          
+
           if (matchingSkills.length > 0) {
-            const avgLevel = matchingSkills.reduce((sum, skill) => sum + skill.current_level, 0) / matchingSkills.length;
+            const avgLevel =
+              matchingSkills.reduce((sum, skill) => sum + skill.current_level, 0) /
+              matchingSkills.length;
             skillMatch = Math.min(100, (avgLevel / 5) * 100); // Assuming 5 is max skill level
           }
         }
@@ -77,7 +79,9 @@ export const SmartAssigneeSelect: React.FC<SmartAssigneeSelectProps> = ({
           assessment => assessment.employee_id === employee.id
         );
         if (employeeSkills.length > 0) {
-          const avgLevel = employeeSkills.reduce((sum, skill) => sum + skill.current_level, 0) / employeeSkills.length;
+          const avgLevel =
+            employeeSkills.reduce((sum, skill) => sum + skill.current_level, 0) /
+            employeeSkills.length;
           skillMatch = Math.min(100, (avgLevel / 5) * 100);
         } else {
           skillMatch = 50; // Default if no skill data
@@ -87,24 +91,29 @@ export const SmartAssigneeSelect: React.FC<SmartAssigneeSelectProps> = ({
       // Calculate workload during task period
       const tasksInPeriod = tasks.filter(task => {
         if (task.assignee !== employee.full_name) return false;
-        
+
         const taskStart = new Date(task.start_date);
         const taskEnd = new Date(task.due_date);
-        
+
         // Check if task overlaps with our period
-        return (taskStart <= endDate && taskEnd >= startDate);
+        return taskStart <= endDate && taskEnd >= startDate;
       });
 
-      const totalHoursInPeriod = tasksInPeriod.reduce((sum, task) => sum + task.effort_estimate_h, 0);
+      const totalHoursInPeriod = tasksInPeriod.reduce(
+        (sum, task) => sum + task.effort_estimate_h,
+        0
+      );
       const weeklyHours = employee.weekly_hours || 35;
-      const workingDays = Math.max(1, Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24 * 7)));
+      const workingDays = Math.max(
+        1,
+        Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24 * 7))
+      );
       const availableHours = weeklyHours * workingDays;
       const workload = Math.min(100, (totalHoursInPeriod / availableHours) * 100);
 
       // Count active tasks
-      const currentTasks = tasks.filter(task => 
-        task.assignee === employee.full_name && 
-        task.status !== 'done'
+      const currentTasks = tasks.filter(
+        task => task.assignee === employee.full_name && task.status !== 'done'
       ).length;
 
       return {
@@ -116,16 +125,14 @@ export const SmartAssigneeSelect: React.FC<SmartAssigneeSelectProps> = ({
         currentTasks,
         totalTasksInPeriod: tasksInPeriod.length,
         availableHours,
-        totalHours: totalHoursInPeriod
+        totalHours: totalHoursInPeriod,
       } as EmployeeMetrics;
     });
   }, [employees, skillAssessments, tasks, taskStartDate, taskEndDate, taskSkills]);
 
   const filteredEmployees = useMemo(() => {
     return employeeMetrics
-      .filter(employee => 
-        employee.name.toLowerCase().includes(searchTerm.toLowerCase())
-      )
+      .filter(employee => employee.name.toLowerCase().includes(searchTerm.toLowerCase()))
       .sort((a, b) => {
         // Sort by skill match first, then by lower workload
         const aScore = a.skillMatch * 0.6 + (100 - a.workload) * 0.4;
@@ -155,7 +162,7 @@ export const SmartAssigneeSelect: React.FC<SmartAssigneeSelectProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl max-h-[80vh] overflow-hidden flex flex-col">
+      <DialogContent className="flex max-h-[80vh] max-w-4xl flex-col overflow-hidden">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <TrendingUp className="h-5 w-5" />
@@ -163,30 +170,33 @@ export const SmartAssigneeSelect: React.FC<SmartAssigneeSelectProps> = ({
           </DialogTitle>
         </DialogHeader>
 
-        <div className="flex flex-col gap-4 flex-1 overflow-hidden">
+        <div className="flex flex-1 flex-col gap-4 overflow-hidden">
           {/* Search and info */}
           <div className="space-y-4">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transform text-muted-foreground" />
               <Input
                 placeholder="Rechercher un employé..."
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                onChange={e => setSearchTerm(e.target.value)}
                 className="pl-10"
               />
             </div>
-            
+
             <div className="flex gap-4 text-sm text-muted-foreground">
               <div className="flex items-center gap-1">
                 <Calendar className="h-4 w-4" />
-                Du {new Date(taskStartDate).toLocaleDateString()} au {new Date(taskEndDate).toLocaleDateString()}
+                Du {new Date(taskStartDate).toLocaleDateString()} au{' '}
+                {new Date(taskEndDate).toLocaleDateString()}
               </div>
               {taskSkills.length > 0 && (
                 <div className="flex items-center gap-1">
                   <span>Compétences requises:</span>
                   <div className="flex gap-1">
                     {taskSkills.map((skill, index) => (
-                      <Badge key={index} variant="outline" className="text-xs">{skill}</Badge>
+                      <Badge key={index} variant="outline" className="text-xs">
+                        {skill}
+                      </Badge>
                     ))}
                   </div>
                 </div>
@@ -195,15 +205,15 @@ export const SmartAssigneeSelect: React.FC<SmartAssigneeSelectProps> = ({
           </div>
 
           {/* Employee list */}
-          <div className="flex-1 overflow-y-auto space-y-3">
-            {filteredEmployees.map((employee) => {
+          <div className="flex-1 space-y-3 overflow-y-auto">
+            {filteredEmployees.map(employee => {
               const workloadBadge = getWorkloadBadge(employee.workload);
               const skillBadge = getSkillMatchBadge(employee.skillMatch);
-              
+
               return (
                 <div
                   key={employee.id}
-                  className="border rounded-lg p-4 hover:bg-accent/50 cursor-pointer transition-colors"
+                  className="cursor-pointer rounded-lg border p-4 transition-colors hover:bg-accent/50"
                   onClick={() => {
                     onAssigneeSelect(employee.id);
                     onOpenChange(false);
@@ -211,36 +221,39 @@ export const SmartAssigneeSelect: React.FC<SmartAssigneeSelectProps> = ({
                 >
                   <div className="flex items-start gap-4">
                     {/* Avatar and basic info */}
-                    <div className="flex items-center gap-3 flex-1">
+                    <div className="flex flex-1 items-center gap-3">
                       <Avatar>
                         <AvatarImage src={employee.avatar_url} />
                         <AvatarFallback>
-                          {employee.name.split(' ').map(n => n[0]).join('')}
+                          {employee.name
+                            .split(' ')
+                            .map(n => n[0])
+                            .join('')}
                         </AvatarFallback>
                       </Avatar>
-                      
+
                       <div className="flex-1">
                         <div className="flex items-center gap-2">
                           <h4 className="font-medium">{employee.name}</h4>
                           {currentAssignee === employee.id && (
-                            <Badge variant="outline" className="text-xs">Actuel</Badge>
+                            <Badge variant="outline" className="text-xs">
+                              Actuel
+                            </Badge>
                           )}
                         </div>
-                        
-                        <div className="flex items-center gap-4 mt-1 text-sm text-muted-foreground">
+
+                        <div className="mt-1 flex items-center gap-4 text-sm text-muted-foreground">
                           <div className="flex items-center gap-1">
                             <Clock className="h-3 w-3" />
                             {employee.currentTasks} tâches actives
                           </div>
-                          <div>
-                            {employee.totalTasksInPeriod} tâches sur la période
-                          </div>
+                          <div>{employee.totalTasksInPeriod} tâches sur la période</div>
                         </div>
                       </div>
                     </div>
 
                     {/* Metrics */}
-                    <div className="space-y-3 min-w-0 flex-1">
+                    <div className="min-w-0 flex-1 space-y-3">
                       {/* Skill match */}
                       <div className="space-y-1">
                         <div className="flex items-center justify-between text-sm">
@@ -281,7 +294,7 @@ export const SmartAssigneeSelect: React.FC<SmartAssigneeSelectProps> = ({
           </div>
 
           {filteredEmployees.length === 0 && (
-            <div className="text-center py-8 text-muted-foreground">
+            <div className="py-8 text-center text-muted-foreground">
               Aucun employé trouvé pour cette recherche
             </div>
           )}

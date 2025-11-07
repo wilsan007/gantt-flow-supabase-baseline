@@ -24,64 +24,63 @@ interface TaskTableHeaderProps {
   filters?: TaskFilters;
 }
 
-export const TaskTableHeader = ({ 
-  newActionTitle, 
-  setNewActionTitle, 
+export const TaskTableHeader = ({
+  newActionTitle,
+  setNewActionTitle,
   onAddActionColumn,
   onCreateDetailedAction,
   selectedTaskId,
   isActionButtonEnabled,
   onCreateTask,
   tasks = [],
-  filters
+  filters,
 }: TaskTableHeaderProps) => (
   <CardHeader>
-    <div className="flex justify-between items-center">
+    <div className="flex items-center justify-between">
       <CardTitle className="flex items-center gap-2">
         <Target className="h-5 w-5" />
         Tableau Dynamique d'Exécution
       </CardTitle>
       <div className="flex gap-2">
         {onCreateTask && (
-          <Button 
-            onClick={onCreateTask} 
+          <Button
+            onClick={onCreateTask}
             size="sm"
             variant="default"
             className="bg-primary hover:bg-primary/90"
           >
-            <Plus className="h-4 w-4 mr-2" />
+            <Plus className="mr-2 h-4 w-4" />
             Nouvelle Tâche
           </Button>
         )}
         {tasks.length > 0 && (
-          <ExportButton 
-            tasks={tasks} 
-            filters={filters}
-            variant="outline"
-            size="sm"
-          />
+          <ExportButton tasks={tasks} filters={filters} variant="outline" size="sm" />
         )}
         {selectedTaskId && (
-          <div className="text-sm text-muted-foreground self-center">
-            Tâche sélectionnée
-          </div>
+          <div className="self-center text-sm text-muted-foreground">Tâche sélectionnée</div>
         )}
-        <Input 
-          placeholder="Action rapide..." 
+        <Input
+          placeholder="Action rapide..."
           value={newActionTitle}
-          onChange={(e) => setNewActionTitle(e.target.value)}
-          onKeyPress={(e) => e.key === 'Enter' && isActionButtonEnabled && onAddActionColumn()}
+          onChange={e => setNewActionTitle(e.target.value)}
+          onKeyPress={e => e.key === 'Enter' && isActionButtonEnabled && onAddActionColumn()}
           className="w-40"
         />
-        <Button 
-          onClick={onAddActionColumn} 
+        <Button
+          onClick={onAddActionColumn}
           size="sm"
           disabled={!isActionButtonEnabled}
-          title={!selectedTaskId ? "Sélectionnez d'abord une tâche" : !newActionTitle.trim() ? "Entrez un nom pour l'action" : ""}
+          title={
+            !selectedTaskId
+              ? "Sélectionnez d'abord une tâche"
+              : !newActionTitle.trim()
+                ? "Entrez un nom pour l'action"
+                : ''
+          }
         >
           <Plus className="h-4 w-4" />
         </Button>
-        <ActionCreationDialog 
+        <ActionCreationDialog
           onCreateAction={onCreateDetailedAction}
           selectedTaskId={selectedTaskId}
         />

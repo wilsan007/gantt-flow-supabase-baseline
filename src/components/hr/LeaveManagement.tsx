@@ -5,8 +5,20 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Calendar, Plus, Check, X } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -27,17 +39,15 @@ export const LeaveManagement = () => {
 
   // Fonctions CRUD pour les demandes de congés
   const createLeaveRequest = async (data: any) => {
-    const { error } = await supabase
-      .from('leave_requests')
-      .insert([data]);
-    
+    const { error } = await supabase.from('leave_requests').insert([data]);
+
     if (error) throw error;
-    
+
     toast({
       title: 'Succès',
-      description: 'Demande de congé créée avec succès'
+      description: 'Demande de congé créée avec succès',
     });
-    
+
     refresh();
   };
 
@@ -46,20 +56,20 @@ export const LeaveManagement = () => {
       .from('leave_requests')
       .update({ status, rejection_reason: reason })
       .eq('id', requestId);
-    
+
     if (error) throw error;
-    
+
     toast({
       title: 'Succès',
-      description: `Demande ${status === 'approved' ? 'approuvée' : 'rejetée'} avec succès`
+      description: `Demande ${status === 'approved' ? 'approuvée' : 'rejetée'} avec succès`,
     });
-    
+
     refresh();
   };
 
   // Filtres
-  const filteredRequests = leaveRequests.filter(request => 
-    selectedStatus === 'all' || request.status === selectedStatus
+  const filteredRequests = leaveRequests.filter(
+    request => selectedStatus === 'all' || request.status === selectedStatus
   );
 
   // Handlers
@@ -68,7 +78,8 @@ export const LeaveManagement = () => {
       // Calculate total days (simplified calculation)
       const startDate = new Date(data.start_date);
       const endDate = new Date(data.end_date);
-      const totalDays = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
+      const totalDays =
+        Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
 
       await createLeaveRequest({
         employee_id: data.employee_id,
@@ -77,7 +88,7 @@ export const LeaveManagement = () => {
         end_date: data.end_date,
         total_days: totalDays,
         status: 'pending',
-        reason: data.reason
+        reason: data.reason,
       });
 
       reset();
@@ -87,7 +98,7 @@ export const LeaveManagement = () => {
       toast({
         title: 'Erreur',
         description: 'Impossible de créer la demande',
-        variant: 'destructive'
+        variant: 'destructive',
       });
     }
   };
@@ -117,16 +128,16 @@ export const LeaveManagement = () => {
   }
 
   return (
-    <div className="p-6 space-y-6">
-      <div className="flex justify-between items-center">
-        <h2 className="text-3xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+    <div className="space-y-6 p-6">
+      <div className="flex items-center justify-between">
+        <h2 className="bg-gradient-to-r from-primary to-accent bg-clip-text text-3xl font-bold text-transparent">
           Gestion des Congés
         </h2>
-        
+
         <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
           <DialogTrigger asChild>
             <Button className="hover-glow">
-              <Plus className="h-4 w-4 mr-2" />
+              <Plus className="mr-2 h-4 w-4" />
               Nouvelle demande
             </Button>
           </DialogTrigger>
@@ -137,7 +148,7 @@ export const LeaveManagement = () => {
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
               <div>
                 <Label htmlFor="employee_id">Employé</Label>
-                <Select onValueChange={(value) => setValue('employee_id', value)}>
+                <Select onValueChange={value => setValue('employee_id', value)}>
                   <SelectTrigger>
                     <SelectValue placeholder="Sélectionner un employé" />
                   </SelectTrigger>
@@ -153,7 +164,7 @@ export const LeaveManagement = () => {
 
               <div>
                 <Label htmlFor="absence_type_id">Type d'absence</Label>
-                <Select onValueChange={(value) => setValue('absence_type_id', value)}>
+                <Select onValueChange={value => setValue('absence_type_id', value)}>
                   <SelectTrigger>
                     <SelectValue placeholder="Sélectionner un type" />
                   </SelectTrigger>
@@ -178,11 +189,7 @@ export const LeaveManagement = () => {
                 </div>
                 <div>
                   <Label htmlFor="end_date">Date de fin</Label>
-                  <Input
-                    id="end_date"
-                    type="date"
-                    {...register('end_date', { required: true })}
-                  />
+                  <Input id="end_date" type="date" {...register('end_date', { required: true })} />
                 </div>
               </div>
 
@@ -196,10 +203,12 @@ export const LeaveManagement = () => {
               </div>
 
               <div className="flex gap-2">
-                <Button type="submit" className="flex-1">Créer</Button>
-                <Button 
-                  type="button" 
-                  variant="outline" 
+                <Button type="submit" className="flex-1">
+                  Créer
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
                   onClick={() => setIsCreateDialogOpen(false)}
                 >
                   Annuler
@@ -211,7 +220,7 @@ export const LeaveManagement = () => {
       </div>
 
       {/* Filter */}
-      <div className="flex gap-4 items-center">
+      <div className="flex items-center gap-4">
         <Select value={selectedStatus} onValueChange={setSelectedStatus}>
           <SelectTrigger className="w-48">
             <SelectValue />
@@ -230,42 +239,64 @@ export const LeaveManagement = () => {
         {filteredRequests.length === 0 ? (
           <Card className="modern-card">
             <CardContent className="p-8 text-center">
-              <Calendar className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+              <Calendar className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
               <p className="text-muted-foreground">Aucune demande de congé trouvée</p>
             </CardContent>
           </Card>
         ) : (
-          filteredRequests.map((request) => {
+          filteredRequests.map(request => {
             const employee = employees.find(emp => emp.user_id === request.employee_id);
             const absenceType = absenceTypes.find(type => type.id === request.absence_type_id);
-            
+
             return (
               <Card key={request.id} className="modern-card hover-glow">
                 <CardContent className="p-6">
-                  <div className={`${isMobile ? 'space-y-4' : 'flex items-center justify-between'}`}>
+                  <div
+                    className={`${isMobile ? 'space-y-4' : 'flex items-center justify-between'}`}
+                  >
                     <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-2">
-                        <h3 className="font-semibold text-lg">
+                      <div className="mb-2 flex items-center gap-3">
+                        <h3 className="text-lg font-semibold">
                           {employee?.full_name || 'Employé inconnu'}
                         </h3>
                         <Badge
                           variant={
-                            request.status === 'approved' ? 'default' :
-                            request.status === 'rejected' ? 'destructive' : 'secondary'
+                            request.status === 'approved'
+                              ? 'default'
+                              : request.status === 'rejected'
+                                ? 'destructive'
+                                : 'secondary'
                           }
                         >
-                          {request.status === 'approved' ? 'Approuvée' :
-                           request.status === 'rejected' ? 'Rejetée' : 'En attente'}
+                          {request.status === 'approved'
+                            ? 'Approuvée'
+                            : request.status === 'rejected'
+                              ? 'Rejetée'
+                              : 'En attente'}
                         </Badge>
                       </div>
-                      
-                      <div className="text-sm text-muted-foreground space-y-1">
-                        <p><strong>Type:</strong> {absenceType?.name || 'Type inconnu'}</p>
-                        <p><strong>Période:</strong> {new Date(request.start_date).toLocaleDateString()} - {new Date(request.end_date).toLocaleDateString()}</p>
-                        <p><strong>Durée:</strong> {request.total_days} jour(s)</p>
-                        {request.reason && <p><strong>Motif:</strong> {request.reason}</p>}
+
+                      <div className="space-y-1 text-sm text-muted-foreground">
+                        <p>
+                          <strong>Type:</strong> {absenceType?.name || 'Type inconnu'}
+                        </p>
+                        <p>
+                          <strong>Période:</strong>{' '}
+                          {new Date(request.start_date).toLocaleDateString()} -{' '}
+                          {new Date(request.end_date).toLocaleDateString()}
+                        </p>
+                        <p>
+                          <strong>Durée:</strong> {request.total_days} jour(s)
+                        </p>
+                        {request.reason && (
+                          <p>
+                            <strong>Motif:</strong> {request.reason}
+                          </p>
+                        )}
                         {request.rejection_reason && (
-                          <p className="text-destructive"><strong>Motif de rejet:</strong> {request.rejection_reason}</p>
+                          <p className="text-destructive">
+                            <strong>Motif de rejet:</strong> {request.rejection_reason}
+                          </p>
                         )}
                       </div>
                     </div>
@@ -277,10 +308,10 @@ export const LeaveManagement = () => {
                           onClick={() => handleApprove(request.id)}
                           className="hover-glow"
                         >
-                          <Check className="h-4 w-4 mr-1" />
+                          <Check className="mr-1 h-4 w-4" />
                           Approuver
                         </Button>
-                        
+
                         <Dialog>
                           <DialogTrigger asChild>
                             <Button
@@ -288,7 +319,7 @@ export const LeaveManagement = () => {
                               variant="outline"
                               onClick={() => setSelectedRequestId(request.id)}
                             >
-                              <X className="h-4 w-4 mr-1" />
+                              <X className="mr-1 h-4 w-4" />
                               Rejeter
                             </Button>
                           </DialogTrigger>
@@ -300,7 +331,7 @@ export const LeaveManagement = () => {
                               <Textarea
                                 placeholder="Motif de rejet..."
                                 value={rejectionReason}
-                                onChange={(e) => setRejectionReason(e.target.value)}
+                                onChange={e => setRejectionReason(e.target.value)}
                               />
                               <div className="flex gap-2">
                                 <Button

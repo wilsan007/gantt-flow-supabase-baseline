@@ -10,9 +10,23 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Award, CheckCircle2, Plus, TrendingUp, Search, Filter } from 'lucide-react';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 
 const SKILL_LEVELS = {
@@ -23,8 +37,16 @@ const SKILL_LEVELS = {
 };
 
 export function MySkillsProfile() {
-  const { skills, employeeSkills, loading, addSkillToProfile, updateSkillLevel, requestCertification, removeSkillFromProfile } = useSkills();
-  
+  const {
+    skills,
+    employeeSkills,
+    loading,
+    addSkillToProfile,
+    updateSkillLevel,
+    requestCertification,
+    removeSkillFromProfile,
+  } = useSkills();
+
   const [searchTerm, setSearchTerm] = useState('');
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
   const [selectedSkillId, setSelectedSkillId] = useState<string>('');
@@ -53,7 +75,7 @@ export function MySkillsProfile() {
 
   const handleAddSkill = async () => {
     if (!selectedSkillId) return;
-    
+
     await addSkillToProfile(selectedSkillId, selectedLevel);
     setIsAddDialogOpen(false);
     setSelectedSkillId('');
@@ -61,19 +83,21 @@ export function MySkillsProfile() {
   };
 
   if (loading) {
-    return <div className="flex items-center justify-center p-12">Chargement de vos compétences...</div>;
+    return (
+      <div className="flex items-center justify-center p-12">Chargement de vos compétences...</div>
+    );
   }
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
+    <div className="container mx-auto space-y-6 p-6">
       {/* Header & Stats */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold flex items-center gap-2">
+          <h1 className="flex items-center gap-2 text-3xl font-bold">
             <Award className="h-8 w-8 text-primary" />
             Mes Compétences
           </h1>
-          <p className="text-muted-foreground mt-1">
+          <p className="mt-1 text-muted-foreground">
             Gérez votre profil de compétences et développez votre carrière
           </p>
         </div>
@@ -81,7 +105,7 @@ export function MySkillsProfile() {
         <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
           <DialogTrigger asChild>
             <Button>
-              <Plus className="h-4 w-4 mr-2" />
+              <Plus className="mr-2 h-4 w-4" />
               Ajouter une compétence
             </Button>
           </DialogTrigger>
@@ -140,7 +164,7 @@ export function MySkillsProfile() {
       </div>
 
       {/* Statistiques */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-medium text-muted-foreground">
@@ -149,9 +173,7 @@ export function MySkillsProfile() {
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold">{totalSkills}</div>
-            <p className="text-xs text-muted-foreground mt-1">
-              {certifiedSkills} certifiées
-            </p>
+            <p className="mt-1 text-xs text-muted-foreground">{certifiedSkills} certifiées</p>
           </CardContent>
         </Card>
 
@@ -177,7 +199,7 @@ export function MySkillsProfile() {
             <div className="text-3xl font-bold">
               {employeeSkills.filter(es => es.skill?.is_critical).length}
             </div>
-            <p className="text-xs text-muted-foreground mt-1">
+            <p className="mt-1 text-xs text-muted-foreground">
               Sur {skills.filter(s => s.is_critical).length} totales
             </p>
           </CardContent>
@@ -187,26 +209,28 @@ export function MySkillsProfile() {
       {/* Filtres */}
       <Card>
         <CardContent className="pt-6">
-          <div className="flex flex-col md:flex-row gap-4">
-            <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <div className="flex flex-col gap-4 md:flex-row">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transform text-muted-foreground" />
               <Input
                 placeholder="Rechercher une compétence..."
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                onChange={e => setSearchTerm(e.target.value)}
                 className="pl-10"
               />
             </div>
-            
+
             <Select value={categoryFilter} onValueChange={setCategoryFilter}>
               <SelectTrigger className="w-full md:w-[200px]">
-                <Filter className="h-4 w-4 mr-2" />
+                <Filter className="mr-2 h-4 w-4" />
                 <SelectValue placeholder="Catégorie" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Toutes catégories</SelectItem>
                 {categories.map(cat => (
-                  <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+                  <SelectItem key={cat} value={cat}>
+                    {cat}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -215,24 +239,27 @@ export function MySkillsProfile() {
       </Card>
 
       {/* Liste compétences */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         {filteredEmployeeSkills.length === 0 ? (
           <Card className="col-span-full">
             <CardContent className="pt-6 text-center text-muted-foreground">
-              {searchTerm || categoryFilter !== 'all' 
+              {searchTerm || categoryFilter !== 'all'
                 ? 'Aucune compétence ne correspond à vos filtres'
                 : 'Vous n\'avez pas encore ajouté de compétences. Cliquez sur "Ajouter une compétence" pour commencer !'}
             </CardContent>
           </Card>
         ) : (
-          filteredEmployeeSkills.map((employeeSkill) => {
+          filteredEmployeeSkills.map(employeeSkill => {
             const skill = employeeSkill.skill;
             if (!skill) return null;
 
             const levelInfo = SKILL_LEVELS[employeeSkill.level as keyof typeof SKILL_LEVELS];
 
             return (
-              <Card key={employeeSkill.id} className={`relative ${employeeSkill.is_certified ? 'border-green-500 border-2' : ''}`}>
+              <Card
+                key={employeeSkill.id}
+                className={`relative ${employeeSkill.is_certified ? 'border-2 border-green-500' : ''}`}
+              >
                 <CardHeader>
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
@@ -243,9 +270,7 @@ export function MySkillsProfile() {
                           <CheckCircle2 className="h-5 w-5 text-green-500" />
                         )}
                       </CardTitle>
-                      <CardDescription className="mt-1">
-                        {skill.category}
-                      </CardDescription>
+                      <CardDescription className="mt-1">{skill.category}</CardDescription>
                     </div>
 
                     <Badge variant="outline" className={levelInfo.color}>
@@ -268,13 +293,14 @@ export function MySkillsProfile() {
                   {employeeSkill.years_experience > 0 && (
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
                       <TrendingUp className="h-4 w-4" />
-                      {employeeSkill.years_experience} an{employeeSkill.years_experience > 1 ? 's' : ''} d'expérience
+                      {employeeSkill.years_experience} an
+                      {employeeSkill.years_experience > 1 ? 's' : ''} d'expérience
                     </div>
                   )}
 
                   {employeeSkill.is_certified && (
                     <Badge variant="secondary" className="bg-green-100 text-green-800">
-                      <CheckCircle2 className="h-3 w-3 mr-1" />
+                      <CheckCircle2 className="mr-1 h-3 w-3" />
                       Certifié par manager
                     </Badge>
                   )}
@@ -282,17 +308,17 @@ export function MySkillsProfile() {
                   {/* Actions */}
                   <div className="flex gap-2 pt-2">
                     {!employeeSkill.is_certified && (
-                      <Button 
-                        size="sm" 
+                      <Button
+                        size="sm"
                         variant="outline"
                         onClick={() => requestCertification(employeeSkill.id)}
                       >
                         Demander certification
                       </Button>
                     )}
-                    
-                    <Button 
-                      size="sm" 
+
+                    <Button
+                      size="sm"
                       variant="ghost"
                       onClick={() => removeSkillFromProfile(employeeSkill.id)}
                     >

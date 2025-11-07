@@ -17,11 +17,9 @@ export const ErrorState: React.FC<ErrorStateProps> = ({ error, onRetry }) => {
   return (
     <Card className="w-full border-destructive">
       <CardContent className="flex flex-col items-center justify-center py-12">
-        <AlertCircle className="h-12 w-12 text-destructive mb-4" />
-        <p className="text-lg font-semibold text-destructive mb-2">
-          Erreur de chargement
-        </p>
-        <p className="text-sm text-muted-foreground mb-6 text-center max-w-md">
+        <AlertCircle className="mb-4 h-12 w-12 text-destructive" />
+        <p className="mb-2 text-lg font-semibold text-destructive">Erreur de chargement</p>
+        <p className="mb-6 max-w-md text-center text-sm text-muted-foreground">
           {error || 'Une erreur est survenue lors du chargement des données'}
         </p>
         {onRetry && (

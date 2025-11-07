@@ -15,7 +15,7 @@ export const useTenantOwnerSetup = () => {
     isPendingTenantOwner: false,
     hasCompletedSetup: false,
     userEmail: null,
-    error: null
+    error: null,
   });
 
   useEffect(() => {
@@ -27,14 +27,17 @@ export const useTenantOwnerSetup = () => {
       setState(prev => ({ ...prev, isLoading: true, error: null }));
 
       // Récupérer l'utilisateur connecté
-      const { data: { user }, error: authError } = await supabase.auth.getUser();
-      
+      const {
+        data: { user },
+        error: authError,
+      } = await supabase.auth.getUser();
+
       if (authError || !user) {
-        setState(prev => ({ 
-          ...prev, 
-          isLoading: false, 
+        setState(prev => ({
+          ...prev,
+          isLoading: false,
           isPendingTenantOwner: false,
-          hasCompletedSetup: false 
+          hasCompletedSetup: false,
         }));
         return;
       }
@@ -53,21 +56,23 @@ export const useTenantOwnerSetup = () => {
           isLoading: false,
           isPendingTenantOwner: false,
           hasCompletedSetup: true,
-          userEmail: user.email
+          userEmail: user.email,
         }));
         return;
       }
 
       // Vérifier s'il y a une invitation tenant_owner en attente pour cet email
-      const { data: isPending, error: pendingError } = await supabase
-        .rpc('is_pending_tenant_owner', { user_email: user.email });
+      const { data: isPending, error: pendingError } = await supabase.rpc(
+        'is_pending_tenant_owner',
+        { user_email: user.email }
+      );
 
       if (pendingError) {
         console.error('Erreur vérification invitation:', pendingError);
-        setState(prev => ({ 
-          ...prev, 
-          isLoading: false, 
-          error: 'Erreur lors de la vérification de l\'invitation' 
+        setState(prev => ({
+          ...prev,
+          isLoading: false,
+          error: "Erreur lors de la vérification de l'invitation",
         }));
         return;
       }
@@ -77,15 +82,14 @@ export const useTenantOwnerSetup = () => {
         isLoading: false,
         isPendingTenantOwner: isPending || false,
         hasCompletedSetup: false,
-        userEmail: user.email
+        userEmail: user.email,
       }));
-
     } catch (error: any) {
       console.error('Erreur checkTenantOwnerStatus:', error);
-      setState(prev => ({ 
-        ...prev, 
-        isLoading: false, 
-        error: 'Erreur lors de la vérification du statut' 
+      setState(prev => ({
+        ...prev,
+        isLoading: false,
+        error: 'Erreur lors de la vérification du statut',
       }));
     }
   };
@@ -96,6 +100,6 @@ export const useTenantOwnerSetup = () => {
 
   return {
     ...state,
-    refreshStatus
+    refreshStatus,
   };
 };

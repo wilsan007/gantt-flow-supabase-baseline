@@ -32,7 +32,7 @@ export const NotificationsSettings = () => {
     {
       type: 'mentions',
       label: 'Mentions',
-      description: 'Quand quelqu\'un vous mentionne',
+      description: "Quand quelqu'un vous mentionne",
       icon: <MessageSquare className="h-4 w-4" />,
       inApp: true,
       email: true,
@@ -48,7 +48,7 @@ export const NotificationsSettings = () => {
     {
       type: 'team',
       label: 'Équipe',
-      description: 'Mises à jour de l\'équipe',
+      description: "Mises à jour de l'équipe",
       icon: <Users className="h-4 w-4" />,
       inApp: true,
       email: false,
@@ -73,23 +73,24 @@ export const NotificationsSettings = () => {
       <Card>
         <CardHeader>
           <CardTitle>Préférences de notifications</CardTitle>
-          <CardDescription>
-            Choisissez comment vous souhaitez être notifié
-          </CardDescription>
+          <CardDescription>Choisissez comment vous souhaitez être notifié</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           {preferences.map((pref, index) => (
-            <div key={pref.type} className="flex items-start justify-between py-4 border-b last:border-0">
-              <div className="flex items-start gap-3 flex-1">
+            <div
+              key={pref.type}
+              className="flex items-start justify-between border-b py-4 last:border-0"
+            >
+              <div className="flex flex-1 items-start gap-3">
                 <div className="mt-1 text-muted-foreground">{pref.icon}</div>
                 <div className="flex-1">
                   <Label className="text-base font-medium">{pref.label}</Label>
-                  <p className="text-sm text-muted-foreground mt-1">{pref.description}</p>
+                  <p className="mt-1 text-sm text-muted-foreground">{pref.description}</p>
                 </div>
               </div>
-              <div className="flex flex-col gap-3 ml-4">
+              <div className="ml-4 flex flex-col gap-3">
                 <div className="flex items-center gap-2">
-                  <Label htmlFor={`${pref.type}-app`} className="text-sm cursor-pointer">
+                  <Label htmlFor={`${pref.type}-app`} className="cursor-pointer text-sm">
                     Dans l'app
                   </Label>
                   <Switch
@@ -99,7 +100,7 @@ export const NotificationsSettings = () => {
                   />
                 </div>
                 <div className="flex items-center gap-2">
-                  <Label htmlFor={`${pref.type}-email`} className="text-sm cursor-pointer">
+                  <Label htmlFor={`${pref.type}-email`} className="cursor-pointer text-sm">
                     Par email
                   </Label>
                   <Switch

@@ -32,7 +32,7 @@ export default function MyAdminRequestsPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedTab, setSelectedTab] = useState('all');
 
-  const filtered = administrativeRequests.filter((request) => {
+  const filtered = administrativeRequests.filter(request => {
     if (selectedTab === 'all') return true;
     return request.status === selectedTab;
   });
@@ -45,32 +45,28 @@ export default function MyAdminRequestsPage() {
   };
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
+    <div className="container mx-auto space-y-6 p-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold flex items-center gap-2">
+          <h1 className="flex items-center gap-2 text-3xl font-bold">
             <FileText className="h-8 w-8" />
             Mes Demandes Administratives
           </h1>
-          <p className="text-muted-foreground mt-1">
-            Gérez vos demandes auprès du service RH
-          </p>
+          <p className="mt-1 text-muted-foreground">Gérez vos demandes auprès du service RH</p>
         </div>
 
         <Button onClick={() => setIsDialogOpen(true)}>
-          <Plus className="h-4 w-4 mr-2" />
+          <Plus className="mr-2 h-4 w-4" />
           Nouvelle Demande
         </Button>
       </div>
 
       {/* Statistiques */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              Total
-            </CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">Total</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold">{stats.total}</div>
@@ -79,9 +75,7 @@ export default function MyAdminRequestsPage() {
 
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              En Attente
-            </CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">En Attente</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-blue-600">{stats.pending}</div>
@@ -90,9 +84,7 @@ export default function MyAdminRequestsPage() {
 
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              En Cours
-            </CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">En Cours</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-yellow-600">{stats.in_progress}</div>
@@ -101,9 +93,7 @@ export default function MyAdminRequestsPage() {
 
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              Terminées
-            </CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">Terminées</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-green-600">{stats.completed}</div>
@@ -115,9 +105,7 @@ export default function MyAdminRequestsPage() {
       <Card>
         <CardHeader>
           <CardTitle>Historique</CardTitle>
-          <CardDescription>
-            Toutes vos demandes administratives
-          </CardDescription>
+          <CardDescription>Toutes vos demandes administratives</CardDescription>
         </CardHeader>
         <CardContent>
           <Tabs value={selectedTab} onValueChange={setSelectedTab}>
@@ -128,17 +116,18 @@ export default function MyAdminRequestsPage() {
               <TabsTrigger value="completed">Terminées ({stats.completed})</TabsTrigger>
             </TabsList>
 
-            <TabsContent value={selectedTab} className="space-y-4 mt-4">
+            <TabsContent value={selectedTab} className="mt-4 space-y-4">
               {loading ? (
-                <div className="text-center py-8 text-muted-foreground">Chargement...</div>
+                <div className="py-8 text-center text-muted-foreground">Chargement...</div>
               ) : filtered.length === 0 ? (
-                <div className="text-center py-8 text-muted-foreground">
+                <div className="py-8 text-center text-muted-foreground">
                   Aucune demande pour le moment
                 </div>
               ) : (
-                filtered.map((request) => {
+                filtered.map(request => {
                   const statusConfig = STATUS_CONFIG[request.status as keyof typeof STATUS_CONFIG];
-                  const priorityConfig = PRIORITY_CONFIG[request.priority as keyof typeof PRIORITY_CONFIG];
+                  const priorityConfig =
+                    PRIORITY_CONFIG[request.priority as keyof typeof PRIORITY_CONFIG];
                   const StatusIcon = statusConfig?.icon || Clock;
 
                   return (
@@ -146,20 +135,18 @@ export default function MyAdminRequestsPage() {
                       <CardContent className="pt-6">
                         <div className="flex items-start justify-between">
                           <div className="flex-1">
-                            <div className="flex items-center gap-3 mb-2">
-                              <h3 className="font-semibold text-lg">
-                                {request.subject}
-                              </h3>
+                            <div className="mb-2 flex items-center gap-3">
+                              <h3 className="text-lg font-semibold">{request.subject}</h3>
                               <Badge className={statusConfig?.color}>
-                                <StatusIcon className="h-3 w-3 mr-1" />
+                                <StatusIcon className="mr-1 h-3 w-3" />
                                 {statusConfig?.label}
                               </Badge>
                               <Badge className={priorityConfig?.color}>
                                 {priorityConfig?.label}
                               </Badge>
                             </div>
-                            
-                            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm mt-3">
+
+                            <div className="mt-3 grid grid-cols-2 gap-4 text-sm md:grid-cols-3">
                               <div>
                                 <p className="text-muted-foreground">Type</p>
                                 <p className="font-medium capitalize">
@@ -169,27 +156,33 @@ export default function MyAdminRequestsPage() {
                               <div>
                                 <p className="text-muted-foreground">Demandé le</p>
                                 <p className="font-medium">
-                                  {format(new Date(request.created_at), 'dd MMM yyyy', { locale: fr })}
+                                  {format(new Date(request.created_at), 'dd MMM yyyy', {
+                                    locale: fr,
+                                  })}
                                 </p>
                               </div>
                               {request.completed_at && (
                                 <div>
                                   <p className="text-muted-foreground">Terminé le</p>
                                   <p className="font-medium">
-                                    {format(new Date(request.completed_at), 'dd MMM yyyy', { locale: fr })}
+                                    {format(new Date(request.completed_at), 'dd MMM yyyy', {
+                                      locale: fr,
+                                    })}
                                   </p>
                                 </div>
                               )}
                             </div>
 
                             {request.description && (
-                              <div className="mt-3 p-3 bg-muted/50 rounded-md">
-                                <p className="text-sm text-muted-foreground">{request.description}</p>
+                              <div className="mt-3 rounded-md bg-muted/50 p-3">
+                                <p className="text-sm text-muted-foreground">
+                                  {request.description}
+                                </p>
                               </div>
                             )}
 
                             {request.response && (
-                              <div className="mt-3 p-3 bg-green-50 border border-green-200 rounded-md">
+                              <div className="mt-3 rounded-md border border-green-200 bg-green-50 p-3">
                                 <p className="text-sm font-medium text-green-800">Réponse RH:</p>
                                 <p className="text-sm text-green-700">{request.response}</p>
                               </div>
@@ -201,7 +194,7 @@ export default function MyAdminRequestsPage() {
                                   href={request.attachment_url}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className="text-sm text-primary hover:underline flex items-center gap-1"
+                                  className="flex items-center gap-1 text-sm text-primary hover:underline"
                                 >
                                   <FileText className="h-4 w-4" />
                                   Voir pièce jointe

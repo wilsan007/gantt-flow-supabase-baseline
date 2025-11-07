@@ -13,25 +13,29 @@ export const useErrorHandler = (options: UseErrorHandlerOptions = {}) => {
   const { toast } = useToast();
   const [errors, setErrors] = useState<AppError[]>([]);
 
-  const addError = useCallback((error: AppError) => {
-    if (persistErrors) {
-      setErrors(prev => {
-        const newErrors = [error, ...prev];
-        return newErrors.slice(0, maxErrors);
-      });
-    }
+  const addError = useCallback(
+    (error: AppError) => {
+      if (persistErrors) {
+        setErrors(prev => {
+          const newErrors = [error, ...prev];
+          return newErrors.slice(0, maxErrors);
+        });
+      }
 
-    if (showToast) {
-      toast({
-        title: error.title,
-        description: error.message,
-        variant: error.severity === ErrorSeverity.ERROR || error.severity === ErrorSeverity.CRITICAL 
-          ? 'destructive' 
-          : 'default',
-        duration: error.severity === ErrorSeverity.CRITICAL ? 0 : 5000
-      });
-    }
-  }, [persistErrors, maxErrors, showToast, toast]);
+      if (showToast) {
+        toast({
+          title: error.title,
+          description: error.message,
+          variant:
+            error.severity === ErrorSeverity.ERROR || error.severity === ErrorSeverity.CRITICAL
+              ? 'destructive'
+              : 'default',
+          duration: error.severity === ErrorSeverity.CRITICAL ? 0 : 5000,
+        });
+      }
+    },
+    [persistErrors, maxErrors, showToast, toast]
+  );
 
   const removeError = useCallback((index: number) => {
     setErrors(prev => prev.filter((_, i) => i !== index));
@@ -41,91 +45,93 @@ export const useErrorHandler = (options: UseErrorHandlerOptions = {}) => {
     setErrors([]);
   }, []);
 
-  const handleTaskDateValidation = useCallback((
-    taskStart: string,
-    taskEnd: string,
-    parentStart?: string,
-    parentEnd?: string,
-    parentTaskTitle?: string
-  ): AppError | null => {
-    const taskStartDate = new Date(taskStart);
-    const taskEndDate = new Date(taskEnd);
-    
-    // Vérifier que la date de fin est après la date de début
-    if (taskEndDate <= taskStartDate) {
-      const error = ErrorFactory.createValidationError(
-        'due_date',
-        taskEnd,
-        'must_be_after_start_date',
-        'La date d\'échéance doit être postérieure à la date de début.'
-      );
-      addError(error);
-      return error;
-    }
+  const handleTaskDateValidation = useCallback(
+    (
+      taskStart: string,
+      taskEnd: string,
+      parentStart?: string,
+      parentEnd?: string,
+      parentTaskTitle?: string
+    ): AppError | null => {
+      const taskStartDate = new Date(taskStart);
+      const taskEndDate = new Date(taskEnd);
 
-    // Vérifier les conflits avec la tâche parent si elle existe
-    if (parentStart && parentEnd) {
-      const parentStartDate = new Date(parentStart);
-      const parentEndDate = new Date(parentEnd);
-
-      if (taskStartDate < parentStartDate || taskEndDate > parentEndDate) {
-        const error = ErrorFactory.createTaskDateConflictError(
-          taskStart,
+      // Vérifier que la date de fin est après la date de début
+      if (taskEndDate <= taskStartDate) {
+        const error = ErrorFactory.createValidationError(
+          'due_date',
           taskEnd,
-          parentStart,
-          parentEnd,
-          parentTaskTitle
+          'must_be_after_start_date',
+          "La date d'échéance doit être postérieure à la date de début."
         );
         addError(error);
         return error;
       }
-    }
 
-    return null;
-  }, [addError]);
+      // Vérifier les conflits avec la tâche parent si elle existe
+      if (parentStart && parentEnd) {
+        const parentStartDate = new Date(parentStart);
+        const parentEndDate = new Date(parentEnd);
 
-  const handleNetworkError = useCallback((
-    operation: string,
-    statusCode?: number,
-    originalError?: any
-  ) => {
-    const error = ErrorFactory.createNetworkError(operation, statusCode);
-    if (originalError) {
-      error.context = { originalError: originalError.message };
-    }
-    addError(error);
-    return error;
-  }, [addError]);
+        if (taskStartDate < parentStartDate || taskEndDate > parentEndDate) {
+          const error = ErrorFactory.createTaskDateConflictError(
+            taskStart,
+            taskEnd,
+            parentStart,
+            parentEnd,
+            parentTaskTitle
+          );
+          addError(error);
+          return error;
+        }
+      }
 
-  const handleValidationError = useCallback((
-    field: string,
-    value: any,
-    constraint: string,
-    customMessage?: string
-  ) => {
-    const error = ErrorFactory.createValidationError(field, value, constraint, customMessage);
-    addError(error);
-    return error;
-  }, [addError]);
+      return null;
+    },
+    [addError]
+  );
 
-  const handlePermissionError = useCallback((action: string) => {
-    const error = ErrorFactory.createPermissionError(action);
-    addError(error);
-    return error;
-  }, [addError]);
+  const handleNetworkError = useCallback(
+    (operation: string, statusCode?: number, originalError?: any) => {
+      const error = ErrorFactory.createNetworkError(operation, statusCode);
+      if (originalError) {
+        error.context = { originalError: originalError.message };
+      }
+      addError(error);
+      return error;
+    },
+    [addError]
+  );
 
-  const handleGenericError = useCallback((
-    title: string,
-    message: string,
-    suggestion?: string
-  ) => {
-    const error = ErrorFactory.createGenericError(title, message, suggestion);
-    addError(error);
-    return error;
-  }, [addError]);
+  const handleValidationError = useCallback(
+    (field: string, value: any, constraint: string, customMessage?: string) => {
+      const error = ErrorFactory.createValidationError(field, value, constraint, customMessage);
+      addError(error);
+      return error;
+    },
+    [addError]
+  );
+
+  const handlePermissionError = useCallback(
+    (action: string) => {
+      const error = ErrorFactory.createPermissionError(action);
+      addError(error);
+      return error;
+    },
+    [addError]
+  );
+
+  const handleGenericError = useCallback(
+    (title: string, message: string, suggestion?: string) => {
+      const error = ErrorFactory.createGenericError(title, message, suggestion);
+      addError(error);
+      return error;
+    },
+    [addError]
+  );
 
   // ========== MÉTHODES D'AUTHENTIFICATION (NIVEAU STRIPE/NOTION) ==========
-  
+
   const handleAuthInvalidCredentials = useCallback(() => {
     const error = ErrorFactory.createAuthInvalidCredentialsError();
     addError(error);
@@ -169,55 +175,77 @@ export const useErrorHandler = (options: UseErrorHandlerOptions = {}) => {
   }, [addError]);
 
   // Méthode intelligente pour détecter le type d'erreur d'authentification
-  const handleAuthError = useCallback((error: any) => {
-    const message = error?.message?.toLowerCase() || '';
-    
-    if (message.includes('invalid') || message.includes('credentials')) {
-      return handleAuthInvalidCredentials();
-    }
-    
-    if (message.includes('email') && (message.includes('already') || message.includes('exists'))) {
-      return handleAuthEmailExists();
-    }
-    
-    if (message.includes('password') && (message.includes('weak') || message.includes('strength'))) {
-      return handleAuthWeakPassword();
-    }
-    
-    if (message.includes('session') && message.includes('expired')) {
-      return handleAuthSessionExpired();
-    }
-    
-    if (message.includes('email') && message.includes('confirm')) {
-      return handleAuthEmailNotConfirmed();
-    }
-    
-    if (message.includes('too many') || message.includes('rate limit')) {
-      return handleAuthTooManyAttempts();
-    }
-    
-    if (message.includes('locked') || message.includes('blocked')) {
-      return handleAuthAccountLocked();
-    }
-    
-    // Fallback vers erreur générique
-    return handleGenericError('Erreur d\'authentification', error?.message || 'Une erreur s\'est produite.');
-  }, [handleAuthInvalidCredentials, handleAuthEmailExists, handleAuthWeakPassword, 
-      handleAuthSessionExpired, handleAuthEmailNotConfirmed, handleAuthTooManyAttempts, 
-      handleAuthAccountLocked, handleGenericError]);
+  const handleAuthError = useCallback(
+    (error: any) => {
+      const message = error?.message?.toLowerCase() || '';
 
-  const retryError = useCallback((index: number, retryFn?: () => Promise<void>) => {
-    if (retryFn) {
-      retryFn().catch((error) => {
-        handleGenericError(
-          'Échec de la nouvelle tentative',
-          'La nouvelle tentative a échoué.',
-          'Vérifiez votre connexion et réessayez.'
-        );
-      });
-    }
-    removeError(index);
-  }, [removeError, handleGenericError]);
+      if (message.includes('invalid') || message.includes('credentials')) {
+        return handleAuthInvalidCredentials();
+      }
+
+      if (
+        message.includes('email') &&
+        (message.includes('already') || message.includes('exists'))
+      ) {
+        return handleAuthEmailExists();
+      }
+
+      if (
+        message.includes('password') &&
+        (message.includes('weak') || message.includes('strength'))
+      ) {
+        return handleAuthWeakPassword();
+      }
+
+      if (message.includes('session') && message.includes('expired')) {
+        return handleAuthSessionExpired();
+      }
+
+      if (message.includes('email') && message.includes('confirm')) {
+        return handleAuthEmailNotConfirmed();
+      }
+
+      if (message.includes('too many') || message.includes('rate limit')) {
+        return handleAuthTooManyAttempts();
+      }
+
+      if (message.includes('locked') || message.includes('blocked')) {
+        return handleAuthAccountLocked();
+      }
+
+      // Fallback vers erreur générique
+      return handleGenericError(
+        "Erreur d'authentification",
+        error?.message || "Une erreur s'est produite."
+      );
+    },
+    [
+      handleAuthInvalidCredentials,
+      handleAuthEmailExists,
+      handleAuthWeakPassword,
+      handleAuthSessionExpired,
+      handleAuthEmailNotConfirmed,
+      handleAuthTooManyAttempts,
+      handleAuthAccountLocked,
+      handleGenericError,
+    ]
+  );
+
+  const retryError = useCallback(
+    (index: number, retryFn?: () => Promise<void>) => {
+      if (retryFn) {
+        retryFn().catch(error => {
+          handleGenericError(
+            'Échec de la nouvelle tentative',
+            'La nouvelle tentative a échoué.',
+            'Vérifiez votre connexion et réessayez.'
+          );
+        });
+      }
+      removeError(index);
+    },
+    [removeError, handleGenericError]
+  );
 
   return {
     errors,
@@ -242,6 +270,6 @@ export const useErrorHandler = (options: UseErrorHandlerOptions = {}) => {
     handleAuthAccountLocked,
     // État
     hasErrors: errors.length > 0,
-    hasBlockingErrors: errors.some(e => e.severity === ErrorSeverity.CRITICAL || !e.recoverable)
+    hasBlockingErrors: errors.some(e => e.severity === ErrorSeverity.CRITICAL || !e.recoverable),
   };
 };

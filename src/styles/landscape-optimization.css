@@ -5,7 +5,7 @@
 /* Suggestion de rotation paysage sur mobile */
 @media (max-width: 768px) and (orientation: portrait) {
   .landscape-optimized::before {
-    content: "📱 Pour une meilleure expérience, basculez en mode paysage";
+    content: '📱 Pour une meilleure expérience, basculez en mode paysage';
     display: block;
     text-align: center;
     padding: 12px;
@@ -27,13 +27,13 @@
     margin-left: calc(-1 * var(--sidebar-width, 0px));
     padding: 8px;
   }
-  
+
   /* Tableau pleine largeur en paysage */
   .landscape-optimized table {
     width: 100%;
     font-size: 11px;
   }
-  
+
   .landscape-optimized th,
   .landscape-optimized td {
     padding: 6px 8px;
@@ -42,7 +42,8 @@
 
 /* Animation pulse pour le message */
 @keyframes pulse {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 1;
   }
   50% {

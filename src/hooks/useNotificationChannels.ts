@@ -21,15 +21,15 @@ export const useNotificationChannels = () => {
       const { data, error } = await supabase.functions.invoke('send-notifications', {
         body: {
           notificationIds,
-          type: 'send_emails'
-        }
+          type: 'send_emails',
+        },
       });
 
       if (error) throw error;
 
       toast({
         title: 'Succès',
-        description: `${data.results.filter((r: any) => r.status === 'email_sent').length} emails envoyés`
+        description: `${data.results.filter((r: any) => r.status === 'email_sent').length} emails envoyés`,
       });
 
       return data;
@@ -37,8 +37,8 @@ export const useNotificationChannels = () => {
       console.error('Error sending email notifications:', error);
       toast({
         title: 'Erreur',
-        description: 'Impossible d\'envoyer les emails de notification',
-        variant: 'destructive'
+        description: "Impossible d'envoyer les emails de notification",
+        variant: 'destructive',
       });
     } finally {
       setLoading(false);
@@ -52,15 +52,15 @@ export const useNotificationChannels = () => {
         body: {
           notificationIds,
           type: 'send_webhook',
-          webhookUrl
-        }
+          webhookUrl,
+        },
       });
 
       if (error) throw error;
 
       toast({
         title: 'Succès',
-        description: 'Notifications Slack envoyées'
+        description: 'Notifications Slack envoyées',
       });
 
       return data;
@@ -68,8 +68,8 @@ export const useNotificationChannels = () => {
       console.error('Error sending Slack notification:', error);
       toast({
         title: 'Erreur',
-        description: 'Impossible d\'envoyer les notifications Slack',
-        variant: 'destructive'
+        description: "Impossible d'envoyer les notifications Slack",
+        variant: 'destructive',
       });
     } finally {
       setLoading(false);
@@ -79,10 +79,10 @@ export const useNotificationChannels = () => {
   const sendTeamsNotification = async (notificationIds: string[], webhookUrl: string) => {
     try {
       setLoading(true);
-      
+
       // Pour Teams, on adapte le format du message
       const teamsData = await Promise.all(
-        notificationIds.map(async (id) => {
+        notificationIds.map(async id => {
           const { data: notification } = await supabase
             .from('notifications')
             .select('*')
@@ -96,29 +96,31 @@ export const useNotificationChannels = () => {
             .single();
 
           return {
-            "@type": "MessageCard",
-            "@context": "http://schema.org/extensions",
-            "themeColor": notification?.priority === 'urgent' ? "d63384" : "0078d4",
-            "summary": notification?.title,
-            "sections": [{
-              "activityTitle": notification?.title,
-              "activitySubtitle": `Pour: ${recipient?.full_name || 'Utilisateur'}`,
-              "activityImage": "https://via.placeholder.com/64/0078d4/ffffff?text=📢",
-              "facts": [
-                {
-                  "name": "Message:",
-                  "value": notification?.message
-                },
-                {
-                  "name": "Priorité:",
-                  "value": notification?.priority
-                },
-                {
-                  "name": "Type:",
-                  "value": notification?.notification_type
-                }
-              ]
-            }]
+            '@type': 'MessageCard',
+            '@context': 'http://schema.org/extensions',
+            themeColor: notification?.priority === 'urgent' ? 'd63384' : '0078d4',
+            summary: notification?.title,
+            sections: [
+              {
+                activityTitle: notification?.title,
+                activitySubtitle: `Pour: ${recipient?.full_name || 'Utilisateur'}`,
+                activityImage: 'https://via.placeholder.com/64/0078d4/ffffff?text=📢',
+                facts: [
+                  {
+                    name: 'Message:',
+                    value: notification?.message,
+                  },
+                  {
+                    name: 'Priorité:',
+                    value: notification?.priority,
+                  },
+                  {
+                    name: 'Type:',
+                    value: notification?.notification_type,
+                  },
+                ],
+              },
+            ],
           };
         })
       );
@@ -139,27 +141,30 @@ export const useNotificationChannels = () => {
 
       toast({
         title: 'Succès',
-        description: 'Notifications Teams envoyées'
+        description: 'Notifications Teams envoyées',
       });
-
     } catch (error: any) {
       console.error('Error sending Teams notification:', error);
       toast({
         title: 'Erreur',
-        description: 'Impossible d\'envoyer les notifications Teams',
-        variant: 'destructive'
+        description: "Impossible d'envoyer les notifications Teams",
+        variant: 'destructive',
       });
     } finally {
       setLoading(false);
     }
   };
 
-  const sendWebPushNotification = async (title: string, message: string, options?: NotificationOptions) => {
+  const sendWebPushNotification = async (
+    title: string,
+    message: string,
+    options?: NotificationOptions
+  ) => {
     if (!('Notification' in window)) {
       toast({
         title: 'Non supporté',
         description: 'Les notifications push ne sont pas supportées sur ce navigateur',
-        variant: 'destructive'
+        variant: 'destructive',
       });
       return;
     }
@@ -167,8 +172,9 @@ export const useNotificationChannels = () => {
     if (Notification.permission === 'denied') {
       toast({
         title: 'Permission refusée',
-        description: 'Les notifications push sont bloquées. Veuillez les autoriser dans les paramètres du navigateur.',
-        variant: 'destructive'
+        description:
+          'Les notifications push sont bloquées. Veuillez les autoriser dans les paramètres du navigateur.',
+        variant: 'destructive',
       });
       return;
     }
@@ -179,7 +185,7 @@ export const useNotificationChannels = () => {
         toast({
           title: 'Permission refusée',
           description: 'Permission de notification refusée',
-          variant: 'destructive'
+          variant: 'destructive',
         });
         return;
       }
@@ -189,7 +195,7 @@ export const useNotificationChannels = () => {
       body: message,
       icon: '/favicon.ico',
       badge: '/favicon.ico',
-      ...options
+      ...options,
     });
   };
 
@@ -200,29 +206,29 @@ export const useNotificationChannels = () => {
       name: 'Email',
       type: 'email',
       config: { enabled: true },
-      enabled: true
+      enabled: true,
     },
     {
       id: 'browser',
       name: 'Notifications navigateur',
       type: 'webhook',
       config: { type: 'browser_push' },
-      enabled: true
+      enabled: true,
     },
     {
       id: 'slack',
       name: 'Slack',
       type: 'slack',
       config: { webhookUrl: '' },
-      enabled: false
+      enabled: false,
     },
     {
       id: 'teams',
       name: 'Microsoft Teams',
       type: 'teams',
       config: { webhookUrl: '' },
-      enabled: false
-    }
+      enabled: false,
+    },
   ];
 
   useEffect(() => {
@@ -236,6 +242,6 @@ export const useNotificationChannels = () => {
     sendSlackNotification,
     sendTeamsNotification,
     sendWebPushNotification,
-    setChannels
+    setChannels,
   };
 };

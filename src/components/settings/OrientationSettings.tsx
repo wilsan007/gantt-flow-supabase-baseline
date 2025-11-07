@@ -11,16 +11,14 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Smartphone, RotateCw, Info } from 'lucide-react';
-import { useOrientationPreference, type OrientationPreference } from '@/hooks/useOrientationPreference';
+import {
+  useOrientationPreference,
+  type OrientationPreference,
+} from '@/hooks/useOrientationPreference';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
 export const OrientationSettings: React.FC = () => {
-  const { 
-    preference, 
-    setPreference, 
-    dismissedViews, 
-    resetDismissed 
-  } = useOrientationPreference();
+  const { preference, setPreference, dismissedViews, resetDismissed } = useOrientationPreference();
 
   const options: Array<{
     value: OrientationPreference;
@@ -32,7 +30,7 @@ export const OrientationSettings: React.FC = () => {
       value: 'auto',
       label: 'Automatique (Recommandé)',
       description: 'Demande la rotation paysage pour Table, Gantt et Kanban sur mobile/tablette',
-      recommended: true
+      recommended: true,
     },
     {
       value: 'always-landscape',
@@ -43,7 +41,7 @@ export const OrientationSettings: React.FC = () => {
       value: 'never-ask',
       label: 'Ne Jamais Demander',
       description: 'Désactive tous les messages de rotation (non recommandé sur mobile)',
-    }
+    },
   ];
 
   return (
@@ -57,35 +55,46 @@ export const OrientationSettings: React.FC = () => {
           Gérez comment l'application gère l'orientation sur mobile et tablette
         </CardDescription>
       </CardHeader>
-      
+
       <CardContent className="space-y-6">
         {/* Info sur l'appareil actuel */}
         <Alert>
           <Info className="h-4 w-4" />
           <AlertDescription className="text-sm">
-            <strong>Appareil détecté:</strong> {window.innerWidth < 640 ? 'Mobile' : window.innerWidth < 1024 ? 'Tablette' : 'Desktop'}
+            <strong>Appareil détecté:</strong>{' '}
+            {window.innerWidth < 640 ? 'Mobile' : window.innerWidth < 1024 ? 'Tablette' : 'Desktop'}
             <br />
-            <strong>Orientation actuelle:</strong> {window.innerWidth > window.innerHeight ? 'Paysage' : 'Portrait'}
+            <strong>Orientation actuelle:</strong>{' '}
+            {window.innerWidth > window.innerHeight ? 'Paysage' : 'Portrait'}
           </AlertDescription>
         </Alert>
 
         {/* Options de préférence */}
         <div className="space-y-3">
           <Label className="text-base font-semibold">Préférence d'orientation</Label>
-          <RadioGroup value={preference} onValueChange={(value) => setPreference(value as OrientationPreference)}>
-            {options.map((option) => (
-              <div key={option.value} className="flex items-start space-x-3 space-y-0 border rounded-lg p-4 hover:bg-accent/50 transition-colors">
+          <RadioGroup
+            value={preference}
+            onValueChange={value => setPreference(value as OrientationPreference)}
+          >
+            {options.map(option => (
+              <div
+                key={option.value}
+                className="flex items-start space-x-3 space-y-0 rounded-lg border p-4 transition-colors hover:bg-accent/50"
+              >
                 <RadioGroupItem value={option.value} id={option.value} className="mt-1" />
                 <div className="flex-1 space-y-1">
-                  <Label htmlFor={option.value} className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer flex items-center gap-2">
+                  <Label
+                    htmlFor={option.value}
+                    className="flex cursor-pointer items-center gap-2 text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                  >
                     {option.label}
                     {option.recommended && (
-                      <Badge variant="secondary" className="text-xs">Recommandé</Badge>
+                      <Badge variant="secondary" className="text-xs">
+                        Recommandé
+                      </Badge>
                     )}
                   </Label>
-                  <p className="text-xs text-muted-foreground">
-                    {option.description}
-                  </p>
+                  <p className="text-xs text-muted-foreground">{option.description}</p>
                 </div>
               </div>
             ))}
@@ -94,24 +103,20 @@ export const OrientationSettings: React.FC = () => {
 
         {/* Vues ignorées */}
         {dismissedViews.length > 0 && (
-          <div className="space-y-3 pt-4 border-t">
+          <div className="space-y-3 border-t pt-4">
             <div className="flex items-center justify-between">
               <div>
                 <Label className="text-sm font-medium">Vues avec notification désactivée</Label>
-                <p className="text-xs text-muted-foreground mt-1">
+                <p className="mt-1 text-xs text-muted-foreground">
                   Vous avez choisi de ne plus afficher la notification pour ces vues
                 </p>
               </div>
-              <Button 
-                variant="outline" 
-                size="sm"
-                onClick={resetDismissed}
-              >
+              <Button variant="outline" size="sm" onClick={resetDismissed}>
                 Réinitialiser
               </Button>
             </div>
             <div className="flex flex-wrap gap-2">
-              {dismissedViews.map((view) => (
+              {dismissedViews.map(view => (
                 <Badge key={view} variant="secondary">
                   {view}
                 </Badge>
@@ -121,14 +126,17 @@ export const OrientationSettings: React.FC = () => {
         )}
 
         {/* Info additionnelle */}
-        <div className="bg-muted/50 rounded-lg p-4 space-y-2">
+        <div className="space-y-2 rounded-lg bg-muted/50 p-4">
           <div className="flex items-start gap-2">
-            <Smartphone className="h-4 w-4 text-muted-foreground mt-0.5 flex-shrink-0" />
-            <div className="text-xs text-muted-foreground space-y-1">
-              <p><strong>Pourquoi le mode paysage ?</strong></p>
+            <Smartphone className="mt-0.5 h-4 w-4 flex-shrink-0 text-muted-foreground" />
+            <div className="space-y-1 text-xs text-muted-foreground">
               <p>
-                Les vues Table, Gantt et Kanban nécessitent beaucoup d'espace horizontal pour une visualisation optimale. 
-                Le mode paysage offre une largeur d'écran maximale sur mobile et tablette.
+                <strong>Pourquoi le mode paysage ?</strong>
+              </p>
+              <p>
+                Les vues Table, Gantt et Kanban nécessitent beaucoup d'espace horizontal pour une
+                visualisation optimale. Le mode paysage offre une largeur d'écran maximale sur
+                mobile et tablette.
               </p>
             </div>
           </div>

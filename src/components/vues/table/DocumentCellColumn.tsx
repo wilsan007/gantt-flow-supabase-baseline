@@ -1,11 +1,17 @@
-import { useState, useEffect } from "react";
-import { Plus, FileText, Eye, Download } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
-import { useTenant } from "@/contexts/TenantContext";
+import { useState, useEffect } from 'react';
+import { Plus, FileText, Eye, Download } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
+import { useTenant } from '@/contexts/TenantContext';
 
 interface Task {
   id: string;
@@ -37,14 +43,14 @@ export const DocumentCellColumn = ({ task, isSubtask }: DocumentCellProps) => {
   const loadDocuments = async () => {
     try {
       const { data, error } = await supabase
-        .from("task_documents")
-        .select("*")
-        .eq("task_id", task.id);
+        .from('task_documents')
+        .select('*')
+        .eq('task_id', task.id);
 
       if (error) throw error;
       setDocuments(data || []);
     } catch (error) {
-      console.error("Error loading documents:", error);
+      console.error('Error loading documents:', error);
     }
   };
 
@@ -59,7 +65,7 @@ export const DocumentCellColumn = ({ task, isSubtask }: DocumentCellProps) => {
 
       console.log('Uploading file:', fileName);
       const { error: uploadError } = await supabase.storage
-        .from("task-documents")
+        .from('task-documents')
         .upload(fileName, file);
 
       if (uploadError) {
@@ -68,71 +74,69 @@ export const DocumentCellColumn = ({ task, isSubtask }: DocumentCellProps) => {
       }
 
       console.log('File uploaded successfully, inserting into database...');
-      
+
       // Récupérer l'utilisateur actuel
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) {
         throw new Error('Utilisateur non authentifié');
       }
-      
+
       if (!currentTenant?.id) {
         throw new Error('Aucun tenant actif');
       }
-      
-      const { error: dbError } = await supabase
-        .from("task_documents")
-        .insert({
-          task_id: task.id,
-          project_id: task.project_id,
-          file_name: file.name,
-          file_path: fileName,
-          file_size: file.size,
-          mime_type: file.type,
-          tenant_id: currentTenant.id,
-          uploader_id: user.id,
-        });
+
+      const { error: dbError } = await supabase.from('task_documents').insert({
+        task_id: task.id,
+        project_id: task.project_id,
+        file_name: file.name,
+        file_path: fileName,
+        file_size: file.size,
+        mime_type: file.type,
+        tenant_id: currentTenant.id,
+        uploader_id: user.id,
+      });
 
       if (dbError) throw dbError;
 
       toast({
-        title: "Succès",
-        description: "Document uploadé",
+        title: 'Succès',
+        description: 'Document uploadé',
       });
 
       loadDocuments();
     } catch (error) {
-      console.error("Error uploading file:", error);
+      console.error('Error uploading file:', error);
       toast({
-        title: "Erreur",
+        title: 'Erreur',
         description: "Échec de l'upload",
-        variant: "destructive",
+        variant: 'destructive',
       });
     } finally {
       setUploading(false);
-      event.target.value = "";
+      event.target.value = '';
     }
   };
 
   const downloadDocument = async (doc: TaskDocument) => {
     try {
-      const { data, error } = await supabase.storage
-        .from("task-documents")
-        .download(doc.file_path);
+      const { data, error } = await supabase.storage.from('task-documents').download(doc.file_path);
 
       if (error) throw error;
 
       const url = URL.createObjectURL(data);
-      const a = document.createElement("a");
+      const a = document.createElement('a');
       a.href = url;
       a.download = doc.file_name;
       a.click();
       URL.revokeObjectURL(url);
     } catch (error) {
-      console.error("Error downloading file:", error);
+      console.error('Error downloading file:', error);
       toast({
-        title: "Erreur",
-        description: "Échec du téléchargement",
-        variant: "destructive",
+        title: 'Erreur',
+        description: 'Échec du téléchargement',
+        variant: 'destructive',
       });
     }
   };
@@ -170,7 +174,7 @@ export const DocumentCellColumn = ({ task, isSubtask }: DocumentCellProps) => {
               size="sm"
               className={`${isSubtask ? 'h-6 px-1 text-xs' : 'h-8 px-2 text-sm'}`}
             >
-              <FileText className={`${isSubtask ? 'h-3 w-3 mr-1' : 'h-4 w-4 mr-1'}`} />
+              <FileText className={`${isSubtask ? 'mr-1 h-3 w-3' : 'mr-1 h-4 w-4'}`} />
               {documents.length}
             </Button>
           </DialogTrigger>
@@ -179,10 +183,13 @@ export const DocumentCellColumn = ({ task, isSubtask }: DocumentCellProps) => {
               <DialogTitle>Documents - {task.title}</DialogTitle>
             </DialogHeader>
             <div className="space-y-3">
-              {documents.map((doc) => (
-                <div key={doc.id} className="flex items-center justify-between p-2 bg-muted/50 rounded">
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium truncate">{doc.file_name}</p>
+              {documents.map(doc => (
+                <div
+                  key={doc.id}
+                  className="flex items-center justify-between rounded bg-muted/50 p-2"
+                >
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-medium">{doc.file_name}</p>
                     <p className="text-xs text-muted-foreground">
                       {new Date(doc.created_at).toLocaleDateString()}
                     </p>

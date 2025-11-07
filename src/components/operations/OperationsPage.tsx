@@ -1,7 +1,7 @@
 /**
  * Page: Operations (Activités Opérationnelles)
  * Pattern: Linear/Monday.com Dashboard
- * 
+ *
  * Gestion des activités récurrentes et ponctuelles hors projet
  */
 
@@ -33,7 +33,9 @@ export const OperationsPage: React.FC = () => {
   const [filterKind, setFilterKind] = useState<'all' | 'recurring' | 'one_off'>('all');
   const [filterStatus, setFilterStatus] = useState<'all' | 'active' | 'inactive'>('all');
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
-  const [createActivityKind, setCreateActivityKind] = useState<'recurring' | 'one_off'>('recurring');
+  const [createActivityKind, setCreateActivityKind] = useState<'recurring' | 'one_off'>(
+    'recurring'
+  );
 
   // Hook pour charger les activités
   const {
@@ -56,7 +58,7 @@ export const OperationsPage: React.FC = () => {
   });
 
   // Filtrer les activités
-  const filteredActivities = activities.filter((activity) => {
+  const filteredActivities = activities.filter(activity => {
     const matchesKind = filterKind === 'all' || activity.kind === filterKind;
     const matchesStatus =
       filterStatus === 'all' ||
@@ -80,28 +82,28 @@ export const OperationsPage: React.FC = () => {
   const { upsertSchedule } = useOperationalSchedules();
 
   const handleSaveActivity = async (formData: any) => {
-    const loadingToast = toast.loading('Création de l\'activité en cours...');
-    
+    const loadingToast = toast.loading("Création de l'activité en cours...");
+
     try {
       console.log('📝 Données du formulaire:', formData);
-      
+
       // 1. Extraire les action_templates et schedule
       const { action_templates, schedule, ...activityData } = formData;
 
       // 2. Valider les données requises
       if (!activityData.name?.trim()) {
-        throw new Error('Le nom de l\'activité est requis');
+        throw new Error("Le nom de l'activité est requis");
       }
 
       console.log('📤 Envoi données activité:', activityData);
 
       // 3. Créer l'activité
       const newActivity = await createActivity(activityData);
-      
+
       console.log('✅ Activité créée:', newActivity);
-      
+
       if (!newActivity) {
-        throw new Error('Échec de la création de l\'activité - Aucune donnée retournée');
+        throw new Error("Échec de la création de l'activité - Aucune donnée retournée");
       }
 
       // 3. Créer la planification si récurrent
@@ -131,20 +133,19 @@ export const OperationsPage: React.FC = () => {
         description: `"${newActivity.name}" est maintenant active`,
         duration: 4000,
       });
-      
+
       setIsCreateDialogOpen(false);
       await refresh();
-      
     } catch (error: any) {
       console.error('❌ Erreur création activité:', error);
-      
+
       // Messages d'erreur contextuels
-      let errorMessage = 'Impossible de créer l\'activité';
-      let errorDescription = error?.message || 'Une erreur inattendue s\'est produite';
+      let errorMessage = "Impossible de créer l'activité";
+      let errorDescription = error?.message || "Une erreur inattendue s'est produite";
 
       if (error?.code === '42501') {
         errorMessage = 'Permission refusée';
-        errorDescription = error?.message?.includes('created_by') 
+        errorDescription = error?.message?.includes('created_by')
           ? 'Utilisateur non authentifié. Veuillez vous reconnecter.'
           : 'Erreur de sécurité RLS. Vérifiez que vous êtes connecté à un tenant actif.';
       } else if (error?.code === 'PGRST204') {
@@ -155,7 +156,7 @@ export const OperationsPage: React.FC = () => {
         errorDescription = 'Une activité avec ce nom existe déjà';
       } else if (error?.message?.includes('permission')) {
         errorMessage = 'Permission refusée';
-        errorDescription = 'Vous n\'avez pas les droits pour créer cette activité';
+        errorDescription = "Vous n'avez pas les droits pour créer cette activité";
       } else if (error?.message?.includes('tenant')) {
         errorMessage = 'Tenant manquant';
         errorDescription = 'Aucun tenant actif détecté. Reconnectez-vous.';
@@ -178,10 +179,10 @@ export const OperationsPage: React.FC = () => {
   return (
     <div className="container mx-auto px-4 py-6">
       {/* Header avec métriques */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="mb-6 flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Activités Opérationnelles</h1>
-          <p className="text-muted-foreground mt-1">
+          <p className="mt-1 text-muted-foreground">
             Gérez vos tâches récurrentes et ponctuelles hors projet
           </p>
         </div>
@@ -199,14 +200,14 @@ export const OperationsPage: React.FC = () => {
       </div>
 
       {/* Métriques */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+      <div className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Activités</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{metrics.totalCount}</div>
-            <p className="text-xs text-muted-foreground mt-1">
+            <p className="mt-1 text-xs text-muted-foreground">
               {metrics.cacheHit ? '⚡ Cache' : `${metrics.fetchTime}ms`}
             </p>
           </CardContent>
@@ -218,7 +219,7 @@ export const OperationsPage: React.FC = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-green-600">{metrics.activeCount}</div>
-            <p className="text-xs text-muted-foreground mt-1">En génération</p>
+            <p className="mt-1 text-xs text-muted-foreground">En génération</p>
           </CardContent>
         </Card>
 
@@ -228,7 +229,7 @@ export const OperationsPage: React.FC = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-blue-600">{metrics.recurringCount}</div>
-            <p className="text-xs text-muted-foreground mt-1">Automatiques</p>
+            <p className="mt-1 text-xs text-muted-foreground">Automatiques</p>
           </CardContent>
         </Card>
 
@@ -238,7 +239,7 @@ export const OperationsPage: React.FC = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-purple-600">{metrics.oneOffCount}</div>
-            <p className="text-xs text-muted-foreground mt-1">Manuelles</p>
+            <p className="mt-1 text-xs text-muted-foreground">Manuelles</p>
           </CardContent>
         </Card>
       </div>
@@ -246,14 +247,14 @@ export const OperationsPage: React.FC = () => {
       {/* Filtres */}
       <Card className="mb-6">
         <CardContent className="pt-6">
-          <div className="flex flex-col md:flex-row gap-4">
+          <div className="flex flex-col gap-4 md:flex-row">
             {/* Recherche */}
-            <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transform text-muted-foreground" />
               <Input
                 placeholder="Rechercher une activité..."
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                onChange={e => setSearchTerm(e.target.value)}
                 className="pl-10"
               />
             </div>
@@ -291,8 +292,8 @@ export const OperationsPage: React.FC = () => {
 
       {/* Liste des activités */}
       {loading && activities.length === 0 ? (
-        <div className="text-center py-12">
-          <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
+        <div className="py-12 text-center">
+          <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
           <p className="text-muted-foreground">Chargement des activités...</p>
         </div>
       ) : error ? (
@@ -300,7 +301,7 @@ export const OperationsPage: React.FC = () => {
           <CardContent className="pt-6">
             <div className="text-center text-destructive">
               <p className="font-semibold">Erreur lors du chargement</p>
-              <p className="text-sm mt-2">{error}</p>
+              <p className="mt-2 text-sm">{error}</p>
               <Button onClick={() => refresh()} className="mt-4">
                 Réessayer
               </Button>
@@ -310,16 +311,14 @@ export const OperationsPage: React.FC = () => {
       ) : filteredActivities.length === 0 ? (
         <Card>
           <CardContent className="pt-6">
-            <div className="text-center py-12">
-              <CalendarClock className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+            <div className="py-12 text-center">
+              <CalendarClock className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
               <p className="text-lg font-semibold">Aucune activité trouvée</p>
-              <p className="text-sm text-muted-foreground mt-2">
+              <p className="mt-2 text-sm text-muted-foreground">
                 Créez votre première activité récurrente ou ponctuelle
               </p>
-              <div className="flex gap-2 justify-center mt-6">
-                <Button onClick={() => handleCreateClick('recurring')}>
-                  Créer une récurrente
-                </Button>
+              <div className="mt-6 flex justify-center gap-2">
+                <Button onClick={() => handleCreateClick('recurring')}>Créer une récurrente</Button>
                 <Button onClick={() => handleCreateClick('one_off')} variant="outline">
                   Créer une ponctuelle
                 </Button>
@@ -328,8 +327,8 @@ export const OperationsPage: React.FC = () => {
           </CardContent>
         </Card>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filteredActivities.map((activity) => (
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {filteredActivities.map(activity => (
             <ActivityCard
               key={activity.id}
               activity={activity}

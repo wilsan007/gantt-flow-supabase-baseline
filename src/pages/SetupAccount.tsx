@@ -6,51 +6,53 @@ import { useMultiplePlaceholderHandler } from '@/hooks/usePlaceholderHandler';
 const SetupAccount: React.FC = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  
+
   // Paramètres URL
   const tenantId = searchParams.get('tenant_id');
   const email = searchParams.get('email');
-  
+
   // États du formulaire
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [companyName, setCompanyName] = useState('');
-  
+
   // Gestion des placeholders
   const { handleFocus, getPlaceholder } = useMultiplePlaceholderHandler({
     currentPassword: 'Votre mot de passe temporaire',
     newPassword: 'Minimum 8 caractères',
     confirmPassword: 'Répétez le nouveau mot de passe',
-    companyName: 'Entrez le nom de votre entreprise'
+    companyName: 'Entrez le nom de votre entreprise',
   });
-  
+
   // États UI
   const [loading, setLoading] = useState(false);
   const [passwordError, setPasswordError] = useState('');
   const [companyError, setCompanyError] = useState('');
   const [success, setSuccess] = useState('');
   const [userInfo, setUserInfo] = useState<any>(null);
-  
+
   // Récupération des informations utilisateur et pré-remplissage
   useEffect(() => {
     const loadUserInfo = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
       if (!session) {
         console.log('❌ Aucune session, redirection connexion...');
         navigate('/tenant-login');
         return;
       }
-      
+
       console.log('✅ Session trouvée pour:', session.user.email);
-      
+
       // Récupérer les métadonnées utilisateur pour le mot de passe temporaire
       const tempPassword = session.user.user_metadata?.temp_password;
       if (tempPassword) {
         setCurrentPassword(tempPassword);
         console.log('🔑 Mot de passe temporaire pré-rempli');
       }
-      
+
       // Récupérer les informations du tenant
       if (tenantId) {
         const { data: tenant } = await supabase
@@ -58,42 +60,42 @@ const SetupAccount: React.FC = () => {
           .select('name')
           .eq('id', tenantId)
           .single();
-        
+
         if (tenant) {
           console.log('🏢 Nom entreprise actuel:', tenant.name);
           // Ne pas pré-remplir le nom d'entreprise selon la demande
         }
       }
-      
+
       setUserInfo(session.user);
     };
-    
+
     loadUserInfo();
   }, [navigate, tenantId]);
 
   const handlePasswordChange = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (newPassword !== confirmPassword) {
       setPasswordError('Les mots de passe ne correspondent pas');
       return;
     }
-    
+
     if (newPassword.length < 8) {
       setPasswordError('Le mot de passe doit contenir au moins 8 caractères');
       return;
     }
-    
+
     setLoading(true);
     setPasswordError('');
-    
+
     try {
       console.log('🔄 Changement mot de passe...');
-      
+
       const { error } = await supabase.auth.updateUser({
-        password: newPassword
+        password: newPassword,
       });
-      
+
       if (error) {
         console.error('❌ Erreur changement mot de passe:', error);
         setPasswordError(error.message);
@@ -114,35 +116,35 @@ const SetupAccount: React.FC = () => {
 
   const handleCompanyNameChange = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!companyName.trim()) {
-      setCompanyError('Le nom de l\'entreprise est requis');
+      setCompanyError("Le nom de l'entreprise est requis");
       return;
     }
-    
+
     if (!tenantId) {
       setCompanyError('ID tenant manquant');
       return;
     }
-    
+
     setLoading(true);
     setCompanyError('');
-    
+
     try {
       console.log('🔄 Mise à jour nom entreprise...');
-      
+
       const { error } = await supabase
         .from('tenants')
         .update({ name: companyName.trim() })
         .eq('id', tenantId);
-      
+
       if (error) {
         console.error('❌ Erreur mise à jour entreprise:', error);
         setCompanyError(error.message);
       } else {
         console.log('✅ Nom entreprise mis à jour avec succès');
-        setSuccess('Nom de l\'entreprise mis à jour avec succès !');
-        
+        setSuccess("Nom de l'entreprise mis à jour avec succès !");
+
         // Redirection vers le dashboard après 2 secondes
         setTimeout(() => {
           navigate('/dashboard');
@@ -162,33 +164,28 @@ const SetupAccount: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+    <div className="flex min-h-screen flex-col justify-center bg-gray-50 py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <div className="text-center">
-          <h2 className="mt-6 text-3xl font-extrabold text-gray-900">
-            🎉 Bienvenue !
-          </h2>
-          <p className="mt-2 text-sm text-gray-600">
-            Configurez votre compte pour commencer
-          </p>
-          {email && (
-            <p className="mt-1 text-xs text-gray-500">
-              Connecté en tant que : {email}
-            </p>
-          )}
+          <h2 className="mt-6 text-3xl font-extrabold text-gray-900">🎉 Bienvenue !</h2>
+          <p className="mt-2 text-sm text-gray-600">Configurez votre compte pour commencer</p>
+          {email && <p className="mt-1 text-xs text-gray-500">Connecté en tant que : {email}</p>}
         </div>
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10 space-y-8">
-          
+        <div className="space-y-8 bg-white px-4 py-8 shadow sm:rounded-lg sm:px-10">
           {/* Messages de succès */}
           {success && (
-            <div className="bg-green-50 border border-green-200 rounded-md p-4">
+            <div className="rounded-md border border-green-200 bg-green-50 p-4">
               <div className="flex">
                 <div className="flex-shrink-0">
                   <svg className="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                    <path
+                      fillRule="evenodd"
+                      d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                      clipRule="evenodd"
+                    />
                   </svg>
                 </div>
                 <div className="ml-3">
@@ -200,13 +197,16 @@ const SetupAccount: React.FC = () => {
 
           {/* Formulaire changement mot de passe */}
           <div>
-            <h3 className="text-lg font-medium text-gray-900 mb-4">
+            <h3 className="mb-4 text-lg font-medium text-gray-900">
               🔐 Changer votre mot de passe
             </h3>
-            
+
             <form onSubmit={handlePasswordChange} className="space-y-4">
               <div>
-                <label htmlFor="current-password" className="block text-sm font-medium text-gray-700">
+                <label
+                  htmlFor="current-password"
+                  className="block text-sm font-medium text-gray-700"
+                >
                   Mot de passe actuel
                 </label>
                 <input
@@ -214,9 +214,9 @@ const SetupAccount: React.FC = () => {
                   name="current-password"
                   type="password"
                   value={currentPassword}
-                  onChange={(e) => setCurrentPassword(e.target.value)}
+                  onChange={e => setCurrentPassword(e.target.value)}
                   onFocus={() => handleFocus('currentPassword')}
-                  className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                  className="relative mt-1 block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
                   placeholder={getPlaceholder('currentPassword', currentPassword)}
                   required
                 />
@@ -236,16 +236,19 @@ const SetupAccount: React.FC = () => {
                   name="new-password"
                   type="password"
                   value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
+                  onChange={e => setNewPassword(e.target.value)}
                   onFocus={() => handleFocus('newPassword')}
-                  className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                  className="relative mt-1 block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
                   placeholder={getPlaceholder('newPassword', newPassword)}
                   required
                 />
               </div>
 
               <div>
-                <label htmlFor="confirm-password" className="block text-sm font-medium text-gray-700">
+                <label
+                  htmlFor="confirm-password"
+                  className="block text-sm font-medium text-gray-700"
+                >
                   Confirmer le nouveau mot de passe
                 </label>
                 <input
@@ -253,22 +256,20 @@ const SetupAccount: React.FC = () => {
                   name="confirm-password"
                   type="password"
                   value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  onChange={e => setConfirmPassword(e.target.value)}
                   onFocus={() => handleFocus('confirmPassword')}
-                  className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                  className="relative mt-1 block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
                   placeholder={getPlaceholder('confirmPassword', confirmPassword)}
                   required
                 />
               </div>
 
-              {passwordError && (
-                <div className="text-red-600 text-sm">{passwordError}</div>
-              )}
+              {passwordError && <div className="text-sm text-red-600">{passwordError}</div>}
 
               <button
                 type="submit"
                 disabled={loading}
-                className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
+                className="group relative flex w-full justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50"
               >
                 {loading ? 'Mise à jour...' : 'Changer le mot de passe'}
               </button>
@@ -281,16 +282,14 @@ const SetupAccount: React.FC = () => {
               <div className="w-full border-t border-gray-300" />
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-white text-gray-500">ET</span>
+              <span className="bg-white px-2 text-gray-500">ET</span>
             </div>
           </div>
 
           {/* Formulaire nom entreprise */}
           <div>
-            <h3 className="text-lg font-medium text-gray-900 mb-4">
-              🏢 Nom de votre entreprise
-            </h3>
-            
+            <h3 className="mb-4 text-lg font-medium text-gray-900">🏢 Nom de votre entreprise</h3>
+
             <form onSubmit={handleCompanyNameChange} className="space-y-4">
               <div>
                 <label htmlFor="company-name" className="block text-sm font-medium text-gray-700">
@@ -301,22 +300,20 @@ const SetupAccount: React.FC = () => {
                   name="company-name"
                   type="text"
                   value={companyName}
-                  onChange={(e) => setCompanyName(e.target.value)}
+                  onChange={e => setCompanyName(e.target.value)}
                   onFocus={() => handleFocus('companyName')}
-                  className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                  className="relative mt-1 block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
                   placeholder={getPlaceholder('companyName', companyName)}
                   required
                 />
               </div>
 
-              {companyError && (
-                <div className="text-red-600 text-sm">{companyError}</div>
-              )}
+              {companyError && <div className="text-sm text-red-600">{companyError}</div>}
 
               <button
                 type="submit"
                 disabled={loading}
-                className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50"
+                className="group relative flex w-full justify-center rounded-md border border-transparent bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:opacity-50"
               >
                 {loading ? 'Mise à jour...' : 'Mettre à jour le nom'}
               </button>
@@ -327,7 +324,7 @@ const SetupAccount: React.FC = () => {
           <div className="text-center">
             <button
               onClick={handleSkipToLater}
-              className="text-sm text-gray-500 hover:text-gray-700 underline"
+              className="text-sm text-gray-500 underline hover:text-gray-700"
             >
               ⏭️ Reporter la configuration et accéder au dashboard
             </button>

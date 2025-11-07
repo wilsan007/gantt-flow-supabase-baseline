@@ -1,13 +1,13 @@
 /**
  * 🎯 Système de Filtrage Centralisé par Rôle - Option 3 (Hybride)
- * 
+ *
  * Une seule source de vérité pour tous les filtres basés sur les rôles
  * Pattern: Stripe/Salesforce/Linear
  */
 
 import { PostgrestFilterBuilder } from '@supabase/postgrest-js';
 
-export type RoleName = 
+export type RoleName =
   | 'super_admin'
   | 'tenant_admin'
   | 'hr_manager'
@@ -27,14 +27,54 @@ export interface UserContext {
 
 /**
  * 🔒 APPLICATION CENTRALISÉE DES FILTRES PAR RÔLE
- * 
+ *
  * Cette fonction unique gère TOUS les filtres pour TOUS les rôles
  * Utilisée par TOUS les hooks (tasks, projects, employees, etc.)
  */
 export function applyRoleFilters<T>(
   query: any,
   context: UserContext,
-  resource: 'tasks' | 'projects' | 'employees' | 'leave_requests' | 'skills' | 'trainings' | 'training_enrollments' | 'development_plans' | 'expense_reports' | 'absence_justifications' | 'administrative_requests' | 'timesheets' | 'remote_work_requests' | 'attendances' | 'absence_types' | 'work_locations' | 'employee_skills' | 'skill_certifications' | 'operational_activities' | 'operational_schedules' | 'operational_action_templates' | 'operational_instances' | 'operational_actions' | 'alert_types' | 'alert_solutions' | 'alert_instances' | 'alert_instance_recommendations' | 'skill_assessments' | 'onboarding_processes' | 'offboarding_processes' | 'onboarding_tasks' | 'offboarding_tasks' | 'expense_items' | 'expense_categories' | 'health_safety_incidents' | 'payroll_runs' | 'payroll_items' | 'performance_reviews' | 'performance_goals' | 'notifications'
+  resource:
+    | 'tasks'
+    | 'projects'
+    | 'employees'
+    | 'leave_requests'
+    | 'skills'
+    | 'trainings'
+    | 'training_enrollments'
+    | 'development_plans'
+    | 'expense_reports'
+    | 'absence_justifications'
+    | 'administrative_requests'
+    | 'timesheets'
+    | 'remote_work_requests'
+    | 'attendances'
+    | 'absence_types'
+    | 'work_locations'
+    | 'employee_skills'
+    | 'skill_certifications'
+    | 'operational_activities'
+    | 'operational_schedules'
+    | 'operational_action_templates'
+    | 'operational_instances'
+    | 'operational_actions'
+    | 'alert_types'
+    | 'alert_solutions'
+    | 'alert_instances'
+    | 'alert_instance_recommendations'
+    | 'skill_assessments'
+    | 'onboarding_processes'
+    | 'offboarding_processes'
+    | 'onboarding_tasks'
+    | 'offboarding_tasks'
+    | 'expense_items'
+    | 'expense_categories'
+    | 'health_safety_incidents'
+    | 'payroll_runs'
+    | 'payroll_items'
+    | 'performance_reviews'
+    | 'performance_goals'
+    | 'notifications'
 ): any {
   const { userId, role, tenantId, projectIds = [] } = context;
 
@@ -63,37 +103,77 @@ export function applyRoleFilters<T>(
 function applyResourceSpecificFilters(
   query: any,
   context: UserContext,
-  resource: 'tasks' | 'projects' | 'employees' | 'leave_requests' | 'skills' | 'trainings' | 'training_enrollments' | 'development_plans' | 'expense_reports' | 'absence_justifications' | 'administrative_requests' | 'timesheets' | 'remote_work_requests' | 'attendances' | 'absence_types' | 'work_locations' | 'employee_skills' | 'skill_certifications' | 'operational_activities' | 'operational_schedules' | 'operational_action_templates' | 'operational_instances' | 'operational_actions' | 'alert_types' | 'alert_solutions' | 'alert_instances' | 'alert_instance_recommendations' | 'skill_assessments' | 'onboarding_processes' | 'offboarding_processes' | 'onboarding_tasks' | 'offboarding_tasks' | 'expense_items' | 'expense_categories' | 'health_safety_incidents' | 'payroll_runs' | 'payroll_items' | 'performance_reviews' | 'performance_goals' | 'notifications'
+  resource:
+    | 'tasks'
+    | 'projects'
+    | 'employees'
+    | 'leave_requests'
+    | 'skills'
+    | 'trainings'
+    | 'training_enrollments'
+    | 'development_plans'
+    | 'expense_reports'
+    | 'absence_justifications'
+    | 'administrative_requests'
+    | 'timesheets'
+    | 'remote_work_requests'
+    | 'attendances'
+    | 'absence_types'
+    | 'work_locations'
+    | 'employee_skills'
+    | 'skill_certifications'
+    | 'operational_activities'
+    | 'operational_schedules'
+    | 'operational_action_templates'
+    | 'operational_instances'
+    | 'operational_actions'
+    | 'alert_types'
+    | 'alert_solutions'
+    | 'alert_instances'
+    | 'alert_instance_recommendations'
+    | 'skill_assessments'
+    | 'onboarding_processes'
+    | 'offboarding_processes'
+    | 'onboarding_tasks'
+    | 'offboarding_tasks'
+    | 'expense_items'
+    | 'expense_categories'
+    | 'health_safety_incidents'
+    | 'payroll_runs'
+    | 'payroll_items'
+    | 'performance_reviews'
+    | 'performance_goals'
+    | 'notifications'
 ): any {
   const { userId, role, projectIds = [] } = context;
 
   // === TÂCHES ===
   if (resource === 'tasks') {
     const taskFilters: Record<RoleName, () => any> = {
-      'super_admin': () => query,
-      'tenant_admin': () => query,
-      'hr_manager': () => query,
-      
-      'project_manager': () => {
+      super_admin: () => query,
+      tenant_admin: () => query,
+      hr_manager: () => query,
+
+      project_manager: () => {
         // Tâches des projets qu'il gère OU assignées à lui
         if (projectIds.length > 0) {
           return query.or(`assignee_id.eq.${userId},project_id.in.(${projectIds.join(',')})`);
         }
         return query.eq('assignee_id', userId);
       },
-      
-      'team_lead': () => {
+
+      team_lead: () => {
         // Tâches des projets assignés
         if (projectIds.length > 0) {
           return query.in('project_id', projectIds);
         }
         return query.eq('assignee_id', userId);
       },
-      
-      'employee': () => query.eq('assignee_id', userId),
-      'contractor': () => query.eq('assignee_id', userId),
-      'intern': () => query.eq('assignee_id', userId),
-      'viewer': () => query.eq('assignee_id', userId),
+
+      employee: () => query.eq('assignee_id', userId),
+      contractor: () => query.eq('assignee_id', userId),
+      intern: () => query.eq('assignee_id', userId),
+      viewer: () => query.eq('assignee_id', userId),
     };
 
     return taskFilters[role]?.() || query.eq('assignee_id', userId);
@@ -102,42 +182,42 @@ function applyResourceSpecificFilters(
   // === PROJETS ===
   if (resource === 'projects') {
     const projectFilters: Record<RoleName, () => any> = {
-      'super_admin': () => query,
-      'tenant_admin': () => query,
-      'hr_manager': () => query,
-      'project_manager': () => query, // Voit tous les projets du tenant
-      
-      'team_lead': () => {
+      super_admin: () => query,
+      tenant_admin: () => query,
+      hr_manager: () => query,
+      project_manager: () => query, // Voit tous les projets du tenant
+
+      team_lead: () => {
         // Uniquement projets assignés
         if (projectIds.length > 0) {
           return query.in('id', projectIds);
         }
         return query.eq('id', '00000000-0000-0000-0000-000000000000'); // Aucun
       },
-      
-      'employee': () => {
+
+      employee: () => {
         // Uniquement projets dont il est membre
         if (projectIds.length > 0) {
           return query.in('id', projectIds);
         }
         return query.eq('id', '00000000-0000-0000-0000-000000000000');
       },
-      
-      'contractor': () => {
+
+      contractor: () => {
         if (projectIds.length > 0) {
           return query.in('id', projectIds);
         }
         return query.eq('id', '00000000-0000-0000-0000-000000000000');
       },
-      
-      'intern': () => {
+
+      intern: () => {
         if (projectIds.length > 0) {
           return query.in('id', projectIds);
         }
         return query.eq('id', '00000000-0000-0000-0000-000000000000');
       },
-      
-      'viewer': () => {
+
+      viewer: () => {
         if (projectIds.length > 0) {
           return query.in('id', projectIds);
         }
@@ -151,26 +231,26 @@ function applyResourceSpecificFilters(
   // === EMPLOYÉS / RH ===
   if (resource === 'employees' || resource === 'leave_requests') {
     const hrFilters: Record<RoleName, () => any> = {
-      'super_admin': () => query,
-      'tenant_admin': () => query,
-      'hr_manager': () => query,
-      
+      super_admin: () => query,
+      tenant_admin: () => query,
+      hr_manager: () => query,
+
       // Autres rôles : pas d'accès (sauf leurs propres congés)
-      'project_manager': () => {
+      project_manager: () => {
         if (resource === 'leave_requests') {
           return query.eq('employee_id', userId); // Ses propres congés
         }
         return query.eq('id', '00000000-0000-0000-0000-000000000000');
       },
-      
-      'team_lead': () => {
+
+      team_lead: () => {
         if (resource === 'leave_requests') {
           return query.eq('employee_id', userId);
         }
         return query.eq('id', '00000000-0000-0000-0000-000000000000');
       },
-      
-      'employee': () => {
+
+      employee: () => {
         // Employee peut voir :
         // - Ses demandes de congés (leave_requests)
         // - Son propre profil RH complet (employees)
@@ -179,10 +259,10 @@ function applyResourceSpecificFilters(
         }
         return query.eq('user_id', userId); // Son propre profil (adresse, infos perso, absences, etc.)
       },
-      
-      'contractor': () => query.eq('id', '00000000-0000-0000-0000-000000000000'),
-      'intern': () => query.eq('id', '00000000-0000-0000-0000-000000000000'),
-      'viewer': () => query.eq('id', '00000000-0000-0000-0000-000000000000'),
+
+      contractor: () => query.eq('id', '00000000-0000-0000-0000-000000000000'),
+      intern: () => query.eq('id', '00000000-0000-0000-0000-000000000000'),
+      viewer: () => query.eq('id', '00000000-0000-0000-0000-000000000000'),
     };
 
     return hrFilters[role]?.() || query.eq('id', '00000000-0000-0000-0000-000000000000');
@@ -204,19 +284,25 @@ function applyResourceSpecificFilters(
   // === INSCRIPTIONS FORMATIONS (TRAINING_ENROLLMENTS) ===
   if (resource === 'training_enrollments') {
     const enrollmentFilters: Record<RoleName, () => any> = {
-      'super_admin': () => query,
-      'tenant_admin': () => query,
-      'hr_manager': () => query,
-      
+      super_admin: () => query,
+      tenant_admin: () => query,
+      hr_manager: () => query,
+
       // Managers peuvent voir inscriptions de leur équipe
-      'project_manager': () => query.or(`employee_id.eq.${userId},employee_id.in.(SELECT id FROM employees WHERE manager_id='${userId}')`),
-      'team_lead': () => query.or(`employee_id.eq.${userId},employee_id.in.(SELECT id FROM employees WHERE manager_id='${userId}')`),
-      
+      project_manager: () =>
+        query.or(
+          `employee_id.eq.${userId},employee_id.in.(SELECT id FROM employees WHERE manager_id='${userId}')`
+        ),
+      team_lead: () =>
+        query.or(
+          `employee_id.eq.${userId},employee_id.in.(SELECT id FROM employees WHERE manager_id='${userId}')`
+        ),
+
       // Employés voient uniquement leurs inscriptions
-      'employee': () => query.eq('employee_id', userId),
-      'contractor': () => query.eq('employee_id', userId),
-      'intern': () => query.eq('employee_id', userId),
-      'viewer': () => query.eq('employee_id', userId),
+      employee: () => query.eq('employee_id', userId),
+      contractor: () => query.eq('employee_id', userId),
+      intern: () => query.eq('employee_id', userId),
+      viewer: () => query.eq('employee_id', userId),
     };
 
     return enrollmentFilters[role]?.() || query.eq('employee_id', userId);
@@ -225,19 +311,19 @@ function applyResourceSpecificFilters(
   // === PLANS DE DÉVELOPPEMENT (DEVELOPMENT_PLANS) ===
   if (resource === 'development_plans') {
     const planFilters: Record<RoleName, () => any> = {
-      'super_admin': () => query,
-      'tenant_admin': () => query,
-      'hr_manager': () => query,
-      
+      super_admin: () => query,
+      tenant_admin: () => query,
+      hr_manager: () => query,
+
       // Managers peuvent voir plans de leur équipe + ceux qu'ils ont créés
-      'project_manager': () => query.or(`employee_id.eq.${userId},created_by.eq.${userId}`),
-      'team_lead': () => query.or(`employee_id.eq.${userId},created_by.eq.${userId}`),
-      
+      project_manager: () => query.or(`employee_id.eq.${userId},created_by.eq.${userId}`),
+      team_lead: () => query.or(`employee_id.eq.${userId},created_by.eq.${userId}`),
+
       // Employés voient uniquement leur plan
-      'employee': () => query.eq('employee_id', userId),
-      'contractor': () => query.eq('employee_id', userId),
-      'intern': () => query.eq('employee_id', userId),
-      'viewer': () => query.eq('employee_id', userId),
+      employee: () => query.eq('employee_id', userId),
+      contractor: () => query.eq('employee_id', userId),
+      intern: () => query.eq('employee_id', userId),
+      viewer: () => query.eq('employee_id', userId),
     };
 
     return planFilters[role]?.() || query.eq('employee_id', userId);
@@ -246,19 +332,25 @@ function applyResourceSpecificFilters(
   // === NOTES DE FRAIS (EXPENSE_REPORTS) ===
   if (resource === 'expense_reports') {
     const expenseFilters: Record<RoleName, () => any> = {
-      'super_admin': () => query,
-      'tenant_admin': () => query,
-      'hr_manager': () => query,
-      
+      super_admin: () => query,
+      tenant_admin: () => query,
+      hr_manager: () => query,
+
       // Managers peuvent voir/approuver frais de leur équipe
-      'project_manager': () => query.or(`employee_id.eq.${userId},employee_id.in.(SELECT id FROM employees WHERE manager_id='${userId}')`),
-      'team_lead': () => query.or(`employee_id.eq.${userId},employee_id.in.(SELECT id FROM employees WHERE manager_id='${userId}')`),
-      
+      project_manager: () =>
+        query.or(
+          `employee_id.eq.${userId},employee_id.in.(SELECT id FROM employees WHERE manager_id='${userId}')`
+        ),
+      team_lead: () =>
+        query.or(
+          `employee_id.eq.${userId},employee_id.in.(SELECT id FROM employees WHERE manager_id='${userId}')`
+        ),
+
       // Employés voient uniquement leurs frais
-      'employee': () => query.eq('employee_id', userId),
-      'contractor': () => query.eq('employee_id', userId),
-      'intern': () => query.eq('employee_id', userId),
-      'viewer': () => query.eq('employee_id', userId),
+      employee: () => query.eq('employee_id', userId),
+      contractor: () => query.eq('employee_id', userId),
+      intern: () => query.eq('employee_id', userId),
+      viewer: () => query.eq('employee_id', userId),
     };
 
     return expenseFilters[role]?.() || query.eq('employee_id', userId);
@@ -267,19 +359,25 @@ function applyResourceSpecificFilters(
   // === JUSTIFICATIFS D'ABSENCE (ABSENCE_JUSTIFICATIONS) ===
   if (resource === 'absence_justifications') {
     const justificationFilters: Record<RoleName, () => any> = {
-      'super_admin': () => query,
-      'tenant_admin': () => query,
-      'hr_manager': () => query,
-      
+      super_admin: () => query,
+      tenant_admin: () => query,
+      hr_manager: () => query,
+
       // Managers peuvent voir justificatifs de leur équipe
-      'project_manager': () => query.or(`employee_id.eq.${userId},employee_id.in.(SELECT id FROM employees WHERE manager_id='${userId}')`),
-      'team_lead': () => query.or(`employee_id.eq.${userId},employee_id.in.(SELECT id FROM employees WHERE manager_id='${userId}')`),
-      
+      project_manager: () =>
+        query.or(
+          `employee_id.eq.${userId},employee_id.in.(SELECT id FROM employees WHERE manager_id='${userId}')`
+        ),
+      team_lead: () =>
+        query.or(
+          `employee_id.eq.${userId},employee_id.in.(SELECT id FROM employees WHERE manager_id='${userId}')`
+        ),
+
       // Employés voient uniquement leurs justificatifs
-      'employee': () => query.eq('employee_id', userId),
-      'contractor': () => query.eq('employee_id', userId),
-      'intern': () => query.eq('employee_id', userId),
-      'viewer': () => query.eq('employee_id', userId),
+      employee: () => query.eq('employee_id', userId),
+      contractor: () => query.eq('employee_id', userId),
+      intern: () => query.eq('employee_id', userId),
+      viewer: () => query.eq('employee_id', userId),
     };
 
     return justificationFilters[role]?.() || query.eq('employee_id', userId);
@@ -288,17 +386,17 @@ function applyResourceSpecificFilters(
   // === DEMANDES ADMINISTRATIVES (ADMINISTRATIVE_REQUESTS) ===
   if (resource === 'administrative_requests') {
     const adminRequestFilters: Record<RoleName, () => any> = {
-      'super_admin': () => query,
-      'tenant_admin': () => query,
-      'hr_manager': () => query, // HR traite toutes les demandes
-      
+      super_admin: () => query,
+      tenant_admin: () => query,
+      hr_manager: () => query, // HR traite toutes les demandes
+
       // Autres rôles voient uniquement leurs demandes
-      'project_manager': () => query.eq('employee_id', userId),
-      'team_lead': () => query.eq('employee_id', userId),
-      'employee': () => query.eq('employee_id', userId),
-      'contractor': () => query.eq('employee_id', userId),
-      'intern': () => query.eq('employee_id', userId),
-      'viewer': () => query.eq('employee_id', userId),
+      project_manager: () => query.eq('employee_id', userId),
+      team_lead: () => query.eq('employee_id', userId),
+      employee: () => query.eq('employee_id', userId),
+      contractor: () => query.eq('employee_id', userId),
+      intern: () => query.eq('employee_id', userId),
+      viewer: () => query.eq('employee_id', userId),
     };
 
     return adminRequestFilters[role]?.() || query.eq('employee_id', userId);
@@ -307,19 +405,25 @@ function applyResourceSpecificFilters(
   // === FEUILLES DE TEMPS (TIMESHEETS) ===
   if (resource === 'timesheets') {
     const timesheetFilters: Record<RoleName, () => any> = {
-      'super_admin': () => query,
-      'tenant_admin': () => query,
-      'hr_manager': () => query,
-      
+      super_admin: () => query,
+      tenant_admin: () => query,
+      hr_manager: () => query,
+
       // Managers peuvent voir/approuver timesheets de leur équipe
-      'project_manager': () => query.or(`employee_id.eq.${userId},employee_id.in.(SELECT id FROM employees WHERE manager_id='${userId}')`),
-      'team_lead': () => query.or(`employee_id.eq.${userId},employee_id.in.(SELECT id FROM employees WHERE manager_id='${userId}')`),
-      
+      project_manager: () =>
+        query.or(
+          `employee_id.eq.${userId},employee_id.in.(SELECT id FROM employees WHERE manager_id='${userId}')`
+        ),
+      team_lead: () =>
+        query.or(
+          `employee_id.eq.${userId},employee_id.in.(SELECT id FROM employees WHERE manager_id='${userId}')`
+        ),
+
       // Employés voient uniquement leurs timesheets
-      'employee': () => query.eq('employee_id', userId),
-      'contractor': () => query.eq('employee_id', userId),
-      'intern': () => query.eq('employee_id', userId),
-      'viewer': () => query.eq('employee_id', userId),
+      employee: () => query.eq('employee_id', userId),
+      contractor: () => query.eq('employee_id', userId),
+      intern: () => query.eq('employee_id', userId),
+      viewer: () => query.eq('employee_id', userId),
     };
 
     return timesheetFilters[role]?.() || query.eq('employee_id', userId);
@@ -328,19 +432,25 @@ function applyResourceSpecificFilters(
   // === DEMANDES TÉLÉTRAVAIL (REMOTE_WORK_REQUESTS) ===
   if (resource === 'remote_work_requests') {
     const remoteWorkFilters: Record<RoleName, () => any> = {
-      'super_admin': () => query,
-      'tenant_admin': () => query,
-      'hr_manager': () => query,
-      
+      super_admin: () => query,
+      tenant_admin: () => query,
+      hr_manager: () => query,
+
       // Managers peuvent voir/approuver demandes de leur équipe
-      'project_manager': () => query.or(`employee_id.eq.${userId},employee_id.in.(SELECT id FROM employees WHERE manager_id='${userId}')`),
-      'team_lead': () => query.or(`employee_id.eq.${userId},employee_id.in.(SELECT id FROM employees WHERE manager_id='${userId}')`),
-      
+      project_manager: () =>
+        query.or(
+          `employee_id.eq.${userId},employee_id.in.(SELECT id FROM employees WHERE manager_id='${userId}')`
+        ),
+      team_lead: () =>
+        query.or(
+          `employee_id.eq.${userId},employee_id.in.(SELECT id FROM employees WHERE manager_id='${userId}')`
+        ),
+
       // Employés voient uniquement leurs demandes
-      'employee': () => query.eq('employee_id', userId),
-      'contractor': () => query.eq('employee_id', userId),
-      'intern': () => query.eq('employee_id', userId),
-      'viewer': () => query.eq('employee_id', userId),
+      employee: () => query.eq('employee_id', userId),
+      contractor: () => query.eq('employee_id', userId),
+      intern: () => query.eq('employee_id', userId),
+      viewer: () => query.eq('employee_id', userId),
     };
 
     return remoteWorkFilters[role]?.() || query.eq('employee_id', userId);
@@ -458,7 +568,9 @@ function applyResourceSpecificFilters(
     }
     // Managers voient les alertes de leur scope
     if (['project_manager', 'team_lead'].includes(role)) {
-      return query.or(`resolved_by.eq.${userId},entity_id.in.(SELECT id FROM employees WHERE manager_id='${userId}')`);
+      return query.or(
+        `resolved_by.eq.${userId},entity_id.in.(SELECT id FROM employees WHERE manager_id='${userId}')`
+      );
     }
     // Employés voient uniquement celles qui les concernent
     return query.eq('entity_id', userId);
@@ -478,7 +590,9 @@ function applyResourceSpecificFilters(
     }
     // Managers voient leurs équipes
     if (['project_manager', 'team_lead'].includes(role)) {
-      return query.or(`employee_id.eq.${userId},employee_id.in.(SELECT id FROM employees WHERE manager_id='${userId}')`);
+      return query.or(
+        `employee_id.eq.${userId},employee_id.in.(SELECT id FROM employees WHERE manager_id='${userId}')`
+      );
     }
     // Employés voient uniquement les leurs
     return query.eq('employee_id', userId);
@@ -492,7 +606,9 @@ function applyResourceSpecificFilters(
     }
     // Managers voient leurs nouvelles recrues
     if (['project_manager', 'team_lead'].includes(role)) {
-      return query.or(`employee_id.eq.${userId},employee_id.in.(SELECT id FROM employees WHERE manager_id='${userId}')`);
+      return query.or(
+        `employee_id.eq.${userId},employee_id.in.(SELECT id FROM employees WHERE manager_id='${userId}')`
+      );
     }
     // Employés voient uniquement leur propre onboarding
     return query.eq('employee_id', userId);
@@ -506,7 +622,9 @@ function applyResourceSpecificFilters(
     }
     // Managers voient leurs départs
     if (['project_manager', 'team_lead'].includes(role)) {
-      return query.or(`employee_id.eq.${userId},employee_id.in.(SELECT id FROM employees WHERE manager_id='${userId}')`);
+      return query.or(
+        `employee_id.eq.${userId},employee_id.in.(SELECT id FROM employees WHERE manager_id='${userId}')`
+      );
     }
     // Employés voient uniquement leur propre offboarding
     return query.eq('employee_id', userId);
@@ -540,7 +658,9 @@ function applyResourceSpecificFilters(
     }
     // Managers peuvent voir/approuver items de leur équipe
     if (['project_manager', 'team_lead'].includes(role)) {
-      return query.or(`employee_id.eq.${userId},employee_id.in.(SELECT id FROM employees WHERE manager_id='${userId}')`);
+      return query.or(
+        `employee_id.eq.${userId},employee_id.in.(SELECT id FROM employees WHERE manager_id='${userId}')`
+      );
     }
     // Employés voient uniquement leurs items
     return query.eq('employee_id', userId);
@@ -560,7 +680,9 @@ function applyResourceSpecificFilters(
     }
     // Managers voient incidents de leur équipe
     if (['project_manager', 'team_lead'].includes(role)) {
-      return query.or(`reported_by.eq.${userId},employee_id.in.(SELECT id FROM employees WHERE manager_id='${userId}')`);
+      return query.or(
+        `reported_by.eq.${userId},employee_id.in.(SELECT id FROM employees WHERE manager_id='${userId}')`
+      );
     }
     // Employés voient ceux qu'ils ont rapportés
     return query.eq('reported_by', userId);
@@ -594,7 +716,9 @@ function applyResourceSpecificFilters(
     }
     // Managers voient évaluations de leur équipe + les leurs
     if (['project_manager', 'team_lead'].includes(role)) {
-      return query.or(`employee_id.eq.${userId},reviewer_id.eq.${userId},employee_id.in.(SELECT id FROM employees WHERE manager_id='${userId}')`);
+      return query.or(
+        `employee_id.eq.${userId},reviewer_id.eq.${userId},employee_id.in.(SELECT id FROM employees WHERE manager_id='${userId}')`
+      );
     }
     // Employés voient uniquement leurs évaluations
     return query.eq('employee_id', userId);
@@ -608,7 +732,9 @@ function applyResourceSpecificFilters(
     }
     // Managers voient objectifs de leur équipe + les leurs
     if (['project_manager', 'team_lead'].includes(role)) {
-      return query.or(`employee_id.eq.${userId},employee_id.in.(SELECT id FROM employees WHERE manager_id='${userId}')`);
+      return query.or(
+        `employee_id.eq.${userId},employee_id.in.(SELECT id FROM employees WHERE manager_id='${userId}')`
+      );
     }
     // Employés voient uniquement leurs objectifs
     return query.eq('employee_id', userId);
@@ -628,27 +754,147 @@ function applyResourceSpecificFilters(
  */
 export function canAccessResource(role: RoleName, resource: string): boolean {
   const accessMatrix: Record<string, RoleName[]> = {
-    'tasks': ['super_admin', 'tenant_admin', 'hr_manager', 'project_manager', 'team_lead', 'employee', 'contractor', 'intern', 'viewer'],
-    'projects': ['super_admin', 'tenant_admin', 'hr_manager', 'project_manager', 'team_lead', 'employee', 'contractor', 'intern', 'viewer'],
-    'employees': ['super_admin', 'tenant_admin', 'hr_manager', 'employee'], // Employee peut voir SON profil
-    'leave_requests': ['super_admin', 'tenant_admin', 'hr_manager', 'project_manager', 'team_lead', 'employee'],
-    'payroll': ['super_admin', 'tenant_admin', 'hr_manager'],
-    'super_admin_page': ['super_admin'],
-    'hr_page': ['super_admin', 'tenant_admin', 'hr_manager', 'employee'], // Accès page HR (filtré par rôle)
-    
+    tasks: [
+      'super_admin',
+      'tenant_admin',
+      'hr_manager',
+      'project_manager',
+      'team_lead',
+      'employee',
+      'contractor',
+      'intern',
+      'viewer',
+    ],
+    projects: [
+      'super_admin',
+      'tenant_admin',
+      'hr_manager',
+      'project_manager',
+      'team_lead',
+      'employee',
+      'contractor',
+      'intern',
+      'viewer',
+    ],
+    employees: ['super_admin', 'tenant_admin', 'hr_manager', 'employee'], // Employee peut voir SON profil
+    leave_requests: [
+      'super_admin',
+      'tenant_admin',
+      'hr_manager',
+      'project_manager',
+      'team_lead',
+      'employee',
+    ],
+    payroll: ['super_admin', 'tenant_admin', 'hr_manager'],
+    super_admin_page: ['super_admin'],
+    hr_page: ['super_admin', 'tenant_admin', 'hr_manager', 'employee'], // Accès page HR (filtré par rôle)
+
     // Nouvelles ressources Formations & Compétences
-    'skills': ['super_admin', 'tenant_admin', 'hr_manager', 'project_manager', 'team_lead', 'employee', 'contractor', 'intern', 'viewer'],
-    'trainings': ['super_admin', 'tenant_admin', 'hr_manager', 'project_manager', 'team_lead', 'employee', 'contractor', 'intern', 'viewer'],
-    'training_enrollments': ['super_admin', 'tenant_admin', 'hr_manager', 'project_manager', 'team_lead', 'employee', 'contractor', 'intern'],
-    'development_plans': ['super_admin', 'tenant_admin', 'hr_manager', 'project_manager', 'team_lead', 'employee', 'contractor', 'intern'],
-    'training_catalog': ['super_admin', 'tenant_admin', 'hr_manager', 'project_manager', 'team_lead', 'employee', 'contractor', 'intern', 'viewer'],
-    
+    skills: [
+      'super_admin',
+      'tenant_admin',
+      'hr_manager',
+      'project_manager',
+      'team_lead',
+      'employee',
+      'contractor',
+      'intern',
+      'viewer',
+    ],
+    trainings: [
+      'super_admin',
+      'tenant_admin',
+      'hr_manager',
+      'project_manager',
+      'team_lead',
+      'employee',
+      'contractor',
+      'intern',
+      'viewer',
+    ],
+    training_enrollments: [
+      'super_admin',
+      'tenant_admin',
+      'hr_manager',
+      'project_manager',
+      'team_lead',
+      'employee',
+      'contractor',
+      'intern',
+    ],
+    development_plans: [
+      'super_admin',
+      'tenant_admin',
+      'hr_manager',
+      'project_manager',
+      'team_lead',
+      'employee',
+      'contractor',
+      'intern',
+    ],
+    training_catalog: [
+      'super_admin',
+      'tenant_admin',
+      'hr_manager',
+      'project_manager',
+      'team_lead',
+      'employee',
+      'contractor',
+      'intern',
+      'viewer',
+    ],
+
     // Ressources RH Self-Service
-    'expense_reports': ['super_admin', 'tenant_admin', 'hr_manager', 'project_manager', 'team_lead', 'employee', 'contractor', 'intern'],
-    'absence_justifications': ['super_admin', 'tenant_admin', 'hr_manager', 'project_manager', 'team_lead', 'employee', 'contractor', 'intern'],
-    'administrative_requests': ['super_admin', 'tenant_admin', 'hr_manager', 'project_manager', 'team_lead', 'employee', 'contractor', 'intern'],
-    'timesheets': ['super_admin', 'tenant_admin', 'hr_manager', 'project_manager', 'team_lead', 'employee', 'contractor', 'intern'],
-    'remote_work_requests': ['super_admin', 'tenant_admin', 'hr_manager', 'project_manager', 'team_lead', 'employee', 'contractor', 'intern'],
+    expense_reports: [
+      'super_admin',
+      'tenant_admin',
+      'hr_manager',
+      'project_manager',
+      'team_lead',
+      'employee',
+      'contractor',
+      'intern',
+    ],
+    absence_justifications: [
+      'super_admin',
+      'tenant_admin',
+      'hr_manager',
+      'project_manager',
+      'team_lead',
+      'employee',
+      'contractor',
+      'intern',
+    ],
+    administrative_requests: [
+      'super_admin',
+      'tenant_admin',
+      'hr_manager',
+      'project_manager',
+      'team_lead',
+      'employee',
+      'contractor',
+      'intern',
+    ],
+    timesheets: [
+      'super_admin',
+      'tenant_admin',
+      'hr_manager',
+      'project_manager',
+      'team_lead',
+      'employee',
+      'contractor',
+      'intern',
+    ],
+    remote_work_requests: [
+      'super_admin',
+      'tenant_admin',
+      'hr_manager',
+      'project_manager',
+      'team_lead',
+      'employee',
+      'contractor',
+      'intern',
+    ],
   };
 
   return accessMatrix[resource]?.includes(role) || false;
@@ -665,17 +911,18 @@ export function getFilterDescription(context: UserContext, resource: string): st
   }
 
   const descriptions: Record<RoleName, string> = {
-    'super_admin': 'Tous les tenants',
-    'tenant_admin': `Tenant ${tenantId}`,
-    'hr_manager': `Tenant ${tenantId} (tous les ${resource})`,
-    'project_manager': resource === 'tasks' 
-      ? `Tenant ${tenantId} (ses projets + assignées)` 
-      : `Tenant ${tenantId} (tous les projets)`,
-    'team_lead': `Tenant ${tenantId} (${projectIds.length} projets assignés)`,
-    'employee': `Tenant ${tenantId} (assignées uniquement)`,
-    'contractor': `Tenant ${tenantId} (assignées uniquement)`,
-    'intern': `Tenant ${tenantId} (lecture seule)`,
-    'viewer': `Tenant ${tenantId} (lecture seule)`,
+    super_admin: 'Tous les tenants',
+    tenant_admin: `Tenant ${tenantId}`,
+    hr_manager: `Tenant ${tenantId} (tous les ${resource})`,
+    project_manager:
+      resource === 'tasks'
+        ? `Tenant ${tenantId} (ses projets + assignées)`
+        : `Tenant ${tenantId} (tous les projets)`,
+    team_lead: `Tenant ${tenantId} (${projectIds.length} projets assignés)`,
+    employee: `Tenant ${tenantId} (assignées uniquement)`,
+    contractor: `Tenant ${tenantId} (assignées uniquement)`,
+    intern: `Tenant ${tenantId} (lecture seule)`,
+    viewer: `Tenant ${tenantId} (lecture seule)`,
   };
 
   return descriptions[role] || `Tenant ${tenantId} (accès limité)`;

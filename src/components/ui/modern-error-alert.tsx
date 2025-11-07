@@ -1,16 +1,16 @@
 import React from 'react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
-import { 
-  AlertCircle, 
-  AlertTriangle, 
-  Info, 
-  CheckCircle2, 
+import {
+  AlertCircle,
+  AlertTriangle,
+  Info,
+  CheckCircle2,
   X,
   RefreshCw,
   Mail,
   Lock,
-  Shield
+  Shield,
 } from 'lucide-react';
 
 export interface ModernErrorProps {
@@ -68,27 +68,21 @@ export const ModernErrorAlert: React.FC<ModernErrorProps> = ({
   suggestion,
   actionButton,
   onDismiss,
-  className = ''
+  className = '',
 }) => {
   return (
     <Alert className={`${getErrorStyles(type)} ${className} relative`}>
       <div className="flex items-start space-x-3">
         {getErrorIcon(type)}
-        <div className="flex-1 min-w-0">
-          <AlertTitle className="text-sm font-semibold mb-1">
-            {title}
-          </AlertTitle>
+        <div className="min-w-0 flex-1">
+          <AlertTitle className="mb-1 text-sm font-semibold">{title}</AlertTitle>
           <AlertDescription className="text-sm leading-relaxed">
             <div className="space-y-2">
               <p>{message}</p>
-              {suggestion && (
-                <p className="text-xs opacity-80 font-medium">
-                  💡 {suggestion}
-                </p>
-              )}
+              {suggestion && <p className="text-xs font-medium opacity-80">💡 {suggestion}</p>}
             </div>
           </AlertDescription>
-          
+
           {actionButton && (
             <div className="mt-3">
               <Button
@@ -102,7 +96,7 @@ export const ModernErrorAlert: React.FC<ModernErrorProps> = ({
             </div>
           )}
         </div>
-        
+
         {onDismiss && (
           <Button
             variant="ghost"
@@ -134,15 +128,21 @@ export const AuthErrorAlert: React.FC<{
     title={title}
     message={message}
     suggestion="Vérifiez vos informations et réessayez"
-    actionButton={onForgotPassword ? {
-      text: "Mot de passe oublié ?",
-      action: onForgotPassword,
-      variant: "outline"
-    } : onRetry ? {
-      text: "Réessayer",
-      action: onRetry,
-      variant: "outline"
-    } : undefined}
+    actionButton={
+      onForgotPassword
+        ? {
+            text: 'Mot de passe oublié ?',
+            action: onForgotPassword,
+            variant: 'outline',
+          }
+        : onRetry
+          ? {
+              text: 'Réessayer',
+              action: onRetry,
+              variant: 'outline',
+            }
+          : undefined
+    }
     onDismiss={onDismiss}
   />
 );
@@ -156,11 +156,15 @@ export const EmailExistsAlert: React.FC<{
     title="📧 Email déjà utilisé"
     message="Cette adresse email est déjà utilisée. Veuillez en choisir une autre."
     suggestion="Utilisez une adresse email différente ou connectez-vous si vous avez déjà un compte"
-    actionButton={onLogin ? {
-      text: "Se connecter",
-      action: onLogin,
-      variant: "default"
-    } : undefined}
+    actionButton={
+      onLogin
+        ? {
+            text: 'Se connecter',
+            action: onLogin,
+            variant: 'default',
+          }
+        : undefined
+    }
     onDismiss={onDismiss}
   />
 );
@@ -174,11 +178,15 @@ export const NetworkErrorAlert: React.FC<{
     title="🌐 Problème de connexion"
     message="Impossible de se connecter au serveur."
     suggestion="Vérifiez votre connexion internet et réessayez"
-    actionButton={onRetry ? {
-      text: "Réessayer",
-      action: onRetry,
-      variant: "outline"
-    } : undefined}
+    actionButton={
+      onRetry
+        ? {
+            text: 'Réessayer',
+            action: onRetry,
+            variant: 'outline',
+          }
+        : undefined
+    }
     onDismiss={onDismiss}
   />
 );
@@ -203,41 +211,41 @@ export const ValidationErrorAlert: React.FC<{
 export const useModernErrors = () => {
   const createAuthError = (error: any) => {
     const message = error?.message?.toLowerCase() || '';
-    
+
     if (message.includes('invalid') || message.includes('credentials')) {
       return {
         type: 'error' as const,
         title: '🔐 Email ou mot de passe incorrect',
-        message: 'L\'email et/ou le mot de passe sont erronés. Veuillez vérifier vos informations.',
-        suggestion: 'Assurez-vous que votre email et mot de passe sont corrects'
+        message: "L'email et/ou le mot de passe sont erronés. Veuillez vérifier vos informations.",
+        suggestion: 'Assurez-vous que votre email et mot de passe sont corrects',
       };
     }
-    
+
     if (message.includes('email') && (message.includes('already') || message.includes('exists'))) {
       return {
         type: 'warning' as const,
         title: '📧 Email déjà utilisé',
         message: 'Cette adresse email est déjà utilisée. Veuillez en choisir une autre.',
-        suggestion: 'Utilisez une adresse email différente ou connectez-vous'
+        suggestion: 'Utilisez une adresse email différente ou connectez-vous',
       };
     }
-    
+
     if (message.includes('network') || message.includes('fetch')) {
       return {
         type: 'error' as const,
         title: '🌐 Problème de connexion',
         message: 'Impossible de se connecter au serveur.',
-        suggestion: 'Vérifiez votre connexion internet'
+        suggestion: 'Vérifiez votre connexion internet',
       };
     }
-    
+
     return {
       type: 'error' as const,
       title: '❌ Erreur inattendue',
-      message: error?.message || 'Une erreur inattendue s\'est produite.',
-      suggestion: 'Veuillez réessayer ou contacter le support'
+      message: error?.message || "Une erreur inattendue s'est produite.",
+      suggestion: 'Veuillez réessayer ou contacter le support',
     };
   };
-  
+
   return { createAuthError };
 };

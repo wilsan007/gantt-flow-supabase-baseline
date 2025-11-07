@@ -10,8 +10,16 @@ describe('Button Component', () => {
 
   it('should handle click events', () => {
     let clicked = false;
-    render(<Button onClick={() => { clicked = true; }}>Click</Button>);
-    
+    render(
+      <Button
+        onClick={() => {
+          clicked = true;
+        }}
+      >
+        Click
+      </Button>
+    );
+
     fireEvent.click(screen.getByText('Click'));
     expect(clicked).toBe(true);
   });

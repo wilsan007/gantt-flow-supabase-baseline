@@ -8,10 +8,22 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { FileUp, CalendarIcon, AlertCircle } from 'lucide-react';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
@@ -129,7 +141,7 @@ export function AbsenceJustificationDialog({
                 <SelectValue placeholder="Sélectionner un type" />
               </SelectTrigger>
               <SelectContent>
-                {ABSENCE_TYPES.map((type) => (
+                {ABSENCE_TYPES.map(type => (
                   <SelectItem key={type.value} value={type.value}>
                     {type.label}
                   </SelectItem>
@@ -146,7 +158,7 @@ export function AbsenceJustificationDialog({
               placeholder="Expliquez brièvement la raison de votre absence..."
               rows={4}
               value={reason}
-              onChange={(e) => setReason(e.target.value)}
+              onChange={e => setReason(e.target.value)}
               required
             />
           </div>
@@ -163,7 +175,7 @@ export function AbsenceJustificationDialog({
                 type="url"
                 placeholder="https://... (certificat médical, justificatif...)"
                 value={documentUrl}
-                onChange={(e) => setDocumentUrl(e.target.value)}
+                onChange={e => setDocumentUrl(e.target.value)}
                 required={absenceType === 'sick_leave'}
               />
               <Button type="button" variant="outline" size="icon">
@@ -187,10 +199,7 @@ export function AbsenceJustificationDialog({
             >
               Annuler
             </Button>
-            <Button
-              type="submit"
-              disabled={loading || !absenceDate || !absenceType || !reason}
-            >
+            <Button type="submit" disabled={loading || !absenceDate || !absenceType || !reason}>
               {loading ? 'Envoi en cours...' : 'Soumettre le justificatif'}
             </Button>
           </div>

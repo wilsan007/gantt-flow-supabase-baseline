@@ -10,16 +10,16 @@ vi.mock('@/contexts/RolesContext', () => ({
     hasRole: () => true,
     hasPermission: () => true,
     isSuperAdmin: false,
-    currentTenantId: 'tenant-1'
-  })
+    currentTenantId: 'tenant-1',
+  }),
 }));
 
 vi.mock('@/hooks/useTenant', () => ({
   useTenant: () => ({
     tenantId: 'tenant-1',
     tenantName: 'Test Company',
-    loading: false
-  })
+    loading: false,
+  }),
 }));
 
 vi.mock('@/hooks/useHRMinimal', () => ({
@@ -27,8 +27,8 @@ vi.mock('@/hooks/useHRMinimal', () => ({
     employees: [],
     loading: false,
     error: null,
-    refresh: vi.fn()
-  })
+    refresh: vi.fn(),
+  }),
 }));
 
 vi.mock('@/integrations/supabase/client', () => ({
@@ -36,26 +36,28 @@ vi.mock('@/integrations/supabase/client', () => ({
     from: vi.fn(() => ({
       select: vi.fn(() => ({
         eq: vi.fn(() => ({
-          order: vi.fn(() => Promise.resolve({ data: [], error: null }))
-        }))
+          order: vi.fn(() => Promise.resolve({ data: [], error: null })),
+        })),
       })),
       insert: vi.fn(() => ({
-        select: vi.fn(() => Promise.resolve({ data: [], error: null }))
+        select: vi.fn(() => Promise.resolve({ data: [], error: null })),
       })),
       update: vi.fn(() => ({
-        eq: vi.fn(() => Promise.resolve({ data: [], error: null }))
+        eq: vi.fn(() => Promise.resolve({ data: [], error: null })),
       })),
       delete: vi.fn(() => ({
-        eq: vi.fn(() => Promise.resolve({ error: null }))
-      }))
+        eq: vi.fn(() => Promise.resolve({ error: null })),
+      })),
     })),
     auth: {
-      getUser: vi.fn(() => Promise.resolve({
-        data: { user: { id: 'user-1' } },
-        error: null
-      }))
-    }
-  }
+      getUser: vi.fn(() =>
+        Promise.resolve({
+          data: { user: { id: 'user-1' } },
+          error: null,
+        })
+      ),
+    },
+  },
 }));
 
 // Import real component
@@ -72,7 +74,7 @@ describe('EnhancedEmployeeManagement - Real Component (Used in HRPage)', () => {
         <EnhancedEmployeeManagement />
       </BrowserRouter>
     );
-    
+
     expect(container).toBeTruthy();
     expect(container.querySelector('div')).toBeInTheDocument();
   });
@@ -93,7 +95,7 @@ describe('EnhancedEmployeeManagement - Real Component (Used in HRPage)', () => {
         <EnhancedEmployeeManagement />
       </BrowserRouter>
     );
-    
+
     expect(container.firstChild).toBeDefined();
   });
 });

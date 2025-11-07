@@ -23,7 +23,9 @@ export default function DebugTasks() {
 
     try {
       // 1. Info utilisateur
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       results.user = {
         id: user?.id,
         email: user?.email,
@@ -35,8 +37,8 @@ export default function DebugTasks() {
         isSuperAdmin: isSuperAdmin(),
         userRoles: userRoles.map(r => ({
           role: r.roles.name,
-          tenant_id: r.tenant_id
-        }))
+          tenant_id: r.tenant_id,
+        })),
       };
 
       // 3. Count des projets
@@ -44,20 +46,20 @@ export default function DebugTasks() {
         .from('projects')
         .select('*', { count: 'exact', head: true })
         .eq('tenant_id', tenantId || '');
-      
+
       results.projects = {
         count: projectCount,
-        error: projectError?.message
+        error: projectError?.message,
       };
 
       // 4. Count des tâches SANS filtre
       const { count: allTasksCount, error: allTasksError } = await supabase
         .from('tasks')
         .select('*', { count: 'exact', head: true });
-      
+
       results.allTasks = {
         count: allTasksCount,
-        error: allTasksError?.message
+        error: allTasksError?.message,
       };
 
       // 5. Count des tâches PAR tenant
@@ -65,29 +67,31 @@ export default function DebugTasks() {
         .from('tasks')
         .select('*', { count: 'exact', head: true })
         .eq('tenant_id', tenantId || '');
-      
+
       results.tenantTasks = {
         count: tenantTasksCount,
-        error: tenantTasksError?.message
+        error: tenantTasksError?.message,
       };
 
       // 6. Récupérer 5 tâches avec jointures (comme dans useTasksEnterprise)
       const { data: tasksWithJoins, error: joinsError } = await supabase
         .from('tasks')
-        .select(`
+        .select(
+          `
           *,
           projects:project_id(name),
           assignee:assignee_id(full_name),
           parent_task:parent_id(title),
           task_actions!task_id(*)
-        `)
+        `
+        )
         .eq('tenant_id', tenantId || '')
         .limit(5);
-      
+
       results.tasksWithJoins = {
         count: tasksWithJoins?.length || 0,
         error: joinsError?.message,
-        sample: tasksWithJoins
+        sample: tasksWithJoins,
       };
 
       // 7. Récupérer 5 tâches SANS jointures
@@ -96,11 +100,11 @@ export default function DebugTasks() {
         .select('*')
         .eq('tenant_id', tenantId || '')
         .limit(5);
-      
+
       results.tasksWithoutJoins = {
         count: tasksWithoutJoins?.length || 0,
         error: noJoinsError?.message,
-        sample: tasksWithoutJoins
+        sample: tasksWithoutJoins,
       };
 
       // 8. Vérifier la table employees
@@ -108,9 +112,9 @@ export default function DebugTasks() {
         .from('employees')
         .select('*', { count: 'exact', head: true })
         .eq('tenant_id', tenantId || '');
-      
+
       results.employees = {
-        count: employeesCount
+        count: employeesCount,
       };
 
       // 9. Vérifier les tâches d'un projet spécifique
@@ -120,22 +124,21 @@ export default function DebugTasks() {
           .select('id')
           .eq('tenant_id', tenantId || '')
           .limit(1);
-        
+
         if (projects && projects.length > 0) {
           const projectId = projects[0].id;
-          
+
           const { count: projectTasksCount } = await supabase
             .from('tasks')
             .select('*', { count: 'exact', head: true })
             .eq('project_id', projectId);
-          
+
           results.projectTasks = {
             projectId,
-            count: projectTasksCount
+            count: projectTasksCount,
           };
         }
       }
-
     } catch (error: any) {
       results.error = error.message;
     }
@@ -149,7 +152,7 @@ export default function DebugTasks() {
   }, [tenantId]);
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="space-y-6 p-6">
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold">🔍 Debug Tasks</h1>
         <Button onClick={runDebug} disabled={loading}>
@@ -162,7 +165,7 @@ export default function DebugTasks() {
           <CardTitle>Informations Utilisateur</CardTitle>
         </CardHeader>
         <CardContent>
-          <pre className="bg-muted p-4 rounded-lg overflow-auto text-sm">
+          <pre className="overflow-auto rounded-lg bg-muted p-4 text-sm">
             {JSON.stringify(debugInfo.user, null, 2)}
           </pre>
         </CardContent>
@@ -173,7 +176,7 @@ export default function DebugTasks() {
           <CardTitle>Informations Tenant & Rôles</CardTitle>
         </CardHeader>
         <CardContent>
-          <pre className="bg-muted p-4 rounded-lg overflow-auto text-sm">
+          <pre className="overflow-auto rounded-lg bg-muted p-4 text-sm">
             {JSON.stringify(debugInfo.tenant, null, 2)}
           </pre>
         </CardContent>
@@ -184,7 +187,7 @@ export default function DebugTasks() {
           <CardTitle>Projets (Fonctionnent ✓)</CardTitle>
         </CardHeader>
         <CardContent>
-          <pre className="bg-muted p-4 rounded-lg overflow-auto text-sm">
+          <pre className="overflow-auto rounded-lg bg-muted p-4 text-sm">
             {JSON.stringify(debugInfo.projects, null, 2)}
           </pre>
         </CardContent>
@@ -195,7 +198,7 @@ export default function DebugTasks() {
           <CardTitle className="text-orange-600">Tâches - Toutes (Sans filtre tenant)</CardTitle>
         </CardHeader>
         <CardContent>
-          <pre className="bg-muted p-4 rounded-lg overflow-auto text-sm">
+          <pre className="overflow-auto rounded-lg bg-muted p-4 text-sm">
             {JSON.stringify(debugInfo.allTasks, null, 2)}
           </pre>
         </CardContent>
@@ -206,7 +209,7 @@ export default function DebugTasks() {
           <CardTitle className="text-red-600">Tâches - Par Tenant (Filtrées)</CardTitle>
         </CardHeader>
         <CardContent>
-          <pre className="bg-muted p-4 rounded-lg overflow-auto text-sm">
+          <pre className="overflow-auto rounded-lg bg-muted p-4 text-sm">
             {JSON.stringify(debugInfo.tenantTasks, null, 2)}
           </pre>
         </CardContent>
@@ -217,7 +220,7 @@ export default function DebugTasks() {
           <CardTitle>Tâches AVEC Jointures (useTasksEnterprise)</CardTitle>
         </CardHeader>
         <CardContent>
-          <pre className="bg-muted p-4 rounded-lg overflow-auto text-sm">
+          <pre className="overflow-auto rounded-lg bg-muted p-4 text-sm">
             {JSON.stringify(debugInfo.tasksWithJoins, null, 2)}
           </pre>
         </CardContent>
@@ -228,7 +231,7 @@ export default function DebugTasks() {
           <CardTitle>Tâches SANS Jointures</CardTitle>
         </CardHeader>
         <CardContent>
-          <pre className="bg-muted p-4 rounded-lg overflow-auto text-sm">
+          <pre className="overflow-auto rounded-lg bg-muted p-4 text-sm">
             {JSON.stringify(debugInfo.tasksWithoutJoins, null, 2)}
           </pre>
         </CardContent>
@@ -239,7 +242,7 @@ export default function DebugTasks() {
           <CardTitle>Employés</CardTitle>
         </CardHeader>
         <CardContent>
-          <pre className="bg-muted p-4 rounded-lg overflow-auto text-sm">
+          <pre className="overflow-auto rounded-lg bg-muted p-4 text-sm">
             {JSON.stringify(debugInfo.employees, null, 2)}
           </pre>
         </CardContent>
@@ -251,7 +254,7 @@ export default function DebugTasks() {
             <CardTitle>Tâches d'un Projet Spécifique</CardTitle>
           </CardHeader>
           <CardContent>
-            <pre className="bg-muted p-4 rounded-lg overflow-auto text-sm">
+            <pre className="overflow-auto rounded-lg bg-muted p-4 text-sm">
               {JSON.stringify(debugInfo.projectTasks, null, 2)}
             </pre>
           </CardContent>
@@ -284,20 +287,22 @@ export default function DebugTasks() {
               <strong>Tâches sans jointures:</strong>{' '}
               <span className="text-blue-600">{debugInfo.tasksWithoutJoins?.count || 0}</span>
             </p>
-            
+
             {debugInfo.tenantTasks?.count === 0 && debugInfo.allTasks?.count > 0 && (
-              <div className="mt-4 p-4 bg-red-50 dark:bg-red-950 border border-red-200 rounded-lg">
+              <div className="mt-4 rounded-lg border border-red-200 bg-red-50 p-4 dark:bg-red-950">
                 <p className="font-bold text-red-800 dark:text-red-200">🚨 Problème Identifié :</p>
                 <p className="text-red-700 dark:text-red-300">
-                  Les tâches existent dans la base mais n'ont pas le bon `tenant_id`.
-                  Elles ne sont pas associées à votre entreprise.
+                  Les tâches existent dans la base mais n'ont pas le bon `tenant_id`. Elles ne sont
+                  pas associées à votre entreprise.
                 </p>
               </div>
             )}
 
             {debugInfo.tenantTasks?.count > 0 && debugInfo.tasksWithJoins?.count === 0 && (
-              <div className="mt-4 p-4 bg-orange-50 dark:bg-orange-950 border border-orange-200 rounded-lg">
-                <p className="font-bold text-orange-800 dark:text-orange-200">⚠️ Problème Identifié :</p>
+              <div className="mt-4 rounded-lg border border-orange-200 bg-orange-50 p-4 dark:bg-orange-950">
+                <p className="font-bold text-orange-800 dark:text-orange-200">
+                  ⚠️ Problème Identifié :
+                </p>
                 <p className="text-orange-700 dark:text-orange-300">
                   Les tâches existent mais les jointures (assignee, project, etc.) échouent.
                   Vérifiez les foreign keys.
@@ -306,7 +311,7 @@ export default function DebugTasks() {
             )}
 
             {debugInfo.tenantTasks?.count === 0 && debugInfo.allTasks?.count === 0 && (
-              <div className="mt-4 p-4 bg-blue-50 dark:bg-blue-950 border border-blue-200 rounded-lg">
+              <div className="mt-4 rounded-lg border border-blue-200 bg-blue-50 p-4 dark:bg-blue-950">
                 <p className="font-bold text-blue-800 dark:text-blue-200">ℹ️ Information :</p>
                 <p className="text-blue-700 dark:text-blue-300">
                   Aucune tâche n'existe dans la base de données. Créez-en une pour tester.

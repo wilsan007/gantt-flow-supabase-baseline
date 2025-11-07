@@ -56,25 +56,25 @@ export const useHealthSafety = () => {
   const [trainingRecords, setTrainingRecords] = useState<TrainingRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  
+
   // 🔒 Contexte utilisateur pour le filtrage
   const { userContext } = useUserFilterContext();
 
   const fetchHealthSafetyData = async () => {
     if (!userContext) return;
-    
+
     try {
       setLoading(true);
-      
+
       // Fetch incidents avec filtrage
       let incidentsQuery = supabase
         .from('safety_incidents')
         .select('*')
         .order('reported_date', { ascending: false });
-      
+
       // 🔒 Appliquer le filtrage par rôle
       incidentsQuery = applyRoleFilters(incidentsQuery, userContext, 'health_safety_incidents');
-      
+
       const { data: incidentsData, error: incidentsError } = await incidentsQuery;
 
       if (incidentsError) throw incidentsError;
@@ -99,7 +99,7 @@ export const useHealthSafety = () => {
         location: incident.location,
         affectedEmployee: incident.affected_employee || undefined,
         status: incident.status as any,
-        actions: [] // TODO: Fetch from separate table
+        actions: [], // TODO: Fetch from separate table
       }));
 
       const mappedDocuments: SafetyDocument[] = (documentsData || []).map(doc => ({
@@ -111,7 +111,7 @@ export const useHealthSafety = () => {
         publishedDate: doc.published_date,
         expiryDate: doc.expiry_date || undefined,
         status: doc.status as any,
-        downloadUrl: doc.download_url
+        downloadUrl: doc.download_url,
       }));
 
       setIncidents(mappedIncidents);
@@ -136,7 +136,7 @@ export const useHealthSafety = () => {
         reported_date: incidentData.reportedDate,
         location: incidentData.location,
         affected_employee: incidentData.affectedEmployee,
-        status: incidentData.status
+        status: incidentData.status,
       };
 
       const { data, error } = await supabase
@@ -146,7 +146,7 @@ export const useHealthSafety = () => {
         .single();
 
       if (error) throw error;
-      
+
       const mappedData: Incident = {
         id: data.id,
         type: data.type as any,
@@ -158,7 +158,7 @@ export const useHealthSafety = () => {
         location: data.location,
         affectedEmployee: data.affected_employee || undefined,
         status: data.status as any,
-        actions: []
+        actions: [],
       };
 
       setIncidents(prev => [mappedData, ...prev]);
@@ -202,11 +202,11 @@ export const useHealthSafety = () => {
         location: data.location,
         affectedEmployee: data.affected_employee || undefined,
         status: data.status as any,
-        actions: [] // Keep existing actions
+        actions: [], // Keep existing actions
       };
 
-      setIncidents(prev => 
-        prev.map(incident => incident.id === id ? { ...incident, ...mappedData } : incident)
+      setIncidents(prev =>
+        prev.map(incident => (incident.id === id ? { ...incident, ...mappedData } : incident))
       );
       return mappedData;
     } catch (err) {
@@ -225,7 +225,7 @@ export const useHealthSafety = () => {
         published_date: documentData.publishedDate,
         expiry_date: documentData.expiryDate,
         status: documentData.status,
-        download_url: documentData.downloadUrl
+        download_url: documentData.downloadUrl,
       };
 
       const { data, error } = await supabase
@@ -235,7 +235,7 @@ export const useHealthSafety = () => {
         .single();
 
       if (error) throw error;
-      
+
       const mappedData: SafetyDocument = {
         id: data.id,
         title: data.title,
@@ -245,7 +245,7 @@ export const useHealthSafety = () => {
         publishedDate: data.published_date,
         expiryDate: data.expiry_date || undefined,
         status: data.status as any,
-        downloadUrl: data.download_url
+        downloadUrl: data.download_url,
       };
 
       setSafetyDocuments(prev => [mappedData, ...prev]);
@@ -269,6 +269,6 @@ export const useHealthSafety = () => {
     createIncident,
     updateIncident,
     uploadDocument,
-    refetch: fetchHealthSafetyData
+    refetch: fetchHealthSafetyData,
   };
 };

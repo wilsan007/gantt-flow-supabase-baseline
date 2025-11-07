@@ -17,7 +17,7 @@ interface State {
 /**
  * ErrorBoundary global pour capturer toutes les erreurs React
  * Pattern: React Error Boundary best practices
- * 
+ *
  * Usage:
  * <ErrorBoundary>
  *   <App />
@@ -41,7 +41,7 @@ export class ErrorBoundary extends Component<Props, State> {
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     // Log l'erreur dans la console (en dev) et dans un service de monitoring (en prod)
     console.error('❌ ErrorBoundary caught an error:', error, errorInfo);
-    
+
     this.setState({
       error,
       errorInfo,
@@ -74,8 +74,8 @@ export class ErrorBoundary extends Component<Props, State> {
 
       // Fallback UI par défaut
       return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
-          <div className="max-w-2xl w-full space-y-4">
+        <div className="flex min-h-screen items-center justify-center bg-gray-50 p-4">
+          <div className="w-full max-w-2xl space-y-4">
             <Alert variant="destructive">
               <AlertCircle className="h-4 w-4" />
               <AlertTitle>Une erreur est survenue</AlertTitle>
@@ -84,11 +84,11 @@ export class ErrorBoundary extends Component<Props, State> {
               </AlertDescription>
             </Alert>
 
-            <div className="bg-white p-6 rounded-lg shadow-sm border space-y-4">
+            <div className="space-y-4 rounded-lg border bg-white p-6 shadow-sm">
               <div className="space-y-2">
-                <h3 className="font-semibold text-lg">Détails de l'erreur</h3>
-                <div className="bg-red-50 border border-red-200 rounded p-3">
-                  <p className="text-sm font-mono text-red-800 break-all">
+                <h3 className="text-lg font-semibold">Détails de l'erreur</h3>
+                <div className="rounded border border-red-200 bg-red-50 p-3">
+                  <p className="break-all font-mono text-sm text-red-800">
                     {this.state.error?.message || 'Erreur inconnue'}
                   </p>
                 </div>
@@ -96,18 +96,18 @@ export class ErrorBoundary extends Component<Props, State> {
 
               {process.env.NODE_ENV === 'development' && this.state.errorInfo && (
                 <details className="space-y-2">
-                  <summary className="cursor-pointer font-semibold text-sm text-gray-700 hover:text-gray-900">
+                  <summary className="cursor-pointer text-sm font-semibold text-gray-700 hover:text-gray-900">
                     Stack Trace (Dev uniquement)
                   </summary>
-                  <pre className="mt-2 text-xs bg-gray-100 p-3 rounded overflow-auto max-h-60">
+                  <pre className="mt-2 max-h-60 overflow-auto rounded bg-gray-100 p-3 text-xs">
                     {this.state.errorInfo.componentStack}
                   </pre>
                 </details>
               )}
 
               <div className="space-y-2">
-                <h3 className="font-semibold text-lg">Que faire ?</h3>
-                <ul className="text-sm text-gray-600 list-disc list-inside space-y-1 ml-2">
+                <h3 className="text-lg font-semibold">Que faire ?</h3>
+                <ul className="ml-2 list-inside list-disc space-y-1 text-sm text-gray-600">
                   <li>Essayez de recharger la page</li>
                   <li>Vérifiez votre connexion internet</li>
                   <li>Contactez le support si le problème persiste</li>
@@ -126,7 +126,7 @@ export class ErrorBoundary extends Component<Props, State> {
               </div>
             </div>
 
-            <p className="text-xs text-center text-gray-500">
+            <p className="text-center text-xs text-gray-500">
               ID de l'erreur: {Date.now().toString(36)}
             </p>
           </div>

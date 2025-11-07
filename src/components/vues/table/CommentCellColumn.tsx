@@ -1,13 +1,19 @@
-import { useState, useEffect } from "react";
-import { MessageSquare, Send } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
-import { formatDistanceToNow } from "date-fns";
-import { fr } from "date-fns/locale";
+import { useState, useEffect } from 'react';
+import { MessageSquare, Send } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
+import { formatDistanceToNow } from 'date-fns';
+import { fr } from 'date-fns/locale';
 
 interface Task {
   id: string;
@@ -29,7 +35,7 @@ interface TaskComment {
 
 export const CommentCellColumn = ({ task, isSubtask }: CommentCellProps) => {
   const [comments, setComments] = useState<TaskComment[]>([]);
-  const [newComment, setNewComment] = useState("");
+  const [newComment, setNewComment] = useState('');
   const [posting, setPosting] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
   const { toast } = useToast();
@@ -37,15 +43,15 @@ export const CommentCellColumn = ({ task, isSubtask }: CommentCellProps) => {
   const loadComments = async () => {
     try {
       const { data, error } = await supabase
-        .from("task_comments")
-        .select("*")
-        .eq("task_id", task.id)
-        .order("created_at", { ascending: true });
+        .from('task_comments')
+        .select('*')
+        .eq('task_id', task.id)
+        .order('created_at', { ascending: true });
 
       if (error) throw error;
       setComments(data || []);
     } catch (error) {
-      console.error("Error loading comments:", error);
+      console.error('Error loading comments:', error);
     }
   };
 
@@ -54,30 +60,28 @@ export const CommentCellColumn = ({ task, isSubtask }: CommentCellProps) => {
 
     setPosting(true);
     try {
-      const { error } = await supabase
-        .from("task_comments")
-        .insert({
-          task_id: task.id,
-          content: newComment.trim(),
-          comment_type: "general",
-          tenant_id: '00000000-0000-0000-0000-000000000001', // Default tenant for now
-        });
+      const { error } = await supabase.from('task_comments').insert({
+        task_id: task.id,
+        content: newComment.trim(),
+        comment_type: 'general',
+        tenant_id: '00000000-0000-0000-0000-000000000001', // Default tenant for now
+      });
 
       if (error) throw error;
 
-      setNewComment("");
+      setNewComment('');
       loadComments();
-      
+
       toast({
-        title: "Succès",
-        description: "Commentaire ajouté",
+        title: 'Succès',
+        description: 'Commentaire ajouté',
       });
     } catch (error) {
-      console.error("Error adding comment:", error);
+      console.error('Error adding comment:', error);
       toast({
-        title: "Erreur",
+        title: 'Erreur',
         description: "Échec de l'ajout du commentaire",
-        variant: "destructive",
+        variant: 'destructive',
       });
     } finally {
       setPosting(false);
@@ -96,7 +100,7 @@ export const CommentCellColumn = ({ task, isSubtask }: CommentCellProps) => {
           size="sm"
           className={`${isSubtask ? 'h-6 px-1 text-xs' : 'h-8 px-2 text-sm'}`}
         >
-          <MessageSquare className={`${isSubtask ? 'h-3 w-3 mr-1' : 'h-4 w-4 mr-1'}`} />
+          <MessageSquare className={`${isSubtask ? 'mr-1 h-3 w-3' : 'mr-1 h-4 w-4'}`} />
           {comments.length}
         </Button>
       </DialogTrigger>
@@ -104,21 +108,19 @@ export const CommentCellColumn = ({ task, isSubtask }: CommentCellProps) => {
         <DialogHeader>
           <DialogTitle>Commentaires - {task.title}</DialogTitle>
         </DialogHeader>
-        
-        <div className="flex flex-col h-96">
-          <ScrollArea className="flex-1 mb-3">
+
+        <div className="flex h-96 flex-col">
+          <ScrollArea className="mb-3 flex-1">
             <div className="space-y-3 pr-2">
               {comments.length === 0 ? (
-                <div className="text-center text-sm text-muted-foreground">
-                  Aucun commentaire
-                </div>
+                <div className="text-center text-sm text-muted-foreground">Aucun commentaire</div>
               ) : (
-                comments.map((comment) => (
-                  <div key={comment.id} className="bg-muted/30 p-2 rounded-md">
-                    <div className="text-xs text-muted-foreground mb-1">
-                      {formatDistanceToNow(new Date(comment.created_at), { 
-                        addSuffix: true, 
-                        locale: fr 
+                comments.map(comment => (
+                  <div key={comment.id} className="rounded-md bg-muted/30 p-2">
+                    <div className="mb-1 text-xs text-muted-foreground">
+                      {formatDistanceToNow(new Date(comment.created_at), {
+                        addSuffix: true,
+                        locale: fr,
                       })}
                     </div>
                     <div className="text-sm">{comment.content}</div>
@@ -132,7 +134,7 @@ export const CommentCellColumn = ({ task, isSubtask }: CommentCellProps) => {
             <Textarea
               placeholder="Ajouter un commentaire..."
               value={newComment}
-              onChange={(e) => setNewComment(e.target.value)}
+              onChange={e => setNewComment(e.target.value)}
               className="mb-2 min-h-[60px] resize-none"
               disabled={posting}
             />
@@ -142,8 +144,8 @@ export const CommentCellColumn = ({ task, isSubtask }: CommentCellProps) => {
               size="sm"
               className="w-full"
             >
-              <Send className="h-3 w-3 mr-1" />
-              {posting ? "Envoi..." : "Envoyer"}
+              <Send className="mr-1 h-3 w-3" />
+              {posting ? 'Envoi...' : 'Envoyer'}
             </Button>
           </div>
         </div>

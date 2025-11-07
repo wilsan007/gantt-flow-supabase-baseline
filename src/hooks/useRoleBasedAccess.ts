@@ -12,7 +12,7 @@ export const useRoleBasedAccess = () => {
   const lastUserRolesRef = useRef<any[]>([]);
   const lastAccessRightsRef = useRef<any>(null);
   const stableUserRolesRef = useRef<any>(null);
-  
+
   const {
     userRoles,
     userPermissions,
@@ -22,49 +22,52 @@ export const useRoleBasedAccess = () => {
     isSuperAdmin,
     isTenantAdmin,
     isHRManager,
-    isProjectManager
+    isProjectManager,
   } = useUserRoles();
 
   // État initial memoizé pour éviter les re-créations
-  const initialAccessRights = useMemo(() => ({
-    // Pages principales
-    canAccessDashboard: false,
-    canAccessHR: false,
-    canAccessProjects: false,
-    canAccessTasks: false,
-    canAccessSuperAdmin: false,
-    
-    // Fonctionnalités HR
-    canManageEmployees: false,
-    canViewReports: false,
-    canManageAbsences: false,
-    canViewPayroll: false,
-    
-    // Fonctionnalités Projets
-    canCreateProjects: false,
-    canManageProjects: false,
-    canViewProjectReports: false,
-    canManageProjectBudgets: false,
-    
-    // Fonctionnalités Tâches
-    canCreateTasks: false,
-    canAssignTasks: false,
-    canManageAllTasks: false,
-    canViewTaskReports: false,
-    
-    // Administration
-    canManageUsers: false,
-    canManageRoles: false,
-    canManageTenants: false,
-    canViewSystemLogs: false,
-    
-    // Notifications et alertes
-    canReceiveAlerts: false,
-    canManageAlerts: false,
-    
-    // Niveau d'accès général
-    accessLevel: 'none' as 'none' | 'basic' | 'advanced' | 'admin' | 'super_admin'
-  }), []); // Pas de dépendances = valeur constante
+  const initialAccessRights = useMemo(
+    () => ({
+      // Pages principales
+      canAccessDashboard: false,
+      canAccessHR: false,
+      canAccessProjects: false,
+      canAccessTasks: false,
+      canAccessSuperAdmin: false,
+
+      // Fonctionnalités HR
+      canManageEmployees: false,
+      canViewReports: false,
+      canManageAbsences: false,
+      canViewPayroll: false,
+
+      // Fonctionnalités Projets
+      canCreateProjects: false,
+      canManageProjects: false,
+      canViewProjectReports: false,
+      canManageProjectBudgets: false,
+
+      // Fonctionnalités Tâches
+      canCreateTasks: false,
+      canAssignTasks: false,
+      canManageAllTasks: false,
+      canViewTaskReports: false,
+
+      // Administration
+      canManageUsers: false,
+      canManageRoles: false,
+      canManageTenants: false,
+      canViewSystemLogs: false,
+
+      // Notifications et alertes
+      canReceiveAlerts: false,
+      canManageAlerts: false,
+
+      // Niveau d'accès général
+      accessLevel: 'none' as 'none' | 'basic' | 'advanced' | 'admin' | 'super_admin',
+    }),
+    []
+  ); // Pas de dépendances = valeur constante
 
   const [accessRights, setAccessRights] = useState(initialAccessRights);
 
@@ -72,9 +75,16 @@ export const useRoleBasedAccess = () => {
     if (isLoading) return;
 
     // Protection anti-boucle STRICTE : hash stable des rôles
-    const userRolesHash = userRoles.map(r => `${r.roles.name}-${r.tenant_id}`).sort().join('|');
-    const lastHash = lastUserRolesRef.current?.map(r => `${r.roles.name}-${r.tenant_id}`).sort().join('|') || '';
-    
+    const userRolesHash = userRoles
+      .map(r => `${r.roles.name}-${r.tenant_id}`)
+      .sort()
+      .join('|');
+    const lastHash =
+      lastUserRolesRef.current
+        ?.map(r => `${r.roles.name}-${r.tenant_id}`)
+        .sort()
+        .join('|') || '';
+
     // Si déjà calculé avec les mêmes données, ARRÊT COMPLET
     if (calculatedRef.current && userRolesHash === lastHash && lastAccessRightsRef.current) {
       // Pas de logs répétitifs - seulement si changement détecté
@@ -100,41 +110,78 @@ export const useRoleBasedAccess = () => {
       canAccessProjects: isProjectManager() || isTenantAdmin() || isSuperAdmin(),
       canAccessTasks: userRoles.length > 0, // Tous les utilisateurs peuvent voir les tâches
       canAccessSuperAdmin: isSuperAdmin(),
-      
+
       // Fonctionnalités HR
-      canManageEmployees: hasPermission(PermissionNames.MANAGE_USERS) || isHRManager() || isTenantAdmin() || isSuperAdmin(),
-      canViewReports: hasPermission(PermissionNames.VIEW_REPORTS) || isHRManager() || isTenantAdmin() || isSuperAdmin(),
+      canManageEmployees:
+        hasPermission(PermissionNames.MANAGE_USERS) ||
+        isHRManager() ||
+        isTenantAdmin() ||
+        isSuperAdmin(),
+      canViewReports:
+        hasPermission(PermissionNames.VIEW_REPORTS) ||
+        isHRManager() ||
+        isTenantAdmin() ||
+        isSuperAdmin(),
       canManageAbsences: isHRManager() || isTenantAdmin() || isSuperAdmin(),
       canViewPayroll: isHRManager() || isTenantAdmin() || isSuperAdmin(),
-      
+
       // Fonctionnalités Projets
-      canCreateProjects: hasPermission(PermissionNames.MANAGE_PROJECTS) || isProjectManager() || isTenantAdmin() || isSuperAdmin(),
-      canManageProjects: hasPermission(PermissionNames.MANAGE_PROJECTS) || isProjectManager() || isTenantAdmin() || isSuperAdmin(),
-      canViewProjectReports: hasPermission(PermissionNames.VIEW_REPORTS) || isProjectManager() || isTenantAdmin() || isSuperAdmin(),
+      canCreateProjects:
+        hasPermission(PermissionNames.MANAGE_PROJECTS) ||
+        isProjectManager() ||
+        isTenantAdmin() ||
+        isSuperAdmin(),
+      canManageProjects:
+        hasPermission(PermissionNames.MANAGE_PROJECTS) ||
+        isProjectManager() ||
+        isTenantAdmin() ||
+        isSuperAdmin(),
+      canViewProjectReports:
+        hasPermission(PermissionNames.VIEW_REPORTS) ||
+        isProjectManager() ||
+        isTenantAdmin() ||
+        isSuperAdmin(),
       canManageProjectBudgets: isTenantAdmin() || isSuperAdmin(),
-      
+
       // Fonctionnalités Tâches
       canCreateTasks: hasPermission(PermissionNames.MANAGE_TASKS) || userRoles.length > 0, // Tous peuvent créer des tâches
-      canAssignTasks: hasPermission(PermissionNames.MANAGE_TASKS) || isProjectManager() || isTenantAdmin() || isSuperAdmin(),
-      canManageAllTasks: hasPermission(PermissionNames.MANAGE_TASKS) || isProjectManager() || isTenantAdmin() || isSuperAdmin(),
-      canViewTaskReports: hasPermission(PermissionNames.VIEW_REPORTS) || isProjectManager() || isTenantAdmin() || isSuperAdmin(),
-      
+      canAssignTasks:
+        hasPermission(PermissionNames.MANAGE_TASKS) ||
+        isProjectManager() ||
+        isTenantAdmin() ||
+        isSuperAdmin(),
+      canManageAllTasks:
+        hasPermission(PermissionNames.MANAGE_TASKS) ||
+        isProjectManager() ||
+        isTenantAdmin() ||
+        isSuperAdmin(),
+      canViewTaskReports:
+        hasPermission(PermissionNames.VIEW_REPORTS) ||
+        isProjectManager() ||
+        isTenantAdmin() ||
+        isSuperAdmin(),
+
       // Administration
-      canManageUsers: hasPermission(PermissionNames.MANAGE_USERS) || isTenantAdmin() || isSuperAdmin(),
+      canManageUsers:
+        hasPermission(PermissionNames.MANAGE_USERS) || isTenantAdmin() || isSuperAdmin(),
       canManageRoles: isSuperAdmin(), // Seuls les super admins peuvent gérer les rôles
       canManageTenants: hasPermission(PermissionNames.CREATE_TENANT) || isSuperAdmin(),
       canViewSystemLogs: isSuperAdmin(),
-      
+
       // Notifications et alertes
       canReceiveAlerts: userRoles.length > 0, // Tous les utilisateurs connectés
       canManageAlerts: isProjectManager() || isTenantAdmin() || isSuperAdmin(),
-      
+
       // Niveau d'accès général
-      accessLevel: isSuperAdmin() ? 'super_admin' as const :
-                   isTenantAdmin() ? 'admin' as const :
-                   (isHRManager() || isProjectManager()) ? 'advanced' as const :
-                   userRoles.length > 0 ? 'basic' as const :
-                   'none' as const
+      accessLevel: isSuperAdmin()
+        ? ('super_admin' as const)
+        : isTenantAdmin()
+          ? ('admin' as const)
+          : isHRManager() || isProjectManager()
+            ? ('advanced' as const)
+            : userRoles.length > 0
+              ? ('basic' as const)
+              : ('none' as const),
     };
 
     // Mettre en cache les nouveaux droits d'accès
@@ -149,7 +196,7 @@ export const useRoleBasedAccess = () => {
     isSuperAdmin,
     isTenantAdmin,
     isHRManager,
-    isProjectManager
+    isProjectManager,
   ]);
 
   // Fonctions utilitaires pour vérifier l'accès
@@ -166,7 +213,7 @@ export const useRoleBasedAccess = () => {
   // Fonction pour obtenir les restrictions d'accès
   const getAccessRestrictions = () => {
     const restrictions = [];
-    
+
     if (!accessRights.canAccessHR) {
       restrictions.push('Accès RH restreint');
     }
@@ -179,30 +226,33 @@ export const useRoleBasedAccess = () => {
     if (!accessRights.canManageAllTasks) {
       restrictions.push('Gestion des tâches limitée');
     }
-    
+
     return restrictions;
   };
 
   // Fonction pour obtenir les fonctionnalités disponibles
   const getAvailableFeatures = () => {
     const features = [];
-    
+
     if (accessRights.canAccessDashboard) features.push('Tableau de bord');
     if (accessRights.canAccessHR) features.push('Ressources Humaines');
     if (accessRights.canAccessProjects) features.push('Gestion de Projets');
     if (accessRights.canAccessTasks) features.push('Gestion des Tâches');
     if (accessRights.canAccessSuperAdmin) features.push('Administration Système');
-    
+
     return features;
   };
 
   // Memoizer les valeurs booléennes pour éviter les re-renders
-  const memoizedValues = useMemo(() => ({
-    isSuperAdmin: isSuperAdmin(),
-    isTenantAdmin: isTenantAdmin(),
-    isHRManager: isHRManager(),
-    isProjectManager: isProjectManager(),
-  }), [isSuperAdmin, isTenantAdmin, isHRManager, isProjectManager]);
+  const memoizedValues = useMemo(
+    () => ({
+      isSuperAdmin: isSuperAdmin(),
+      isTenantAdmin: isTenantAdmin(),
+      isHRManager: isHRManager(),
+      isProjectManager: isProjectManager(),
+    }),
+    [isSuperAdmin, isTenantAdmin, isHRManager, isProjectManager]
+  );
 
   return {
     // États
@@ -210,20 +260,20 @@ export const useRoleBasedAccess = () => {
     isLoading,
     userRoles,
     userPermissions,
-    
+
     // Fonctions de vérification
     canAccess,
     hasRole,
     hasPermission,
-    
+
     // Informations sur les rôles (memoizées)
     ...memoizedValues,
-    
+
     // Utilitaires
     getAccessLevel,
     getUserRoleNames,
     getUserPermissionNames,
     getAccessRestrictions,
-    getAvailableFeatures
+    getAvailableFeatures,
   };
 };

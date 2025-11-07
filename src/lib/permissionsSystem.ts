@@ -2,7 +2,7 @@
  * ========================================
  * SYSTÈME DE PERMISSIONS - WADASHAQEEN
  * ========================================
- * 
+ *
  * Documentation complète de la logique des rôles et permissions
  * pour éviter toute confusion future dans le développement.
  */
@@ -10,7 +10,7 @@
 /**
  * STRUCTURE DE BASE DE DONNÉES
  * ============================
- * 
+ *
  * 1. TABLE: user_roles
  *    - Relie les utilisateurs aux rôles
  *    - Colonnes principales :
@@ -20,7 +20,7 @@
  *      * tenant_id: UUID (contexte tenant)
  *      * assigned_at: timestamp
  *      * expires_at: timestamp (optionnel)
- * 
+ *
  * 2. TABLE: roles
  *    - Définit les types de rôles possibles
  *    - Colonnes principales :
@@ -33,7 +33,7 @@
  *      * 'manager_hr' - Manager RH
  *      * 'project_manager' - Chef de projet
  *      * 'employee' - Employé standard
- * 
+ *
  * 3. TABLE: permissions
  *    - Définit les types de permissions possibles
  *    - Colonnes principales :
@@ -46,7 +46,7 @@
  *      * 'view_reports' - Voir les rapports
  *      * 'manage_projects' - Gérer les projets
  *      * 'manage_tasks' - Gérer les tâches
- * 
+ *
  * 4. TABLE: role_permissions
  *    - Relie les permissions aux rôles (table de liaison)
  *    - Colonnes principales :
@@ -58,12 +58,12 @@
 /**
  * LOGIQUE DE VÉRIFICATION
  * ========================
- * 
+ *
  * Pour vérifier si un utilisateur a un rôle :
  * 1. Récupérer les user_roles actifs pour l'utilisateur
  * 2. Faire une jointure avec la table roles
  * 3. Vérifier si le nom du rôle correspond
- * 
+ *
  * SQL équivalent :
  * SELECT ur.*, r.name as role_name
  * FROM user_roles ur
@@ -74,28 +74,28 @@
 /**
  * HIÉRARCHIE DES RÔLES
  * =====================
- * 
+ *
  * 1. super_admin (Niveau le plus élevé)
  *    - Accès à tout le système
  *    - Peut créer des tenants
  *    - Peut gérer tous les utilisateurs
  *    - Visible : Bouton "Super Admin" + "Rôles et Permissions"
- * 
+ *
  * 2. tenant_admin (Administrateur de tenant)
  *    - Accès complet à son tenant
  *    - Peut gérer les utilisateurs de son tenant
  *    - Peut créer des projets et tâches
- * 
+ *
  * 3. manager_hr (Manager RH)
  *    - Gestion des employés
  *    - Gestion des absences
  *    - Rapports RH
- * 
+ *
  * 4. project_manager (Chef de projet)
  *    - Gestion des projets assignés
  *    - Gestion des tâches
  *    - Rapports de projet
- * 
+ *
  * 5. employee (Employé standard)
  *    - Accès aux tâches assignées
  *    - Gestion de ses propres données
@@ -136,7 +136,7 @@ export enum RoleNames {
   TENANT_ADMIN = 'tenant_admin',
   MANAGER_HR = 'manager_hr',
   PROJECT_MANAGER = 'project_manager',
-  EMPLOYEE = 'employee'
+  EMPLOYEE = 'employee',
 }
 
 // Énumération des permissions communes
@@ -147,7 +147,7 @@ export enum PermissionNames {
   MANAGE_PROJECTS = 'manage_projects',
   MANAGE_TASKS = 'manage_tasks',
   MANAGE_EMPLOYEES = 'manage_employees',
-  VIEW_ANALYTICS = 'view_analytics'
+  VIEW_ANALYTICS = 'view_analytics',
 }
 
 /**
@@ -195,7 +195,10 @@ export const hasRole = (userRoles: UserRole[], roleName: RoleNames): boolean => 
 };
 
 // Vérifier si un utilisateur a une permission spécifique
-export const hasPermission = (userPermissions: UserPermission[], permissionName: PermissionNames): boolean => {
+export const hasPermission = (
+  userPermissions: UserPermission[],
+  permissionName: PermissionNames
+): boolean => {
   return userPermissions.some(perm => perm.permission_name === permissionName);
 };
 
@@ -212,20 +215,20 @@ export const canManageUsers = (userPermissions: UserPermission[]): boolean => {
 /**
  * RÈGLES MÉTIER
  * ==============
- * 
+ *
  * 1. SUPER ADMIN
  *    - Seuls les super_admin voient le bouton "Super Admin"
  *    - Seuls les super_admin voient le bouton "Rôles et Permissions"
  *    - Les super_admin ont accès à toutes les fonctionnalités
- * 
+ *
  * 2. TENANT ISOLATION
  *    - Chaque utilisateur (sauf super_admin) est limité à son tenant
  *    - Les requêtes doivent filtrer par tenant_id
- * 
+ *
  * 3. PERMISSIONS CUMULATIVES
  *    - Un utilisateur peut avoir plusieurs rôles
  *    - Les permissions se cumulent entre les rôles
- * 
+ *
  * 4. RÔLES ACTIFS UNIQUEMENT
  *    - Seuls les rôles avec is_active = true sont pris en compte
  *    - Les rôles peuvent expirer (expires_at)
@@ -265,7 +268,7 @@ const MyComponent = () => {
 /**
  * DÉBOGAGE ET LOGS
  * =================
- * 
+ *
  * Pour déboguer les problèmes de permissions :
  * 1. Vérifier que l'utilisateur a bien des user_roles actifs
  * 2. Vérifier que les rôles existent dans la table roles
@@ -275,23 +278,23 @@ const MyComponent = () => {
 
 export const debugUserPermissions = async (userId: string) => {
   console.group(`🔍 Debug Permissions pour utilisateur: ${userId}`);
-  
+
   // Log des rôles
   console.log('1. Rôles utilisateur:', await getUserRolesQuery(userId));
-  
+
   // Log des permissions
   console.log('2. Permissions utilisateur:', 'Voir requête getUserPermissionsQuery');
-  
+
   // Log du contexte tenant
   console.log('3. Contexte tenant:', 'Vérifier tenant_id dans user_roles');
-  
+
   console.groupEnd();
 };
 
 /**
  * MIGRATION ET ÉVOLUTION
  * =======================
- * 
+ *
  * Lors de l'ajout de nouveaux rôles ou permissions :
  * 1. Ajouter dans les enums RoleNames/PermissionNames
  * 2. Créer les entrées en base de données
@@ -307,5 +310,5 @@ export default {
   hasPermission,
   isSuperAdmin,
   canManageUsers,
-  debugUserPermissions
+  debugUserPermissions,
 };

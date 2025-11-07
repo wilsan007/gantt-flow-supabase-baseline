@@ -6,13 +6,13 @@ import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Label } from '@/components/ui/label';
 import { Progress } from '@/components/ui/progress';
-import { 
-  User, 
-  Briefcase, 
-  MapPin, 
-  Phone, 
-  Mail, 
-  Calendar, 
+import {
+  User,
+  Briefcase,
+  MapPin,
+  Phone,
+  Mail,
+  Calendar,
   DollarSign,
   Clock,
   Award,
@@ -22,7 +22,7 @@ import {
   Users,
   AlertCircle,
   CheckCircle,
-  Star
+  Star,
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { format } from 'date-fns';
@@ -75,7 +75,11 @@ interface Absence {
   reason: string;
 }
 
-export const EmployeeDetailsDialog = ({ employee, isOpen, onOpenChange }: EmployeeDetailsDialogProps) => {
+export const EmployeeDetailsDialog = ({
+  employee,
+  isOpen,
+  onOpenChange,
+}: EmployeeDetailsDialogProps) => {
   const [skillAssessments, setSkillAssessments] = useState<SkillAssessment[]>([]);
   const [evaluations, setEvaluations] = useState<Evaluation[]>([]);
   const [currentTasks, setCurrentTasks] = useState<Task[]>([]);
@@ -91,20 +95,22 @@ export const EmployeeDetailsDialog = ({ employee, isOpen, onOpenChange }: Employ
 
   const fetchEmployeeDetails = async () => {
     if (!employee) return;
-    
+
     setLoading(true);
     try {
       // Fetch skill assessments
       const { data: skills } = await supabase
         .from('skill_assessments')
-        .select(`
+        .select(
+          `
           id,
           current_level,
           target_level,
           last_assessed,
           assessor,
           skill_id
-        `)
+        `
+        )
         .eq('employee_id', employee.id)
         .order('last_assessed', { ascending: false });
 
@@ -116,20 +122,25 @@ export const EmployeeDetailsDialog = ({ employee, isOpen, onOpenChange }: Employ
           .from('skills')
           .select('id, name')
           .in('id', skillIds);
-        
+
         if (skillsData) {
-          skillsMap = skillsData.reduce((acc, skill) => {
-            acc[skill.id] = skill.name;
-            return acc;
-          }, {} as { [key: string]: string });
+          skillsMap = skillsData.reduce(
+            (acc, skill) => {
+              acc[skill.id] = skill.name;
+              return acc;
+            },
+            {} as { [key: string]: string }
+          );
         }
       }
 
       if (skills) {
-        setSkillAssessments(skills.map(s => ({
-          ...s,
-          skill_name: skillsMap[s.skill_id] || 'Compétence inconnue'
-        })));
+        setSkillAssessments(
+          skills.map(s => ({
+            ...s,
+            skill_name: skillsMap[s.skill_id] || 'Compétence inconnue',
+          }))
+        );
       }
 
       // Fetch evaluations
@@ -154,21 +165,24 @@ export const EmployeeDetailsDialog = ({ employee, isOpen, onOpenChange }: Employ
         .limit(10);
 
       if (tasks) {
-        setCurrentTasks(tasks.map((t) => ({
-          id: t.id,
-          title: t.title,
-          status: t.status,
-          priority: t.priority,
-          progress: t.progress || 0,
-          due_date: t.due_date,
-          assignee: (t as any).assigned_name
-        })));
+        setCurrentTasks(
+          tasks.map(t => ({
+            id: t.id,
+            title: t.title,
+            status: t.status,
+            priority: t.priority,
+            progress: t.progress || 0,
+            due_date: t.due_date,
+            assignee: (t as any).assigned_name,
+          }))
+        );
       }
 
       // Fetch recent absences
       const { data: absences } = await supabase
         .from('absences')
-        .select(`
+        .select(
+          `
           id,
           start_date,
           end_date,
@@ -176,9 +190,13 @@ export const EmployeeDetailsDialog = ({ employee, isOpen, onOpenChange }: Employ
           status,
           reason,
           absence_type_id
-        `)
+        `
+        )
         .eq('employee_id', employee.id)
-        .gte('start_date', new Date(Date.now() - 6 * 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0])
+        .gte(
+          'start_date',
+          new Date(Date.now() - 6 * 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+        )
         .order('start_date', { ascending: false })
         .limit(10);
 
@@ -190,20 +208,25 @@ export const EmployeeDetailsDialog = ({ employee, isOpen, onOpenChange }: Employ
           .from('absence_types')
           .select('id, name')
           .in('id', typeIds);
-        
+
         if (types) {
-          absenceTypesMap = types.reduce((acc, type) => {
-            acc[type.id] = type.name;
-            return acc;
-          }, {} as { [key: string]: string });
+          absenceTypesMap = types.reduce(
+            (acc, type) => {
+              acc[type.id] = type.name;
+              return acc;
+            },
+            {} as { [key: string]: string }
+          );
         }
       }
 
       if (absences) {
-        setRecentAbsences(absences.map(a => ({
-          ...a,
-          absence_type_name: absenceTypesMap[a.absence_type_id] || 'Type inconnu'
-        })));
+        setRecentAbsences(
+          absences.map(a => ({
+            ...a,
+            absence_type_name: absenceTypesMap[a.absence_type_id] || 'Type inconnu',
+          }))
+        );
       }
 
       // Fetch attendance statistics
@@ -224,10 +247,9 @@ export const EmployeeDetailsDialog = ({ employee, isOpen, onOpenChange }: Employ
           presentDays,
           presentRate: totalDays > 0 ? (presentDays / totalDays) * 100 : 0,
           avgHoursPerDay: avgHours,
-          totalHours
+          totalHours,
         });
       }
-
     } catch (error) {
       console.error('Error fetching employee details:', error);
     } finally {
@@ -237,20 +259,35 @@ export const EmployeeDetailsDialog = ({ employee, isOpen, onOpenChange }: Employ
 
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
-      case 'approved': case 'completed': case 'done': return 'default';
-      case 'pending': case 'doing': case 'in_progress': return 'secondary';
-      case 'rejected': case 'cancelled': return 'destructive';
-      case 'todo': return 'outline';
-      default: return 'secondary';
+      case 'approved':
+      case 'completed':
+      case 'done':
+        return 'default';
+      case 'pending':
+      case 'doing':
+      case 'in_progress':
+        return 'secondary';
+      case 'rejected':
+      case 'cancelled':
+        return 'destructive';
+      case 'todo':
+        return 'outline';
+      default:
+        return 'secondary';
     }
   };
 
   const getPriorityColor = (priority: string) => {
     switch (priority?.toLowerCase()) {
-      case 'high': case 'urgent': return 'destructive';
-      case 'medium': return 'secondary';
-      case 'low': return 'outline';
-      default: return 'secondary';
+      case 'high':
+      case 'urgent':
+        return 'destructive';
+      case 'medium':
+        return 'secondary';
+      case 'low':
+        return 'outline';
+      default:
+        return 'secondary';
     }
   };
 
@@ -267,18 +304,24 @@ export const EmployeeDetailsDialog = ({ employee, isOpen, onOpenChange }: Employ
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-h-[90vh] max-w-4xl overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-3">
             <Avatar className="h-12 w-12">
               <AvatarImage src={employee.avatar_url || undefined} />
               <AvatarFallback className="text-lg">
-                {employee.full_name.split(' ').map((n: string) => n[0]).join('').toUpperCase()}
+                {employee.full_name
+                  .split(' ')
+                  .map((n: string) => n[0])
+                  .join('')
+                  .toUpperCase()}
               </AvatarFallback>
             </Avatar>
             <div>
               <h2 className="text-2xl font-bold">{employee.full_name}</h2>
-              <p className="text-lg text-muted-foreground">{employee.job_title || 'Poste non défini'}</p>
+              <p className="text-lg text-muted-foreground">
+                {employee.job_title || 'Poste non défini'}
+              </p>
             </div>
           </DialogTitle>
         </DialogHeader>
@@ -295,7 +338,7 @@ export const EmployeeDetailsDialog = ({ employee, isOpen, onOpenChange }: Employ
 
           {/* Informations personnelles */}
           <TabsContent value="personal" className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
@@ -332,9 +375,15 @@ export const EmployeeDetailsDialog = ({ employee, isOpen, onOpenChange }: Employ
                 <CardContent>
                   {employee.emergency_contact ? (
                     <div className="space-y-2">
-                      <p><strong>Nom:</strong> {employee.emergency_contact.name}</p>
-                      <p><strong>Téléphone:</strong> {employee.emergency_contact.phone}</p>
-                      <p><strong>Relation:</strong> {employee.emergency_contact.relation}</p>
+                      <p>
+                        <strong>Nom:</strong> {employee.emergency_contact.name}
+                      </p>
+                      <p>
+                        <strong>Téléphone:</strong> {employee.emergency_contact.phone}
+                      </p>
+                      <p>
+                        <strong>Relation:</strong> {employee.emergency_contact.relation}
+                      </p>
                     </div>
                   ) : (
                     <p className="text-muted-foreground">Aucun contact d'urgence renseigné</p>
@@ -346,7 +395,7 @@ export const EmployeeDetailsDialog = ({ employee, isOpen, onOpenChange }: Employ
 
           {/* Informations de travail */}
           <TabsContent value="work" className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
@@ -358,7 +407,9 @@ export const EmployeeDetailsDialog = ({ employee, isOpen, onOpenChange }: Employ
                   <div>
                     <Label>Date d'embauche</Label>
                     <p className="font-medium">
-                      {employee.hire_date ? format(new Date(employee.hire_date), 'dd MMMM yyyy', { locale: fr }) : 'Non renseignée'}
+                      {employee.hire_date
+                        ? format(new Date(employee.hire_date), 'dd MMMM yyyy', { locale: fr })
+                        : 'Non renseignée'}
                     </p>
                   </div>
                   <div>
@@ -413,23 +464,29 @@ export const EmployeeDetailsDialog = ({ employee, isOpen, onOpenChange }: Employ
               <CardContent>
                 {skillAssessments.length > 0 ? (
                   <div className="space-y-4">
-                    {skillAssessments.map((skill) => (
+                    {skillAssessments.map(skill => (
                       <div key={skill.id} className="space-y-2">
-                        <div className="flex justify-between items-center">
+                        <div className="flex items-center justify-between">
                           <h4 className="font-medium">{skill.skill_name}</h4>
                           <div className="text-sm text-muted-foreground">
                             {skill.current_level}/{skill.target_level} - Évalué par {skill.assessor}
                           </div>
                         </div>
-                        <Progress value={(skill.current_level / skill.target_level) * 100} className="h-2" />
+                        <Progress
+                          value={(skill.current_level / skill.target_level) * 100}
+                          className="h-2"
+                        />
                         <p className="text-xs text-muted-foreground">
-                          Dernière évaluation: {format(new Date(skill.last_assessed), 'dd/MM/yyyy', { locale: fr })}
+                          Dernière évaluation:{' '}
+                          {format(new Date(skill.last_assessed), 'dd/MM/yyyy', { locale: fr })}
                         </p>
                       </div>
                     ))}
                   </div>
                 ) : (
-                  <p className="text-muted-foreground">Aucune évaluation de compétences disponible</p>
+                  <p className="text-muted-foreground">
+                    Aucune évaluation de compétences disponible
+                  </p>
                 )}
               </CardContent>
             </Card>
@@ -447,11 +504,13 @@ export const EmployeeDetailsDialog = ({ employee, isOpen, onOpenChange }: Employ
               <CardContent>
                 {evaluations.length > 0 ? (
                   <div className="space-y-4">
-                    {evaluations.map((evaluation) => (
-                      <div key={evaluation.id} className="border rounded-lg p-4 space-y-2">
-                        <div className="flex justify-between items-start">
+                    {evaluations.map(evaluation => (
+                      <div key={evaluation.id} className="space-y-2 rounded-lg border p-4">
+                        <div className="flex items-start justify-between">
                           <div>
-                            <h4 className="font-medium">{evaluation.type} - {evaluation.period}</h4>
+                            <h4 className="font-medium">
+                              {evaluation.type} - {evaluation.period}
+                            </h4>
                             <p className="text-sm text-muted-foreground">
                               Évaluateur: {evaluation.evaluator_name}
                             </p>
@@ -472,7 +531,9 @@ export const EmployeeDetailsDialog = ({ employee, isOpen, onOpenChange }: Employ
                     ))}
                   </div>
                 ) : (
-                  <p className="text-muted-foreground">Aucune évaluation de performance disponible</p>
+                  <p className="text-muted-foreground">
+                    Aucune évaluation de performance disponible
+                  </p>
                 )}
               </CardContent>
             </Card>
@@ -490,17 +551,13 @@ export const EmployeeDetailsDialog = ({ employee, isOpen, onOpenChange }: Employ
               <CardContent>
                 {currentTasks.length > 0 ? (
                   <div className="space-y-3">
-                    {currentTasks.map((task) => (
-                      <div key={task.id} className="border rounded-lg p-3 space-y-2">
-                        <div className="flex justify-between items-start">
+                    {currentTasks.map(task => (
+                      <div key={task.id} className="space-y-2 rounded-lg border p-3">
+                        <div className="flex items-start justify-between">
                           <h4 className="font-medium">{task.title}</h4>
                           <div className="flex gap-2">
-                            <Badge variant={getStatusColor(task.status)}>
-                              {task.status}
-                            </Badge>
-                            <Badge variant={getPriorityColor(task.priority)}>
-                              {task.priority}
-                            </Badge>
+                            <Badge variant={getStatusColor(task.status)}>{task.status}</Badge>
+                            <Badge variant={getPriorityColor(task.priority)}>{task.priority}</Badge>
                           </div>
                         </div>
                         <div className="space-y-1">
@@ -512,7 +569,8 @@ export const EmployeeDetailsDialog = ({ employee, isOpen, onOpenChange }: Employ
                         </div>
                         {task.due_date && (
                           <p className="text-xs text-muted-foreground">
-                            Échéance: {format(new Date(task.due_date), 'dd/MM/yyyy', { locale: fr })}
+                            Échéance:{' '}
+                            {format(new Date(task.due_date), 'dd/MM/yyyy', { locale: fr })}
                           </p>
                         )}
                       </div>
@@ -527,7 +585,7 @@ export const EmployeeDetailsDialog = ({ employee, isOpen, onOpenChange }: Employ
 
           {/* Présences et absences */}
           <TabsContent value="attendance" className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
@@ -572,14 +630,14 @@ export const EmployeeDetailsDialog = ({ employee, isOpen, onOpenChange }: Employ
                 </CardHeader>
                 <CardContent>
                   {recentAbsences.length > 0 ? (
-                    <div className="space-y-3 max-h-60 overflow-y-auto">
-                      {recentAbsences.map((absence) => (
-                        <div key={absence.id} className="border rounded p-2 space-y-1">
-                          <div className="flex justify-between items-start">
+                    <div className="max-h-60 space-y-3 overflow-y-auto">
+                      {recentAbsences.map(absence => (
+                        <div key={absence.id} className="space-y-1 rounded border p-2">
+                          <div className="flex items-start justify-between">
                             <div>
-                              <p className="font-medium text-sm">{absence.absence_type_name}</p>
+                              <p className="text-sm font-medium">{absence.absence_type_name}</p>
                               <p className="text-xs text-muted-foreground">
-                                {format(new Date(absence.start_date), 'dd/MM', { locale: fr })} - 
+                                {format(new Date(absence.start_date), 'dd/MM', { locale: fr })} -
                                 {format(new Date(absence.end_date), 'dd/MM/yyyy', { locale: fr })}
                               </p>
                             </div>
@@ -593,15 +651,13 @@ export const EmployeeDetailsDialog = ({ employee, isOpen, onOpenChange }: Employ
                             </div>
                           </div>
                           {absence.reason && (
-                            <p className="text-xs text-muted-foreground italic">
-                              {absence.reason}
-                            </p>
+                            <p className="text-xs italic text-muted-foreground">{absence.reason}</p>
                           )}
                         </div>
                       ))}
                     </div>
                   ) : (
-                    <p className="text-muted-foreground text-sm">Aucune absence récente</p>
+                    <p className="text-sm text-muted-foreground">Aucune absence récente</p>
                   )}
                 </CardContent>
               </Card>

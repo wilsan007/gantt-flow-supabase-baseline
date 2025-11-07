@@ -7,7 +7,13 @@ import { useHRSelfService } from '@/hooks/useHRSelfService';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Clock, Plus, Save, Send, Trash2, AlertCircle } from 'lucide-react';
@@ -32,7 +38,7 @@ interface TimesheetWeeklyProps {
 
 export function TimesheetWeekly({ weekStartDate, onSuccess }: TimesheetWeeklyProps) {
   const { createTimesheet, loading } = useHRSelfService();
-  
+
   const [entries, setEntries] = useState<TimesheetEntry[]>([]);
   const [selectedProject, setSelectedProject] = useState<string>('');
   const [isDraft, setIsDraft] = useState(true);
@@ -82,15 +88,11 @@ export function TimesheetWeekly({ weekStartDate, onSuccess }: TimesheetWeeklyPro
   };
 
   const calculateRegularHours = () => {
-    return entries
-      .filter(e => !e.is_overtime)
-      .reduce((sum, e) => sum + (Number(e.hours) || 0), 0);
+    return entries.filter(e => !e.is_overtime).reduce((sum, e) => sum + (Number(e.hours) || 0), 0);
   };
 
   const calculateOvertimeHours = () => {
-    return entries
-      .filter(e => e.is_overtime)
-      .reduce((sum, e) => sum + (Number(e.hours) || 0), 0);
+    return entries.filter(e => e.is_overtime).reduce((sum, e) => sum + (Number(e.hours) || 0), 0);
   };
 
   const handleSave = async (submit: boolean = false) => {
@@ -125,11 +127,10 @@ export function TimesheetWeekly({ weekStartDate, onSuccess }: TimesheetWeeklyPro
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Clock className="h-5 w-5" />
-          Feuille de Temps - Semaine du {format(weekStart, 'dd MMM', { locale: fr })} au {format(weekEnd, 'dd MMM yyyy', { locale: fr })}
+          Feuille de Temps - Semaine du {format(weekStart, 'dd MMM', { locale: fr })} au{' '}
+          {format(weekEnd, 'dd MMM yyyy', { locale: fr })}
         </CardTitle>
-        <CardDescription>
-          Remplissez vos heures travaillées pour la semaine
-        </CardDescription>
+        <CardDescription>Remplissez vos heures travaillées pour la semaine</CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         {/* Alerte heures supplémentaires */}
@@ -137,7 +138,8 @@ export function TimesheetWeekly({ weekStartDate, onSuccess }: TimesheetWeeklyPro
           <Alert>
             <AlertCircle className="h-4 w-4" />
             <AlertDescription>
-              Vous avez dépassé 40 heures cette semaine. Pensez à cocher "Heures sup." pour les heures excédentaires.
+              Vous avez dépassé 40 heures cette semaine. Pensez à cocher "Heures sup." pour les
+              heures excédentaires.
             </AlertDescription>
           </Alert>
         )}
@@ -145,27 +147,23 @@ export function TimesheetWeekly({ weekStartDate, onSuccess }: TimesheetWeeklyPro
         {/* Tableau des entrées */}
         <div className="space-y-4">
           {entries.map((entry, index) => (
-            <div key={index} className="border rounded-lg p-4 space-y-4">
+            <div key={index} className="space-y-4 rounded-lg border p-4">
               <div className="flex items-center justify-between">
                 <h4 className="font-medium">Entrée {index + 1}</h4>
                 {entries.length > 1 && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => removeEntry(index)}
-                  >
+                  <Button variant="ghost" size="sm" onClick={() => removeEntry(index)}>
                     <Trash2 className="h-4 w-4" />
                   </Button>
                 )}
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 {/* Projet */}
                 <div className="space-y-2">
                   <Label>Projet</Label>
                   <Select
                     value={entry.project_id || ''}
-                    onValueChange={(value) => updateEntry(index, 'project_id', value)}
+                    onValueChange={value => updateEntry(index, 'project_id', value)}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Sélectionner un projet" />
@@ -184,21 +182,23 @@ export function TimesheetWeekly({ weekStartDate, onSuccess }: TimesheetWeeklyPro
                   <Input
                     placeholder="Ex: Développement, Réunion..."
                     value={entry.description || ''}
-                    onChange={(e) => updateEntry(index, 'description', e.target.value)}
+                    onChange={e => updateEntry(index, 'description', e.target.value)}
                   />
                 </div>
               </div>
 
               {/* Heures par jour */}
               <div className="grid grid-cols-7 gap-2">
-                {weekDays.map((day) => {
+                {weekDays.map(day => {
                   const dayStr = format(day, 'yyyy-MM-dd');
                   const isToday = format(new Date(), 'yyyy-MM-dd') === dayStr;
                   const isSelected = entry.work_date === dayStr;
 
                   return (
                     <div key={dayStr} className="space-y-2">
-                      <Label className={`text-xs text-center block ${isToday ? 'font-bold text-primary' : ''}`}>
+                      <Label
+                        className={`block text-center text-xs ${isToday ? 'font-bold text-primary' : ''}`}
+                      >
                         {format(day, 'EEE', { locale: fr })}
                         <br />
                         {format(day, 'dd')}
@@ -211,7 +211,7 @@ export function TimesheetWeekly({ weekStartDate, onSuccess }: TimesheetWeeklyPro
                         placeholder="0"
                         className={`text-center ${isSelected ? 'border-primary' : ''}`}
                         value={isSelected ? entry.hours : ''}
-                        onChange={(e) => {
+                        onChange={e => {
                           updateEntry(index, 'work_date', dayStr);
                           updateEntry(index, 'hours', parseFloat(e.target.value) || 0);
                         }}
@@ -226,9 +226,9 @@ export function TimesheetWeekly({ weekStartDate, onSuccess }: TimesheetWeeklyPro
                 <Checkbox
                   id={`overtime-${index}`}
                   checked={entry.is_overtime}
-                  onCheckedChange={(checked) => updateEntry(index, 'is_overtime', checked)}
+                  onCheckedChange={checked => updateEntry(index, 'is_overtime', checked)}
                 />
-                <Label htmlFor={`overtime-${index}`} className="text-sm cursor-pointer">
+                <Label htmlFor={`overtime-${index}`} className="cursor-pointer text-sm">
                   Heures supplémentaires
                 </Label>
               </div>
@@ -238,15 +238,15 @@ export function TimesheetWeekly({ weekStartDate, onSuccess }: TimesheetWeeklyPro
 
         {/* Bouton ajouter entrée */}
         <Button variant="outline" onClick={addNewEntry} className="w-full">
-          <Plus className="h-4 w-4 mr-2" />
+          <Plus className="mr-2 h-4 w-4" />
           Ajouter une ligne
         </Button>
 
         {/* Totaux journaliers */}
         <div className="border-t pt-4">
           <Label className="text-sm font-medium">Total par jour</Label>
-          <div className="grid grid-cols-7 gap-2 mt-2">
-            {weekDays.map((day) => {
+          <div className="mt-2 grid grid-cols-7 gap-2">
+            {weekDays.map(day => {
               const total = calculateDayTotal(day);
               const isOvertime = total > 8;
               return (
@@ -261,16 +261,16 @@ export function TimesheetWeekly({ weekStartDate, onSuccess }: TimesheetWeeklyPro
         </div>
 
         {/* Totaux globaux */}
-        <div className="bg-muted/50 rounded-lg p-4 space-y-2">
-          <div className="flex justify-between items-center">
+        <div className="space-y-2 rounded-lg bg-muted/50 p-4">
+          <div className="flex items-center justify-between">
             <span className="text-sm text-muted-foreground">Heures normales</span>
             <span className="font-semibold">{regularHours.toFixed(1)}h</span>
           </div>
-          <div className="flex justify-between items-center">
+          <div className="flex items-center justify-between">
             <span className="text-sm text-muted-foreground">Heures supplémentaires</span>
             <span className="font-semibold text-orange-600">{overtimeHours.toFixed(1)}h</span>
           </div>
-          <div className="flex justify-between items-center border-t pt-2">
+          <div className="flex items-center justify-between border-t pt-2">
             <span className="font-medium">Total semaine</span>
             <span className="text-xl font-bold text-primary">{totalHours.toFixed(1)}h</span>
           </div>
@@ -283,14 +283,11 @@ export function TimesheetWeekly({ weekStartDate, onSuccess }: TimesheetWeeklyPro
             onClick={() => handleSave(false)}
             disabled={loading || totalHours === 0}
           >
-            <Save className="h-4 w-4 mr-2" />
+            <Save className="mr-2 h-4 w-4" />
             Enregistrer brouillon
           </Button>
-          <Button
-            onClick={() => handleSave(true)}
-            disabled={loading || totalHours === 0}
-          >
-            <Send className="h-4 w-4 mr-2" />
+          <Button onClick={() => handleSave(true)} disabled={loading || totalHours === 0}>
+            <Send className="mr-2 h-4 w-4" />
             Soumettre pour approbation
           </Button>
         </div>

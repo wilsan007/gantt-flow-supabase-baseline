@@ -4,12 +4,16 @@ import { TaskDetailsDialog } from '../dialogs/TaskDetailsDialog';
 
 interface TaskDialogManagerProps {
   tasks: Task[];
-  onCreateSubtask: (parentId: string, linkedActionId?: string, customData?: {
-    title: string;
-    start_date: string;
-    due_date: string;
-    effort_estimate_h: number;
-  }) => void;
+  onCreateSubtask: (
+    parentId: string,
+    linkedActionId?: string,
+    customData?: {
+      title: string;
+      start_date: string;
+      due_date: string;
+      effort_estimate_h: number;
+    }
+  ) => void;
 }
 
 export const TaskDialogManager = ({ tasks, onCreateSubtask }: TaskDialogManagerProps) => {
@@ -61,7 +65,7 @@ export const TaskDialogManager = ({ tasks, onCreateSubtask }: TaskDialogManagerP
     // Handlers
     handleCreateSubtask,
     handleRowDoubleClick,
-    
+
     // Dialogs JSX
     dialogs: (
       <>
@@ -71,6 +75,6 @@ export const TaskDialogManager = ({ tasks, onCreateSubtask }: TaskDialogManagerP
           task={selectedTaskForDetails}
         />
       </>
-    )
+    ),
   };
 };

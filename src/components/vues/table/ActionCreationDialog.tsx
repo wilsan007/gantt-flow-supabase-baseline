@@ -27,7 +27,10 @@ interface ActionCreationDialogProps {
   selectedTaskId?: string;
 }
 
-export const ActionCreationDialog = ({ onCreateAction, selectedTaskId }: ActionCreationDialogProps) => {
+export const ActionCreationDialog = ({
+  onCreateAction,
+  selectedTaskId,
+}: ActionCreationDialogProps) => {
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState('');
   const [weight, setWeight] = useState([20]);
@@ -55,12 +58,12 @@ export const ActionCreationDialog = ({ onCreateAction, selectedTaskId }: ActionC
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button 
-          size="sm" 
+        <Button
+          size="sm"
           disabled={!selectedTaskId}
-          title={!selectedTaskId ? "Sélectionnez d'abord une tâche" : "Créer une action détaillée"}
+          title={!selectedTaskId ? "Sélectionnez d'abord une tâche" : 'Créer une action détaillée'}
         >
-          <Plus className="h-4 w-4 mr-2" />
+          <Plus className="mr-2 h-4 w-4" />
           Action Détaillée
         </Button>
       </DialogTrigger>
@@ -75,7 +78,7 @@ export const ActionCreationDialog = ({ onCreateAction, selectedTaskId }: ActionC
             <Input
               id="title"
               value={title}
-              onChange={(e) => setTitle(e.target.value)}
+              onChange={e => setTitle(e.target.value)}
               placeholder="Ex: Révision du code..."
               maxLength={40}
             />
@@ -107,21 +110,13 @@ export const ActionCreationDialog = ({ onCreateAction, selectedTaskId }: ActionC
             <Label>Date d'échéance (optionnelle)</Label>
             <Popover>
               <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  className="w-full justify-start text-left font-normal"
-                >
+                <Button variant="outline" className="w-full justify-start text-left font-normal">
                   <CalendarIcon className="mr-2 h-4 w-4" />
-                  {dueDate ? format(dueDate, 'PPP', { locale: fr }) : "Sélectionner une date"}
+                  {dueDate ? format(dueDate, 'PPP', { locale: fr }) : 'Sélectionner une date'}
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0">
-                <Calendar
-                  mode="single"
-                  selected={dueDate}
-                  onSelect={setDueDate}
-                  initialFocus
-                />
+                <Calendar mode="single" selected={dueDate} onSelect={setDueDate} initialFocus />
               </PopoverContent>
             </Popover>
           </div>
@@ -132,7 +127,7 @@ export const ActionCreationDialog = ({ onCreateAction, selectedTaskId }: ActionC
             <Textarea
               id="notes"
               value={notes}
-              onChange={(e) => setNotes(e.target.value)}
+              onChange={e => setNotes(e.target.value)}
               placeholder="Détails supplémentaires, instructions..."
               rows={3}
             />

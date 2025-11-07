@@ -26,7 +26,9 @@ export const ProfileSettings = () => {
 
   const loadProfile = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (user) {
         setEmail(user.email || '');
         setFullName(user.user_metadata?.full_name || '');
@@ -43,7 +45,7 @@ export const ProfileSettings = () => {
 
     try {
       const { error } = await supabase.auth.updateUser({
-        data: { full_name: fullName }
+        data: { full_name: fullName },
       });
 
       if (error) throw error;
@@ -73,20 +75,20 @@ export const ProfileSettings = () => {
 
       const file = event.target.files[0];
       const fileExt = file.name.split('.').pop();
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       const fileName = `${user?.id}-${Math.random()}.${fileExt}`;
       const filePath = `avatars/${fileName}`;
 
-      const { error: uploadError } = await supabase.storage
-        .from('avatars')
-        .upload(filePath, file);
+      const { error: uploadError } = await supabase.storage.from('avatars').upload(filePath, file);
 
       if (uploadError) throw uploadError;
 
       const { data } = supabase.storage.from('avatars').getPublicUrl(filePath);
-      
+
       const { error: updateError } = await supabase.auth.updateUser({
-        data: { avatar_url: data.publicUrl }
+        data: { avatar_url: data.publicUrl },
       });
 
       if (updateError) throw updateError;
@@ -108,7 +110,12 @@ export const ProfileSettings = () => {
     }
   };
 
-  const initials = fullName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+  const initials = fullName
+    .split(' ')
+    .map(n => n[0])
+    .join('')
+    .toUpperCase()
+    .slice(0, 2);
 
   return (
     <Card>
@@ -123,7 +130,7 @@ export const ProfileSettings = () => {
         <div className="flex items-center gap-4">
           <Avatar className="h-20 w-20">
             <AvatarImage src={avatarUrl} alt={fullName} />
-            <AvatarFallback className="bg-primary text-primary-foreground text-lg">
+            <AvatarFallback className="bg-primary text-lg text-primary-foreground">
               {initials}
             </AvatarFallback>
           </Avatar>
@@ -133,9 +140,13 @@ export const ProfileSettings = () => {
                 <Button type="button" variant="outline" size="sm" disabled={uploading} asChild>
                   <span>
                     {uploading ? (
-                      <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Téléchargement...</>
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Téléchargement...
+                      </>
                     ) : (
-                      <><Upload className="h-4 w-4 mr-2" /> Changer la photo</>
+                      <>
+                        <Upload className="mr-2 h-4 w-4" /> Changer la photo
+                      </>
                     )}
                   </span>
                 </Button>
@@ -149,9 +160,7 @@ export const ProfileSettings = () => {
               className="hidden"
               disabled={uploading}
             />
-            <p className="text-xs text-muted-foreground mt-2">
-              JPG, PNG ou GIF. Max 2MB.
-            </p>
+            <p className="mt-2 text-xs text-muted-foreground">JPG, PNG ou GIF. Max 2MB.</p>
           </div>
         </div>
 
@@ -162,7 +171,7 @@ export const ProfileSettings = () => {
             <Input
               id="fullName"
               value={fullName}
-              onChange={(e) => setFullName(e.target.value)}
+              onChange={e => setFullName(e.target.value)}
               placeholder="Votre nom complet"
             />
           </div>
@@ -170,13 +179,7 @@ export const ProfileSettings = () => {
           {/* Email (lecture seule) */}
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
-            <Input
-              id="email"
-              type="email"
-              value={email}
-              disabled
-              className="bg-muted"
-            />
+            <Input id="email" type="email" value={email} disabled className="bg-muted" />
             <p className="text-xs text-muted-foreground">
               L'email ne peut pas être modifié. Contactez l'administrateur si nécessaire.
             </p>
@@ -184,7 +187,9 @@ export const ProfileSettings = () => {
 
           <Button type="submit" disabled={loading}>
             {loading ? (
-              <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Enregistrement...</>
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Enregistrement...
+              </>
             ) : (
               'Enregistrer les modifications'
             )}

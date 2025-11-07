@@ -59,37 +59,35 @@ export default function Analytics() {
     <div className="min-h-screen bg-background">
       <div className="container mx-auto p-6">
         {/* Header */}
-        <div className="flex items-center justify-between mb-6">
+        <div className="mb-6 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Button variant="outline" onClick={() => navigate('/')}>
-              <ArrowLeft className="h-4 w-4 mr-2" />
+              <ArrowLeft className="mr-2 h-4 w-4" />
               Retour
             </Button>
             <div>
-              <h1 className="text-3xl font-bold flex items-center gap-2">
+              <h1 className="flex items-center gap-2 text-3xl font-bold">
                 <TrendingUp className="h-8 w-8" />
                 Mes Statistiques
               </h1>
-              <p className="text-muted-foreground">
-                Votre performance et vos réalisations
-              </p>
+              <p className="text-muted-foreground">Votre performance et vos réalisations</p>
             </div>
           </div>
         </div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-          {stats.map((stat) => (
+        <div className="mb-6 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+          {stats.map(stat => (
             <Card key={stat.title}>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
-                  {stat.title}
-                </CardTitle>
+                <CardTitle className="text-sm font-medium">{stat.title}</CardTitle>
                 <stat.icon className={`h-4 w-4 ${stat.color}`} />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{stat.value}</div>
-                <p className={`text-xs ${stat.trend === 'up' ? 'text-green-600' : 'text-red-600'} flex items-center gap-1 mt-1`}>
+                <p
+                  className={`text-xs ${stat.trend === 'up' ? 'text-green-600' : 'text-red-600'} mt-1 flex items-center gap-1`}
+                >
                   <TrendingUp className="h-3 w-3" />
                   {stat.change} vs mois dernier
                 </p>
@@ -98,7 +96,7 @@ export default function Analytics() {
           ))}
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
           {/* Activité récente */}
           <Card>
             <CardHeader>
@@ -111,13 +109,13 @@ export default function Analytics() {
                   <div key={day} className="flex items-center justify-between">
                     <span className="text-sm font-medium">{day}</span>
                     <div className="flex items-center gap-2">
-                      <div className="h-2 w-32 bg-muted rounded-full overflow-hidden">
+                      <div className="h-2 w-32 overflow-hidden rounded-full bg-muted">
                         <div
-                          className="h-full bg-primary rounded-full"
+                          className="h-full rounded-full bg-primary"
                           style={{ width: `${Math.random() * 100}%` }}
                         />
                       </div>
-                      <span className="text-sm text-muted-foreground w-8">
+                      <span className="w-8 text-sm text-muted-foreground">
                         {Math.floor(Math.random() * 10)}h
                       </span>
                     </div>
@@ -141,15 +139,15 @@ export default function Analytics() {
                 {achievements.map((achievement, i) => (
                   <div
                     key={i}
-                    className={`flex items-start gap-3 p-3 rounded-lg border ${
+                    className={`flex items-start gap-3 rounded-lg border p-3 ${
                       achievement.unlocked
-                        ? 'bg-primary/5 border-primary/20'
-                        : 'bg-muted/50 border-muted opacity-60'
+                        ? 'border-primary/20 bg-primary/5'
+                        : 'border-muted bg-muted/50 opacity-60'
                     }`}
                   >
                     <div className="text-2xl">{achievement.title.split(' ')[0]}</div>
                     <div className="flex-1">
-                      <p className="font-medium text-sm">
+                      <p className="text-sm font-medium">
                         {achievement.title.split(' ').slice(1).join(' ')}
                       </p>
                       <p className="text-xs text-muted-foreground">{achievement.desc}</p>
@@ -169,8 +167,9 @@ export default function Analytics() {
         {/* Note */}
         <Card className="mt-6">
           <CardContent className="pt-6">
-            <p className="text-sm text-muted-foreground text-center">
-              💡 Ces statistiques sont basées sur votre activité. Connectez-vous quotidiennement pour suivre votre progression !
+            <p className="text-center text-sm text-muted-foreground">
+              💡 Ces statistiques sont basées sur votre activité. Connectez-vous quotidiennement
+              pour suivre votre progression !
             </p>
           </CardContent>
         </Card>

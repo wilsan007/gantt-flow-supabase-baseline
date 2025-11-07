@@ -1,12 +1,12 @@
 /**
  * Système de Cache Sécurisé avec Expiration Automatique
- * 
+ *
  * Bonnes Pratiques Sécurité :
  * - TTL adaptatif selon le type de données
  * - Expiration automatique pour données sensibles
  * - Invalidation sur déconnexion
  * - Chiffrement optionnel pour données critiques
- * 
+ *
  * Pattern: Auth0 + AWS Cognito + Firebase Auth
  */
 
@@ -16,29 +16,29 @@
 
 export const CACHE_TTL = {
   // Auth & Sessions (Court - Sécurité maximale)
-  SESSION: 15 * 60 * 1000,           // 15 min - Token refresh
-  AUTH_TOKEN: 30 * 60 * 1000,        // 30 min - Access token
-  
+  SESSION: 15 * 60 * 1000, // 15 min - Token refresh
+  AUTH_TOKEN: 30 * 60 * 1000, // 30 min - Access token
+
   // Rôles & Permissions (Moyen - Équilibre perf/sécu)
-  ROLES: 10 * 60 * 1000,             // 10 min - Rôles utilisateur
-  PERMISSIONS: 10 * 60 * 1000,       // 10 min - Permissions
-  ACCESS_RIGHTS: 5 * 60 * 1000,      // 5 min - Droits calculés
-  
+  ROLES: 10 * 60 * 1000, // 10 min - Rôles utilisateur
+  PERMISSIONS: 10 * 60 * 1000, // 10 min - Permissions
+  ACCESS_RIGHTS: 5 * 60 * 1000, // 5 min - Droits calculés
+
   // Données Utilisateur (Court)
-  USER_PROFILE: 5 * 60 * 1000,       // 5 min - Profil utilisateur
-  USER_SETTINGS: 10 * 60 * 1000,     // 10 min - Préférences
-  
+  USER_PROFILE: 5 * 60 * 1000, // 5 min - Profil utilisateur
+  USER_SETTINGS: 10 * 60 * 1000, // 10 min - Préférences
+
   // Données Métier (Moyen)
-  EMPLOYEES: 5 * 60 * 1000,          // 5 min - Liste employés
-  PROJECTS: 3 * 60 * 1000,           // 3 min - Projets
-  TASKS: 2 * 60 * 1000,              // 2 min - Tâches
-  
+  EMPLOYEES: 5 * 60 * 1000, // 5 min - Liste employés
+  PROJECTS: 3 * 60 * 1000, // 3 min - Projets
+  TASKS: 2 * 60 * 1000, // 2 min - Tâches
+
   // Données Référence (Long)
-  DEPARTMENTS: 30 * 60 * 1000,       // 30 min - Départements (stable)
-  TENANT_CONFIG: 60 * 60 * 1000,     // 1h - Config tenant
-  
+  DEPARTMENTS: 30 * 60 * 1000, // 30 min - Départements (stable)
+  TENANT_CONFIG: 60 * 60 * 1000, // 1h - Config tenant
+
   // Données Publiques (Très long)
-  PUBLIC_DATA: 24 * 60 * 60 * 1000,  // 24h - Données publiques
+  PUBLIC_DATA: 24 * 60 * 60 * 1000, // 24h - Données publiques
 } as const;
 
 // ============================================================================
@@ -80,7 +80,7 @@ class SecureCacheManager {
     totalEntries: 0,
     memoryUsage: 0,
   };
-  
+
   private cleanupInterval: NodeJS.Timeout | null = null;
   private readonly CLEANUP_INTERVAL = 60 * 1000; // Nettoyage toutes les minutes
   private readonly VERSION = '1.0';
@@ -100,7 +100,7 @@ class SecureCacheManager {
    */
   get<T>(key: string): T | null {
     const entry = this.cache.get(key);
-    
+
     if (!entry) {
       this.stats.misses++;
       return null;
@@ -126,8 +126,8 @@ class SecureCacheManager {
    * Stocker une valeur dans le cache
    */
   set<T>(
-    key: string, 
-    data: T, 
+    key: string,
+    data: T,
     ttl: number = CACHE_TTL.USER_PROFILE,
     options?: {
       userId?: string;
@@ -136,7 +136,7 @@ class SecureCacheManager {
     }
   ): void {
     const now = Date.now();
-    
+
     const entry: CacheEntry<T> = {
       data,
       timestamp: now,
@@ -204,10 +204,10 @@ class SecureCacheManager {
 
     // Récupérer les données
     const data = await fetcher();
-    
+
     // Stocker dans le cache
     this.set(key, data, ttl, options);
-    
+
     return data;
   }
 
@@ -220,9 +220,7 @@ class SecureCacheManager {
    */
   invalidateByPattern(pattern: string | RegExp): number {
     let count = 0;
-    const regex = typeof pattern === 'string' 
-      ? new RegExp(pattern.replace(/\*/g, '.*')) 
-      : pattern;
+    const regex = typeof pattern === 'string' ? new RegExp(pattern.replace(/\*/g, '.*')) : pattern;
 
     for (const key of this.cache.keys()) {
       if (regex.test(key)) {
@@ -239,7 +237,7 @@ class SecureCacheManager {
    */
   invalidateByUser(userId: string): number {
     let count = 0;
-    
+
     for (const [key, entry] of this.cache.entries()) {
       if (entry.userId === userId) {
         this.delete(key);
@@ -255,7 +253,7 @@ class SecureCacheManager {
    */
   invalidateByTenant(tenantId: string): number {
     let count = 0;
-    
+
     for (const [key, entry] of this.cache.entries()) {
       if (entry.tenantId === tenantId) {
         this.delete(key);
@@ -292,7 +290,7 @@ class SecureCacheManager {
    */
   private cleanupExpired(): number {
     let removed = 0;
-    
+
     for (const [key, entry] of this.cache.entries()) {
       if (this.isExpired(entry)) {
         this.delete(key);
@@ -370,7 +368,7 @@ class SecureCacheManager {
   private setupStorageSync(): void {
     try {
       const keys = Object.keys(localStorage);
-      
+
       keys.forEach(key => {
         if (key.startsWith('cache_')) {
           const data = localStorage.getItem(key);
@@ -378,7 +376,7 @@ class SecureCacheManager {
             try {
               const entry = JSON.parse(data);
               const cacheKey = key.replace('cache_', '');
-              
+
               // Vérifier si toujours valide
               if (!this.isExpired(entry)) {
                 this.cache.set(cacheKey, entry);
@@ -395,7 +393,7 @@ class SecureCacheManager {
       });
 
       this.stats.totalEntries = this.cache.size;
-      
+
       if (import.meta.env.DEV && this.cache.size > 0) {
         console.log(`💾 Cache: ${this.cache.size} entrées restaurées depuis localStorage`);
       }
@@ -457,9 +455,7 @@ class SecureCacheManager {
    */
   getStats(): CacheStats & { hitRate: string } {
     const total = this.stats.hits + this.stats.misses;
-    const hitRate = total > 0 
-      ? ((this.stats.hits / total) * 100).toFixed(2) + '%'
-      : 'N/A';
+    const hitRate = total > 0 ? ((this.stats.hits / total) * 100).toFixed(2) + '%' : 'N/A';
 
     return {
       ...this.stats,
@@ -472,7 +468,7 @@ class SecureCacheManager {
    */
   printReport(): void {
     const stats = this.getStats();
-    
+
     console.group('📊 Rapport Cache');
     console.log(`✅ Hits: ${stats.hits}`);
     console.log(`❌ Misses: ${stats.misses}`);
@@ -534,21 +530,13 @@ export function cached<T>(
   keyGenerator: (...args: any[]) => string,
   ttl: number = CACHE_TTL.USER_PROFILE
 ) {
-  return function (
-    target: any,
-    propertyName: string,
-    descriptor: PropertyDescriptor
-  ) {
+  return function (target: any, propertyName: string, descriptor: PropertyDescriptor) {
     const originalMethod = descriptor.value;
 
     descriptor.value = async function (...args: any[]) {
       const key = keyGenerator(...args);
-      
-      return secureCache.getOrFetch(
-        key,
-        () => originalMethod.apply(this, args),
-        ttl
-      );
+
+      return secureCache.getOrFetch(key, () => originalMethod.apply(this, args), ttl);
     };
 
     return descriptor;

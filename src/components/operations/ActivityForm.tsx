@@ -28,13 +28,7 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { 
-  User, 
-  Calendar, 
-  CheckSquare,
-  AlertCircle,
-  UserCircle
-} from 'lucide-react';
+import { User, Calendar, CheckSquare, AlertCircle, UserCircle } from 'lucide-react';
 
 interface ActivityFormWithAssignmentProps {
   open: boolean;
@@ -55,7 +49,7 @@ export interface ActivityData {
   project_id?: string;
   task_title_template?: string;
   is_active: boolean;
-  
+
   // Pour ponctuelle : DATE OBLIGATOIRE
   one_off_date?: string; // Format ISO: YYYY-MM-DD
 }
@@ -108,7 +102,7 @@ export const ActivityFormWithAssignment: React.FC<ActivityFormWithAssignmentProp
 
     // Validation nom
     if (!formData.name.trim()) {
-      newErrors.name = 'Le nom de l\'activité est obligatoire';
+      newErrors.name = "Le nom de l'activité est obligatoire";
     } else if (formData.name.length < 3) {
       newErrors.name = 'Le nom doit contenir au moins 3 caractères';
     }
@@ -145,10 +139,10 @@ export const ActivityFormWithAssignment: React.FC<ActivityFormWithAssignmentProp
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[90vh]">
+      <DialogContent className="max-h-[90vh] max-w-2xl">
         <DialogHeader>
           <DialogTitle className="text-xl">
-            {mode === 'edit' ? 'Modifier l\'activité' : 'Nouvelle activité opérationnelle'}
+            {mode === 'edit' ? "Modifier l'activité" : 'Nouvelle activité opérationnelle'}
           </DialogTitle>
           <DialogDescription>
             Créez une activité récurrente ou ponctuelle avec son responsable
@@ -158,7 +152,9 @@ export const ActivityFormWithAssignment: React.FC<ActivityFormWithAssignmentProp
         <ScrollArea className="max-h-[calc(90vh-180px)] pr-4">
           <form onSubmit={handleSubmit} className="space-y-6">
             <Tabs value={currentTab} onValueChange={setCurrentTab}>
-              <TabsList className={`grid w-full ${formData.kind === 'recurring' ? 'grid-cols-3' : 'grid-cols-2'}`}>
+              <TabsList
+                className={`grid w-full ${formData.kind === 'recurring' ? 'grid-cols-3' : 'grid-cols-2'}`}
+              >
                 <TabsTrigger value="info">Informations</TabsTrigger>
                 {formData.kind === 'recurring' && (
                   <TabsTrigger value="planification">Planification</TabsTrigger>
@@ -167,7 +163,7 @@ export const ActivityFormWithAssignment: React.FC<ActivityFormWithAssignmentProp
               </TabsList>
 
               {/* Onglet 1: Informations de base */}
-              <TabsContent value="info" className="space-y-4 mt-4">
+              <TabsContent value="info" className="mt-4 space-y-4">
                 <div>
                   <Label htmlFor="name" className="required">
                     Nom de l'activité
@@ -175,12 +171,12 @@ export const ActivityFormWithAssignment: React.FC<ActivityFormWithAssignmentProp
                   <Input
                     id="name"
                     value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    onChange={e => setFormData({ ...formData, name: e.target.value })}
                     placeholder="Ex: Rapport hebdomadaire des ventes"
                     className={errors.name ? 'border-red-500' : ''}
                   />
                   {errors.name && (
-                    <p className="text-sm text-red-500 mt-1 flex items-center gap-1">
+                    <p className="mt-1 flex items-center gap-1 text-sm text-red-500">
                       <AlertCircle className="h-3 w-3" />
                       {errors.name}
                     </p>
@@ -192,7 +188,7 @@ export const ActivityFormWithAssignment: React.FC<ActivityFormWithAssignmentProp
                   <Textarea
                     id="description"
                     value={formData.description || ''}
-                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                    onChange={e => setFormData({ ...formData, description: e.target.value })}
                     placeholder="Décrivez l'objectif de cette activité..."
                     rows={3}
                   />
@@ -249,17 +245,27 @@ export const ActivityFormWithAssignment: React.FC<ActivityFormWithAssignmentProp
                 </div>
 
                 <div>
-                  <Label htmlFor="task_title_template">
-                    Template du titre de tâche
-                  </Label>
+                  <Label htmlFor="task_title_template">Template du titre de tâche</Label>
                   <Input
                     id="task_title_template"
                     value={formData.task_title_template || ''}
-                    onChange={(e) => setFormData({ ...formData, task_title_template: e.target.value })}
+                    onChange={e =>
+                      setFormData({ ...formData, task_title_template: e.target.value })
+                    }
                     placeholder="Activité {{date}}"
                   />
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Variables disponibles : {'{'}{'{'} date {'}'}{'}'}, {'{'}{'{'} isoWeek {'}'}{'}'}, {'{'}{'{'} year {'}'}{'}'}, {'{'}{'{'} month {'}'}{'}'}, {'{'}{'{'} day {'}'}{'}'}
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    Variables disponibles : {'{'}
+                    {'{'} date {'}'}
+                    {'}'}, {'{'}
+                    {'{'} isoWeek {'}'}
+                    {'}'}, {'{'}
+                    {'{'} year {'}'}
+                    {'}'}, {'{'}
+                    {'{'} month {'}'}
+                    {'}'}, {'{'}
+                    {'{'} day {'}'}
+                    {'}'}
                   </p>
                 </div>
 
@@ -273,16 +279,16 @@ export const ActivityFormWithAssignment: React.FC<ActivityFormWithAssignmentProp
                       id="one_off_date"
                       type="date"
                       value={formData.one_off_date || ''}
-                      onChange={(e) => setFormData({ ...formData, one_off_date: e.target.value })}
+                      onChange={e => setFormData({ ...formData, one_off_date: e.target.value })}
                       className={errors.one_off_date ? 'border-red-500' : ''}
                     />
                     {errors.one_off_date && (
-                      <p className="text-sm text-red-500 mt-1 flex items-center gap-1">
+                      <p className="mt-1 flex items-center gap-1 text-sm text-red-500">
                         <AlertCircle className="h-3 w-3" />
                         {errors.one_off_date}
                       </p>
                     )}
-                    <p className="text-xs text-muted-foreground mt-1">
+                    <p className="mt-1 text-xs text-muted-foreground">
                       Date à laquelle la tâche doit être effectuée
                     </p>
                   </div>
@@ -291,40 +297,45 @@ export const ActivityFormWithAssignment: React.FC<ActivityFormWithAssignmentProp
 
               {/* Onglet 2: Planification (UNIQUEMENT pour récurrente) */}
               {formData.kind === 'recurring' && (
-                <TabsContent value="planification" className="space-y-4 mt-4">
-                  <div className="p-4 bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800 rounded-lg">
+                <TabsContent value="planification" className="mt-4 space-y-4">
+                  <div className="rounded-lg border border-amber-200 bg-amber-50 p-4 dark:border-amber-800 dark:bg-amber-950/20">
                     <div className="flex items-start gap-3">
-                      <Calendar className="h-5 w-5 text-amber-600 mt-0.5" />
+                      <Calendar className="mt-0.5 h-5 w-5 text-amber-600" />
                       <div>
                         <p className="font-medium text-amber-900 dark:text-amber-100">
                           Planification récurrente
                         </p>
-                        <p className="text-sm text-amber-700 dark:text-amber-300 mt-1">
-                          Définissez quand cette activité doit se répéter (quotidien, hebdomadaire, mensuel)
+                        <p className="mt-1 text-sm text-amber-700 dark:text-amber-300">
+                          Définissez quand cette activité doit se répéter (quotidien, hebdomadaire,
+                          mensuel)
                         </p>
                       </div>
                     </div>
                   </div>
 
-                  <div className="text-center text-muted-foreground py-8">
-                    <Calendar className="h-12 w-12 mx-auto mb-3 opacity-50" />
+                  <div className="py-8 text-center text-muted-foreground">
+                    <Calendar className="mx-auto mb-3 h-12 w-12 opacity-50" />
                     <p>La planification détaillée sera configurée après la création</p>
-                    <p className="text-sm mt-1">Vous pourrez définir la fréquence, les jours, etc.</p>
+                    <p className="mt-1 text-sm">
+                      Vous pourrez définir la fréquence, les jours, etc.
+                    </p>
                   </div>
                 </TabsContent>
               )}
 
               {/* Onglet 3: Assignation OBLIGATOIRE */}
-              <TabsContent value="assignment" className="space-y-4 mt-4">
-                <div className="p-4 bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+              <TabsContent value="assignment" className="mt-4 space-y-4">
+                <div className="rounded-lg border border-blue-200 bg-blue-50 p-4 dark:border-blue-800 dark:bg-blue-950/20">
                   <div className="flex items-start gap-3">
-                    <AlertCircle className="h-5 w-5 text-blue-600 mt-0.5" />
+                    <AlertCircle className="mt-0.5 h-5 w-5 text-blue-600" />
                     <div>
                       <p className="font-medium text-blue-900 dark:text-blue-100">
                         Assignation obligatoire
                       </p>
-                      <p className="text-sm text-blue-700 dark:text-blue-300 mt-1">
-                        Chaque activité doit avoir un responsable. Cette personne sera assignée par défaut aux tâches générées (sauf si les actions ont des assignations spécifiques).
+                      <p className="mt-1 text-sm text-blue-700 dark:text-blue-300">
+                        Chaque activité doit avoir un responsable. Cette personne sera assignée par
+                        défaut aux tâches générées (sauf si les actions ont des assignations
+                        spécifiques).
                       </p>
                     </div>
                   </div>
@@ -336,13 +347,9 @@ export const ActivityFormWithAssignment: React.FC<ActivityFormWithAssignmentProp
                   </Label>
                   <Select
                     value={formData.owner_employee_id}
-                    onValueChange={(value) => 
-                      setFormData({ ...formData, owner_employee_id: value })
-                    }
+                    onValueChange={value => setFormData({ ...formData, owner_employee_id: value })}
                   >
-                    <SelectTrigger 
-                      className={errors.owner ? 'border-red-500' : ''}
-                    >
+                    <SelectTrigger className={errors.owner ? 'border-red-500' : ''}>
                       <SelectValue placeholder="Sélectionnez un employé" />
                     </SelectTrigger>
                     <SelectContent>
@@ -355,7 +362,7 @@ export const ActivityFormWithAssignment: React.FC<ActivityFormWithAssignmentProp
                           Aucun employé disponible
                         </SelectItem>
                       ) : (
-                        employees.map((employee) => (
+                        employees.map(employee => (
                           <SelectItem key={employee.id} value={employee.id}>
                             <div className="flex items-center gap-2">
                               <UserCircle className="h-4 w-4" />
@@ -374,7 +381,7 @@ export const ActivityFormWithAssignment: React.FC<ActivityFormWithAssignmentProp
                     </SelectContent>
                   </Select>
                   {errors.owner && (
-                    <p className="text-sm text-red-500 mt-1 flex items-center gap-1">
+                    <p className="mt-1 flex items-center gap-1 text-sm text-red-500">
                       <AlertCircle className="h-3 w-3" />
                       {errors.owner}
                     </p>
@@ -383,14 +390,14 @@ export const ActivityFormWithAssignment: React.FC<ActivityFormWithAssignmentProp
 
                 {/* Affichage employé sélectionné */}
                 {selectedEmployee && (
-                  <div className="p-4 bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800 rounded-lg">
+                  <div className="rounded-lg border border-green-200 bg-green-50 p-4 dark:border-green-800 dark:bg-green-950/20">
                     <div className="flex items-center gap-3">
-                      <div className="h-10 w-10 rounded-full bg-green-100 dark:bg-green-900 flex items-center justify-center">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-green-100 dark:bg-green-900">
                         <User className="h-5 w-5 text-green-600" />
                       </div>
                       <div className="flex-1">
                         <p className="font-medium">{selectedEmployee.full_name}</p>
-                        <div className="flex items-center gap-2 mt-1">
+                        <div className="mt-1 flex items-center gap-2">
                           {selectedEmployee.job_title && (
                             <Badge variant="secondary" className="text-xs">
                               {selectedEmployee.job_title}
@@ -414,23 +421,16 @@ export const ActivityFormWithAssignment: React.FC<ActivityFormWithAssignmentProp
                 Étape {currentTab === 'info' ? '1' : '2'} sur 2
               </div>
               <div className="flex items-center gap-2">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => onOpenChange(false)}
-                >
+                <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
                   Annuler
                 </Button>
                 {currentTab === 'info' ? (
-                  <Button
-                    type="button"
-                    onClick={() => setCurrentTab('assignment')}
-                  >
+                  <Button type="button" onClick={() => setCurrentTab('assignment')}>
                     Suivant : Assignation
                   </Button>
                 ) : (
                   <Button type="submit">
-                    {mode === 'edit' ? 'Enregistrer' : 'Créer l\'activité'}
+                    {mode === 'edit' ? 'Enregistrer' : "Créer l'activité"}
                   </Button>
                 )}
               </div>

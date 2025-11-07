@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button';
-import { 
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -23,18 +23,15 @@ export const TaskRowActions = ({ taskId, onDuplicate, onDelete, onEdit }: TaskRo
     </DropdownMenuTrigger>
     <DropdownMenuContent align="end">
       <DropdownMenuItem onClick={() => onEdit(taskId)}>
-        <Edit className="h-4 w-4 mr-2" />
+        <Edit className="mr-2 h-4 w-4" />
         Modifier
       </DropdownMenuItem>
       <DropdownMenuItem onClick={() => onDuplicate(taskId)}>
-        <Copy className="h-4 w-4 mr-2" />
+        <Copy className="mr-2 h-4 w-4" />
         Dupliquer
       </DropdownMenuItem>
-      <DropdownMenuItem 
-        onClick={() => onDelete(taskId)}
-        className="text-destructive"
-      >
-        <Trash2 className="h-4 w-4 mr-2" />
+      <DropdownMenuItem onClick={() => onDelete(taskId)} className="text-destructive">
+        <Trash2 className="mr-2 h-4 w-4" />
         Supprimer
       </DropdownMenuItem>
     </DropdownMenuContent>

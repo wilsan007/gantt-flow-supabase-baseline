@@ -29,7 +29,7 @@ export const SecuritySettings = () => {
     setLoading(true);
     try {
       const { data, error } = await supabase.auth.mfa.listFactors();
-      
+
       if (error) throw error;
 
       const factors = (data?.totp || []).map(f => ({
@@ -37,7 +37,7 @@ export const SecuritySettings = () => {
         friendly_name: f.friendly_name || 'Authenticator App',
         factor_type: 'totp' as const,
         status: f.status,
-        created_at: f.created_at
+        created_at: f.created_at,
       }));
       setMfaFactors(factors);
     } catch (err: any) {
@@ -49,27 +49,27 @@ export const SecuritySettings = () => {
 
   const handleUnenroll = async (factorId: string) => {
     const confirmed = window.confirm(
-      'Êtes-vous sûr de vouloir désactiver l\'authentification à deux facteurs ? ' +
-      'Cela réduira la sécurité de votre compte.'
+      "Êtes-vous sûr de vouloir désactiver l'authentification à deux facteurs ? " +
+        'Cela réduira la sécurité de votre compte.'
     );
 
     if (!confirmed) return;
 
     try {
       const { error } = await supabase.auth.mfa.unenroll({ factorId });
-      
+
       if (error) throw error;
 
       toast({
-        title: "MFA désactivé",
+        title: 'MFA désactivé',
         description: "L'authentification à deux facteurs a été désactivée",
       });
 
       loadMFAFactors();
     } catch (err: any) {
       toast({
-        variant: "destructive",
-        title: "Erreur",
+        variant: 'destructive',
+        title: 'Erreur',
         description: err.message || 'Erreur lors de la désactivation',
       });
     }
@@ -102,9 +102,7 @@ export const SecuritySettings = () => {
             <Shield className="h-5 w-5" />
             Sécurité du compte
           </CardTitle>
-          <CardDescription>
-            Gérez les paramètres de sécurité de votre compte
-          </CardDescription>
+          <CardDescription>Gérez les paramètres de sécurité de votre compte</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           {error && (
@@ -115,7 +113,7 @@ export const SecuritySettings = () => {
           )}
 
           {/* Status MFA */}
-          <div className="flex items-center justify-between p-4 border rounded-lg">
+          <div className="flex items-center justify-between rounded-lg border p-4">
             <div className="flex items-center gap-3">
               {hasMFA ? (
                 <>
@@ -140,7 +138,7 @@ export const SecuritySettings = () => {
               )}
             </div>
             {hasMFA && (
-              <div className="px-3 py-1 bg-green-100 text-green-700 text-sm font-medium rounded-full">
+              <div className="rounded-full bg-green-100 px-3 py-1 text-sm font-medium text-green-700">
                 Actif
               </div>
             )}
@@ -150,10 +148,10 @@ export const SecuritySettings = () => {
           {hasMFA ? (
             <div className="space-y-4">
               <h4 className="text-sm font-medium">Méthodes d'authentification configurées</h4>
-              {verifiedFactors.map((factor) => (
+              {verifiedFactors.map(factor => (
                 <div
                   key={factor.id}
-                  className="flex items-center justify-between p-4 border rounded-lg"
+                  className="flex items-center justify-between rounded-lg border p-4"
                 >
                   <div className="flex items-center gap-3">
                     <Shield className="h-5 w-5 text-primary" />
@@ -164,11 +162,7 @@ export const SecuritySettings = () => {
                       </p>
                     </div>
                   </div>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleUnenroll(factor.id)}
-                  >
+                  <Button variant="outline" size="sm" onClick={() => handleUnenroll(factor.id)}>
                     Désactiver
                   </Button>
                 </div>
@@ -178,7 +172,8 @@ export const SecuritySettings = () => {
                 <CheckCircle className="h-4 w-4 text-green-600" />
                 <AlertDescription className="text-sm">
                   <strong>Conseil de sécurité :</strong> Gardez vos codes de sauvegarde en lieu sûr.
-                  Vous en aurez besoin si vous perdez l'accès à votre application d'authentification.
+                  Vous en aurez besoin si vous perdez l'accès à votre application
+                  d'authentification.
                 </AlertDescription>
               </Alert>
             </div>
@@ -194,7 +189,7 @@ export const SecuritySettings = () => {
           <CardTitle>Autres paramètres de sécurité</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="flex items-center justify-between p-4 border rounded-lg">
+          <div className="flex items-center justify-between rounded-lg border p-4">
             <div>
               <p className="font-medium">Changer le mot de passe</p>
               <p className="text-sm text-muted-foreground">
@@ -206,7 +201,7 @@ export const SecuritySettings = () => {
             </Button>
           </div>
 
-          <div className="flex items-center justify-between p-4 border rounded-lg">
+          <div className="flex items-center justify-between rounded-lg border p-4">
             <div>
               <p className="font-medium">Sessions actives</p>
               <p className="text-sm text-muted-foreground">

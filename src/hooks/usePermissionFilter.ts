@@ -4,13 +4,13 @@
  */
 
 import { useState, useEffect, useCallback } from 'react';
-import { 
-  getUserContext, 
-  getResourceFilter, 
+import {
+  getUserContext,
+  getResourceFilter,
   hasPermission,
-  type UserContext, 
+  type UserContext,
   type ResourceType,
-  type FilterResult 
+  type FilterResult,
 } from '@/lib/permissions';
 
 interface UsePermissionFilterResult {
@@ -23,10 +23,10 @@ interface UsePermissionFilterResult {
 
 /**
  * Hook principal de filtrage par permissions
- * 
+ *
  * Usage:
  * const { userContext, filter, hasPermission } = usePermissionFilter('tasks');
- * 
+ *
  * Puis dans votre requête:
  * if (filter.mustFilterByUser) {
  *   query = query.eq('assignee_id', userContext.userId);
@@ -42,7 +42,7 @@ export function usePermissionFilter(resource: ResourceType): UsePermissionFilter
     try {
       const context = await getUserContext();
       setUserContext(context);
-      
+
       if (context) {
         const resourceFilter = getResourceFilter(resource, context);
         setFilter(resourceFilter);
@@ -58,10 +58,13 @@ export function usePermissionFilter(resource: ResourceType): UsePermissionFilter
     fetchUserContext();
   }, [fetchUserContext]);
 
-  const checkPermission = useCallback((permission: string): boolean => {
-    if (!userContext) return false;
-    return hasPermission(userContext, permission);
-  }, [userContext]);
+  const checkPermission = useCallback(
+    (permission: string): boolean => {
+      if (!userContext) return false;
+      return hasPermission(userContext, permission);
+    },
+    [userContext]
+  );
 
   return {
     userContext,

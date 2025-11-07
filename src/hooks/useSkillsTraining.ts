@@ -35,29 +35,32 @@ export function useSkillsTraining() {
   const [skillAssessments, setSkillAssessments] = useState<SkillAssessment[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  
+
   // 🔒 Contexte utilisateur pour le filtrage
   const { userContext } = useUserFilterContext();
   const { toast } = useToast();
 
   const fetchData = useCallback(async () => {
     if (!userContext) return;
-    
+
     try {
       setLoading(true);
       setError(null);
 
       // 🔒 Construire les queries avec filtrage
-      let skillsQuery = supabase.from('skills').select('*').order('created_at', { ascending: false });
+      let skillsQuery = supabase
+        .from('skills')
+        .select('*')
+        .order('created_at', { ascending: false });
       skillsQuery = applyRoleFilters(skillsQuery, userContext, 'skills');
-      
-      let assessmentsQuery = supabase.from('skill_assessments').select('*').order('last_assessed', { ascending: false });
+
+      let assessmentsQuery = supabase
+        .from('skill_assessments')
+        .select('*')
+        .order('last_assessed', { ascending: false });
       assessmentsQuery = applyRoleFilters(assessmentsQuery, userContext, 'skill_assessments');
 
-      const [skillsRes, assessmentsRes] = await Promise.all([
-        skillsQuery,
-        assessmentsQuery
-      ]);
+      const [skillsRes, assessmentsRes] = await Promise.all([skillsQuery, assessmentsQuery]);
 
       if (skillsRes.error) throw skillsRes.error;
       if (assessmentsRes.error) throw assessmentsRes.error;
@@ -68,9 +71,9 @@ export function useSkillsTraining() {
       console.error('Error fetching skills data:', err);
       setError(err.message);
       toast({
-        title: "Erreur",
-        description: "Impossible de charger les données de compétences",
-        variant: "destructive"
+        title: 'Erreur',
+        description: 'Impossible de charger les données de compétences',
+        variant: 'destructive',
       });
     } finally {
       setLoading(false);
@@ -79,48 +82,46 @@ export function useSkillsTraining() {
 
   const createSkill = async (skillData: Omit<Skill, 'id' | 'created_at'>) => {
     try {
-      const { error } = await supabase
-        .from('skills')
-        .insert(skillData);
+      const { error } = await supabase.from('skills').insert(skillData);
 
       if (error) throw error;
 
       toast({
-        title: "Succès",
-        description: "Compétence créée avec succès"
+        title: 'Succès',
+        description: 'Compétence créée avec succès',
       });
 
       fetchData();
     } catch (err: any) {
       console.error('Error creating skill:', err);
       toast({
-        title: "Erreur",
-        description: "Impossible de créer la compétence",
-        variant: "destructive"
+        title: 'Erreur',
+        description: 'Impossible de créer la compétence',
+        variant: 'destructive',
       });
     }
   };
 
-  const createSkillAssessment = async (assessmentData: Omit<SkillAssessment, 'id' | 'created_at' | 'updated_at'>) => {
+  const createSkillAssessment = async (
+    assessmentData: Omit<SkillAssessment, 'id' | 'created_at' | 'updated_at'>
+  ) => {
     try {
-      const { error } = await supabase
-        .from('skill_assessments')
-        .insert(assessmentData);
+      const { error } = await supabase.from('skill_assessments').insert(assessmentData);
 
       if (error) throw error;
 
       toast({
-        title: "Succès",
-        description: "Évaluation de compétence créée avec succès"
+        title: 'Succès',
+        description: 'Évaluation de compétence créée avec succès',
       });
 
       fetchData();
     } catch (err: any) {
       console.error('Error creating skill assessment:', err);
       toast({
-        title: "Erreur",
+        title: 'Erreur',
         description: "Impossible de créer l'évaluation",
-        variant: "destructive"
+        variant: 'destructive',
       });
     }
   };
@@ -137,7 +138,7 @@ export function useSkillsTraining() {
           position: assessment.position,
           department: assessment.department,
           skills: [],
-          overallScore: 0
+          overallScore: 0,
         };
       }
 
@@ -149,7 +150,7 @@ export function useSkillsTraining() {
         currentLevel: assessment.current_level,
         targetLevel: assessment.target_level,
         lastAssessed: assessment.last_assessed,
-        assessor: assessment.assessor
+        assessor: assessment.assessor,
       });
 
       return groups;
@@ -158,7 +159,9 @@ export function useSkillsTraining() {
     // Calculate overall scores
     Object.values(employeeGroups).forEach((group: any) => {
       if (group.skills.length > 0) {
-        group.overallScore = group.skills.reduce((sum: number, skill: any) => sum + skill.currentLevel, 0) / group.skills.length;
+        group.overallScore =
+          group.skills.reduce((sum: number, skill: any) => sum + skill.currentLevel, 0) /
+          group.skills.length;
       }
     });
 
@@ -168,14 +171,16 @@ export function useSkillsTraining() {
   const getSkillsStats = () => {
     const totalSkills = skills.length;
     const totalAssessments = skillAssessments.length;
-    const averageLevel = skillAssessments.length > 0 
-      ? skillAssessments.reduce((sum, assessment) => sum + assessment.current_level, 0) / skillAssessments.length 
-      : 0;
-    
+    const averageLevel =
+      skillAssessments.length > 0
+        ? skillAssessments.reduce((sum, assessment) => sum + assessment.current_level, 0) /
+          skillAssessments.length
+        : 0;
+
     return {
       totalSkills,
       totalAssessments,
-      averageLevel: Math.round(averageLevel * 10) / 10
+      averageLevel: Math.round(averageLevel * 10) / 10,
     };
   };
 
@@ -193,6 +198,6 @@ export function useSkillsTraining() {
     createSkillAssessment,
     getSkillAssessmentsByEmployee,
     getSkillsMatrix,
-    getSkillsStats
+    getSkillsStats,
   };
-};
+}

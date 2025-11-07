@@ -4,14 +4,15 @@ import TenantOwnerWelcome from '@/components/auth/TenantOwnerWelcome';
 import { Loader2 } from 'lucide-react';
 
 const Dashboard: React.FC = () => {
-  const { isLoading, isPendingTenantOwner, hasCompletedSetup, userEmail, error } = useTenantOwnerSetup();
+  const { isLoading, isPendingTenantOwner, hasCompletedSetup, userEmail, error } =
+    useTenantOwnerSetup();
 
   // Affichage de chargement
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="flex min-h-screen items-center justify-center">
         <div className="text-center">
-          <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
+          <Loader2 className="mx-auto mb-4 h-8 w-8 animate-spin" />
           <p>Chargement de votre espace de travail...</p>
         </div>
       </div>
@@ -27,24 +28,22 @@ const Dashboard: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-8">
-          Tableau de bord
-        </h1>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <h1 className="mb-8 text-3xl font-bold text-gray-900">Tableau de bord</h1>
+
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
           {/* Vos composants de dashboard existants */}
-          <div className="bg-white p-6 rounded-lg shadow">
-            <h2 className="text-xl font-semibold mb-4">Projets</h2>
+          <div className="rounded-lg bg-white p-6 shadow">
+            <h2 className="mb-4 text-xl font-semibold">Projets</h2>
             <p className="text-gray-600">Gérez vos projets en cours</p>
           </div>
-          
-          <div className="bg-white p-6 rounded-lg shadow">
-            <h2 className="text-xl font-semibold mb-4">Équipe</h2>
+
+          <div className="rounded-lg bg-white p-6 shadow">
+            <h2 className="mb-4 text-xl font-semibold">Équipe</h2>
             <p className="text-gray-600">Gérez votre équipe et les employés</p>
           </div>
-          
-          <div className="bg-white p-6 rounded-lg shadow">
-            <h2 className="text-xl font-semibold mb-4">Statistiques</h2>
+
+          <div className="rounded-lg bg-white p-6 shadow">
+            <h2 className="mb-4 text-xl font-semibold">Statistiques</h2>
             <p className="text-gray-600">Consultez vos métriques</p>
           </div>
         </div>

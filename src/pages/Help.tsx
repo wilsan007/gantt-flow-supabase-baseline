@@ -53,23 +53,28 @@ export default function Help() {
   const faqs = [
     {
       question: 'Comment modifier mon mot de passe ?',
-      answer: 'Allez dans Paramètres > Mot de passe. Entrez votre nouveau mot de passe en respectant les critères de sécurité (8 caractères minimum, majuscules, minuscules, chiffres et caractères spéciaux).',
+      answer:
+        'Allez dans Paramètres > Mot de passe. Entrez votre nouveau mot de passe en respectant les critères de sécurité (8 caractères minimum, majuscules, minuscules, chiffres et caractères spéciaux).',
     },
     {
       question: 'Puis-je inviter des membres externes à mon entreprise ?',
-      answer: 'Seuls les administrateurs peuvent inviter de nouveaux membres. Contactez votre administrateur ou allez dans Paramètres > Équipe si vous avez les droits nécessaires.',
+      answer:
+        'Seuls les administrateurs peuvent inviter de nouveaux membres. Contactez votre administrateur ou allez dans Paramètres > Équipe si vous avez les droits nécessaires.',
     },
     {
       question: 'Comment exporter mes données ?',
-      answer: 'Cette fonctionnalité sera bientôt disponible. Vous pourrez exporter vos projets et tâches en CSV, Excel ou PDF depuis le menu d\'export.',
+      answer:
+        "Cette fonctionnalité sera bientôt disponible. Vous pourrez exporter vos projets et tâches en CSV, Excel ou PDF depuis le menu d'export.",
     },
     {
       question: 'Mes données sont-elles sécurisées ?',
-      answer: 'Oui, toutes vos données sont chiffrées et stockées de manière sécurisée. Nous utilisons les meilleures pratiques de sécurité pour protéger vos informations.',
+      answer:
+        'Oui, toutes vos données sont chiffrées et stockées de manière sécurisée. Nous utilisons les meilleures pratiques de sécurité pour protéger vos informations.',
     },
     {
       question: 'Comment contacter le support ?',
-      answer: 'Vous pouvez nous contacter par email à support@wadashaqeen.com ou utiliser le chat en direct disponible 24/7.',
+      answer:
+        'Vous pouvez nous contacter par email à support@wadashaqeen.com ou utiliser le chat en direct disponible 24/7.',
     },
   ];
 
@@ -77,20 +82,18 @@ export default function Help() {
     <div className="min-h-screen bg-background">
       <div className="container mx-auto p-6">
         {/* Header */}
-        <div className="flex items-center justify-between mb-6">
+        <div className="mb-6 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Button variant="outline" onClick={() => navigate('/')}>
-              <ArrowLeft className="h-4 w-4 mr-2" />
+              <ArrowLeft className="mr-2 h-4 w-4" />
               Retour
             </Button>
             <div>
-              <h1 className="text-3xl font-bold flex items-center gap-2">
+              <h1 className="flex items-center gap-2 text-3xl font-bold">
                 <HelpCircle className="h-8 w-8" />
                 Centre d'aide
               </h1>
-              <p className="text-muted-foreground">
-                Trouvez des réponses à vos questions
-              </p>
+              <p className="text-muted-foreground">Trouvez des réponses à vos questions</p>
             </div>
           </div>
         </div>
@@ -103,17 +106,17 @@ export default function Help() {
               <Input
                 placeholder="Rechercher dans l'aide..."
                 value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="pl-10 text-lg h-12"
+                onChange={e => setSearch(e.target.value)}
+                className="h-12 pl-10 text-lg"
               />
             </div>
           </CardContent>
         </Card>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+        <div className="mb-6 grid grid-cols-1 gap-6 lg:grid-cols-3">
           {/* Catégories */}
-          {categories.map((category) => (
-            <Card key={category.title} className="hover:shadow-lg transition-shadow">
+          {categories.map(category => (
+            <Card key={category.title} className="transition-shadow hover:shadow-lg">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <category.icon className="h-5 w-5" />
@@ -125,12 +128,10 @@ export default function Help() {
                   {category.articles.map((article, i) => (
                     <button
                       key={i}
-                      className="w-full text-left p-3 rounded-lg hover:bg-accent transition-colors"
+                      className="w-full rounded-lg p-3 text-left transition-colors hover:bg-accent"
                     >
-                      <p className="text-sm font-medium mb-1">{article.title}</p>
-                      <p className="text-xs text-muted-foreground">
-                        {article.views} vues
-                      </p>
+                      <p className="mb-1 text-sm font-medium">{article.title}</p>
+                      <p className="text-xs text-muted-foreground">{article.views} vues</p>
                     </button>
                   ))}
                 </div>
@@ -143,17 +144,13 @@ export default function Help() {
         <Card className="mb-6">
           <CardHeader>
             <CardTitle>Questions fréquentes</CardTitle>
-            <CardDescription>
-              Les questions les plus posées par nos utilisateurs
-            </CardDescription>
+            <CardDescription>Les questions les plus posées par nos utilisateurs</CardDescription>
           </CardHeader>
           <CardContent>
             <Accordion type="single" collapsible className="w-full">
               {faqs.map((faq, i) => (
                 <AccordionItem key={i} value={`item-${i}`}>
-                  <AccordionTrigger className="text-left">
-                    {faq.question}
-                  </AccordionTrigger>
+                  <AccordionTrigger className="text-left">{faq.question}</AccordionTrigger>
                   <AccordionContent className="text-muted-foreground">
                     {faq.answer}
                   </AccordionContent>
@@ -167,28 +164,22 @@ export default function Help() {
         <Card>
           <CardHeader>
             <CardTitle>Besoin d'aide supplémentaire ?</CardTitle>
-            <CardDescription>
-              Notre équipe est là pour vous aider
-            </CardDescription>
+            <CardDescription>Notre équipe est là pour vous aider</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Button variant="outline" className="justify-start h-auto py-4">
-                <Mail className="h-5 w-5 mr-3" />
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <Button variant="outline" className="h-auto justify-start py-4">
+                <Mail className="mr-3 h-5 w-5" />
                 <div className="text-left">
                   <p className="font-medium">Email</p>
-                  <p className="text-xs text-muted-foreground">
-                    Réponse sous 24h
-                  </p>
+                  <p className="text-xs text-muted-foreground">Réponse sous 24h</p>
                 </div>
               </Button>
-              <Button variant="outline" className="justify-start h-auto py-4">
-                <MessageCircle className="h-5 w-5 mr-3" />
+              <Button variant="outline" className="h-auto justify-start py-4">
+                <MessageCircle className="mr-3 h-5 w-5" />
                 <div className="text-left">
                   <p className="font-medium">Chat en direct</p>
-                  <p className="text-xs text-muted-foreground">
-                    Disponible 24/7
-                  </p>
+                  <p className="text-xs text-muted-foreground">Disponible 24/7</p>
                 </div>
               </Button>
             </div>

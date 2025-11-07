@@ -67,47 +67,62 @@ export function useOnboardingOffboarding() {
   const [offboardingTasks, setOffboardingTasks] = useState<OffboardingTask[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  
+
   // 🔒 Contexte utilisateur pour le filtrage
   const { userContext } = useUserFilterContext();
   const { toast } = useToast();
 
   const fetchData = useCallback(async () => {
     if (!userContext) return;
-    
+
     try {
       setLoading(true);
       setError(null);
 
       // 🔒 Construire les queries avec filtrage
-      let onboardingQuery = supabase.from('onboarding_processes').select('*').order('created_at', { ascending: false });
+      let onboardingQuery = supabase
+        .from('onboarding_processes')
+        .select('*')
+        .order('created_at', { ascending: false });
       onboardingQuery = applyRoleFilters(onboardingQuery, userContext, 'onboarding_processes');
-      
-      let offboardingQuery = supabase.from('offboarding_processes').select('*').order('created_at', { ascending: false });
-      offboardingQuery = applyRoleFilters(offboardingQuery, userContext, 'offboarding_processes');
-      
-      let onboardingTasksQuery = supabase.from('onboarding_tasks').select('*').order('due_date');
-      onboardingTasksQuery = applyRoleFilters(onboardingTasksQuery, userContext, 'onboarding_tasks');
-      
-      let offboardingTasksQuery = supabase.from('offboarding_tasks').select('*').order('due_date');
-      offboardingTasksQuery = applyRoleFilters(offboardingTasksQuery, userContext, 'offboarding_tasks');
 
-      const [onboardingRes, offboardingRes, onboardingTasksRes, offboardingTasksRes] = await Promise.all([
-        onboardingQuery,
-        offboardingQuery,
+      let offboardingQuery = supabase
+        .from('offboarding_processes')
+        .select('*')
+        .order('created_at', { ascending: false });
+      offboardingQuery = applyRoleFilters(offboardingQuery, userContext, 'offboarding_processes');
+
+      let onboardingTasksQuery = supabase.from('onboarding_tasks').select('*').order('due_date');
+      onboardingTasksQuery = applyRoleFilters(
         onboardingTasksQuery,
-        offboardingTasksQuery
-      ]);
+        userContext,
+        'onboarding_tasks'
+      );
+
+      let offboardingTasksQuery = supabase.from('offboarding_tasks').select('*').order('due_date');
+      offboardingTasksQuery = applyRoleFilters(
+        offboardingTasksQuery,
+        userContext,
+        'offboarding_tasks'
+      );
+
+      const [onboardingRes, offboardingRes, onboardingTasksRes, offboardingTasksRes] =
+        await Promise.all([
+          onboardingQuery,
+          offboardingQuery,
+          onboardingTasksQuery,
+          offboardingTasksQuery,
+        ]);
 
       if (onboardingRes.error) throw onboardingRes.error;
       if (offboardingRes.error) throw offboardingRes.error;
       if (onboardingTasksRes.error) throw onboardingTasksRes.error;
       if (offboardingTasksRes.error) throw offboardingTasksRes.error;
 
-      setOnboardingProcesses(onboardingRes.data as OnboardingProcess[] || []);
-      setOffboardingProcesses(offboardingRes.data as OffboardingProcess[] || []);
-      setOnboardingTasks(onboardingTasksRes.data as OnboardingTask[] || []);
-      setOffboardingTasks(offboardingTasksRes.data as OffboardingTask[] || []);
+      setOnboardingProcesses((onboardingRes.data as OnboardingProcess[]) || []);
+      setOffboardingProcesses((offboardingRes.data as OffboardingProcess[]) || []);
+      setOnboardingTasks((onboardingTasksRes.data as OnboardingTask[]) || []);
+      setOffboardingTasks((offboardingTasksRes.data as OffboardingTask[]) || []);
     } catch (err: any) {
       console.error('Error fetching onboarding/offboarding data:', err);
       setError(err.message);
@@ -116,76 +131,77 @@ export function useOnboardingOffboarding() {
     }
   }, [userContext]);
 
-  const createOnboardingProcess = async (data: Omit<OnboardingProcess, 'id' | 'created_at' | 'updated_at'>) => {
+  const createOnboardingProcess = async (
+    data: Omit<OnboardingProcess, 'id' | 'created_at' | 'updated_at'>
+  ) => {
     try {
-      const { error } = await supabase
-        .from('onboarding_processes')
-        .insert(data);
+      const { error } = await supabase.from('onboarding_processes').insert(data);
 
       if (error) throw error;
 
       toast({
-        title: "Succès",
-        description: "Processus d'onboarding créé avec succès"
+        title: 'Succès',
+        description: "Processus d'onboarding créé avec succès",
       });
 
       fetchData();
     } catch (err: any) {
       console.error('Error creating onboarding process:', err);
       toast({
-        title: "Erreur",
+        title: 'Erreur',
         description: "Impossible de créer le processus d'onboarding",
-        variant: "destructive"
+        variant: 'destructive',
       });
     }
   };
 
-  const createOffboardingProcess = async (data: Omit<OffboardingProcess, 'id' | 'created_at' | 'updated_at'>) => {
+  const createOffboardingProcess = async (
+    data: Omit<OffboardingProcess, 'id' | 'created_at' | 'updated_at'>
+  ) => {
     try {
-      const { error } = await supabase
-        .from('offboarding_processes')
-        .insert(data);
+      const { error } = await supabase.from('offboarding_processes').insert(data);
 
       if (error) throw error;
 
       toast({
-        title: "Succès",
-        description: "Processus d'offboarding créé avec succès"
+        title: 'Succès',
+        description: "Processus d'offboarding créé avec succès",
       });
 
       fetchData();
     } catch (err: any) {
       console.error('Error creating offboarding process:', err);
       toast({
-        title: "Erreur",
+        title: 'Erreur',
         description: "Impossible de créer le processus d'offboarding",
-        variant: "destructive"
+        variant: 'destructive',
       });
     }
   };
 
-  const updateTaskStatus = async (taskId: string, status: 'pending' | 'completed' | 'overdue', isOnboarding: boolean) => {
+  const updateTaskStatus = async (
+    taskId: string,
+    status: 'pending' | 'completed' | 'overdue',
+    isOnboarding: boolean
+  ) => {
     try {
       const table = isOnboarding ? 'onboarding_tasks' : 'offboarding_tasks';
-      const { error } = await supabase
-        .from(table)
-        .update({ status })
-        .eq('id', taskId);
+      const { error } = await supabase.from(table).update({ status }).eq('id', taskId);
 
       if (error) throw error;
 
       toast({
-        title: "Succès",
-        description: "Statut de la tâche mis à jour"
+        title: 'Succès',
+        description: 'Statut de la tâche mis à jour',
       });
 
       fetchData();
     } catch (err: any) {
       console.error('Error updating task status:', err);
       toast({
-        title: "Erreur",
-        description: "Impossible de mettre à jour le statut de la tâche",
-        variant: "destructive"
+        title: 'Erreur',
+        description: 'Impossible de mettre à jour le statut de la tâche',
+        variant: 'destructive',
       });
     }
   };
@@ -204,6 +220,6 @@ export function useOnboardingOffboarding() {
     refetch: fetchData,
     createOnboardingProcess,
     createOffboardingProcess,
-    updateTaskStatus
+    updateTaskStatus,
   };
-};
+}

@@ -1,6 +1,6 @@
 /**
  * Calendar Page - Calendrier Personnel + Équipe
- * 
+ *
  * Fonctionnalités :
  * - Vue des tâches assignées à l'utilisateur (Personnel)
  * - Vue des tâches des projets de l'utilisateur (Équipe)
@@ -50,7 +50,7 @@ export default function Calendar() {
   const { tasks, loading } = useTasks();
   const { accessRights } = useRoleBasedAccess();
   const { userRoles, isSuperAdmin } = useUserRoles();
-  
+
   const [viewMode, setViewMode] = useState<ViewMode>('month');
   const [filterMode, setFilterMode] = useState<FilterMode>('personal');
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -61,22 +61,24 @@ export default function Calendar() {
   // Récupérer l'ID utilisateur et ses projets
   React.useEffect(() => {
     const fetchUserData = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) return;
-      
+
       setCurrentUserId(user.id);
-      
+
       // Récupérer les projets de l'utilisateur
       const { data: projectMembers } = await supabase
         .from('project_members')
         .select('project_id')
         .eq('user_id', user.id);
-      
+
       if (projectMembers) {
         setUserProjects(projectMembers.map(pm => pm.project_id));
       }
     };
-    
+
     fetchUserData();
   }, []);
 
@@ -90,26 +92,23 @@ export default function Calendar() {
       case 'personal':
         // Option 1 : Tâches assignées à l'utilisateur
         return tasks.filter(task => task.assignee_id === currentUserId);
-      
+
       case 'team':
         // Option 2 : Tâches des projets de l'utilisateur
-        return tasks.filter(task => 
-          task.project_id && userProjects.includes(task.project_id)
-        );
-      
+        return tasks.filter(task => task.project_id && userProjects.includes(task.project_id));
+
       case 'all':
         // Vue complète : Personnel + Équipe (sans doublons)
         const personalTaskIds = new Set(
-          tasks
-            .filter(task => task.assignee_id === currentUserId)
-            .map(task => task.id)
+          tasks.filter(task => task.assignee_id === currentUserId).map(task => task.id)
         );
-        
-        return tasks.filter(task => 
-          personalTaskIds.has(task.id) || 
-          (task.project_id && userProjects.includes(task.project_id))
+
+        return tasks.filter(
+          task =>
+            personalTaskIds.has(task.id) ||
+            (task.project_id && userProjects.includes(task.project_id))
         );
-      
+
       default:
         return tasks;
     }
@@ -121,10 +120,12 @@ export default function Calendar() {
     // - Super Admin
     // - Tenant Admin
     // - A des permissions de gestion de projets
-    return isSuperAdmin() || 
-           accessRights.canAccessSuperAdmin || 
-           accessRights.canAccessProjects ||
-           userProjects.length > 0;
+    return (
+      isSuperAdmin() ||
+      accessRights.canAccessSuperAdmin ||
+      accessRights.canAccessProjects ||
+      userProjects.length > 0
+    );
   }, [isSuperAdmin, accessRights, userProjects]);
 
   // Calculer la plage de dates affichée
@@ -160,7 +161,7 @@ export default function Calendar() {
   const tasksByDate = useMemo(() => {
     const map = new Map<string, Task[]>();
 
-    filteredTasks.forEach((task) => {
+    filteredTasks.forEach(task => {
       if (!task.due_date) return;
 
       const dueDate = parseISO(task.due_date);
@@ -239,7 +240,7 @@ export default function Calendar() {
   return (
     <div className="space-y-6 p-6">
       {/* Header */}
-      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+      <div className="flex flex-col items-start justify-between gap-4 md:flex-row md:items-center">
         <div>
           <h1 className="text-3xl font-bold">Calendrier</h1>
           <p className="text-muted-foreground">
@@ -249,7 +250,7 @@ export default function Calendar() {
 
         <div className="flex flex-wrap items-center gap-2">
           {/* View Mode */}
-          <div className="flex gap-1 border rounded-lg p-1">
+          <div className="flex gap-1 rounded-lg border p-1">
             <Button
               size="sm"
               variant={viewMode === 'month' ? 'default' : 'ghost'}
@@ -289,7 +290,7 @@ export default function Calendar() {
       </div>
 
       {/* Tabs de filtrage */}
-      <Tabs value={filterMode} onValueChange={(value) => setFilterMode(value as FilterMode)}>
+      <Tabs value={filterMode} onValueChange={value => setFilterMode(value as FilterMode)}>
         <TabsList className="grid w-full max-w-md grid-cols-3">
           <TabsTrigger value="personal" className="flex items-center gap-2">
             <User className="h-4 w-4" />
@@ -310,7 +311,7 @@ export default function Calendar() {
         </TabsList>
 
         <TabsContent value={filterMode} className="mt-6">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
             {/* Calendrier Principal */}
             <Card className="lg:col-span-2">
               <CardContent className="p-4">
@@ -318,8 +319,11 @@ export default function Calendar() {
                   <div className="space-y-2">
                     {/* Jours de la semaine */}
                     <div className="grid grid-cols-7 gap-2">
-                      {['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'].map((day) => (
-                        <div key={day} className="text-center text-sm font-medium text-muted-foreground">
+                      {['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'].map(day => (
+                        <div
+                          key={day}
+                          className="text-center text-sm font-medium text-muted-foreground"
+                        >
                           {day}
                         </div>
                       ))}
@@ -327,7 +331,7 @@ export default function Calendar() {
 
                     {/* Grille des jours */}
                     <div className="grid grid-cols-7 gap-2">
-                      {days.map((day) => {
+                      {days.map(day => {
                         const dayTasks = getTasksForDay(day);
                         const isCurrentMonth = day.getMonth() === currentDate.getMonth();
                         const isSelected = selectedDate && isSameDay(day, selectedDate);
@@ -336,21 +340,16 @@ export default function Calendar() {
                           <button
                             key={day.toISOString()}
                             onClick={() => setSelectedDate(day)}
-                            className={`
-                              min-h-[80px] p-2 border rounded-lg text-left hover:bg-accent transition-colors
-                              ${!isCurrentMonth ? 'opacity-40' : ''}
-                              ${isToday(day) ? 'border-blue-500 bg-blue-50 dark:bg-blue-950/20' : ''}
-                              ${isSelected ? 'ring-2 ring-blue-500' : ''}
-                            `}
+                            className={`min-h-[80px] rounded-lg border p-2 text-left transition-colors hover:bg-accent ${!isCurrentMonth ? 'opacity-40' : ''} ${isToday(day) ? 'border-blue-500 bg-blue-50 dark:bg-blue-950/20' : ''} ${isSelected ? 'ring-2 ring-blue-500' : ''} `}
                           >
-                            <div className="text-sm font-medium mb-1">{format(day, 'd')}</div>
+                            <div className="mb-1 text-sm font-medium">{format(day, 'd')}</div>
 
                             {dayTasks.length > 0 && (
                               <div className="space-y-1">
-                                {dayTasks.slice(0, 2).map((task) => (
+                                {dayTasks.slice(0, 2).map(task => (
                                   <div
                                     key={task.id}
-                                    className={`text-xs truncate px-1 py-0.5 rounded flex items-center gap-1 ${getPriorityColor(
+                                    className={`flex items-center gap-1 truncate rounded px-1 py-0.5 text-xs ${getPriorityColor(
                                       task.priority
                                     )} text-white`}
                                     title={task.title}
@@ -377,10 +376,10 @@ export default function Calendar() {
                   <div className="space-y-2">
                     {/* Jours de la semaine */}
                     <div className="grid grid-cols-7 gap-2">
-                      {days.map((day) => (
+                      {days.map(day => (
                         <div
                           key={day.toISOString()}
-                          className={`text-center p-2 ${isToday(day) ? 'bg-blue-50 dark:bg-blue-950/20 rounded-lg' : ''}`}
+                          className={`p-2 text-center ${isToday(day) ? 'rounded-lg bg-blue-50 dark:bg-blue-950/20' : ''}`}
                         >
                           <div className="text-sm text-muted-foreground">
                             {format(day, 'EEE', { locale: fr })}
@@ -392,17 +391,17 @@ export default function Calendar() {
 
                     {/* Tâches par jour */}
                     <div className="grid grid-cols-7 gap-2">
-                      {days.map((day) => {
+                      {days.map(day => {
                         const dayTasks = getTasksForDay(day);
 
                         return (
                           <div key={day.toISOString()} className="space-y-1">
-                            {dayTasks.map((task) => (
+                            {dayTasks.map(task => (
                               <div
                                 key={task.id}
-                                className={`text-xs p-1 rounded flex items-center gap-1 ${getPriorityColor(
+                                className={`flex items-center gap-1 rounded p-1 text-xs ${getPriorityColor(
                                   task.priority
-                                )} text-white truncate`}
+                                )} truncate text-white`}
                                 title={task.title}
                               >
                                 {getTaskTypeIcon(task)}
@@ -421,43 +420,41 @@ export default function Calendar() {
             {/* Détails du jour sélectionné */}
             <Card>
               <CardHeader>
-                <CardTitle className="text-base flex items-center gap-2">
+                <CardTitle className="flex items-center gap-2 text-base">
                   <CalendarIcon className="h-4 w-4" />
                   {selectedDate
                     ? format(selectedDate, 'EEEE d MMMM', { locale: fr })
-                    : "Sélectionnez un jour"}
+                    : 'Sélectionnez un jour'}
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 {selectedDayTasks.length === 0 ? (
-                  <p className="text-muted-foreground text-center py-4">
+                  <p className="py-4 text-center text-muted-foreground">
                     Aucune tâche pour ce jour
                   </p>
                 ) : (
                   <div className="space-y-3">
-                    {selectedDayTasks.map((task) => (
+                    {selectedDayTasks.map(task => (
                       <div
                         key={task.id}
-                        className="p-3 border rounded-lg hover:bg-accent/50 transition-colors"
+                        className="rounded-lg border p-3 transition-colors hover:bg-accent/50"
                       >
                         <div className="flex items-start justify-between gap-2">
                           <div className="flex-1">
-                            <div className="flex items-center gap-2 mb-1">
+                            <div className="mb-1 flex items-center gap-2">
                               {getTaskTypeIcon(task)}
-                              <h4 className="font-medium text-sm">{task.title}</h4>
+                              <h4 className="text-sm font-medium">{task.title}</h4>
                             </div>
                             {task.description && (
-                              <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
+                              <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">
                                 {task.description}
                               </p>
                             )}
                           </div>
-                          <Badge className={getPriorityColor(task.priority)}>
-                            {task.priority}
-                          </Badge>
+                          <Badge className={getPriorityColor(task.priority)}>{task.priority}</Badge>
                         </div>
 
-                        <div className="flex items-center gap-2 mt-2 text-xs flex-wrap">
+                        <div className="mt-2 flex flex-wrap items-center gap-2 text-xs">
                           <Badge variant="secondary">{task.status}</Badge>
                           {task.assignee_id === currentUserId && (
                             <Badge variant="outline" className="flex items-center gap-1">
@@ -481,15 +478,17 @@ export default function Calendar() {
           </div>
 
           {/* Statistiques */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-6">
+          <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <Card>
               <CardContent className="pt-6">
                 <div className="text-center">
                   <p className="text-2xl font-bold">{filteredTasks.length}</p>
                   <p className="text-sm text-muted-foreground">
-                    {filterMode === 'personal' ? 'Mes tâches' : 
-                     filterMode === 'team' ? "Tâches d'équipe" : 
-                     'Total tâches'}
+                    {filterMode === 'personal'
+                      ? 'Mes tâches'
+                      : filterMode === 'team'
+                        ? "Tâches d'équipe"
+                        : 'Total tâches'}
                   </p>
                 </div>
               </CardContent>
@@ -499,7 +498,7 @@ export default function Calendar() {
               <CardContent className="pt-6">
                 <div className="text-center">
                   <p className="text-2xl font-bold">
-                    {Array.from(tasksByDate.values()).filter((t) => t.length > 0).length}
+                    {Array.from(tasksByDate.values()).filter(t => t.length > 0).length}
                   </p>
                   <p className="text-sm text-muted-foreground">Jours avec tâches</p>
                 </div>
@@ -521,7 +520,7 @@ export default function Calendar() {
               <CardContent className="pt-6">
                 <div className="text-center">
                   <p className="text-2xl font-bold">
-                    {filteredTasks.filter((t) => t.priority?.toLowerCase() === 'high').length}
+                    {filteredTasks.filter(t => t.priority?.toLowerCase() === 'high').length}
                   </p>
                   <p className="text-sm text-muted-foreground">Haute priorité</p>
                 </div>

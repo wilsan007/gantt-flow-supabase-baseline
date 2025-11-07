@@ -4,8 +4,20 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Plus, Building, Users, Edit, Trash2 } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -41,10 +53,10 @@ export const DepartmentManagement = () => {
   const fetchData = async () => {
     try {
       setLoading(true);
-      
+
       const [departmentsRes, employeesRes] = await Promise.all([
         supabase.from('departments').select('*').order('name'),
-        supabase.from('profiles').select('id, full_name')
+        supabase.from('profiles').select('id, full_name'),
       ]);
 
       if (departmentsRes.error) throw departmentsRes.error;
@@ -55,9 +67,9 @@ export const DepartmentManagement = () => {
     } catch (error: any) {
       console.error('Error fetching data:', error);
       toast({
-        title: "Erreur",
-        description: "Impossible de charger les données",
-        variant: "destructive"
+        title: 'Erreur',
+        description: 'Impossible de charger les données',
+        variant: 'destructive',
       });
     } finally {
       setLoading(false);
@@ -74,7 +86,7 @@ export const DepartmentManagement = () => {
         name: data.name,
         description: data.description || null,
         manager_id: data.manager_id || null,
-        budget: data.budget ? parseFloat(data.budget) : null
+        budget: data.budget ? parseFloat(data.budget) : null,
       };
 
       let error;
@@ -84,16 +96,14 @@ export const DepartmentManagement = () => {
           .update(departmentData)
           .eq('id', editingDepartment.id));
       } else {
-        ({ error } = await supabase
-          .from('departments')
-          .insert(departmentData));
+        ({ error } = await supabase.from('departments').insert(departmentData));
       }
 
       if (error) throw error;
 
       toast({
-        title: "Succès",
-        description: `Département ${editingDepartment ? 'modifié' : 'créé'} avec succès`
+        title: 'Succès',
+        description: `Département ${editingDepartment ? 'modifié' : 'créé'} avec succès`,
       });
 
       reset();
@@ -103,9 +113,9 @@ export const DepartmentManagement = () => {
     } catch (error: any) {
       console.error('Error managing department:', error);
       toast({
-        title: "Erreur",
+        title: 'Erreur',
         description: `Impossible de ${editingDepartment ? 'modifier' : 'créer'} le département`,
-        variant: "destructive"
+        variant: 'destructive',
       });
     }
   };
@@ -121,25 +131,22 @@ export const DepartmentManagement = () => {
 
   const handleDelete = async (departmentId: string) => {
     try {
-      const { error } = await supabase
-        .from('departments')
-        .delete()
-        .eq('id', departmentId);
+      const { error } = await supabase.from('departments').delete().eq('id', departmentId);
 
       if (error) throw error;
 
       toast({
-        title: "Succès",
-        description: "Département supprimé avec succès"
+        title: 'Succès',
+        description: 'Département supprimé avec succès',
       });
 
       fetchData();
     } catch (error: any) {
       console.error('Error deleting department:', error);
       toast({
-        title: "Erreur",
-        description: "Impossible de supprimer le département",
-        variant: "destructive"
+        title: 'Erreur',
+        description: 'Impossible de supprimer le département',
+        variant: 'destructive',
       });
     }
   };
@@ -151,22 +158,25 @@ export const DepartmentManagement = () => {
   }
 
   return (
-    <div className="p-6 space-y-6">
-      <div className="flex justify-between items-center">
-        <h2 className="text-3xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+    <div className="space-y-6 p-6">
+      <div className="flex items-center justify-between">
+        <h2 className="bg-gradient-to-r from-primary to-accent bg-clip-text text-3xl font-bold text-transparent">
           Départements
         </h2>
-        
-        <Dialog open={isCreateDialogOpen} onOpenChange={(open) => {
-          setIsCreateDialogOpen(open);
-          if (!open) {
-            setEditingDepartment(null);
-            reset();
-          }
-        }}>
+
+        <Dialog
+          open={isCreateDialogOpen}
+          onOpenChange={open => {
+            setIsCreateDialogOpen(open);
+            if (!open) {
+              setEditingDepartment(null);
+              reset();
+            }
+          }}
+        >
           <DialogTrigger asChild>
             <Button className="hover-glow">
-              <Plus className="h-4 w-4 mr-2" />
+              <Plus className="mr-2 h-4 w-4" />
               Nouveau département
             </Button>
           </DialogTrigger>
@@ -197,7 +207,7 @@ export const DepartmentManagement = () => {
 
               <div>
                 <Label htmlFor="manager_id">Manager</Label>
-                <Select onValueChange={(value) => setValue('manager_id', value)}>
+                <Select onValueChange={value => setValue('manager_id', value)}>
                   <SelectTrigger>
                     <SelectValue placeholder="Sélectionner un manager" />
                   </SelectTrigger>
@@ -214,21 +224,16 @@ export const DepartmentManagement = () => {
 
               <div>
                 <Label htmlFor="budget">Budget annuel (€)</Label>
-                <Input
-                  id="budget"
-                  type="number"
-                  placeholder="100000"
-                  {...register('budget')}
-                />
+                <Input id="budget" type="number" placeholder="100000" {...register('budget')} />
               </div>
 
               <div className="flex gap-2">
                 <Button type="submit" className="flex-1">
                   {editingDepartment ? 'Modifier' : 'Créer'}
                 </Button>
-                <Button 
-                  type="button" 
-                  variant="outline" 
+                <Button
+                  type="button"
+                  variant="outline"
                   onClick={() => {
                     setIsCreateDialogOpen(false);
                     setEditingDepartment(null);
@@ -248,15 +253,15 @@ export const DepartmentManagement = () => {
         {departments.length === 0 ? (
           <Card className="modern-card">
             <CardContent className="p-8 text-center">
-              <Building className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+              <Building className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
               <p className="text-muted-foreground">Aucun département configuré</p>
             </CardContent>
           </Card>
         ) : (
           <div className={`grid gap-4 ${isMobile ? 'grid-cols-1' : 'grid-cols-2 lg:grid-cols-3'}`}>
-            {departments.map((department) => {
+            {departments.map(department => {
               const manager = employees.find(emp => emp.id === department.manager_id);
-              
+
               return (
                 <Card key={department.id} className="modern-card hover-glow">
                   <CardContent className="p-6">
@@ -265,9 +270,9 @@ export const DepartmentManagement = () => {
                         <div className="flex items-center gap-3">
                           <Building className="h-6 w-6 text-primary" />
                           <div>
-                            <h3 className="font-semibold text-lg">{department.name}</h3>
+                            <h3 className="text-lg font-semibold">{department.name}</h3>
                             {department.description && (
-                              <p className="text-sm text-muted-foreground line-clamp-2">
+                              <p className="line-clamp-2 text-sm text-muted-foreground">
                                 {department.description}
                               </p>
                             )}

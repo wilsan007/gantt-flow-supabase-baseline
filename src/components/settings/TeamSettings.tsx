@@ -33,7 +33,9 @@ export const TeamSettings = () => {
 
   const loadTeamMembers = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) return;
 
       // Récupérer les membres de l'équipe via le tenant
@@ -47,7 +49,8 @@ export const TeamSettings = () => {
 
       const { data: teamMembers, error } = await supabase
         .from('user_profiles')
-        .select(`
+        .select(
+          `
           user_id,
           tenant_id,
           users:user_id (
@@ -58,27 +61,29 @@ export const TeamSettings = () => {
             role_id,
             roles (name)
           )
-        `)
+        `
+        )
         .eq('tenant_id', profile.tenant_id);
 
       if (error) throw error;
 
       // Formatter les données
-      const formatted = teamMembers?.map((member: any) => ({
-        id: member.user_id,
-        email: member.users?.email || '',
-        full_name: member.users?.raw_user_metadata?.full_name || 'Utilisateur',
-        avatar_url: member.users?.raw_user_metadata?.avatar_url || '',
-        role: member.user_roles?.[0]?.roles?.name || 'user',
-        status: 'active',
-      })) || [];
+      const formatted =
+        teamMembers?.map((member: any) => ({
+          id: member.user_id,
+          email: member.users?.email || '',
+          full_name: member.users?.raw_user_metadata?.full_name || 'Utilisateur',
+          avatar_url: member.users?.raw_user_metadata?.avatar_url || '',
+          role: member.user_roles?.[0]?.roles?.name || 'user',
+          status: 'active',
+        })) || [];
 
       setMembers(formatted);
     } catch (error) {
       console.error('Error loading team members:', error);
       toast({
         title: 'Erreur',
-        description: 'Impossible de charger les membres de l\'équipe',
+        description: "Impossible de charger les membres de l'équipe",
         variant: 'destructive',
       });
     } finally {
@@ -128,42 +133,49 @@ export const TeamSettings = () => {
                 <Users className="h-5 w-5" />
                 Membres de l'équipe
               </CardTitle>
-              <CardDescription>
-                Gérez les membres de votre entreprise
-              </CardDescription>
+              <CardDescription>Gérez les membres de votre entreprise</CardDescription>
             </div>
             <Button onClick={() => navigate('/invite-collaborators')}>
-              <UserPlus className="h-4 w-4 mr-2" />
+              <UserPlus className="mr-2 h-4 w-4" />
               Inviter un membre
             </Button>
           </div>
         </CardHeader>
         <CardContent>
           {loading ? (
-            <div className="text-center py-8">
+            <div className="py-8 text-center">
               <p className="text-muted-foreground">Chargement...</p>
             </div>
           ) : members.length === 0 ? (
-            <div className="text-center py-8">
-              <Users className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+            <div className="py-8 text-center">
+              <Users className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
               <p className="text-muted-foreground">Aucun membre pour le moment</p>
-              <Button variant="outline" className="mt-4" onClick={() => navigate('/invite-collaborators')}>
-                <UserPlus className="h-4 w-4 mr-2" />
+              <Button
+                variant="outline"
+                className="mt-4"
+                onClick={() => navigate('/invite-collaborators')}
+              >
+                <UserPlus className="mr-2 h-4 w-4" />
                 Inviter le premier membre
               </Button>
             </div>
           ) : (
             <div className="space-y-4">
-              {members.map((member) => (
+              {members.map(member => (
                 <div
                   key={member.id}
-                  className="flex items-center justify-between p-4 border rounded-lg hover:bg-accent/50 transition-colors"
+                  className="flex items-center justify-between rounded-lg border p-4 transition-colors hover:bg-accent/50"
                 >
                   <div className="flex items-center gap-4">
                     <Avatar className="h-10 w-10">
                       <AvatarImage src={member.avatar_url} alt={member.full_name} />
                       <AvatarFallback>
-                        {member.full_name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)}
+                        {member.full_name
+                          .split(' ')
+                          .map(n => n[0])
+                          .join('')
+                          .toUpperCase()
+                          .slice(0, 2)}
                       </AvatarFallback>
                     </Avatar>
                     <div>
@@ -176,7 +188,10 @@ export const TeamSettings = () => {
                   </div>
                   <div className="flex items-center gap-3">
                     {getRoleBadge(member.role)}
-                    <Badge variant="outline" className="bg-green-50 text-green-700 dark:bg-green-900/20 dark:text-green-400">
+                    <Badge
+                      variant="outline"
+                      className="bg-green-50 text-green-700 dark:bg-green-900/20 dark:text-green-400"
+                    >
                       Actif
                     </Badge>
                   </div>
@@ -191,14 +206,10 @@ export const TeamSettings = () => {
       <Card>
         <CardHeader>
           <CardTitle>Invitations en attente</CardTitle>
-          <CardDescription>
-            Invitations envoyées en attente d'acceptation
-          </CardDescription>
+          <CardDescription>Invitations envoyées en attente d'acceptation</CardDescription>
         </CardHeader>
         <CardContent>
-          <p className="text-sm text-muted-foreground">
-            Aucune invitation en attente
-          </p>
+          <p className="text-sm text-muted-foreground">Aucune invitation en attente</p>
         </CardContent>
       </Card>
     </div>

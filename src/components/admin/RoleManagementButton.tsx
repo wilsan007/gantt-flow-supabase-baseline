@@ -17,22 +17,19 @@ export const RoleManagementButton: React.FC = () => {
         className="relative"
         onClick={() => setShowRoleManagement(true)}
       >
-        <Shield className="h-4 w-4 mr-2" />
+        <Shield className="mr-2 h-4 w-4" />
         Rôles & Permissions
         {userRoles.length > 0 && (
-          <Badge 
-            variant="secondary" 
-            className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center text-xs"
+          <Badge
+            variant="secondary"
+            className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center p-0 text-xs"
           >
             {userRoles.length}
           </Badge>
         )}
       </Button>
 
-      <RoleManagementDialog
-        open={showRoleManagement}
-        onOpenChange={setShowRoleManagement}
-      />
+      <RoleManagementDialog open={showRoleManagement} onOpenChange={setShowRoleManagement} />
     </>
   );
 };

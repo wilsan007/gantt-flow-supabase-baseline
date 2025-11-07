@@ -1,0 +1,384 @@
+
+> vite_react_shadcn_ts@0.0.0 test:coverage
+> vitest --coverage --run src/__tests__/
+
+
+ RUN  v3.2.4 /home/awaleh/Bureau/Wadashaqeen-SaaS/gantt-flow-next
+      Coverage enabled with v8
+
+ ✓ src/__tests__/hooks/useSupabaseQuery.test.ts (8 tests) 19ms
+ ✓ src/__tests__/auth/authentication.test.ts (9 tests) 29ms
+stderr | src/__tests__/routing/protected-routes.test.tsx > Protected Routes Tests > Authenticated Access > should allow access when user is authenticated
+⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+ ✓ src/__tests__/routing/protected-routes.test.tsx (8 tests) 157ms
+
+ Test Files  3 passed (3)
+      Tests  25 passed (25)
+   Start at  00:11:17
+   Duration  10.21s (transform 505ms, setup 1.85s, collect 729ms, tests 206ms, environment 3.62s, prepare 496ms)
+
+ % Coverage report from v8
+-------------------|---------|----------|---------|---------|-------------------
+File               | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
+-------------------|---------|----------|---------|---------|-------------------
+All files          |       0 |     1.25 |    1.25 |       0 |                   
+ src               |       0 |        0 |       0 |       0 |                   
+  App.tsx          |       0 |        0 |       0 |       0 | 1-386             
+  main.tsx         |       0 |        0 |       0 |       0 | 1-8               
+ src/components    |       0 |        0 |       0 |       0 |                   
+  Auth.tsx         |       0 |        0 |       0 |       0 | 1-358             
+  ...rBoundary.tsx |       0 |        0 |       0 |       0 | 1-139             
+  LogoutButton.tsx |       0 |        0 |       0 |       0 | 1-41              
+  ...nProvider.tsx |       0 |        0 |       0 |       0 | 1-78              
+  ...rBoundary.tsx |       0 |        0 |       0 |       0 | 1-126             
+  ...Indicator.tsx |       0 |        0 |       0 |       0 | 1-47              
+  ThemeToggle.tsx  |       0 |        0 |       0 |       0 | 1-37              
+ ...mponents/admin |       0 |        0 |       0 |       0 |                   
+  ...entButton.tsx |       0 |        0 |       0 |       0 | 1-38              
+  ...entDialog.tsx |       0 |        0 |       0 |       0 | 1-440             
+  ...vitations.tsx |       0 |        0 |       0 |       0 | 1-255             
+  ...TestPanel.tsx |       0 |        0 |       0 |       0 | 1-270             
+ ...ents/analytics |       0 |        0 |       0 |       0 |                   
+  ...eCalendar.tsx |       0 |        0 |       0 |       0 | 1-208             
+  ...tionChart.tsx |       0 |        0 |       0 |       0 | 1-96              
+  KPICard.tsx      |       0 |        0 |       0 |       0 | 1-114             
+ ...omponents/auth |       0 |        0 |       0 |       0 |                   
+  ...thAccount.tsx |       0 |        0 |       0 |       0 | 1-143             
+  MFASetup.tsx     |       0 |        0 |       0 |       0 | 1-214             
+  ...ssionGate.tsx |       0 |        0 |       0 |       0 | 1-306             
+  ...ctedRoute.tsx |       0 |        0 |       0 |       0 | 1-177             
+  ...Indicator.tsx |       0 |        0 |       0 |       0 | 1-199             
+  SessionTimer.tsx |       0 |        0 |       0 |       0 | 1-140             
+  SocialAuth.tsx   |       0 |        0 |       0 |       0 | 1-101             
+  ...erWelcome.tsx |       0 |        0 |       0 |       0 | 1-207             
+ ...components/dev |       0 |        0 |       0 |       0 |                   
+  ...ceMonitor.tsx |       0 |        0 |       0 |       0 | 1-239             
+ ...onents/dialogs |       0 |        0 |       0 |       0 |                   
+  ...ionDialog.tsx |       0 |        0 |       0 |       0 | 1-78              
+ ...mponents/gantt |       0 |        0 |       0 |       0 |                   
+  ...ncyHandle.tsx |       0 |        0 |       0 |       0 | 1-100             
+  ...encyLines.tsx |       0 |        0 |       0 |       0 | 1-270             
+ src/components/hr |       0 |        0 |       0 |       0 |                   
+  ...ionDialog.tsx |       0 |        0 |       0 |       0 | 1-201             
+  ...anagement.tsx |       0 |        0 |       0 |       0 | 1-289             
+  ...estDialog.tsx |       0 |        0 |       0 |       0 | 1-227             
+  ...ailDialog.tsx |       0 |        0 |       0 |       0 | 1-372             
+  ...ovalPanel.tsx |       0 |        0 |       0 |       0 | 1-543             
+  ...anagement.tsx |       0 |        0 |       0 |       0 | 1-262             
+  ...nvitation.tsx |       0 |        0 |       0 |       0 | 1-574             
+  ...ionDialog.tsx |       0 |        0 |       0 |       0 | 1-208             
+  ...iveDialog.tsx |       0 |        0 |       0 |       0 | 1-182             
+  ...anagement.tsx |       0 |        0 |       0 |       0 | 1-325             
+  ...ilsDialog.tsx |       0 |        0 |       0 |       0 | 1-614             
+  ...anagement.tsx |       0 |        0 |       0 |       0 | 1-146             
+  ...anagement.tsx |       0 |        0 |       0 |       0 | 1-511             
+  ...anagement.tsx |       0 |        0 |       0 |       0 | 1-408             
+  ...eportForm.tsx |       0 |        0 |       0 |       0 | 1-237             
+  ...rdMinimal.tsx |       0 |        0 |       0 |       0 | 1-287             
+  HealthSafety.tsx |       0 |        0 |       0 |       0 | 1-461             
+  ...valsPanel.tsx |       0 |        0 |       0 |       0 | 1-276             
+  ...anagement.tsx |       0 |        0 |       0 |       0 | 1-284             
+  ...anagement.tsx |       0 |        0 |       0 |       0 | 1-328             
+  ...fboarding.tsx |       0 |        0 |       0 |       0 | 1-241             
+  ...anagement.tsx |       0 |        0 |       0 |       0 | 1-459             
+  ...anagement.tsx |       0 |        0 |       0 |       0 | 1-438             
+  ...estDialog.tsx |       0 |        0 |       0 |       0 | 1-227             
+  ...sTraining.tsx |       0 |        0 |       0 |       0 | 1-228             
+  ...anagement.tsx |       0 |        0 |       0 |       0 | 1-400             
+  ...eetWeekly.tsx |       0 |        0 |       0 |       0 | 1-300             
+ ...ponents/layout |       0 |        0 |       0 |       0 |                   
+  ...thSidebar.tsx |       0 |        0 |       0 |       0 | 1-172             
+  ...peWrapper.tsx |       0 |        0 |       0 |       0 | 1-129             
+  ...leSidebar.tsx |       0 |        0 |       0 |       0 | 1-439             
+ .../notifications |       0 |        0 |       0 |       0 |                   
+  ...ionButton.tsx |       0 |        0 |       0 |       0 | 1-45              
+  ...ionCenter.tsx |       0 |        0 |       0 |       0 | 1-301             
+  ...tionPopup.tsx |       0 |        0 |       0 |       0 | 1-436             
+  ...TestPanel.tsx |       0 |        0 |       0 |       0 | 1-251             
+ ...nts/operations |       0 |        0 |       0 |       0 |                   
+  ...entUpload.tsx |       0 |        0 |       0 |       0 | 1-395             
+  ...plateForm.tsx |       0 |        0 |       0 |       0 | 1-670             
+  ...plateList.tsx |       0 |        0 |       0 |       0 | 1-219             
+  ...tEnhanced.tsx |       0 |        0 |       0 |       0 | 1-452             
+  ActivityCard.tsx |       0 |        0 |       0 |       0 | 1-206             
+  ...ailDialog.tsx |       0 |        0 |       0 |       0 | 1-343             
+  ...yForm.old.tsx |       0 |        0 |       0 |       0 | 1-428             
+  ActivityForm.tsx |       0 |        0 |       0 |       0 | 1-445             
+  ...ssignment.tsx |       0 |        0 |       0 |       0 | 1-445             
+  ...sticsCard.tsx |       0 |        0 |       0 |       0 | 1-192             
+  ...encesList.tsx |       0 |        0 |       0 |       0 | 1-320             
+  ...ityDialog.tsx |       0 |        0 |       0 |       0 | 1-266             
+  ...mptyState.tsx |       0 |        0 |       0 |       0 | 1-148             
+  ...tionsPage.tsx |       0 |        0 |       0 |       0 | 1-355             
+  ScheduleForm.tsx |       0 |        0 |       0 |       0 | 1-313             
+  index.ts         |       0 |        0 |       0 |       0 | 1-15              
+ ...nents/projects |       0 |        0 |       0 |       0 |                   
+  ...ionDialog.tsx |       0 |        0 |       0 |       0 | 1-275             
+  ...Analytics.tsx |       0 |        0 |       0 |       0 | 1-392             
+  ...nterprise.tsx |       0 |        0 |       0 |       0 | 1-526             
+  ...ilsDialog.tsx |       0 |        0 |       0 |       0 | 1-197             
+ ...nts/responsive |       0 |        0 |       0 |       0 |                   
+  ...iveLayout.tsx |       0 |        0 |       0 |       0 | 1-40              
+ ...nents/settings |       0 |        0 |       0 |       0 |                   
+  ...eSettings.tsx |       0 |        0 |       0 |       0 | 1-62              
+  ...ySettings.tsx |       0 |        0 |       0 |       0 | 1-233             
+  ...eSettings.tsx |       0 |        0 |       0 |       0 | 1-55              
+  ...sSettings.tsx |       0 |        0 |       0 |       0 | 1-118             
+  ...nSettings.tsx |       0 |        0 |       0 |       0 | 1-139             
+  ...dSettings.tsx |       0 |        0 |       0 |       0 | 1-157             
+  ...eSettings.tsx |       0 |        0 |       0 |       0 | 1-196             
+  ...ySettings.tsx |       0 |        0 |       0 |       0 | 1-224             
+  TeamSettings.tsx |       0 |        0 |       0 |       0 | 1-206             
+ ...omponents/task |       0 |        0 |       0 |       0 |                   
+  ...rySection.tsx |       0 |        0 |       0 |       0 | 1-212             
+ ...mponents/tasks |       0 |        0 |       0 |       0 |                   
+  ...edFilters.tsx |       0 |        0 |       0 |       0 | 1-403             
+  ...askSearch.tsx |       0 |        0 |       0 |       0 | 1-489             
+  ExportButton.tsx |       0 |        0 |       0 |       0 | 1-130             
+  ...ionDialog.tsx |       0 |        0 |       0 |       0 | 1-618             
+  MyTasksView.tsx  |       0 |        0 |       0 |       0 | 1-498             
+  ...laborator.tsx |       0 |        0 |       0 |       0 | 1-281             
+  ...kTaskForm.tsx |       0 |        0 |       0 |       0 | 1-458             
+  ...neeSelect.tsx |       0 |        0 |       0 |       0 | 1-292             
+  ...Analytics.tsx |       0 |        0 |       0 |       0 | 1-373             
+  ...ntManager.tsx |       0 |        0 |       0 |       0 | 1-321             
+  ...entUpload.tsx |       0 |        0 |       0 |       0 | 1-392             
+  TaskCalendar.tsx |       0 |        0 |       0 |       0 | 1-405             
+  ...entDialog.tsx |       0 |        0 |       0 |       0 | 1-520             
+ ...nents/training |       0 |        0 |       0 |       0 |                   
+  ...lsProfile.tsx |       0 |        0 |       0 |       0 | 1-310             
+ src/components/ui |       0 |        0 |       0 |       0 |                   
+  ...ss-denied.tsx |       0 |        0 |       0 |       0 | 1-232             
+  accordion.tsx    |       0 |        0 |       0 |       0 | 1-50              
+  alert-dialog.tsx |       0 |        0 |       0 |       0 | 1-90              
+  alert.tsx        |       0 |        0 |       0 |       0 | 1-41              
+  aspect-ratio.tsx |       0 |        0 |       0 |       0 | 1-3               
+  ...ror-alert.tsx |       0 |        0 |       0 |       0 | 1-268             
+  avatar.tsx       |       0 |        0 |       0 |       0 | 1-36              
+  badge.tsx        |       0 |        0 |       0 |       0 | 1-27              
+  badges.tsx       |       0 |        0 |       0 |       0 | 1-342             
+  breadcrumb.tsx   |       0 |        0 |       0 |       0 | 1-80              
+  button.tsx       |       0 |        0 |       0 |       0 | 1-45              
+  calendar.tsx     |       0 |        0 |       0 |       0 | 1-52              
+  card.tsx         |       0 |        0 |       0 |       0 | 1-41              
+  carousel.tsx     |       0 |        0 |       0 |       0 | 1-222             
+  chart.tsx        |       0 |        0 |       0 |       0 | 1-301             
+  checkbox.tsx     |       0 |        0 |       0 |       0 | 1-24              
+  collapsible.tsx  |       0 |        0 |       0 |       0 | 1-7               
+  command.tsx      |       0 |        0 |       0 |       0 | 1-120             
+  context-menu.tsx |       0 |        0 |       0 |       0 | 1-160             
+  dialog.tsx       |       0 |        0 |       0 |       0 | 1-82              
+  drawer.tsx       |       0 |        0 |       0 |       0 | 1-74              
+  ...down-menu.tsx |       0 |        0 |       0 |       0 | 1-161             
+  error-alert.tsx  |       0 |        0 |       0 |       0 | 1-275             
+  error-state.tsx  |       0 |        0 |       0 |       0 | 1-36              
+  error-toast.tsx  |       0 |        0 |       0 |       0 | 1-153             
+  form.tsx         |       0 |        0 |       0 |       0 | 1-127             
+  ...tion-text.tsx |       0 |        0 |       0 |       0 | 1-40              
+  hover-card.tsx   |       0 |        0 |       0 |       0 | 1-25              
+  input-otp.tsx    |       0 |        0 |       0 |       0 | 1-59              
+  input.tsx        |       0 |        0 |       0 |       0 | 1-20              
+  label.tsx        |       0 |        0 |       0 |       0 | 1-15              
+  ...text-area.tsx |       0 |        0 |       0 |       0 | 1-156             
+  ...ing-state.tsx |       0 |        0 |       0 |       0 | 1-24              
+  menubar.tsx      |       0 |        0 |       0 |       0 | 1-188             
+  ...ror-alert.tsx |       0 |        0 |       0 |       0 | 1-243             
+  ...tion-menu.tsx |       0 |        0 |       0 |       0 | 1-108             
+  pagination.tsx   |       0 |        0 |       0 |       0 | 1-71              
+  popover.tsx      |       0 |        0 |       0 |       0 | 1-27              
+  progress.tsx     |       0 |        0 |       0 |       0 | 1-21              
+  radio-group.tsx  |       0 |        0 |       0 |       0 | 1-34              
+  resizable.tsx    |       0 |        0 |       0 |       0 | 1-31              
+  ...e-message.tsx |       0 |        0 |       0 |       0 | 1-150             
+  scroll-area.tsx  |       0 |        0 |       0 |       0 | 1-36              
+  select.tsx       |       0 |        0 |       0 |       0 | 1-130             
+  separator.tsx    |       0 |        0 |       0 |       0 | 1-18              
+  sheet.tsx        |       0 |        0 |       0 |       0 | 1-94              
+  sidebar.tsx      |       0 |        0 |       0 |       0 | 1-610             
+  skeleton.tsx     |       0 |        0 |       0 |       0 | 1-5               
+  slider.tsx       |       0 |        0 |       0 |       0 | 1-21              
+  sonner.tsx       |       0 |        0 |       0 |       0 | 1-25              
+  switch.tsx       |       0 |        0 |       0 |       0 | 1-25              
+  table.tsx        |       0 |        0 |       0 |       0 | 1-68              
+  tabs.tsx         |       0 |        0 |       0 |       0 | 1-51              
+  textarea.tsx     |       0 |        0 |       0 |       0 | 1-19              
+  toast.tsx        |       0 |        0 |       0 |       0 | 1-95              
+  toaster.tsx      |       0 |        0 |       0 |       0 | 1-24              
+  toggle-group.tsx |       0 |        0 |       0 |       0 | 1-47              
+  toggle.tsx       |       0 |        0 |       0 |       0 | 1-35              
+  tooltip.tsx      |       0 |        0 |       0 |       0 | 1-26              
+  use-toast.ts     |       0 |        0 |       0 |       0 | 1                 
+ ...omponents/user |       0 |        0 |       0 |       0 |                   
+  UserMenu.tsx     |       0 |        0 |       0 |       0 | 1-387             
+ ...s/vues/dialogs |       0 |        0 |       0 |       0 |                   
+  ...ionDialog.tsx |       0 |        0 |       0 |       0 | 1-274             
+  ...ilsDialog.tsx |       0 |        0 |       0 |       0 | 1-372             
+  ...ditDialog.tsx |       0 |        0 |       0 |       0 | 1-160             
+ ...nts/vues/gantt |       0 |        0 |       0 |       0 |                   
+  GanttChart.tsx   |       0 |        0 |       0 |       0 | 1-624             
+  GanttHeader.tsx  |       0 |        0 |       0 |       0 | 1-43              
+  GanttStates.tsx  |       0 |        0 |       0 |       0 | 1-18              
+  GanttTaskBar.tsx |       0 |        0 |       0 |       0 | 1-100             
+  ...tTaskList.tsx |       0 |        0 |       0 |       0 | 1-121             
+  ...tTimeline.tsx |       0 |        0 |       0 |       0 | 1-153             
+ ...ts/vues/kanban |       0 |        0 |       0 |       0 |                   
+  KanbanBoard.tsx  |       0 |        0 |       0 |       0 | 1-314             
+ .../vues/projects |       0 |        0 |       0 |       0 |                   
+  ...TableView.tsx |       0 |        0 |       0 |       0 | 1-267             
+ ...ues/responsive |       0 |        0 |       0 |       0 |                   
+  ...amicTable.tsx |       0 |        0 |       0 |       0 | 1-350             
+  ...anttChart.tsx |       0 |        0 |       0 |       0 | 1-171             
+  ...nbanBoard.tsx |       0 |        0 |       0 |       0 | 1-236             
+ ...nts/vues/table |       0 |        0 |       0 |       0 |                   
+  ...ionDialog.tsx |       0 |        0 |       0 |       0 | 1-153             
+  ...neeSelect.tsx |       0 |        0 |       0 |       0 | 1-87              
+  ...ellColumn.tsx |       0 |        0 |       0 |       0 | 1-153             
+  ...ntsColumn.tsx |       0 |        0 |       0 |       0 | 1-158             
+  ...ellColumn.tsx |       0 |        0 |       0 |       0 | 1-206             
+  ...ntsColumn.tsx |       0 |        0 |       0 |       0 | 1-227             
+  DynamicTable.tsx |       0 |        0 |       0 |       0 | 1-438             
+  ErrorState.tsx   |       0 |        0 |       0 |       0 | 1-12              
+  LoadingState.tsx |       0 |        0 |       0 |       0 | 1-8               
+  SubTaskRow.tsx   |       0 |        0 |       0 |       0 | 1-112             
+  ...ionDialog.tsx |       0 |        0 |       0 |       0 | 1-569             
+  ...onColumns.tsx |       0 |        0 |       0 |       0 | 1-311             
+  ...ogManager.tsx |       0 |        0 |       0 |       0 | 1-76              
+  ...edColumns.tsx |       0 |        0 |       0 |       0 | 1-98              
+  TaskRow.tsx      |       0 |        0 |       0 |       0 | 1-224             
+  ...owActions.tsx |       0 |        0 |       0 |       0 | 1-37              
+  ...TableBody.tsx |       0 |        0 |       0 |       0 | 1-78              
+  ...bleHeader.tsx |       0 |        0 |       0 |       0 | 1-86              
+ src/contexts      |       0 |        0 |       0 |       0 |                   
+  RolesContext.tsx |       0 |        0 |       0 |       0 | 1-106             
+  ...ntContext.tsx |       0 |        0 |       0 |       0 | 1-151             
+  ...deContext.tsx |       0 |        0 |       0 |       0 | 1-39              
+ src/hooks         |       0 |     1.78 |    1.78 |       0 |                   
+  use-mobile.tsx   |       0 |        0 |       0 |       0 | 1-19              
+  use-toast.ts     |       0 |        0 |       0 |       0 | 1-184             
+  ...tSolutions.ts |       0 |        0 |       0 |       0 | 1-239             
+  useAlerts.ts     |       0 |        0 |       0 |       0 | 1-288             
+  ...Invitation.ts |       0 |        0 |       0 |       0 | 1-484             
+  ...utedAlerts.ts |       0 |        0 |       0 |       0 | 1-188             
+  useEmployees.ts  |       0 |        0 |       0 |       0 | 1-250             
+  ...rorHandler.ts |       0 |        0 |       0 |       0 | 1-247             
+  ...Management.ts |       0 |        0 |       0 |       0 | 1-217             
+  ...elandscape.ts |       0 |        0 |       0 |       0 | 1-78              
+  useGanttDrag.ts  |       0 |        0 |       0 |       0 | 1-158             
+  useHRMinimal.ts  |       0 |        0 |       0 |       0 | 1-496             
+  ...elfService.ts |       0 |        0 |       0 |       0 | 1-592             
+  ...althSafety.ts |       0 |        0 |       0 |       0 | 1-274             
+  ...ivityTimer.ts |       0 |        0 |       0 |       0 | 1-167             
+  ...gleAccount.ts |       0 |        0 |       0 |       0 | 1-76              
+  ...veApproval.ts |       0 |        0 |       0 |       0 | 1-291             
+  ...onChannels.ts |       0 |        0 |       0 |       0 | 1-241             
+  ...ifications.ts |       0 |        0 |       0 |       0 | 1-360             
+  ...ffboarding.ts |       0 |        0 |       0 |       0 | 1-209             
+  ...nTemplates.ts |       0 |        0 |       0 |       0 | 1-188             
+  ...Activities.ts |       0 |        0 |       0 |       0 | 1-405             
+  ...lSchedules.ts |       0 |        0 |       0 |       0 | 1-117             
+  ...Preference.ts |       0 |        0 |       0 |       0 | 1-105             
+  ...Management.ts |       0 |        0 |       0 |       0 | 1-338             
+  ...erformance.ts |       0 |        0 |       0 |       0 | 1-247             
+  ...nceMonitor.ts |       0 |        0 |       0 |       0 | 1-317             
+  ...eOptimizer.ts |       0 |        0 |       0 |       0 | 1-203             
+  ...sionFilter.ts |       0 |        0 |       0 |       0 | 1-111             
+  ...ionFilters.ts |       0 |        0 |       0 |       0 | 1-116             
+  ...ermissions.ts |       0 |        0 |       0 |       0 | 1-273             
+  ...derHandler.ts |       0 |        0 |       0 |       0 | 1-94              
+  useProfiles.ts   |       0 |        0 |       0 |       0 | 1-56              
+  ...Enterprise.ts |       0 |        0 |       0 |       0 | 1-466             
+  ...ifications.ts |       0 |        0 |       0 |       0 | 1-219             
+  ...asedAccess.ts |       0 |        0 |       0 |       0 | 1-229             
+  ...Management.ts |       0 |        0 |       0 |       0 | 1-315             
+  ...ionManager.ts |       0 |        0 |       0 |       0 | 1-202             
+  useSkills.ts     |       0 |        0 |       0 |       0 | 1-264             
+  ...lsTraining.ts |       0 |        0 |       0 |       0 | 1-198             
+  ...rtDebounce.ts |       0 |        0 |       0 |       0 | 1-367             
+  ...leCallback.ts |       0 |        0 |       0 |       0 | 1-123             
+  useStrictAuth.ts |       0 |        0 |       0 |       0 | 1-239             
+  ...pendencies.ts |       0 |        0 |       0 |       0 | 1-187             
+  ...Export.old.ts |       0 |        0 |       0 |       0 | 1-337             
+  ....optimized.ts |       0 |        0 |       0 |       0 |                   
+  useTaskExport.ts |       0 |        0 |       0 |       0 | 1-381             
+  ...askFilters.ts |       0 |        0 |       0 |       0 | 1-95              
+  ...askHistory.ts |       0 |        0 |       0 |       0 | 1-291             
+  ...kTemplates.ts |       0 |        0 |       0 |       0 | 1-260             
+  ...Enterprise.ts |       0 |        0 |       0 |       0 | 1-519             
+  useTenant.ts     |       0 |        0 |       0 |       0 | 1-112             
+  ...OwnerSetup.ts |       0 |        0 |       0 |       0 | 1-101             
+  useTrainings.ts  |       0 |        0 |       0 |       0 | 1-432             
+  useUserAuth.ts   |       0 |        0 |       0 |       0 | 1-306             
+  useUserRoles.ts  |       0 |        0 |       0 |       0 | 1-251             
+ ...ooks/optimized |       0 |        0 |       0 |       0 |                   
+  index.ts         |       0 |        0 |       0 |       0 | 1-520             
+ src/hooks/utils   |       0 |        0 |       0 |       0 |                   
+  ...Controller.ts |       0 |        0 |       0 |       0 | 1-41              
+  useCache.ts      |       0 |        0 |       0 |       0 | 1-73              
+  ...Protection.ts |       0 |        0 |       0 |       0 | 1-38              
+  useMetrics.ts    |       0 |        0 |       0 |       0 | 1-54              
+  ...eryBuilder.ts |       0 |        0 |       0 |       0 | 1-132             
+ ...tions/supabase |       0 |       50 |      50 |       0 |                   
+  client.ts        |       0 |        0 |       0 |       0 | 1-41              
+  types.ts         |       0 |      100 |     100 |       0 | 4319-4323         
+ src/lib           |       0 |    11.11 |   11.11 |       0 |                   
+  auth-config.ts   |       0 |        0 |       0 |       0 | 1-238             
+  ...rorHandler.ts |       0 |        0 |       0 |       0 | 1-371             
+  cacheManager.ts  |       0 |        0 |       0 |       0 | 1-296             
+  errorTypes.ts    |       0 |        0 |       0 |       0 | 1-448             
+  exportUtils.ts   |       0 |        0 |       0 |       0 | 1-114             
+  ganttColors.ts   |       0 |        0 |       0 |       0 | 1-163             
+  ganttHelpers.ts  |       0 |      100 |     100 |       0 | 24-84             
+  logger.ts        |       0 |        0 |       0 |       0 | 1-453             
+  ...xportUtils.ts |       0 |        0 |       0 |       0 | 1-437             
+  ...ionManager.ts |       0 |        0 |       0 |       0 | 1-622             
+  permissions.ts   |       0 |        0 |       0 |       0 | 1-360             
+  ...ionsSystem.ts |       0 |        0 |       0 |       0 | 1-311             
+  ...dFiltering.ts |       0 |        0 |       0 |       0 | 1-682             
+  roleCache.ts     |       0 |        0 |       0 |       0 | 1-513             
+  scheduleUtils.ts |       0 |        0 |       0 |       0 | 1-105             
+  secureCache.ts   |       0 |        0 |       0 |       0 | 1-556             
+  taskHelpers.ts   |       0 |      100 |     100 |       0 | 3-29              
+  utils.ts         |       0 |        0 |       0 |       0 | 1-6               
+ src/pages         |       0 |        0 |       0 |       0 |                   
+  Analytics.tsx    |       0 |        0 |       0 |       0 | 1-180             
+  ...ovalsPage.tsx |       0 |        0 |       0 |       0 | 1-9               
+  AuthCallback.tsx |       0 |        0 |       0 |       0 | 1-518             
+  Calendar.tsx     |       0 |        0 |       0 |       0 | 1-535             
+  ...atorSetup.tsx |       0 |        0 |       0 |       0 | 1-285             
+  Dashboard.tsx    |       0 |        0 |       0 |       0 | 1-56              
+  DebugTasks.tsx   |       0 |        0 |       0 |       0 | 1-321             
+  HRPage.tsx       |       0 |        0 |       0 |       0 | 1-277             
+  ...nvitation.tsx |       0 |        0 |       0 |       0 | 1-132             
+  Help.tsx         |       0 |        0 |       0 |       0 | 1-200             
+  Inbox.tsx        |       0 |        0 |       0 |       0 | 1-411             
+  Index.tsx        |       0 |        0 |       0 |       0 | 1-107             
+  InvitePage.tsx   |       0 |        0 |       0 |       0 | 1-169             
+  ...encesPage.tsx |       0 |        0 |       0 |       0 | 1-211             
+  ...uestsPage.tsx |       0 |        0 |       0 |       0 | 1-231             
+  ...ensesPage.tsx |       0 |        0 |       0 |       0 | 1-234             
+  ...eWorkPage.tsx |       0 |        0 |       0 |       0 | 1-204             
+  MySkillsPage.tsx |       0 |        0 |       0 |       0 | 1-9               
+  ...heetsPage.tsx |       0 |        0 |       0 |       0 | 1-265             
+  ...ningsPage.tsx |       0 |        0 |       0 |       0 | 1-279             
+  NotFound.tsx     |       0 |        0 |       0 |       0 | 1-24              
+  Notes.tsx        |       0 |        0 |       0 |       0 | 1-244             
+  ProjectPage.tsx  |       0 |        0 |       0 |       0 | 1-105             
+  Settings.tsx     |       0 |        0 |       0 |       0 | 1-93              
+  SetupAccount.tsx |       0 |        0 |       0 |       0 | 1-341             
+  ...AdminPage.tsx |       0 |        0 |       0 |       0 | 1-71              
+  ...ementPage.tsx |       0 |        0 |       0 |       0 | 1-99              
+  ...wnerLogin.tsx |       0 |        0 |       0 |       0 | 1-341             
+  ...nerSignup.tsx |       0 |        0 |       0 |       0 | 1-604             
+  ...talogPage.tsx |       0 |        0 |       0 |       0 | 1-155             
+ src/stores        |       0 |        0 |       0 |       0 |                   
+  ...ssionStore.ts |       0 |        0 |       0 |       0 | 1-267             
+ src/utils         |       0 |        0 |       0 |       0 |                   
+  ...ionCleanup.ts |       0 |        0 |       0 |       0 | 1-130             
+  ...-alignment.ts |       0 |        0 |       0 |       0 | 1-232             
+-------------------|---------|----------|---------|---------|-------------------
+ERROR: Coverage for lines (0%) does not meet global threshold (60%)
+ERROR: Coverage for functions (1.25%) does not meet global threshold (60%)
+ERROR: Coverage for statements (0%) does not meet global threshold (60%)
+ERROR: Coverage for branches (1.25%) does not meet global threshold (50%)

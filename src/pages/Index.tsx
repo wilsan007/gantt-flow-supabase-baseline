@@ -1,15 +1,15 @@
-import { useState, useEffect } from "react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useIsMobile } from "@/hooks/use-mobile";
-import { LandscapeWrapper } from "@/components/layout/LandscapeWrapper";
+import { useState, useEffect } from 'react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { LandscapeWrapper } from '@/components/layout/LandscapeWrapper';
 // 🎨 Utilisation des vues ORIGINALES avec design complet + performance Enterprise
-import DynamicTable from "@/components/vues/table/DynamicTable";
-import KanbanBoard from "@/components/vues/kanban/KanbanBoard";
-import GanttChart from "@/components/vues/gantt/GanttChart";
+import DynamicTable from '@/components/vues/table/DynamicTable';
+import KanbanBoard from '@/components/vues/kanban/KanbanBoard';
+import GanttChart from '@/components/vues/gantt/GanttChart';
 // import { HRDashboard } from "@/components/hr/HRDashboard"; // Temporarily commented out
 
 const Index = () => {
-  const [activeTab, setActiveTab] = useState("table");
+  const [activeTab, setActiveTab] = useState('table');
   const isMobile = useIsMobile();
 
   // Force landscape orientation on mobile for better table viewing
@@ -18,34 +18,39 @@ const Index = () => {
       // Add landscape lock hint for mobile devices
       const meta = document.querySelector('meta[name="viewport"]');
       if (meta) {
-        meta.setAttribute('content', 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no');
+        meta.setAttribute(
+          'content',
+          'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no'
+        );
       }
     }
   }, [isMobile]);
 
   return (
     <div className="h-full w-full">
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="h-full w-full flex flex-col">
-          <TabsList className={`grid w-full modern-card glow-primary bg-gradient-to-r from-primary/10 via-accent/10 to-tech-purple/10 border-2 ${isMobile ? 'grid-cols-3 gap-1 p-1' : 'grid-cols-3 p-2'}`}>
-            <TabsTrigger 
-              value="gantt" 
-              className={`transition-smooth hover-glow data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-accent data-[state=active]:text-white font-semibold ${isMobile ? 'text-sm py-2' : ''}`}
-            >
-              {isMobile ? 'Gantt' : 'Diagramme de Gantt'}
-            </TabsTrigger>
-            <TabsTrigger 
-              value="kanban" 
-              className={`transition-smooth hover-glow data-[state=active]:bg-gradient-to-r data-[state=active]:from-accent data-[state=active]:to-tech-purple data-[state=active]:text-white font-semibold ${isMobile ? 'text-sm py-2' : ''}`}
-            >
-              Kanban
-            </TabsTrigger>
-            <TabsTrigger 
-              value="table" 
-              className={`transition-smooth hover-glow data-[state=active]:bg-gradient-to-r data-[state=active]:from-tech-purple data-[state=active]:to-primary data-[state=active]:text-white font-semibold ${isMobile ? 'text-sm py-2' : ''}`}
-            >
-              {isMobile ? 'Tableau' : 'Tableau Dynamique'}
-            </TabsTrigger>
-            {/* Temporarily commented out HR tab
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="flex h-full w-full flex-col">
+        <TabsList
+          className={`modern-card glow-primary grid w-full border-2 bg-gradient-to-r from-primary/10 via-accent/10 to-tech-purple/10 ${isMobile ? 'grid-cols-3 gap-1 p-1' : 'grid-cols-3 p-2'}`}
+        >
+          <TabsTrigger
+            value="gantt"
+            className={`transition-smooth hover-glow font-semibold data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-accent data-[state=active]:text-white ${isMobile ? 'py-2 text-sm' : ''}`}
+          >
+            {isMobile ? 'Gantt' : 'Diagramme de Gantt'}
+          </TabsTrigger>
+          <TabsTrigger
+            value="kanban"
+            className={`transition-smooth hover-glow font-semibold data-[state=active]:bg-gradient-to-r data-[state=active]:from-accent data-[state=active]:to-tech-purple data-[state=active]:text-white ${isMobile ? 'py-2 text-sm' : ''}`}
+          >
+            Kanban
+          </TabsTrigger>
+          <TabsTrigger
+            value="table"
+            className={`transition-smooth hover-glow font-semibold data-[state=active]:bg-gradient-to-r data-[state=active]:from-tech-purple data-[state=active]:to-primary data-[state=active]:text-white ${isMobile ? 'py-2 text-sm' : ''}`}
+          >
+            {isMobile ? 'Tableau' : 'Tableau Dynamique'}
+          </TabsTrigger>
+          {/* Temporarily commented out HR tab
             <TabsTrigger 
               value="hr" 
               className={`transition-smooth hover-glow data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-accent data-[state=active]:text-white font-semibold ${isMobile ? 'text-sm py-2' : ''}`}
@@ -53,46 +58,46 @@ const Index = () => {
               RH
             </TabsTrigger>
             */}
-          </TabsList>
-          
-          {/* Table content - Full width with landscape optimization on mobile */}
-          <TabsContent value="table" className="mt-0 flex-1 overflow-auto">
-            <LandscapeWrapper
-              viewType="table"
-              forceOnTablet={true}
-              customMessage="Pour profiter pleinement du tableau, veuillez tourner votre appareil en mode paysage"
-            >
-              <DynamicTable />
-            </LandscapeWrapper>
-          </TabsContent>
-          
-          {/* Kanban content - Full width */}
-          <TabsContent value="kanban" className="mt-0 flex-1 overflow-auto">
-            <LandscapeWrapper
-              viewType="kanban"
-              forceOnTablet={true}
-              customMessage="Le tableau Kanban offre une meilleure expérience en mode paysage"
-            >
-              <div className="modern-card rounded-xl transition-smooth hover-glow">
-                <KanbanBoard />
-              </div>
-            </LandscapeWrapper>
-          </TabsContent>
-          
-          {/* Gantt content - Full width */}
-          <TabsContent value="gantt" className="mt-0 flex-1 overflow-auto">
-            <LandscapeWrapper
-              viewType="gantt"
-              forceOnTablet={true}
-              customMessage="Le diagramme de Gantt nécessite le mode paysage pour une visualisation optimale"
-            >
-              <div className="modern-card rounded-xl transition-smooth hover-glow">
-                <GanttChart />
-              </div>
-            </LandscapeWrapper>
-          </TabsContent>
-          
-          {/* Temporarily commented out HR content
+        </TabsList>
+
+        {/* Table content - Full width with landscape optimization on mobile */}
+        <TabsContent value="table" className="mt-0 flex-1 overflow-auto">
+          <LandscapeWrapper
+            viewType="table"
+            forceOnTablet={true}
+            customMessage="Pour profiter pleinement du tableau, veuillez tourner votre appareil en mode paysage"
+          >
+            <DynamicTable />
+          </LandscapeWrapper>
+        </TabsContent>
+
+        {/* Kanban content - Full width */}
+        <TabsContent value="kanban" className="mt-0 flex-1 overflow-auto">
+          <LandscapeWrapper
+            viewType="kanban"
+            forceOnTablet={true}
+            customMessage="Le tableau Kanban offre une meilleure expérience en mode paysage"
+          >
+            <div className="modern-card transition-smooth hover-glow rounded-xl">
+              <KanbanBoard />
+            </div>
+          </LandscapeWrapper>
+        </TabsContent>
+
+        {/* Gantt content - Full width */}
+        <TabsContent value="gantt" className="mt-0 flex-1 overflow-auto">
+          <LandscapeWrapper
+            viewType="gantt"
+            forceOnTablet={true}
+            customMessage="Le diagramme de Gantt nécessite le mode paysage pour une visualisation optimale"
+          >
+            <div className="modern-card transition-smooth hover-glow rounded-xl">
+              <GanttChart />
+            </div>
+          </LandscapeWrapper>
+        </TabsContent>
+
+        {/* Temporarily commented out HR content
           <TabsContent value="hr" className={isMobile ? 'mt-2' : 'mt-6'}>
             <div className="modern-card rounded-xl transition-smooth hover-glow">
               <HRDashboard />

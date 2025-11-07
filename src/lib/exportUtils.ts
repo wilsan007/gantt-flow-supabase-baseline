@@ -13,42 +13,38 @@ export function convertToCSV<T extends Record<string, any>>(
   if (data.length === 0) return '';
 
   // Si pas de colonnes spécifiées, utiliser toutes les clés du premier objet
-  const headers = columns
-    ? columns.map((col) => col.label)
-    : Object.keys(data[0]);
+  const headers = columns ? columns.map(col => col.label) : Object.keys(data[0]);
 
-  const keys = columns
-    ? columns.map((col) => col.key as string)
-    : Object.keys(data[0]);
+  const keys = columns ? columns.map(col => col.key as string) : Object.keys(data[0]);
 
   // En-têtes
   const csvHeaders = headers.join(',');
 
   // Lignes de données
-  const csvRows = data.map((row) => {
+  const csvRows = data.map(row => {
     return keys
-      .map((key) => {
+      .map(key => {
         const value = row[key];
-        
+
         // Gérer les valeurs null/undefined
         if (value === null || value === undefined) return '';
-        
+
         // Gérer les dates
         if (value instanceof Date) {
           return value.toLocaleDateString('fr-FR');
         }
-        
+
         // Gérer les objets/tableaux
         if (typeof value === 'object') {
           return JSON.stringify(value);
         }
-        
+
         // Échapper les guillemets et virgules
         const stringValue = String(value);
         if (stringValue.includes(',') || stringValue.includes('"') || stringValue.includes('\n')) {
           return `"${stringValue.replace(/"/g, '""')}"`;
         }
-        
+
         return stringValue;
       })
       .join(',');
@@ -60,15 +56,12 @@ export function convertToCSV<T extends Record<string, any>>(
 /**
  * Télécharge un fichier CSV
  */
-export function downloadCSV(
-  data: string,
-  filename: string = 'export.csv'
-): void {
+export function downloadCSV(data: string, filename: string = 'export.csv'): void {
   // Ajouter BOM UTF-8 pour Excel
   const BOM = '\uFEFF';
   const blob = new Blob([BOM + data], { type: 'text/csv;charset=utf-8;' });
   const link = document.createElement('a');
-  
+
   if (link.download !== undefined) {
     const url = URL.createObjectURL(blob);
     link.setAttribute('href', url);

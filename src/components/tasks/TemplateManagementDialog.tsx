@@ -1,7 +1,7 @@
 /**
  * 🎯 TemplateManagementDialog - Gestion des Templates de Tâches
  * Pattern: Notion, Linear, ClickUp
- * 
+ *
  * Fonctionnalités:
  * - Liste des templates avec catégories
  * - Création/Édition/Suppression
@@ -43,16 +43,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import {
-  BookTemplate,
-  Plus,
-  Trash2,
-  Edit,
-  Search,
-  Globe,
-  Lock,
-  TrendingUp,
-} from 'lucide-react';
+import { BookTemplate, Plus, Trash2, Edit, Search, Globe, Lock, TrendingUp } from 'lucide-react';
 import { useTaskTemplates, TaskTemplate, TaskTemplateData } from '@/hooks/useTaskTemplates';
 
 const CATEGORIES = [
@@ -159,9 +150,10 @@ export const TemplateManagementDialog = () => {
     setDeleteConfirmId(null);
   };
 
-  const filteredTemplates = templates.filter(t =>
-    t.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    t.description?.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredTemplates = templates.filter(
+    t =>
+      t.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      t.description?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const getCategoryInfo = (category?: string) => {
@@ -173,11 +165,11 @@ export const TemplateManagementDialog = () => {
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
           <Button variant="outline" size="sm">
-            <BookTemplate className="h-4 w-4 mr-2" />
+            <BookTemplate className="mr-2 h-4 w-4" />
             Templates
           </Button>
         </DialogTrigger>
-        <DialogContent className="max-w-4xl max-h-[85vh]">
+        <DialogContent className="max-h-[85vh] max-w-4xl">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <BookTemplate className="h-5 w-5" />
@@ -188,7 +180,7 @@ export const TemplateManagementDialog = () => {
             </DialogDescription>
           </DialogHeader>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             {/* Liste des templates */}
             <div className="space-y-3">
               <div className="flex items-center justify-between">
@@ -201,18 +193,18 @@ export const TemplateManagementDialog = () => {
                   }}
                   disabled={isCreating}
                 >
-                  <Plus className="h-4 w-4 mr-1" />
+                  <Plus className="mr-1 h-4 w-4" />
                   Nouveau
                 </Button>
               </div>
 
               {/* Recherche */}
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                 <Input
                   placeholder="Rechercher..."
                   value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onChange={e => setSearchQuery(e.target.value)}
                   className="pl-10"
                 />
               </div>
@@ -220,27 +212,25 @@ export const TemplateManagementDialog = () => {
               {/* Liste scrollable */}
               <ScrollArea className="h-[450px] pr-4">
                 {loading ? (
-                  <div className="text-center py-8 text-muted-foreground">
-                    Chargement...
-                  </div>
+                  <div className="py-8 text-center text-muted-foreground">Chargement...</div>
                 ) : filteredTemplates.length === 0 ? (
-                  <div className="text-center py-8 text-muted-foreground">
+                  <div className="py-8 text-center text-muted-foreground">
                     {searchQuery ? 'Aucun template trouvé' : 'Aucun template créé'}
                   </div>
                 ) : (
                   <div className="space-y-2">
-                    {filteredTemplates.map((template) => {
+                    {filteredTemplates.map(template => {
                       const categoryInfo = getCategoryInfo(template.category);
                       return (
                         <div
                           key={template.id}
-                          className="p-3 border rounded-lg hover:bg-accent/50 transition-colors cursor-pointer"
+                          className="cursor-pointer rounded-lg border p-3 transition-colors hover:bg-accent/50"
                           onClick={() => handleEdit(template)}
                         >
                           <div className="flex items-start justify-between gap-2">
-                            <div className="flex-1 min-w-0">
-                              <div className="flex items-center gap-2 mb-1">
-                                <span className="font-medium text-sm truncate">
+                            <div className="min-w-0 flex-1">
+                              <div className="mb-1 flex items-center gap-2">
+                                <span className="truncate text-sm font-medium">
                                   {template.name}
                                 </span>
                                 {template.is_public ? (
@@ -250,16 +240,16 @@ export const TemplateManagementDialog = () => {
                                 )}
                               </div>
                               {template.description && (
-                                <p className="text-xs text-muted-foreground line-clamp-1">
+                                <p className="line-clamp-1 text-xs text-muted-foreground">
                                   {template.description}
                                 </p>
                               )}
-                              <div className="flex items-center gap-2 mt-2">
+                              <div className="mt-2 flex items-center gap-2">
                                 <Badge className={`text-xs ${categoryInfo.color}`}>
                                   {categoryInfo.label}
                                 </Badge>
                                 {template.usage_count > 0 && (
-                                  <span className="text-xs text-muted-foreground flex items-center gap-1">
+                                  <span className="flex items-center gap-1 text-xs text-muted-foreground">
                                     <TrendingUp className="h-3 w-3" />
                                     {template.usage_count}
                                   </span>
@@ -270,7 +260,7 @@ export const TemplateManagementDialog = () => {
                               variant="ghost"
                               size="icon"
                               className="h-8 w-8 flex-shrink-0"
-                              onClick={(e) => {
+                              onClick={e => {
                                 e.stopPropagation();
                                 setDeleteConfirmId(template.id);
                               }}
@@ -293,11 +283,7 @@ export const TemplateManagementDialog = () => {
                   <h3 className="text-sm font-medium">
                     {editingTemplate ? 'Modifier' : 'Nouveau'} Template
                   </h3>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={resetForm}
-                  >
+                  <Button variant="ghost" size="sm" onClick={resetForm}>
                     Annuler
                   </Button>
                 </div>
@@ -310,7 +296,7 @@ export const TemplateManagementDialog = () => {
                       <Input
                         placeholder="Ex: Nouvelle feature standard"
                         value={formData.name}
-                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                        onChange={e => setFormData({ ...formData, name: e.target.value })}
                       />
                     </div>
 
@@ -320,7 +306,7 @@ export const TemplateManagementDialog = () => {
                       <Textarea
                         placeholder="À quoi sert ce template ?"
                         value={formData.description}
-                        onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                        onChange={e => setFormData({ ...formData, description: e.target.value })}
                         rows={2}
                       />
                     </div>
@@ -330,13 +316,13 @@ export const TemplateManagementDialog = () => {
                       <Label>Catégorie</Label>
                       <Select
                         value={formData.category}
-                        onValueChange={(value) => setFormData({ ...formData, category: value })}
+                        onValueChange={value => setFormData({ ...formData, category: value })}
                       >
                         <SelectTrigger>
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                          {CATEGORIES.map((cat) => (
+                          {CATEGORIES.map(cat => (
                             <SelectItem key={cat.value} value={cat.value}>
                               {cat.label}
                             </SelectItem>
@@ -355,22 +341,22 @@ export const TemplateManagementDialog = () => {
                       </div>
                       <Switch
                         checked={formData.is_public}
-                        onCheckedChange={(checked) =>
+                        onCheckedChange={checked =>
                           setFormData({ ...formData, is_public: checked })
                         }
                       />
                     </div>
 
                     <div className="border-t pt-4">
-                      <h4 className="text-sm font-medium mb-3">Données de la tâche</h4>
+                      <h4 className="mb-3 text-sm font-medium">Données de la tâche</h4>
 
                       {/* Titre de la tâche */}
-                      <div className="space-y-2 mb-3">
+                      <div className="mb-3 space-y-2">
                         <Label>Titre de la tâche *</Label>
                         <Input
                           placeholder="Ex: Implémenter [feature]"
                           value={formData.template_data.title}
-                          onChange={(e) =>
+                          onChange={e =>
                             setFormData({
                               ...formData,
                               template_data: {
@@ -383,12 +369,12 @@ export const TemplateManagementDialog = () => {
                       </div>
 
                       {/* Description de la tâche */}
-                      <div className="space-y-2 mb-3">
+                      <div className="mb-3 space-y-2">
                         <Label>Description de la tâche</Label>
                         <Textarea
                           placeholder="Description détaillée..."
                           value={formData.template_data.description}
-                          onChange={(e) =>
+                          onChange={e =>
                             setFormData({
                               ...formData,
                               template_data: {
@@ -402,7 +388,7 @@ export const TemplateManagementDialog = () => {
                       </div>
 
                       {/* Priorité */}
-                      <div className="space-y-2 mb-3">
+                      <div className="mb-3 space-y-2">
                         <Label>Priorité</Label>
                         <Select
                           value={formData.template_data.priority}
@@ -420,7 +406,7 @@ export const TemplateManagementDialog = () => {
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
-                            {PRIORITIES.map((p) => (
+                            {PRIORITIES.map(p => (
                               <SelectItem key={p.value} value={p.value}>
                                 {p.label}
                               </SelectItem>
@@ -430,7 +416,7 @@ export const TemplateManagementDialog = () => {
                       </div>
 
                       {/* Statut */}
-                      <div className="space-y-2 mb-3">
+                      <div className="mb-3 space-y-2">
                         <Label>Statut initial</Label>
                         <Select
                           value={formData.template_data.status}
@@ -448,7 +434,7 @@ export const TemplateManagementDialog = () => {
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
-                            {STATUS_OPTIONS.map((s) => (
+                            {STATUS_OPTIONS.map(s => (
                               <SelectItem key={s.value} value={s.value}>
                                 {s.label}
                               </SelectItem>
@@ -465,7 +451,7 @@ export const TemplateManagementDialog = () => {
                           min="0"
                           step="0.5"
                           value={formData.template_data.effort_estimate_h || ''}
-                          onChange={(e) =>
+                          onChange={e =>
                             setFormData({
                               ...formData,
                               template_data: {

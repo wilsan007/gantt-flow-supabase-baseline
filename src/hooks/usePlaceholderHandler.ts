@@ -17,16 +17,19 @@ export const usePlaceholderHandler = (initialPlaceholder: string) => {
     setHasBeenFocused(false);
   }, []);
 
-  const getPlaceholder = useCallback((currentValue: string) => {
-    // Si le champ a été focalisé ou contient une valeur, ne pas afficher le placeholder
-    return hasBeenFocused || currentValue !== '' ? '' : initialPlaceholder;
-  }, [hasBeenFocused, initialPlaceholder]);
+  const getPlaceholder = useCallback(
+    (currentValue: string) => {
+      // Si le champ a été focalisé ou contient une valeur, ne pas afficher le placeholder
+      return hasBeenFocused || currentValue !== '' ? '' : initialPlaceholder;
+    },
+    [hasBeenFocused, initialPlaceholder]
+  );
 
   return {
     handleFocus,
     resetFocus,
     getPlaceholder,
-    hasBeenFocused
+    hasBeenFocused,
   };
 };
 
@@ -41,7 +44,7 @@ export const useMultiplePlaceholderHandler = (placeholders: Record<string, strin
   const handleFocus = useCallback((fieldName: string) => {
     setFocusedFields(prev => ({
       ...prev,
-      [fieldName]: true
+      [fieldName]: true,
     }));
   }, []);
 
@@ -49,7 +52,7 @@ export const useMultiplePlaceholderHandler = (placeholders: Record<string, strin
     if (fieldName) {
       setFocusedFields(prev => ({
         ...prev,
-        [fieldName]: false
+        [fieldName]: false,
       }));
     } else {
       setFocusedFields({});
@@ -60,7 +63,7 @@ export const useMultiplePlaceholderHandler = (placeholders: Record<string, strin
   const forceHidePlaceholder = useCallback((fieldName: string) => {
     setFocusedFields(prev => ({
       ...prev,
-      [fieldName]: true
+      [fieldName]: true,
     }));
   }, []);
 
@@ -70,18 +73,21 @@ export const useMultiplePlaceholderHandler = (placeholders: Record<string, strin
     // mais seulement s'il clique à nouveau
     setFocusedFields(prev => ({
       ...prev,
-      [fieldName]: false
+      [fieldName]: false,
     }));
   }, []);
 
-  const getPlaceholder = useCallback((fieldName: string, currentValue: string) => {
-    const hasBeenFocused = focusedFields[fieldName] || false;
-    const placeholder = placeholders[fieldName] || '';
-    
-    // SÉCURITÉ : Si le champ a été focalisé ou contient une valeur, ne jamais afficher le placeholder
-    // Cela empêche l'auto-complétion de masquer notre logique
-    return hasBeenFocused || currentValue !== '' ? '' : placeholder;
-  }, [focusedFields, placeholders]);
+  const getPlaceholder = useCallback(
+    (fieldName: string, currentValue: string) => {
+      const hasBeenFocused = focusedFields[fieldName] || false;
+      const placeholder = placeholders[fieldName] || '';
+
+      // SÉCURITÉ : Si le champ a été focalisé ou contient une valeur, ne jamais afficher le placeholder
+      // Cela empêche l'auto-complétion de masquer notre logique
+      return hasBeenFocused || currentValue !== '' ? '' : placeholder;
+    },
+    [focusedFields, placeholders]
+  );
 
   return {
     handleFocus,
@@ -89,6 +95,6 @@ export const useMultiplePlaceholderHandler = (placeholders: Record<string, strin
     getPlaceholder,
     focusedFields,
     forceHidePlaceholder,
-    handleFieldClear
+    handleFieldClear,
   };
 };

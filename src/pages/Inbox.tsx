@@ -1,6 +1,6 @@
 /**
  * Inbox Page - Boîte de Réception
- * 
+ *
  * Fonctionnalités :
  * - Notifications de tâches assignées
  * - Demandes d'approbation RH
@@ -51,14 +51,16 @@ export default function Inbox() {
   const { tasks, loading: tasksLoading } = useTasks();
   const { leaveRequests, loading: hrLoading } = useHRMinimal();
   const { isSuperAdmin } = useUserRoles();
-  
+
   const [filter, setFilter] = useState<FilterType>('all');
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
 
   // Récupérer l'ID utilisateur
   React.useEffect(() => {
     const fetchUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (user) setCurrentUserId(user.id);
     };
     fetchUser();
@@ -67,14 +69,14 @@ export default function Inbox() {
   // Construire les éléments de la boîte de réception
   const inboxItems = useMemo((): InboxItem[] => {
     if (!currentUserId) return [];
-    
+
     const items: InboxItem[] = [];
 
     // 1. Tâches assignées récemment (dernières 7 jours)
     const recentTasks = tasks.filter(task => {
       if (task.assignee_id !== currentUserId) return false;
       if (!task.created_at) return false;
-      
+
       const createdDate = parseISO(task.created_at);
       const daysDiff = differenceInDays(new Date(), createdDate);
       return daysDiff <= 7;
@@ -95,9 +97,7 @@ export default function Inbox() {
     });
 
     // 2. Demandes d'approbation de congés (statut pending)
-    const pendingApprovals = leaveRequests.filter(request => 
-      request.status === 'pending'
-    );
+    const pendingApprovals = leaveRequests.filter(request => request.status === 'pending');
 
     pendingApprovals.forEach(request => {
       items.push({
@@ -117,7 +117,7 @@ export default function Inbox() {
       if (task.assignee_id !== currentUserId) return false;
       if (task.status === 'completed') return false;
       if (!task.due_date) return false;
-      
+
       const dueDate = parseISO(task.due_date);
       return dueDate < new Date();
     });
@@ -137,15 +137,13 @@ export default function Inbox() {
     });
 
     // Trier par date (plus récent en premier)
-    return items.sort((a, b) => 
-      new Date(b.date).getTime() - new Date(a.date).getTime()
-    );
+    return items.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
   }, [tasks, leaveRequests, currentUserId]);
 
   // Filtrer selon l'onglet sélectionné
   const filteredItems = useMemo(() => {
     if (filter === 'all') return inboxItems;
-    
+
     switch (filter) {
       case 'tasks':
         return inboxItems.filter(item => item.type === 'task');
@@ -166,7 +164,7 @@ export default function Inbox() {
     const actionRequired = inboxItems.filter(item => item.actionRequired).length;
     const tasks = inboxItems.filter(item => item.type === 'task').length;
     const approvals = inboxItems.filter(item => item.type === 'approval').length;
-    
+
     return { unread, actionRequired, tasks, approvals };
   }, [inboxItems]);
 
@@ -185,35 +183,31 @@ export default function Inbox() {
 
   const getPriorityBadge = (priority?: string) => {
     if (!priority) return null;
-    
+
     const colors = {
       high: 'bg-red-500',
       medium: 'bg-yellow-500',
       low: 'bg-green-500',
     };
-    
-    return (
-      <Badge className={colors[priority as keyof typeof colors]}>
-        {priority}
-      </Badge>
-    );
+
+    return <Badge className={colors[priority as keyof typeof colors]}>{priority}</Badge>;
   };
 
   const formatDate = (dateString: string) => {
     const date = parseISO(dateString);
-    
+
     if (isToday(date)) {
       return `Aujourd'hui ${format(date, 'HH:mm')}`;
     }
     if (isYesterday(date)) {
       return `Hier ${format(date, 'HH:mm')}`;
     }
-    
+
     const daysDiff = differenceInDays(new Date(), date);
     if (daysDiff <= 7) {
       return format(date, 'EEEE HH:mm', { locale: fr });
     }
-    
+
     return format(date, 'dd MMM yyyy', { locale: fr });
   };
 
@@ -229,31 +223,32 @@ export default function Inbox() {
   return (
     <div className="space-y-6 p-6">
       {/* Header */}
-      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+      <div className="flex flex-col items-start justify-between gap-4 md:flex-row md:items-center">
         <div>
-          <h1 className="text-3xl font-bold flex items-center gap-3">
+          <h1 className="flex items-center gap-3 text-3xl font-bold">
             <InboxIcon className="h-8 w-8" />
             Boîte de Réception
           </h1>
-          <p className="text-muted-foreground mt-1">
-            {stats.unread} non lu{stats.unread > 1 ? 's' : ''} • {stats.actionRequired} action{stats.actionRequired > 1 ? 's' : ''} requise{stats.actionRequired > 1 ? 's' : ''}
+          <p className="mt-1 text-muted-foreground">
+            {stats.unread} non lu{stats.unread > 1 ? 's' : ''} • {stats.actionRequired} action
+            {stats.actionRequired > 1 ? 's' : ''} requise{stats.actionRequired > 1 ? 's' : ''}
           </p>
         </div>
 
         <div className="flex gap-2">
           <Button variant="outline" size="sm">
-            <Archive className="h-4 w-4 mr-2" />
+            <Archive className="mr-2 h-4 w-4" />
             Archiver tout
           </Button>
           <Button variant="outline" size="sm">
-            <CheckCircle2 className="h-4 w-4 mr-2" />
+            <CheckCircle2 className="mr-2 h-4 w-4" />
             Marquer tout lu
           </Button>
         </div>
       </div>
 
       {/* Statistiques rapides */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
@@ -304,7 +299,7 @@ export default function Inbox() {
       </div>
 
       {/* Tabs de filtrage */}
-      <Tabs value={filter} onValueChange={(value) => setFilter(value as FilterType)}>
+      <Tabs value={filter} onValueChange={value => setFilter(value as FilterType)}>
         <TabsList className="grid w-full max-w-2xl grid-cols-5">
           <TabsTrigger value="all">
             <span className="hidden sm:inline">Tout</span>
@@ -332,43 +327,39 @@ export default function Inbox() {
           {filteredItems.length === 0 ? (
             <Card>
               <CardContent className="flex flex-col items-center justify-center py-12">
-                <InboxIcon className="h-16 w-16 text-muted-foreground mb-4" />
+                <InboxIcon className="mb-4 h-16 w-16 text-muted-foreground" />
                 <p className="text-lg font-medium">Aucun élément</p>
-                <p className="text-sm text-muted-foreground">
-                  Votre boîte de réception est vide
-                </p>
+                <p className="text-sm text-muted-foreground">Votre boîte de réception est vide</p>
               </CardContent>
             </Card>
           ) : (
             <div className="space-y-2">
-              {filteredItems.map((item) => (
+              {filteredItems.map(item => (
                 <Card key={item.id} className={item.isRead ? 'opacity-60' : ''}>
                   <CardContent className="p-4">
                     <div className="flex items-start gap-4">
                       {/* Icône */}
-                      <div className="flex-shrink-0 mt-1">
-                        {getItemIcon(item.type)}
-                      </div>
+                      <div className="mt-1 flex-shrink-0">{getItemIcon(item.type)}</div>
 
                       {/* Contenu */}
-                      <div className="flex-1 min-w-0">
+                      <div className="min-w-0 flex-1">
                         <div className="flex items-start justify-between gap-2">
                           <div className="flex-1">
                             <h3 className={`font-medium ${!item.isRead ? 'font-bold' : ''}`}>
                               {item.title}
                             </h3>
                             {item.description && (
-                              <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
+                              <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">
                                 {item.description}
                               </p>
                             )}
                           </div>
-                          
+
                           {/* Badges */}
-                          <div className="flex items-center gap-2 flex-shrink-0">
+                          <div className="flex flex-shrink-0 items-center gap-2">
                             {item.actionRequired && (
                               <Badge variant="destructive" className="text-xs">
-                                <AlertCircle className="h-3 w-3 mr-1" />
+                                <AlertCircle className="mr-1 h-3 w-3" />
                                 Action requise
                               </Badge>
                             )}
@@ -377,12 +368,12 @@ export default function Inbox() {
                         </div>
 
                         {/* Footer */}
-                        <div className="flex items-center justify-between mt-3">
-                          <span className="text-xs text-muted-foreground flex items-center gap-1">
+                        <div className="mt-3 flex items-center justify-between">
+                          <span className="flex items-center gap-1 text-xs text-muted-foreground">
                             <Calendar className="h-3 w-3" />
                             {formatDate(item.date)}
                           </span>
-                          
+
                           <div className="flex gap-1">
                             {!item.isRead && (
                               <Button variant="ghost" size="sm">

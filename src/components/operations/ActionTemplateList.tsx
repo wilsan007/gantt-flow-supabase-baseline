@@ -72,8 +72,8 @@ export const ActionTemplateList: React.FC<ActionTemplateListProps> = ({
 
   if (readonly && templates.length === 0) {
     return (
-      <div className="text-center py-8 text-muted-foreground">
-        <CheckSquare className="h-12 w-12 mx-auto mb-2 opacity-50" />
+      <div className="py-8 text-center text-muted-foreground">
+        <CheckSquare className="mx-auto mb-2 h-12 w-12 opacity-50" />
         <p>Aucune action définie pour cette activité</p>
       </div>
     );
@@ -85,9 +85,7 @@ export const ActionTemplateList: React.FC<ActionTemplateListProps> = ({
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <CheckSquare className="h-5 w-5 text-muted-foreground" />
-          <Label className="text-base font-semibold">
-            Actions templates ({templates.length})
-          </Label>
+          <Label className="text-base font-semibold">Actions templates ({templates.length})</Label>
         </div>
         {!readonly && (
           <Button onClick={handleAdd} size="sm" variant="outline" className="gap-2">
@@ -104,7 +102,7 @@ export const ActionTemplateList: React.FC<ActionTemplateListProps> = ({
             <p className="text-sm text-muted-foreground">
               Les actions seront automatiquement clonées sur chaque tâche générée
             </p>
-            <p className="text-xs text-muted-foreground mt-1">
+            <p className="mt-1 text-xs text-muted-foreground">
               Vous pouvez les réorganiser par glisser-déposer
             </p>
           </CardContent>
@@ -118,7 +116,7 @@ export const ActionTemplateList: React.FC<ActionTemplateListProps> = ({
             <div
               {...provided.droppableProps}
               ref={provided.innerRef}
-              className={`space-y-2 ${snapshot.isDraggingOver ? 'bg-muted/50 rounded-lg p-2' : ''}`}
+              className={`space-y-2 ${snapshot.isDraggingOver ? 'rounded-lg bg-muted/50 p-2' : ''}`}
             >
               {templates.map((template, index) => (
                 <Draggable
@@ -141,7 +139,7 @@ export const ActionTemplateList: React.FC<ActionTemplateListProps> = ({
                           {!readonly && (
                             <div
                               {...provided.dragHandleProps}
-                              className="flex items-start pt-2 cursor-grab active:cursor-grabbing"
+                              className="flex cursor-grab items-start pt-2 active:cursor-grabbing"
                             >
                               <GripVertical className="h-5 w-5 text-muted-foreground" />
                             </div>
@@ -159,9 +157,11 @@ export const ActionTemplateList: React.FC<ActionTemplateListProps> = ({
                             {readonly ? (
                               <>
                                 <div>
-                                  <h4 className="font-medium">{template.title || '(Sans titre)'}</h4>
+                                  <h4 className="font-medium">
+                                    {template.title || '(Sans titre)'}
+                                  </h4>
                                   {template.description && (
-                                    <p className="text-sm text-muted-foreground mt-1">
+                                    <p className="mt-1 text-sm text-muted-foreground">
                                       {template.description}
                                     </p>
                                   )}
@@ -171,13 +171,15 @@ export const ActionTemplateList: React.FC<ActionTemplateListProps> = ({
                               <>
                                 <Input
                                   value={template.title}
-                                  onChange={(e) => handleChange(index, 'title', e.target.value)}
+                                  onChange={e => handleChange(index, 'title', e.target.value)}
                                   placeholder="Titre de l'action *"
-                                  className={template.title.trim() === '' ? 'border-destructive' : ''}
+                                  className={
+                                    template.title.trim() === '' ? 'border-destructive' : ''
+                                  }
                                 />
                                 <Textarea
                                   value={template.description}
-                                  onChange={(e) => handleChange(index, 'description', e.target.value)}
+                                  onChange={e => handleChange(index, 'description', e.target.value)}
                                   placeholder="Description détaillée (optionnel)"
                                   rows={2}
                                 />
@@ -210,9 +212,7 @@ export const ActionTemplateList: React.FC<ActionTemplateListProps> = ({
 
       {/* Validation */}
       {!readonly && templates.some(t => t.title.trim() === '') && (
-        <p className="text-sm text-destructive">
-          ⚠️ Certaines actions n'ont pas de titre
-        </p>
+        <p className="text-sm text-destructive">⚠️ Certaines actions n'ont pas de titre</p>
       )}
     </div>
   );

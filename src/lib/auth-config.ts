@@ -17,17 +17,17 @@ export const supabaseStrict = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
     // DÉSACTIVER le refresh token automatique
     autoRefreshToken: false,
-    
+
     // DÉSACTIVER la persistance dans localStorage
     // Utiliser sessionStorage (se vide à la fermeture du navigateur)
     storage: window.sessionStorage,
-    
+
     // Détection de changement de session
     detectSessionInUrl: true,
-    
+
     // Pas de stockage persistant
     persistSession: false,
-    
+
     // Flow PKCE pour sécurité renforcée
     flowType: 'pkce',
   },
@@ -70,12 +70,12 @@ function getOrCreateSessionMarker(): string {
  */
 export function isSessionValid(): boolean {
   const currentMarker = sessionStorage.getItem(SESSION_MARKER_KEY);
-  
+
   // Pas de marqueur = nouvelle session ou navigateur fermé/rouvert
   if (!currentMarker) {
     return false;
   }
-  
+
   return true;
 }
 
@@ -92,10 +92,10 @@ export function initializeSessionMarker(): string {
 export async function invalidateSession(): Promise<void> {
   // Supprimer le marqueur de session
   sessionStorage.removeItem(SESSION_MARKER_KEY);
-  
+
   // Déconnexion Supabase
   await supabaseStrict.auth.signOut();
-  
+
   // Nettoyer tout le sessionStorage
   sessionStorage.clear();
 }
@@ -105,12 +105,12 @@ export async function invalidateSession(): Promise<void> {
  */
 export function isTokenExpired(expiresAt?: number): boolean {
   if (!expiresAt) return true;
-  
+
   // Vérifier si le token expire dans moins de 5 minutes
   const fiveMinutesInSeconds = 5 * 60;
   const now = Math.floor(Date.now() / 1000);
-  
-  return (expiresAt - now) < fiveMinutesInSeconds;
+
+  return expiresAt - now < fiveMinutesInSeconds;
 }
 
 /**
@@ -123,7 +123,7 @@ export function setupSessionMonitoring(onSessionInvalid: () => void): () => void
     // Le marqueur sera automatiquement supprimé car sessionStorage se vide
     console.log('🔒 Session terminée - fermeture du navigateur');
   };
-  
+
   // Détection de visibilité (changement d'onglet, verrouillage écran, etc.)
   const handleVisibilityChange = async () => {
     if (document.hidden) {
@@ -138,7 +138,7 @@ export function setupSessionMonitoring(onSessionInvalid: () => void): () => void
       }
     }
   };
-  
+
   // Détection de changement de focus
   const handleFocus = async () => {
     // Vérifier la session à chaque retour de focus
@@ -148,32 +148,36 @@ export function setupSessionMonitoring(onSessionInvalid: () => void): () => void
       await invalidateSession();
       onSessionInvalid();
     }
-    
+
     // Vérifier l'expiration du token
-    const { data: { session } } = await supabaseStrict.auth.getSession();
+    const {
+      data: { session },
+    } = await supabaseStrict.auth.getSession();
     if (session && isTokenExpired(session.expires_at)) {
       console.log('⏰ Token JWT expiré (2h dépassées)');
       await invalidateSession();
       onSessionInvalid();
     }
   };
-  
+
   // Enregistrer les listeners
   window.addEventListener('beforeunload', handleBeforeUnload);
   document.addEventListener('visibilitychange', handleVisibilityChange);
   window.addEventListener('focus', handleFocus);
-  
+
   // Vérification périodique toutes les 30 secondes
   const intervalId = setInterval(async () => {
-    const { data: { session } } = await supabaseStrict.auth.getSession();
-    
+    const {
+      data: { session },
+    } = await supabaseStrict.auth.getSession();
+
     if (session && isTokenExpired(session.expires_at)) {
       console.log('⏰ Token JWT expiré - déconnexion automatique');
       await invalidateSession();
       onSessionInvalid();
     }
   }, 30000); // 30 secondes
-  
+
   // Fonction de nettoyage
   return () => {
     window.removeEventListener('beforeunload', handleBeforeUnload);
@@ -190,21 +194,21 @@ export async function signInStrict(email: string, password: string) {
   // Générer un nouveau marqueur de session
   const sessionMarker = generateSessionMarker();
   sessionStorage.setItem(SESSION_MARKER_KEY, sessionMarker);
-  
+
   // Connexion Supabase
   const { data, error } = await supabaseStrict.auth.signInWithPassword({
     email,
     password,
   });
-  
+
   if (error) {
     sessionStorage.removeItem(SESSION_MARKER_KEY);
     throw error;
   }
-  
+
   console.log('✅ Connexion réussie - Session valide pour 2h');
   console.log('🔑 Marqueur de session:', sessionMarker);
-  
+
   return data;
 }
 
@@ -218,21 +222,24 @@ export async function getStrictSession() {
     await invalidateSession();
     return null;
   }
-  
+
   // Récupérer la session Supabase
-  const { data: { session }, error } = await supabaseStrict.auth.getSession();
-  
+  const {
+    data: { session },
+    error,
+  } = await supabaseStrict.auth.getSession();
+
   if (error || !session) {
     console.log('❌ Pas de session Supabase');
     return null;
   }
-  
+
   // Vérifier l'expiration
   if (isTokenExpired(session.expires_at)) {
     console.log('⏰ Token expiré');
     await invalidateSession();
     return null;
   }
-  
+
   return session;
 }

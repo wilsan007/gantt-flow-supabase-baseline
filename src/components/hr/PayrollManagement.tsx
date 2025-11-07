@@ -1,11 +1,26 @@
 import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { DollarSign, Download, FileSpreadsheet, Lock, CheckCircle, AlertCircle, TrendingUp, Calendar } from "lucide-react";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { usePayrollManagement } from "@/hooks/usePayrollManagement";
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import {
+  DollarSign,
+  Download,
+  FileSpreadsheet,
+  Lock,
+  CheckCircle,
+  AlertCircle,
+  TrendingUp,
+  Calendar,
+} from 'lucide-react';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { usePayrollManagement } from '@/hooks/usePayrollManagement';
 
 interface PayrollPeriod {
   id: string;
@@ -55,18 +70,18 @@ interface PayrollCheck {
 }
 
 export const PayrollManagement = () => {
-  const [activeView, setActiveView] = useState("periods");
-  const [selectedPeriod, setSelectedPeriod] = useState("2024-01");
-  
-  const { 
-    payrollPeriods, 
-    employeePayrolls, 
-    payrollChecks, 
-    loading, 
+  const [activeView, setActiveView] = useState('periods');
+  const [selectedPeriod, setSelectedPeriod] = useState('2024-01');
+
+  const {
+    payrollPeriods,
+    employeePayrolls,
+    payrollChecks,
+    loading,
     error,
     createPayrollPeriod,
     updatePayrollPeriod,
-    processPayroll 
+    processPayroll,
   } = usePayrollManagement();
 
   if (loading) return <div>Chargement...</div>;
@@ -79,33 +94,52 @@ export const PayrollManagement = () => {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'processed': case 'exported': return 'bg-green-100 text-green-800 border-green-200';
-      case 'locked': return 'bg-blue-100 text-blue-800 border-blue-200';
-      case 'draft': return 'bg-gray-100 text-gray-800 border-gray-200';
-      default: return 'bg-gray-100 text-gray-800 border-gray-200';
+      case 'processed':
+      case 'exported':
+        return 'bg-green-100 text-green-800 border-green-200';
+      case 'locked':
+        return 'bg-blue-100 text-blue-800 border-blue-200';
+      case 'draft':
+        return 'bg-gray-100 text-gray-800 border-gray-200';
+      default:
+        return 'bg-gray-100 text-gray-800 border-gray-200';
     }
   };
 
   const getCheckStatusColor = (status: string) => {
     switch (status) {
-      case 'ok': return 'bg-green-100 text-green-800 border-green-200';
-      case 'warning': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-      case 'error': return 'bg-red-100 text-red-800 border-red-200';
-      default: return 'bg-gray-100 text-gray-800 border-gray-200';
+      case 'ok':
+        return 'bg-green-100 text-green-800 border-green-200';
+      case 'warning':
+        return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+      case 'error':
+        return 'bg-red-100 text-red-800 border-red-200';
+      default:
+        return 'bg-gray-100 text-gray-800 border-gray-200';
     }
   };
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'processed': case 'exported': case 'ok': return <CheckCircle className="h-4 w-4" />;
-      case 'locked': return <Lock className="h-4 w-4" />;
-      case 'warning': case 'error': return <AlertCircle className="h-4 w-4" />;
-      default: return <Calendar className="h-4 w-4" />;
+      case 'processed':
+      case 'exported':
+      case 'ok':
+        return <CheckCircle className="h-4 w-4" />;
+      case 'locked':
+        return <Lock className="h-4 w-4" />;
+      case 'warning':
+      case 'error':
+        return <AlertCircle className="h-4 w-4" />;
+      default:
+        return <Calendar className="h-4 w-4" />;
     }
   };
 
   const formatPeriod = (year: number, month: number) => {
-    return new Date(year, month - 1).toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
+    return new Date(year, month - 1).toLocaleDateString('fr-FR', {
+      month: 'long',
+      year: 'numeric',
+    });
   };
 
   return (
@@ -117,11 +151,11 @@ export const PayrollManagement = () => {
         </div>
         <div className="flex gap-2">
           <Button variant="outline">
-            <FileSpreadsheet className="h-4 w-4 mr-2" />
+            <FileSpreadsheet className="mr-2 h-4 w-4" />
             Importer données
           </Button>
           <Button>
-            <Lock className="h-4 w-4 mr-2" />
+            <Lock className="mr-2 h-4 w-4" />
             Verrouiller période
           </Button>
         </div>
@@ -149,8 +183,8 @@ export const PayrollManagement = () => {
 
         <TabsContent value="periods" className="space-y-4">
           <div className="grid gap-4">
-            {displayPeriods.map((period) => (
-              <Card key={period.id} className="hover:shadow-lg transition-shadow">
+            {displayPeriods.map(period => (
+              <Card key={period.id} className="transition-shadow hover:shadow-lg">
                 <CardHeader>
                   <div className="flex items-center justify-between">
                     <div>
@@ -168,7 +202,7 @@ export const PayrollManagement = () => {
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
                     <div>
                       <p className="text-sm font-medium text-muted-foreground">Salaire brut</p>
                       <p className="text-xl font-bold">{period.totalGross.toLocaleString()} €</p>
@@ -196,23 +230,23 @@ export const PayrollManagement = () => {
                     </div>
                   )}
 
-                  <div className="flex justify-between items-center pt-4 border-t">
+                  <div className="flex items-center justify-between border-t pt-4">
                     <div className="flex gap-2">
                       {period.status === 'draft' && (
                         <>
                           <Button variant="outline" size="sm">
-                            <CheckCircle className="h-4 w-4 mr-2" />
+                            <CheckCircle className="mr-2 h-4 w-4" />
                             Contrôler
                           </Button>
                           <Button size="sm">
-                            <Lock className="h-4 w-4 mr-2" />
+                            <Lock className="mr-2 h-4 w-4" />
                             Verrouiller
                           </Button>
                         </>
                       )}
                       {period.status === 'processed' && (
                         <Button size="sm">
-                          <Download className="h-4 w-4 mr-2" />
+                          <Download className="mr-2 h-4 w-4" />
                           Exporter
                         </Button>
                       )}
@@ -228,7 +262,7 @@ export const PayrollManagement = () => {
         </TabsContent>
 
         <TabsContent value="employees" className="space-y-4">
-          <div className="flex justify-between items-center">
+          <div className="flex items-center justify-between">
             <h3 className="text-lg font-medium">Bulletins de paie</h3>
             <Select defaultValue="2024-01">
               <SelectTrigger className="w-48">
@@ -243,8 +277,8 @@ export const PayrollManagement = () => {
           </div>
 
           <div className="grid gap-4">
-            {displayEmployeePayrolls.map((payroll) => (
-              <Card key={payroll.id} className="hover:shadow-lg transition-shadow">
+            {displayEmployeePayrolls.map(payroll => (
+              <Card key={payroll.id} className="transition-shadow hover:shadow-lg">
                 <CardHeader>
                   <div className="flex items-center justify-between">
                     <div>
@@ -258,7 +292,7 @@ export const PayrollManagement = () => {
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
                     <div>
                       <p className="text-sm font-medium text-muted-foreground">Salaire de base</p>
                       <p className="font-bold">{payroll.baseSalary.toLocaleString()} €</p>
@@ -272,7 +306,9 @@ export const PayrollManagement = () => {
                       <p className="font-bold">{payroll.socialCharges.toLocaleString()} €</p>
                     </div>
                     <div>
-                      <p className="text-sm font-medium text-muted-foreground">Heures travaillées</p>
+                      <p className="text-sm font-medium text-muted-foreground">
+                        Heures travaillées
+                      </p>
                       <p className="font-bold">
                         {payroll.hoursWorked}h
                         {payroll.overtimeHours > 0 && (
@@ -285,18 +321,24 @@ export const PayrollManagement = () => {
                   {(payroll.bonuses.length > 0 || payroll.deductions.length > 0) && (
                     <div className="space-y-3">
                       <h4 className="font-medium">Éléments variables</h4>
-                      
-                      {payroll.bonuses.map((bonus) => (
-                        <div key={bonus.id} className="flex items-center justify-between p-2 rounded bg-green-50">
+
+                      {payroll.bonuses.map(bonus => (
+                        <div
+                          key={bonus.id}
+                          className="flex items-center justify-between rounded bg-green-50 p-2"
+                        >
                           <span className="text-sm text-green-800">+ {bonus.name}</span>
                           <span className="font-medium text-green-800">
                             {bonus.amount.toLocaleString()} €
                           </span>
                         </div>
                       ))}
-                      
-                      {payroll.deductions.map((deduction) => (
-                        <div key={deduction.id} className="flex items-center justify-between p-2 rounded bg-red-50">
+
+                      {payroll.deductions.map(deduction => (
+                        <div
+                          key={deduction.id}
+                          className="flex items-center justify-between rounded bg-red-50 p-2"
+                        >
                           <span className="text-sm text-red-800">- {deduction.name}</span>
                           <span className="font-medium text-red-800">
                             {deduction.amount.toLocaleString()} €
@@ -308,7 +350,7 @@ export const PayrollManagement = () => {
 
                   <div className="flex justify-end">
                     <Button variant="outline" size="sm">
-                      <Download className="h-4 w-4 mr-2" />
+                      <Download className="mr-2 h-4 w-4" />
                       Télécharger bulletin
                     </Button>
                   </div>
@@ -320,10 +362,10 @@ export const PayrollManagement = () => {
 
         <TabsContent value="checks" className="space-y-4">
           <div className="grid gap-4">
-            {displayPayrollChecks.map((check) => (
-              <Card key={check.id} className="hover:shadow-lg transition-shadow">
+            {displayPayrollChecks.map(check => (
+              <Card key={check.id} className="transition-shadow hover:shadow-lg">
                 <CardContent className="p-6">
-                  <div className="flex items-center justify-between mb-4">
+                  <div className="mb-4 flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       {getStatusIcon(check.status)}
                       <div>
@@ -331,14 +373,12 @@ export const PayrollManagement = () => {
                         <p className="text-sm text-muted-foreground">{check.details}</p>
                       </div>
                     </div>
-                    <Badge className={getCheckStatusColor(check.status)}>
-                      {check.status}
-                    </Badge>
+                    <Badge className={getCheckStatusColor(check.status)}>{check.status}</Badge>
                   </div>
 
                   {check.affectedEmployees && check.affectedEmployees.length > 0 && (
-                    <div className="mt-3 p-3 rounded-lg bg-muted/50">
-                      <p className="text-sm font-medium mb-2">Employés concernés:</p>
+                    <div className="mt-3 rounded-lg bg-muted/50 p-3">
+                      <p className="mb-2 text-sm font-medium">Employés concernés:</p>
                       <div className="flex flex-wrap gap-2">
                         {check.affectedEmployees.map((employee, index) => (
                           <Badge key={index} variant="outline">
@@ -365,15 +405,16 @@ export const PayrollManagement = () => {
               </CardHeader>
               <CardContent className="space-y-4">
                 <p className="text-sm text-muted-foreground">
-                  Générer les écritures comptables pour intégration dans votre logiciel de comptabilité
+                  Générer les écritures comptables pour intégration dans votre logiciel de
+                  comptabilité
                 </p>
                 <div className="flex gap-2">
                   <Button className="flex-1">
-                    <Download className="h-4 w-4 mr-2" />
+                    <Download className="mr-2 h-4 w-4" />
                     Export Excel
                   </Button>
                   <Button variant="outline" className="flex-1">
-                    <Download className="h-4 w-4 mr-2" />
+                    <Download className="mr-2 h-4 w-4" />
                     Export CSV
                   </Button>
                 </div>
@@ -393,11 +434,11 @@ export const PayrollManagement = () => {
                 </p>
                 <div className="flex gap-2">
                   <Button className="flex-1">
-                    <Download className="h-4 w-4 mr-2" />
+                    <Download className="mr-2 h-4 w-4" />
                     DSN
                   </Button>
                   <Button variant="outline" className="flex-1">
-                    <Download className="h-4 w-4 mr-2" />
+                    <Download className="mr-2 h-4 w-4" />
                     DADS-U
                   </Button>
                 </div>
@@ -417,11 +458,11 @@ export const PayrollManagement = () => {
                 </p>
                 <div className="flex gap-2">
                   <Button className="flex-1">
-                    <Download className="h-4 w-4 mr-2" />
+                    <Download className="mr-2 h-4 w-4" />
                     Rapport mensuel
                   </Button>
                   <Button variant="outline" className="flex-1">
-                    <Download className="h-4 w-4 mr-2" />
+                    <Download className="mr-2 h-4 w-4" />
                     Analyse annuelle
                   </Button>
                 </div>
@@ -441,11 +482,11 @@ export const PayrollManagement = () => {
                 </p>
                 <div className="flex gap-2">
                   <Button className="flex-1">
-                    <Download className="h-4 w-4 mr-2" />
+                    <Download className="mr-2 h-4 w-4" />
                     Générer tous
                   </Button>
                   <Button variant="outline" className="flex-1">
-                    <Download className="h-4 w-4 mr-2" />
+                    <Download className="mr-2 h-4 w-4" />
                     Envoi groupé
                   </Button>
                 </div>

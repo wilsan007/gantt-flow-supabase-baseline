@@ -9,13 +9,13 @@ interface FormattedActionTextProps {
 
 export const FormattedActionText: React.FC<FormattedActionTextProps> = ({
   text,
-  className = "",
-  style = {}
+  className = '',
+  style = {},
 }) => {
   const formattedText = formatTextToDocumentationsStandard(text);
-  
+
   return (
-    <div 
+    <div
       className={`formatted-action-text ${className}`}
       style={{
         whiteSpace: 'pre-wrap', // Préserver les retours à la ligne
@@ -28,7 +28,7 @@ export const FormattedActionText: React.FC<FormattedActionTextProps> = ({
         maxWidth: '120px', // Largeur basée sur "Documentations"
         wordBreak: 'break-word',
         overflow: 'hidden',
-        ...style
+        ...style,
       }}
       title={text} // Tooltip avec le texte complet
     >

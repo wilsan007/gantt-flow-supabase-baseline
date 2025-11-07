@@ -1,21 +1,9 @@
 import React from 'react';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { 
-  Calendar, 
-  Users, 
-  Target, 
-  DollarSign, 
-  Activity,
-  Clock
-} from 'lucide-react';
+import { Calendar, Users, Target, DollarSign, Activity, Clock } from 'lucide-react';
 
 interface Project {
   id: string;
@@ -43,25 +31,25 @@ interface ProjectDetailsDialogProps {
 export const ProjectDetailsDialog: React.FC<ProjectDetailsDialogProps> = ({
   open,
   onOpenChange,
-  project
+  project,
 }) => {
   if (!project) return null;
 
   const getStatusBadge = (status: Project['status']) => {
     const statusConfig = {
-      'en_cours': { label: 'En cours', color: 'bg-blue-500' },
-      'a_venir': { label: 'À venir', color: 'bg-gray-500' },
-      'termine': { label: 'Terminé', color: 'bg-green-500' }
+      en_cours: { label: 'En cours', color: 'bg-blue-500' },
+      a_venir: { label: 'À venir', color: 'bg-gray-500' },
+      termine: { label: 'Terminé', color: 'bg-green-500' },
     };
     return statusConfig[status];
   };
 
   const getPriorityBadge = (priority: Project['priority']) => {
     const priorityConfig = {
-      'low': { label: '🟢 Faible', color: 'bg-green-100 text-green-800' },
-      'medium': { label: '🟡 Moyenne', color: 'bg-yellow-100 text-yellow-800' },
-      'high': { label: '🟠 Élevée', color: 'bg-orange-100 text-orange-800' },
-      'urgent': { label: '🔴 Urgente', color: 'bg-red-100 text-red-800' }
+      low: { label: '🟢 Faible', color: 'bg-green-100 text-green-800' },
+      medium: { label: '🟡 Moyenne', color: 'bg-yellow-100 text-yellow-800' },
+      high: { label: '🟠 Élevée', color: 'bg-orange-100 text-orange-800' },
+      urgent: { label: '🔴 Urgente', color: 'bg-red-100 text-red-800' },
     };
     return priorityConfig[priority];
   };
@@ -70,7 +58,7 @@ export const ProjectDetailsDialog: React.FC<ProjectDetailsDialogProps> = ({
     { date: '2024-03-15', action: 'Tâche "Interface utilisateur" mise à jour', user: 'AW' },
     { date: '2024-03-14', action: 'Sous-tâche "Design système" terminée', user: 'SM' },
     { date: '2024-03-13', action: 'Action "Tests unitaires" ajoutée', user: 'JD' },
-    { date: '2024-03-12', action: 'Projet mis à jour - Budget modifié', user: 'AW' }
+    { date: '2024-03-12', action: 'Projet mis à jour - Budget modifié', user: 'AW' },
   ];
 
   const statusBadge = getStatusBadge(project.status);
@@ -78,7 +66,7 @@ export const ProjectDetailsDialog: React.FC<ProjectDetailsDialogProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-h-[90vh] max-w-4xl overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Target className="h-5 w-5" />
@@ -97,35 +85,36 @@ export const ProjectDetailsDialog: React.FC<ProjectDetailsDialogProps> = ({
                 <Badge className={statusBadge.color}>{statusBadge.label}</Badge>
                 <Badge className={priorityBadge.color}>{priorityBadge.label}</Badge>
               </div>
-              
+
               <p className="text-muted-foreground">{project.description}</p>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <div className="flex items-center gap-2">
                   <Calendar className="h-4 w-4 text-muted-foreground" />
                   <span className="text-sm">
-                    {new Date(project.start_date).toLocaleDateString()} - {new Date(project.end_date).toLocaleDateString()}
+                    {new Date(project.start_date).toLocaleDateString()} -{' '}
+                    {new Date(project.end_date).toLocaleDateString()}
                   </span>
                 </div>
-                
+
                 <div className="flex items-center gap-2">
                   <Users className="h-4 w-4 text-muted-foreground" />
                   <span className="text-sm">Manager: {project.manager}</span>
                 </div>
-                
+
                 {project.budget && (
                   <div className="flex items-center gap-2">
                     <DollarSign className="h-4 w-4 text-muted-foreground" />
                     <span className="text-sm">Budget: {project.budget.toLocaleString()} €</span>
                   </div>
                 )}
-                
+
                 <div className="flex items-center gap-2">
                   <Activity className="h-4 w-4 text-muted-foreground" />
                   <span className="text-sm">Progression: {project.progress}%</span>
                 </div>
               </div>
-              
+
               <div>
                 <Progress value={project.progress} className="w-full" />
               </div>
@@ -139,7 +128,7 @@ export const ProjectDetailsDialog: React.FC<ProjectDetailsDialogProps> = ({
             </CardHeader>
             <CardContent>
               <div className="flex flex-wrap gap-2">
-                {project.team_members.map((member) => (
+                {project.team_members.map(member => (
                   <Badge key={member} variant="outline">
                     {member}
                   </Badge>
@@ -155,7 +144,7 @@ export const ProjectDetailsDialog: React.FC<ProjectDetailsDialogProps> = ({
             </CardHeader>
             <CardContent>
               <div className="flex flex-wrap gap-2">
-                {project.skills_required.map((skill) => (
+                {project.skills_required.map(skill => (
                   <Badge key={skill} className="bg-primary/10 text-primary">
                     {skill}
                   </Badge>
@@ -167,7 +156,7 @@ export const ProjectDetailsDialog: React.FC<ProjectDetailsDialogProps> = ({
           {/* Historique des modifications */}
           <Card>
             <CardHeader>
-              <CardTitle className="text-lg flex items-center gap-2">
+              <CardTitle className="flex items-center gap-2 text-lg">
                 <Clock className="h-5 w-5" />
                 Historique des Modifications
               </CardTitle>
@@ -175,7 +164,10 @@ export const ProjectDetailsDialog: React.FC<ProjectDetailsDialogProps> = ({
             <CardContent>
               <div className="space-y-3">
                 {mockHistory.map((entry, index) => (
-                  <div key={index} className="flex items-start gap-3 pb-3 border-b border-border/50 last:border-b-0">
+                  <div
+                    key={index}
+                    className="flex items-start gap-3 border-b border-border/50 pb-3 last:border-b-0"
+                  >
                     <Badge variant="outline" className="text-xs">
                       {entry.user}
                     </Badge>

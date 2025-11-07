@@ -41,10 +41,7 @@ export const useRoleManagement = () => {
 
   const fetchRoles = async () => {
     try {
-      const { data, error } = await supabase
-        .from('roles')
-        .select('*')
-        .order('hierarchy_level');
+      const { data, error } = await supabase.from('roles').select('*').order('hierarchy_level');
 
       if (error) throw error;
       setRoles(data || []);
@@ -53,7 +50,7 @@ export const useRoleManagement = () => {
       toast({
         title: 'Erreur',
         description: 'Impossible de charger les rôles',
-        variant: 'destructive'
+        variant: 'destructive',
       });
     }
   };
@@ -72,7 +69,7 @@ export const useRoleManagement = () => {
       toast({
         title: 'Erreur',
         description: 'Impossible de charger les permissions',
-        variant: 'destructive'
+        variant: 'destructive',
       });
     }
   };
@@ -81,10 +78,12 @@ export const useRoleManagement = () => {
     try {
       const { data, error } = await supabase
         .from('user_roles')
-        .select(`
+        .select(
+          `
           *,
           role:roles(*)
-        `)
+        `
+        )
         .eq('is_active', true)
         .order('created_at', { ascending: false });
 
@@ -95,7 +94,7 @@ export const useRoleManagement = () => {
       toast({
         title: 'Erreur',
         description: 'Impossible de charger les rôles utilisateurs',
-        variant: 'destructive'
+        variant: 'destructive',
       });
     }
   };
@@ -108,21 +107,19 @@ export const useRoleManagement = () => {
     expiresAt?: string
   ) => {
     try {
-      const { error } = await supabase
-        .from('user_roles')
-        .insert({
-          user_id: userId,
-          role_id: roleId,
-          context_type: contextType,
-          context_id: contextId,
-          expires_at: expiresAt
-        });
+      const { error } = await supabase.from('user_roles').insert({
+        user_id: userId,
+        role_id: roleId,
+        context_type: contextType,
+        context_id: contextId,
+        expires_at: expiresAt,
+      });
 
       if (error) throw error;
 
       toast({
         title: 'Succès',
-        description: 'Rôle assigné avec succès'
+        description: 'Rôle assigné avec succès',
       });
 
       fetchUserRoles();
@@ -130,8 +127,8 @@ export const useRoleManagement = () => {
       console.error('Error assigning role:', error);
       toast({
         title: 'Erreur',
-        description: 'Impossible d\'assigner le rôle',
-        variant: 'destructive'
+        description: "Impossible d'assigner le rôle",
+        variant: 'destructive',
       });
     }
   };
@@ -147,7 +144,7 @@ export const useRoleManagement = () => {
 
       toast({
         title: 'Succès',
-        description: 'Rôle retiré avec succès'
+        description: 'Rôle retiré avec succès',
       });
 
       fetchUserRoles();
@@ -156,7 +153,7 @@ export const useRoleManagement = () => {
       toast({
         title: 'Erreur',
         description: 'Impossible de retirer le rôle',
-        variant: 'destructive'
+        variant: 'destructive',
       });
     }
   };
@@ -164,7 +161,7 @@ export const useRoleManagement = () => {
   const getUserPermissions = async (userId?: string) => {
     try {
       const { data, error } = await supabase.rpc('get_user_roles', {
-        p_user_id: userId
+        p_user_id: userId,
       });
 
       if (error) throw error;
@@ -182,24 +179,29 @@ export const useRoleManagement = () => {
     contextId?: string
   ) => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) return false;
 
       const { data: userRoles, error } = await supabase
         .from('user_roles')
-        .select(`
+        .select(
+          `
           *,
           roles:role_id (name)
-        `)
+        `
+        )
         .eq('user_id', user.id)
         .eq('is_active', true);
 
       if (error) return false;
 
       // Les admins ont toutes les permissions
-      return userRoles?.some(role => 
-        ['admin', 'tenant_admin', 'owner'].includes(role.roles.name)
-      ) || false;
+      return (
+        userRoles?.some(role => ['admin', 'tenant_admin', 'owner'].includes(role.roles.name)) ||
+        false
+      );
     } catch (error: any) {
       console.error('Error checking permission:', error);
       return false;
@@ -219,9 +221,11 @@ export const useRoleManagement = () => {
     try {
       const { data, error } = await supabase
         .from('role_permissions')
-        .select(`
+        .select(
+          `
           permission:permissions(*)
-        `)
+        `
+        )
         .eq('role_id', roleId);
 
       if (error) throw error;
@@ -235,46 +239,43 @@ export const useRoleManagement = () => {
   const updateRolePermissions = async (roleId: string, permissionIds: string[]) => {
     try {
       // Remove existing permissions
-      await supabase
-        .from('role_permissions')
-        .delete()
-        .eq('role_id', roleId);
+      await supabase.from('role_permissions').delete().eq('role_id', roleId);
 
       // Add new permissions
-      const { error } = await supabase
-        .from('role_permissions')
-        .insert(
-          permissionIds.map(permissionId => ({
-            role_id: roleId,
-            permission_id: permissionId
-          }))
-        );
+      const { error } = await supabase.from('role_permissions').insert(
+        permissionIds.map(permissionId => ({
+          role_id: roleId,
+          permission_id: permissionId,
+        }))
+      );
 
       if (error) throw error;
 
       toast({
         title: 'Succès',
-        description: 'Permissions du rôle mises à jour'
+        description: 'Permissions du rôle mises à jour',
       });
-
     } catch (error: any) {
       console.error('Error updating role permissions:', error);
       toast({
         title: 'Erreur',
         description: 'Impossible de mettre à jour les permissions',
-        variant: 'destructive'
+        variant: 'destructive',
       });
     }
   };
 
   const getPermissionsByResource = () => {
-    const grouped = permissions.reduce((acc, permission) => {
-      if (!acc[permission.resource]) {
-        acc[permission.resource] = [];
-      }
-      acc[permission.resource].push(permission);
-      return acc;
-    }, {} as Record<string, Permission[]>);
+    const grouped = permissions.reduce(
+      (acc, permission) => {
+        if (!acc[permission.resource]) {
+          acc[permission.resource] = [];
+        }
+        acc[permission.resource].push(permission);
+        return acc;
+      },
+      {} as Record<string, Permission[]>
+    );
 
     return grouped;
   };
@@ -282,11 +283,7 @@ export const useRoleManagement = () => {
   useEffect(() => {
     const loadData = async () => {
       setLoading(true);
-      await Promise.all([
-        fetchRoles(),
-        fetchPermissions(),
-        fetchUserRoles()
-      ]);
+      await Promise.all([fetchRoles(), fetchPermissions(), fetchUserRoles()]);
       setLoading(false);
     };
 
@@ -310,6 +307,6 @@ export const useRoleManagement = () => {
       fetchRoles();
       fetchPermissions();
       fetchUserRoles();
-    }
+    },
   };
 };

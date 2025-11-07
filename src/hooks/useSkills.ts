@@ -40,7 +40,7 @@ export interface EmployeeSkill {
 export function useSkills() {
   const { userContext, profile, loading: authLoading } = useUserFilterContext();
   const { toast } = useToast();
-  
+
   const [skills, setSkills] = useState<Skill[]>([]);
   const [employeeSkills, setEmployeeSkills] = useState<EmployeeSkill[]>([]);
   const [loading, setLoading] = useState(true);
@@ -65,165 +65,183 @@ export function useSkills() {
   }, [userContext]);
 
   // Fetch compétences employé (ses skills ou équipe si manager)
-  const fetchEmployeeSkills = useCallback(async (employeeId?: string) => {
-    if (!userContext) return;
+  const fetchEmployeeSkills = useCallback(
+    async (employeeId?: string) => {
+      if (!userContext) return;
 
-    try {
-      let query = supabase
-        .from('employee_skills')
-        .select(`
+      try {
+        let query = supabase
+          .from('employee_skills')
+          .select(
+            `
           *,
           skill:skills(*)
-        `)
-        .order('created_at', { ascending: false });
+        `
+          )
+          .order('created_at', { ascending: false });
 
-      if (employeeId) {
-        query = query.eq('employee_id', employeeId);
+        if (employeeId) {
+          query = query.eq('employee_id', employeeId);
+        }
+
+        const { data, error: fetchError } = await query;
+
+        if (fetchError) throw fetchError;
+        setEmployeeSkills(data || []);
+      } catch (err: any) {
+        console.error('Erreur chargement employee skills:', err);
+        setError(err.message);
       }
-
-      const { data, error: fetchError } = await query;
-
-      if (fetchError) throw fetchError;
-      setEmployeeSkills(data || []);
-    } catch (err: any) {
-      console.error('Erreur chargement employee skills:', err);
-      setError(err.message);
-    }
-  }, [userContext]);
+    },
+    [userContext]
+  );
 
   // Ajouter compétence à son profil
-  const addSkillToProfile = useCallback(async (skillId: string, level: string) => {
-    if (!profile) return;
+  const addSkillToProfile = useCallback(
+    async (skillId: string, level: string) => {
+      if (!profile) return;
 
-    try {
-      const { data: employee } = await supabase
-        .from('employees')
-        .select('id')
-        .eq('user_id', profile.userId)
-        .single();
+      try {
+        const { data: employee } = await supabase
+          .from('employees')
+          .select('id')
+          .eq('user_id', profile.userId)
+          .single();
 
-      if (!employee) throw new Error('Employé non trouvé');
+        if (!employee) throw new Error('Employé non trouvé');
 
-      const { error: insertError } = await supabase
-        .from('employee_skills')
-        .insert({
+        const { error: insertError } = await supabase.from('employee_skills').insert({
           employee_id: employee.id,
           skill_id: skillId,
           level,
         });
 
-      if (insertError) throw insertError;
+        if (insertError) throw insertError;
 
-      toast({
-        title: 'Compétence ajoutée',
-        description: 'La compétence a été ajoutée à votre profil',
-      });
+        toast({
+          title: 'Compétence ajoutée',
+          description: 'La compétence a été ajoutée à votre profil',
+        });
 
-      fetchEmployeeSkills(employee.id);
-    } catch (err: any) {
-      toast({
-        title: 'Erreur',
-        description: err.message,
-        variant: 'destructive',
-      });
-    }
-  }, [profile, toast, fetchEmployeeSkills]);
+        fetchEmployeeSkills(employee.id);
+      } catch (err: any) {
+        toast({
+          title: 'Erreur',
+          description: err.message,
+          variant: 'destructive',
+        });
+      }
+    },
+    [profile, toast, fetchEmployeeSkills]
+  );
 
   // Mettre à jour niveau compétence
-  const updateSkillLevel = useCallback(async (employeeSkillId: string, level: string) => {
-    try {
-      const { error: updateError } = await supabase
-        .from('employee_skills')
-        .update({ level })
-        .eq('id', employeeSkillId);
+  const updateSkillLevel = useCallback(
+    async (employeeSkillId: string, level: string) => {
+      try {
+        const { error: updateError } = await supabase
+          .from('employee_skills')
+          .update({ level })
+          .eq('id', employeeSkillId);
 
-      if (updateError) throw updateError;
+        if (updateError) throw updateError;
 
-      toast({
-        title: 'Niveau mis à jour',
-        description: 'Votre niveau de compétence a été mis à jour',
-      });
+        toast({
+          title: 'Niveau mis à jour',
+          description: 'Votre niveau de compétence a été mis à jour',
+        });
 
-      fetchEmployeeSkills();
-    } catch (err: any) {
-      toast({
-        title: 'Erreur',
-        description: err.message,
-        variant: 'destructive',
-      });
-    }
-  }, [toast, fetchEmployeeSkills]);
+        fetchEmployeeSkills();
+      } catch (err: any) {
+        toast({
+          title: 'Erreur',
+          description: err.message,
+          variant: 'destructive',
+        });
+      }
+    },
+    [toast, fetchEmployeeSkills]
+  );
 
   // Demander certification (manager valide)
-  const requestCertification = useCallback(async (employeeSkillId: string) => {
-    try {
-      // Logique: notification au manager pour validation
-      toast({
-        title: 'Demande envoyée',
-        description: 'Votre manager recevra une notification pour valider cette compétence',
-      });
-    } catch (err: any) {
-      toast({
-        title: 'Erreur',
-        description: err.message,
-        variant: 'destructive',
-      });
-    }
-  }, [toast]);
+  const requestCertification = useCallback(
+    async (employeeSkillId: string) => {
+      try {
+        // Logique: notification au manager pour validation
+        toast({
+          title: 'Demande envoyée',
+          description: 'Votre manager recevra une notification pour valider cette compétence',
+        });
+      } catch (err: any) {
+        toast({
+          title: 'Erreur',
+          description: err.message,
+          variant: 'destructive',
+        });
+      }
+    },
+    [toast]
+  );
 
   // Certifier compétence (manager uniquement)
-  const certifySkill = useCallback(async (employeeSkillId: string, certifiedBy: string) => {
-    try {
-      const { error: updateError } = await supabase
-        .from('employee_skills')
-        .update({
-          is_certified: true,
-          certified_by: certifiedBy,
-          certified_at: new Date().toISOString(),
-        })
-        .eq('id', employeeSkillId);
+  const certifySkill = useCallback(
+    async (employeeSkillId: string, certifiedBy: string) => {
+      try {
+        const { error: updateError } = await supabase
+          .from('employee_skills')
+          .update({
+            is_certified: true,
+            certified_by: certifiedBy,
+            certified_at: new Date().toISOString(),
+          })
+          .eq('id', employeeSkillId);
 
-      if (updateError) throw updateError;
+        if (updateError) throw updateError;
 
-      toast({
-        title: 'Compétence certifiée',
-        description: 'La compétence a été certifiée avec succès',
-      });
+        toast({
+          title: 'Compétence certifiée',
+          description: 'La compétence a été certifiée avec succès',
+        });
 
-      fetchEmployeeSkills();
-    } catch (err: any) {
-      toast({
-        title: 'Erreur',
-        description: err.message,
-        variant: 'destructive',
-      });
-    }
-  }, [toast, fetchEmployeeSkills]);
+        fetchEmployeeSkills();
+      } catch (err: any) {
+        toast({
+          title: 'Erreur',
+          description: err.message,
+          variant: 'destructive',
+        });
+      }
+    },
+    [toast, fetchEmployeeSkills]
+  );
 
   // Supprimer compétence de son profil
-  const removeSkillFromProfile = useCallback(async (employeeSkillId: string) => {
-    try {
-      const { error: deleteError } = await supabase
-        .from('employee_skills')
-        .delete()
-        .eq('id', employeeSkillId);
+  const removeSkillFromProfile = useCallback(
+    async (employeeSkillId: string) => {
+      try {
+        const { error: deleteError } = await supabase
+          .from('employee_skills')
+          .delete()
+          .eq('id', employeeSkillId);
 
-      if (deleteError) throw deleteError;
+        if (deleteError) throw deleteError;
 
-      toast({
-        title: 'Compétence supprimée',
-        description: 'La compétence a été retirée de votre profil',
-      });
+        toast({
+          title: 'Compétence supprimée',
+          description: 'La compétence a été retirée de votre profil',
+        });
 
-      fetchEmployeeSkills();
-    } catch (err: any) {
-      toast({
-        title: 'Erreur',
-        description: err.message,
-        variant: 'destructive',
-      });
-    }
-  }, [toast, fetchEmployeeSkills]);
+        fetchEmployeeSkills();
+      } catch (err: any) {
+        toast({
+          title: 'Erreur',
+          description: err.message,
+          variant: 'destructive',
+        });
+      }
+    },
+    [toast, fetchEmployeeSkills]
+  );
 
   useEffect(() => {
     if (authLoading || !userContext) return;
@@ -241,11 +259,11 @@ export function useSkills() {
     // Data
     skills,
     employeeSkills,
-    
+
     // States
     loading,
     error,
-    
+
     // Actions
     fetchSkills,
     fetchEmployeeSkills,
@@ -254,7 +272,7 @@ export function useSkills() {
     requestCertification,
     certifySkill,
     removeSkillFromProfile,
-    
+
     // Utils
     refresh: () => {
       fetchSkills();

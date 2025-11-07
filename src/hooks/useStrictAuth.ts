@@ -27,7 +27,7 @@ interface StrictAuthState {
 
 export function useStrictAuth() {
   const navigate = useNavigate();
-  
+
   const [state, setState] = useState<StrictAuthState>({
     user: null,
     session: null,
@@ -40,18 +40,18 @@ export function useStrictAuth() {
    */
   const handleSessionInvalid = useCallback(async () => {
     console.log('🔒 Session invalidée - redirection vers login');
-    
+
     setState({
       user: null,
       session: null,
       loading: false,
       isAuthenticated: false,
     });
-    
+
     // Rediriger vers la page de login
-    navigate('/login', { 
+    navigate('/login', {
       replace: true,
-      state: { reason: 'session_expired' }
+      state: { reason: 'session_expired' },
     });
   }, [navigate]);
 
@@ -63,7 +63,7 @@ export function useStrictAuth() {
 
     const initializeAuth = async () => {
       console.log('🔐 Initialisation authentification stricte...');
-      
+
       // Initialiser le marqueur de session
       const marker = initializeSessionMarker();
       console.log('🔑 Marqueur de session:', marker);
@@ -105,27 +105,27 @@ export function useStrictAuth() {
    * Écouter les changements d'état d'authentification
    */
   useEffect(() => {
-    const { data: { subscription } } = supabaseStrict.auth.onAuthStateChange(
-      async (event, session) => {
-        console.log('🔐 Auth event:', event);
+    const {
+      data: { subscription },
+    } = supabaseStrict.auth.onAuthStateChange(async (event, session) => {
+      console.log('🔐 Auth event:', event);
 
-        if (event === 'SIGNED_IN' && session) {
-          setState({
-            user: session.user,
-            session: session,
-            loading: false,
-            isAuthenticated: true,
-          });
-        } else if (event === 'SIGNED_OUT') {
-          await handleSessionInvalid();
-        } else if (event === 'TOKEN_REFRESHED') {
-          // BLOQUER le refresh automatique
-          console.warn('⚠️ Tentative de refresh token détectée - ignorée');
-          await invalidateSession();
-          await handleSessionInvalid();
-        }
+      if (event === 'SIGNED_IN' && session) {
+        setState({
+          user: session.user,
+          session: session,
+          loading: false,
+          isAuthenticated: true,
+        });
+      } else if (event === 'SIGNED_OUT') {
+        await handleSessionInvalid();
+      } else if (event === 'TOKEN_REFRESHED') {
+        // BLOQUER le refresh automatique
+        console.warn('⚠️ Tentative de refresh token détectée - ignorée');
+        await invalidateSession();
+        await handleSessionInvalid();
       }
-    );
+    });
 
     return () => {
       subscription.unsubscribe();
@@ -138,7 +138,7 @@ export function useStrictAuth() {
   const signIn = useCallback(async (email: string, password: string) => {
     try {
       setState(prev => ({ ...prev, loading: true }));
-      
+
       const { session, user } = await signInStrict(email, password);
 
       setState({
@@ -157,9 +157,9 @@ export function useStrictAuth() {
         isAuthenticated: false,
       });
 
-      return { 
-        success: false, 
-        error: error.message || 'Erreur de connexion' 
+      return {
+        success: false,
+        error: error.message || 'Erreur de connexion',
       };
     }
   }, []);
@@ -169,9 +169,9 @@ export function useStrictAuth() {
    */
   const signOut = useCallback(async () => {
     setState(prev => ({ ...prev, loading: true }));
-    
+
     await invalidateSession();
-    
+
     setState({
       user: null,
       session: null,
@@ -187,10 +187,10 @@ export function useStrictAuth() {
    */
   const getTimeUntilExpiry = useCallback((): number | null => {
     if (!state.session?.expires_at) return null;
-    
+
     const now = Math.floor(Date.now() / 1000);
     const remaining = state.session.expires_at - now;
-    
+
     return remaining > 0 ? remaining : 0;
   }, [state.session]);
 
@@ -200,10 +200,10 @@ export function useStrictAuth() {
   const getFormattedTimeRemaining = useCallback((): string | null => {
     const seconds = getTimeUntilExpiry();
     if (seconds === null) return null;
-    
+
     const hours = Math.floor(seconds / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
-    
+
     if (hours > 0) {
       return `${hours}h ${minutes}min`;
     }
@@ -216,7 +216,7 @@ export function useStrictAuth() {
   const isExpiringSoon = useCallback((): boolean => {
     const seconds = getTimeUntilExpiry();
     if (seconds === null) return false;
-    
+
     return seconds < 300; // 5 minutes
   }, [getTimeUntilExpiry]);
 
@@ -226,11 +226,11 @@ export function useStrictAuth() {
     session: state.session,
     loading: state.loading,
     isAuthenticated: state.isAuthenticated,
-    
+
     // Actions
     signIn,
     signOut,
-    
+
     // Utilitaires
     getTimeUntilExpiry,
     getFormattedTimeRemaining,

@@ -1,5 +1,13 @@
 import React from 'react';
-import { Toast, ToastAction, ToastClose, ToastDescription, ToastProvider, ToastTitle, ToastViewport } from '@/components/ui/toast';
+import {
+  Toast,
+  ToastAction,
+  ToastClose,
+  ToastDescription,
+  ToastProvider,
+  ToastTitle,
+  ToastViewport,
+} from '@/components/ui/toast';
 import { useToast } from '@/hooks/use-toast';
 import { AppError, ErrorSeverity } from '@/lib/errorTypes';
 import { AlertTriangle, XCircle, AlertCircle, Info, RefreshCw, ExternalLink } from 'lucide-react';
@@ -9,23 +17,23 @@ const severityConfig = {
   [ErrorSeverity.INFO]: {
     icon: Info,
     className: 'border-blue-500 bg-blue-50 text-blue-900',
-    iconClassName: 'text-blue-600'
+    iconClassName: 'text-blue-600',
   },
   [ErrorSeverity.WARNING]: {
     icon: AlertTriangle,
     className: 'border-yellow-500 bg-yellow-50 text-yellow-900',
-    iconClassName: 'text-yellow-600'
+    iconClassName: 'text-yellow-600',
   },
   [ErrorSeverity.ERROR]: {
     icon: XCircle,
     className: 'border-red-500 bg-red-50 text-red-900',
-    iconClassName: 'text-red-600'
+    iconClassName: 'text-red-600',
   },
   [ErrorSeverity.CRITICAL]: {
     icon: AlertCircle,
     className: 'border-red-600 bg-red-100 text-red-950',
-    iconClassName: 'text-red-700'
-  }
+    iconClassName: 'text-red-700',
+  },
 };
 
 interface ErrorToastProps {
@@ -41,46 +49,34 @@ export const ErrorToast: React.FC<ErrorToastProps> = ({ error, onRetry, onViewDe
   return (
     <Toast className={cn('border-l-4', config.className)}>
       <div className="flex items-start gap-3">
-        <Icon className={cn('h-5 w-5 mt-0.5 flex-shrink-0', config.iconClassName)} />
+        <Icon className={cn('mt-0.5 h-5 w-5 flex-shrink-0', config.iconClassName)} />
         <div className="flex-1">
-          <ToastTitle className="text-sm font-semibold">
-            {error.title}
-          </ToastTitle>
-          <ToastDescription className="text-sm">
-            {error.message}
-          </ToastDescription>
+          <ToastTitle className="text-sm font-semibold">{error.title}</ToastTitle>
+          <ToastDescription className="text-sm">{error.message}</ToastDescription>
           {error.suggestion && (
-            <ToastDescription className="text-xs mt-1 opacity-80">
+            <ToastDescription className="mt-1 text-xs opacity-80">
               💡 {error.suggestion}
             </ToastDescription>
           )}
         </div>
       </div>
-      
-      <div className="flex gap-1 mt-2">
+
+      <div className="mt-2 flex gap-1">
         {error.retryable && onRetry && (
-          <ToastAction 
-            altText="Réessayer"
-            onClick={onRetry}
-            className="h-6 text-xs"
-          >
-            <RefreshCw className="h-3 w-3 mr-1" />
+          <ToastAction altText="Réessayer" onClick={onRetry} className="h-6 text-xs">
+            <RefreshCw className="mr-1 h-3 w-3" />
             Réessayer
           </ToastAction>
         )}
-        
+
         {onViewDetails && (
-          <ToastAction 
-            altText="Voir les détails"
-            onClick={onViewDetails}
-            className="h-6 text-xs"
-          >
-            <ExternalLink className="h-3 w-3 mr-1" />
+          <ToastAction altText="Voir les détails" onClick={onViewDetails} className="h-6 text-xs">
+            <ExternalLink className="mr-1 h-3 w-3" />
             Détails
           </ToastAction>
         )}
       </div>
-      
+
       <ToastClose />
     </Toast>
   );
@@ -96,9 +92,7 @@ export const Toaster = () => {
           <Toast key={id} {...props}>
             <div className="grid gap-1">
               {title && <ToastTitle>{title}</ToastTitle>}
-              {description && (
-                <ToastDescription>{description}</ToastDescription>
-              )}
+              {description && <ToastDescription>{description}</ToastDescription>}
             </div>
             {action}
             <ToastClose />
@@ -115,37 +109,38 @@ export const useErrorToast = () => {
   const { toast } = useToast();
 
   const showErrorToast = (
-    error: AppError, 
+    error: AppError,
     options?: {
       onRetry?: () => void;
       onViewDetails?: () => void;
     }
   ) => {
     const config = severityConfig[error.severity];
-    
+
     toast({
       title: error.title,
       description: error.message,
-      variant: error.severity === ErrorSeverity.ERROR || error.severity === ErrorSeverity.CRITICAL 
-        ? 'destructive' 
-        : 'default',
+      variant:
+        error.severity === ErrorSeverity.ERROR || error.severity === ErrorSeverity.CRITICAL
+          ? 'destructive'
+          : 'default',
       duration: error.severity === ErrorSeverity.CRITICAL ? 0 : 5000,
       action: (
         <div className="flex gap-1">
           {error.retryable && options?.onRetry && (
             <ToastAction altText="Réessayer" onClick={options.onRetry}>
-              <RefreshCw className="h-3 w-3 mr-1" />
+              <RefreshCw className="mr-1 h-3 w-3" />
               Réessayer
             </ToastAction>
           )}
           {options?.onViewDetails && (
             <ToastAction altText="Détails" onClick={options.onViewDetails}>
-              <ExternalLink className="h-3 w-3 mr-1" />
+              <ExternalLink className="mr-1 h-3 w-3" />
               Détails
             </ToastAction>
           )}
         </div>
-      )
+      ),
     });
   };
 

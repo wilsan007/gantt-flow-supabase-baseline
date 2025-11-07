@@ -1,6 +1,6 @@
 /**
  * 🎯 Hook d'Authentification à 3 Niveaux - Cascade Optimisée
- * 
+ *
  * Niveau 1 (profiles) : Identification rapide - Toujours chargé
  * Niveau 2 (user_roles) : Vérification active - Si besoin sécurité
  * Niveau 3 (permissions) : Granulaire - Actions critiques uniquement
@@ -40,27 +40,27 @@ export interface UserPermission {
 }
 
 interface UseUserAuthOptions {
-  level?: 1 | 2 | 3;  // Niveau de profondeur
-  includeProjectIds?: boolean;  // Charger les project_ids
+  level?: 1 | 2 | 3; // Niveau de profondeur
+  includeProjectIds?: boolean; // Charger les project_ids
 }
 
 interface UseUserAuthResult {
   // Niveau 1 (toujours disponible)
   profile: UserProfile | null;
-  
+
   // Niveau 2 (si demandé)
   activeRole: ActiveUserRole | null;
-  
+
   // Niveau 3 (si demandé)
   permissions: UserPermission[];
-  
+
   // Contexte unifié pour le filtrage
   userContext: UserContext | null;
-  
+
   // États
   loading: boolean;
   error: string | null;
-  
+
   // Actions
   refresh: () => Promise<void>;
   hasPermission: (permission: string) => boolean;
@@ -85,8 +85,11 @@ export function useUserAuth(options: UseUserAuthOptions = {}): UseUserAuthResult
       setError(null);
 
       // Récupérer l'utilisateur authentifié
-      const { data: { user }, error: authError } = await supabase.auth.getUser();
-      
+      const {
+        data: { user },
+        error: authError,
+      } = await supabase.auth.getUser();
+
       if (authError || !user) {
         setProfile(null);
         setLoading(false);
@@ -167,7 +170,9 @@ export function useUserAuth(options: UseUserAuthOptions = {}): UseUserAuthResult
           });
 
           // Mettre à jour le profil avec le rôle vérifié
-          setProfile(prev => prev ? { ...prev, role: (roleData?.name as RoleName) || prev.role } : null);
+          setProfile(prev =>
+            prev ? { ...prev, role: (roleData?.name as RoleName) || prev.role } : null
+          );
         }
       }
 
@@ -181,14 +186,16 @@ export function useUserAuth(options: UseUserAuthOptions = {}): UseUserAuthResult
       if (level === 3 && activeRole && !userProfile.isSuperAdmin) {
         const { data: permData } = await supabase
           .from('role_permissions')
-          .select(`
+          .select(
+            `
             permissions!inner(
               name,
               code,
               resource,
               action
             )
-          `)
+          `
+          )
           .eq('role_id', activeRole.roleId);
 
         if (permData) {
@@ -216,7 +223,6 @@ export function useUserAuth(options: UseUserAuthOptions = {}): UseUserAuthResult
       }
 
       setLoading(false);
-
     } catch (err: any) {
       console.error('Erreur useUserAuth:', err);
       setError(err.message);
@@ -229,41 +235,46 @@ export function useUserAuth(options: UseUserAuthOptions = {}): UseUserAuthResult
   }, [fetchAuth]);
 
   // Créer le contexte unifié pour le filtrage
-  const userContext: UserContext | null = profile ? {
-    userId: profile.userId,
-    role: profile.role,
-    tenantId: profile.tenantId,
-    projectIds: includeProjectIds ? projectIds : undefined,
-  } : null;
+  const userContext: UserContext | null = profile
+    ? {
+        userId: profile.userId,
+        role: profile.role,
+        tenantId: profile.tenantId,
+        projectIds: includeProjectIds ? projectIds : undefined,
+      }
+    : null;
 
   // Helper pour vérifier une permission
-  const hasPermission = useCallback((permission: string): boolean => {
-    // Super Admin a toutes les permissions
-    if (profile?.isSuperAdmin) return true;
+  const hasPermission = useCallback(
+    (permission: string): boolean => {
+      // Super Admin a toutes les permissions
+      if (profile?.isSuperAdmin) return true;
 
-    // Niveau 3 chargé : vérifier dans les permissions
-    if (level === 3) {
-      return permissions.some(p => 
-        p.permissionName === permission || p.permissionCode === permission
-      );
-    }
+      // Niveau 3 chargé : vérifier dans les permissions
+      if (level === 3) {
+        return permissions.some(
+          p => p.permissionName === permission || p.permissionCode === permission
+        );
+      }
 
-    // Fallback : vérifier selon le rôle
-    const rolePermissions: Record<RoleName, string[]> = {
-      'super_admin': ['*'],
-      'tenant_admin': ['admin_all', 'projects_manage', 'tasks_manage', 'users_manage'],
-      'hr_manager': ['hr_manage', 'employees_manage', 'leave_manage'],
-      'project_manager': ['projects_create', 'projects_manage_own', 'tasks_manage'],
-      'team_lead': ['tasks_manage', 'projects_view'],
-      'employee': ['tasks_view_own', 'tasks_complete'],
-      'contractor': ['tasks_view_own', 'tasks_complete'],
-      'intern': ['tasks_view_own'],
-      'viewer': ['view_only'],
-    };
+      // Fallback : vérifier selon le rôle
+      const rolePermissions: Record<RoleName, string[]> = {
+        super_admin: ['*'],
+        tenant_admin: ['admin_all', 'projects_manage', 'tasks_manage', 'users_manage'],
+        hr_manager: ['hr_manage', 'employees_manage', 'leave_manage'],
+        project_manager: ['projects_create', 'projects_manage_own', 'tasks_manage'],
+        team_lead: ['tasks_manage', 'projects_view'],
+        employee: ['tasks_view_own', 'tasks_complete'],
+        contractor: ['tasks_view_own', 'tasks_complete'],
+        intern: ['tasks_view_own'],
+        viewer: ['view_only'],
+      };
 
-    const rolePerms = rolePermissions[profile?.role || 'employee'] || [];
-    return rolePerms.includes('*') || rolePerms.includes(permission);
-  }, [profile, permissions, level]);
+      const rolePerms = rolePermissions[profile?.role || 'employee'] || [];
+      return rolePerms.includes('*') || rolePerms.includes(permission);
+    },
+    [profile, permissions, level]
+  );
 
   return {
     profile,

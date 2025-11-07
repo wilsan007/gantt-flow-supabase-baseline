@@ -10,16 +10,16 @@ vi.mock('@/contexts/RolesContext', () => ({
     hasRole: () => true,
     hasPermission: () => true,
     isSuperAdmin: false,
-    currentTenantId: 'tenant-1'
-  })
+    currentTenantId: 'tenant-1',
+  }),
 }));
 
 vi.mock('@/hooks/useTenant', () => ({
   useTenant: () => ({
     tenantId: 'tenant-1',
     tenantName: 'Test Company',
-    loading: false
-  })
+    loading: false,
+  }),
 }));
 
 vi.mock('@/hooks/optimized', () => ({
@@ -28,21 +28,21 @@ vi.mock('@/hooks/optimized', () => ({
     loading: false,
     error: null,
     createTask: vi.fn(() => Promise.resolve({ data: { id: '1' }, error: null })),
-    refresh: vi.fn()
+    refresh: vi.fn(),
   }),
   useProjects: () => ({
     projects: [],
     loading: false,
-    error: null
-  })
+    error: null,
+  }),
 }));
 
 vi.mock('@/hooks/useHRMinimal', () => ({
   useHRMinimal: () => ({
     employees: [],
     loading: false,
-    error: null
-  })
+    error: null,
+  }),
 }));
 
 vi.mock('@/integrations/supabase/client', () => ({
@@ -50,20 +50,22 @@ vi.mock('@/integrations/supabase/client', () => ({
     from: vi.fn(() => ({
       select: vi.fn(() => ({
         eq: vi.fn(() => ({
-          order: vi.fn(() => Promise.resolve({ data: [], error: null }))
-        }))
+          order: vi.fn(() => Promise.resolve({ data: [], error: null })),
+        })),
       })),
       insert: vi.fn(() => ({
-        select: vi.fn(() => Promise.resolve({ data: [], error: null }))
-      }))
+        select: vi.fn(() => Promise.resolve({ data: [], error: null })),
+      })),
     })),
     auth: {
-      getUser: vi.fn(() => Promise.resolve({
-        data: { user: { id: 'user-1' } },
-        error: null
-      }))
-    }
-  }
+      getUser: vi.fn(() =>
+        Promise.resolve({
+          data: { user: { id: 'user-1' } },
+          error: null,
+        })
+      ),
+    },
+  },
 }));
 
 // Import real component
@@ -77,28 +79,20 @@ describe('ModernTaskCreationDialog - Real Component', () => {
   it('should render ModernTaskCreationDialog when open', () => {
     const { container } = render(
       <BrowserRouter>
-        <ModernTaskCreationDialog 
-          open={true} 
-          onOpenChange={vi.fn()}
-          onCreateTask={vi.fn()}
-        />
+        <ModernTaskCreationDialog open={true} onOpenChange={vi.fn()} onCreateTask={vi.fn()} />
       </BrowserRouter>
     );
-    
+
     expect(container).toBeTruthy();
   });
 
   it('should not render when closed', () => {
     const { container } = render(
       <BrowserRouter>
-        <ModernTaskCreationDialog 
-          open={false} 
-          onOpenChange={vi.fn()}
-          onCreateTask={vi.fn()}
-        />
+        <ModernTaskCreationDialog open={false} onOpenChange={vi.fn()} onCreateTask={vi.fn()} />
       </BrowserRouter>
     );
-    
+
     expect(container).toBeTruthy();
   });
 
@@ -106,11 +100,7 @@ describe('ModernTaskCreationDialog - Real Component', () => {
     expect(() => {
       render(
         <BrowserRouter>
-          <ModernTaskCreationDialog 
-            open={true} 
-            onOpenChange={vi.fn()}
-            onCreateTask={vi.fn()}
-          />
+          <ModernTaskCreationDialog open={true} onOpenChange={vi.fn()} onCreateTask={vi.fn()} />
         </BrowserRouter>
       );
     }).not.toThrow();

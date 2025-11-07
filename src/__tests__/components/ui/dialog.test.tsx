@@ -1,6 +1,13 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from '@/components/ui/dialog';
 
 describe('Dialog Components', () => {
   it('should render Dialog', () => {
@@ -18,7 +25,7 @@ describe('Dialog Components', () => {
         </DialogContent>
       </Dialog>
     );
-    
+
     expect(screen.getByText('Test Dialog')).toBeInTheDocument();
     expect(screen.getByText('Test description')).toBeInTheDocument();
     expect(screen.getByText('Content')).toBeInTheDocument();
@@ -32,10 +39,9 @@ describe('Dialog Components', () => {
         </DialogContent>
       </Dialog>
     );
-    
+
     expect(container).toBeTruthy();
   });
-
 
   it('should render DialogFooter', () => {
     render(
@@ -43,7 +49,7 @@ describe('Dialog Components', () => {
         <button>Action</button>
       </DialogFooter>
     );
-    
+
     expect(screen.getByText('Action')).toBeInTheDocument();
   });
 });

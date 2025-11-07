@@ -1,7 +1,7 @@
 /**
  * 🎯 useRealtimeNotifications - Notifications temps réel avec Supabase Realtime
  * Pattern: Linear, Slack, Discord
- * 
+ *
  * Fonctionnalités:
  * - Écoute des changements en temps réel
  * - Notifications pour: congés, tâches, approbations
@@ -20,7 +20,13 @@ export interface Notification {
   id: string;
   tenant_id: string;
   user_id: string;
-  type: 'leave_request' | 'leave_approval' | 'task_assigned' | 'task_completed' | 'mention' | 'system';
+  type:
+    | 'leave_request'
+    | 'leave_approval'
+    | 'task_assigned'
+    | 'task_completed'
+    | 'mention'
+    | 'system';
   title: string;
   message: string;
   action_url?: string;
@@ -104,11 +110,11 @@ export const useRealtimeNotifications = (): UseRealtimeNotificationsReturn => {
             table: 'notifications',
             filter: `user_id=eq.${session.session.user.id}`,
           },
-          (payload) => {
+          payload => {
             const newNotification = payload.new as Notification;
-            
+
             // Ajouter la notification à la liste
-            setNotifications((prev) => [newNotification, ...prev].slice(0, 50));
+            setNotifications(prev => [newNotification, ...prev].slice(0, 50));
 
             // Afficher un toast
             toast({
@@ -147,16 +153,11 @@ export const useRealtimeNotifications = (): UseRealtimeNotificationsReturn => {
    */
   const markAsRead = useCallback(async (id: string) => {
     try {
-      const { error } = await supabase
-        .from('notifications')
-        .update({ is_read: true })
-        .eq('id', id);
+      const { error } = await supabase.from('notifications').update({ is_read: true }).eq('id', id);
 
       if (error) throw error;
 
-      setNotifications((prev) =>
-        prev.map((n) => (n.id === id ? { ...n, is_read: true } : n))
-      );
+      setNotifications(prev => prev.map(n => (n.id === id ? { ...n, is_read: true } : n)));
     } catch (err) {
       console.error('Erreur marquage notification:', err);
     }
@@ -179,9 +180,7 @@ export const useRealtimeNotifications = (): UseRealtimeNotificationsReturn => {
 
       if (error) throw error;
 
-      setNotifications((prev) =>
-        prev.map((n) => ({ ...n, is_read: true }))
-      );
+      setNotifications(prev => prev.map(n => ({ ...n, is_read: true })));
     } catch (err) {
       console.error('Erreur marquage toutes notifications:', err);
     }
@@ -192,20 +191,17 @@ export const useRealtimeNotifications = (): UseRealtimeNotificationsReturn => {
    */
   const deleteNotification = useCallback(async (id: string) => {
     try {
-      const { error } = await supabase
-        .from('notifications')
-        .delete()
-        .eq('id', id);
+      const { error } = await supabase.from('notifications').delete().eq('id', id);
 
       if (error) throw error;
 
-      setNotifications((prev) => prev.filter((n) => n.id !== id));
+      setNotifications(prev => prev.filter(n => n.id !== id));
     } catch (err) {
       console.error('Erreur suppression notification:', err);
     }
   }, []);
 
-  const unreadCount = notifications.filter((n) => !n.is_read).length;
+  const unreadCount = notifications.filter(n => !n.is_read).length;
 
   return {
     notifications,

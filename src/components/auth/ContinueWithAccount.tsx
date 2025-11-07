@@ -18,7 +18,7 @@ export const ContinueWithAccount = ({
   fullName,
   avatarUrl,
   provider,
-  onRemove
+  onRemove,
 }: ContinueWithAccountProps) => {
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
@@ -32,13 +32,15 @@ export const ContinueWithAccount = ({
           redirectTo: `${window.location.origin}/auth/callback`,
           queryParams: {
             // Force la sélection du compte pour Google
-            ...(provider === 'google' ? {
-              access_type: 'offline',
-              prompt: 'consent', // Force la confirmation
-              login_hint: email, // Pré-sélectionne cet email
-            } : {
-              login_hint: email,
-            }),
+            ...(provider === 'google'
+              ? {
+                  access_type: 'offline',
+                  prompt: 'consent', // Force la confirmation
+                  login_hint: email, // Pré-sélectionne cet email
+                }
+              : {
+                  login_hint: email,
+                }),
           },
         },
       });
@@ -46,9 +48,9 @@ export const ContinueWithAccount = ({
       if (error) throw error;
     } catch (err: any) {
       toast({
-        title: "Erreur de connexion",
-        description: err.message || "Impossible de se connecter",
-        variant: "destructive",
+        title: 'Erreur de connexion',
+        description: err.message || 'Impossible de se connecter',
+        variant: 'destructive',
       });
       setLoading(false);
     }
@@ -57,7 +59,7 @@ export const ContinueWithAccount = ({
   const getProviderIcon = () => {
     if (provider === 'google') {
       return (
-        <svg className="w-6 h-6" viewBox="0 0 24 24">
+        <svg className="h-6 w-6" viewBox="0 0 24 24">
           <path
             fill="#4285F4"
             d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -78,11 +80,11 @@ export const ContinueWithAccount = ({
       );
     } else {
       return (
-        <svg className="w-6 h-6" viewBox="0 0 23 23">
-          <path fill="#f35325" d="M1 1h10v10H1z"/>
-          <path fill="#81bc06" d="M12 1h10v10H12z"/>
-          <path fill="#05a6f0" d="M1 12h10v10H1z"/>
-          <path fill="#ffba08" d="M12 12h10v10H12z"/>
+        <svg className="h-6 w-6" viewBox="0 0 23 23">
+          <path fill="#f35325" d="M1 1h10v10H1z" />
+          <path fill="#81bc06" d="M12 1h10v10H12z" />
+          <path fill="#05a6f0" d="M1 12h10v10H1z" />
+          <path fill="#ffba08" d="M12 12h10v10H12z" />
         </svg>
       );
     }
@@ -102,31 +104,29 @@ export const ContinueWithAccount = ({
       <button
         onClick={handleContinue}
         disabled={loading}
-        className="w-full flex items-center gap-3 px-4 py-3 border-2 border-primary/20 rounded-lg hover:border-primary/40 hover:bg-accent/5 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed group"
+        className="group flex w-full items-center gap-3 rounded-lg border-2 border-primary/20 px-4 py-3 transition-all duration-200 hover:border-primary/40 hover:bg-accent/5 disabled:cursor-not-allowed disabled:opacity-50"
       >
         {/* Avatar */}
         <Avatar className="h-10 w-10 border-2 border-primary/10">
           <AvatarImage src={avatarUrl} alt={fullName} />
-          <AvatarFallback className="bg-primary/10 text-primary font-semibold">
+          <AvatarFallback className="bg-primary/10 font-semibold text-primary">
             {getInitials()}
           </AvatarFallback>
         </Avatar>
 
         {/* Texte */}
         <div className="flex-1 text-left">
-          <div className="text-sm font-semibold text-foreground group-hover:text-primary transition-colors">
+          <div className="text-sm font-semibold text-foreground transition-colors group-hover:text-primary">
             Continuer en tant que {fullName.split(' ')[0]}
           </div>
-          <div className="text-xs text-muted-foreground flex items-center gap-1">
+          <div className="flex items-center gap-1 text-xs text-muted-foreground">
             {email}
-            <ChevronDown className="h-3 w-3 inline" />
+            <ChevronDown className="inline h-3 w-3" />
           </div>
         </div>
 
         {/* Icône du provider */}
-        <div className="flex-shrink-0">
-          {getProviderIcon()}
-        </div>
+        <div className="flex-shrink-0">{getProviderIcon()}</div>
       </button>
 
       {/* Bouton pour changer de compte */}

@@ -1,7 +1,7 @@
 /**
  * 💼 Hook useHRSelfService - Système RH Complet pour Employés
  * Pattern: Expensify, BambooHR, Workday, SAP Concur
- * 
+ *
  * Gère:
  * - Notes de frais
  * - Justificatifs d'absence
@@ -64,7 +64,12 @@ export interface AbsenceJustification {
 export interface AdministrativeRequest {
   id: string;
   employee_id: string;
-  request_type: 'employment_certificate' | 'salary_advance' | 'rib_change' | 'situation_change' | 'other';
+  request_type:
+    | 'employment_certificate'
+    | 'salary_advance'
+    | 'rib_change'
+    | 'situation_change'
+    | 'other';
   title: string;
   description: string;
   amount: number | null;
@@ -133,7 +138,7 @@ export interface RemoteWorkRequest {
 export function useHRSelfService() {
   const { userContext, profile, loading: authLoading } = useUserFilterContext();
   const { toast } = useToast();
-  
+
   // États
   const [expenseReports, setExpenseReports] = useState<ExpenseReport[]>([]);
   const [absenceJustifications, setAbsenceJustifications] = useState<AbsenceJustification[]>([]);
@@ -146,7 +151,7 @@ export function useHRSelfService() {
   // ============================================================================
   // NOTES DE FRAIS
   // ============================================================================
-  
+
   const fetchExpenseReports = useCallback(async () => {
     if (!userContext) return;
 
@@ -155,12 +160,12 @@ export function useHRSelfService() {
         .from('expense_reports')
         .select('*')
         .order('created_at', { ascending: false });
-      
+
       query = applyRoleFilters(query, userContext, 'expense_reports');
 
       const { data, error: fetchError } = await query;
       if (fetchError) throw fetchError;
-      
+
       setExpenseReports(data || []);
     } catch (err: any) {
       console.error('Erreur chargement notes de frais:', err);
@@ -168,109 +173,117 @@ export function useHRSelfService() {
     }
   }, [userContext]);
 
-  const createExpenseReport = useCallback(async (expense: Partial<ExpenseReport>) => {
-    if (!profile) return;
+  const createExpenseReport = useCallback(
+    async (expense: Partial<ExpenseReport>) => {
+      if (!profile) return;
 
-    try {
-      const { data: employee } = await supabase
-        .from('employees')
-        .select('id')
-        .eq('user_id', profile.userId)
-        .single();
+      try {
+        const { data: employee } = await supabase
+          .from('employees')
+          .select('id')
+          .eq('user_id', profile.userId)
+          .single();
 
-      if (!employee) throw new Error('Employé non trouvé');
+        if (!employee) throw new Error('Employé non trouvé');
 
-      const { error: insertError } = await supabase
-        .from('expense_reports')
-        .insert({
+        const { error: insertError } = await supabase.from('expense_reports').insert({
           ...expense,
           employee_id: employee.id,
         });
 
-      if (insertError) throw insertError;
+        if (insertError) throw insertError;
 
-      toast({
-        title: 'Note de frais créée',
-        description: 'Votre note de frais a été enregistrée',
-      });
+        toast({
+          title: 'Note de frais créée',
+          description: 'Votre note de frais a été enregistrée',
+        });
 
-      fetchExpenseReports();
-    } catch (err: any) {
-      toast({
-        title: 'Erreur',
-        description: err.message,
-        variant: 'destructive',
-      });
-    }
-  }, [profile, toast, fetchExpenseReports]);
+        fetchExpenseReports();
+      } catch (err: any) {
+        toast({
+          title: 'Erreur',
+          description: err.message,
+          variant: 'destructive',
+        });
+      }
+    },
+    [profile, toast, fetchExpenseReports]
+  );
 
-  const submitExpenseReport = useCallback(async (expenseId: string) => {
-    try {
-      const { error: updateError } = await supabase
-        .from('expense_reports')
-        .update({
-          status: 'submitted',
-          submitted_at: new Date().toISOString(),
-        })
-        .eq('id', expenseId);
+  const submitExpenseReport = useCallback(
+    async (expenseId: string) => {
+      try {
+        const { error: updateError } = await supabase
+          .from('expense_reports')
+          .update({
+            status: 'submitted',
+            submitted_at: new Date().toISOString(),
+          })
+          .eq('id', expenseId);
 
-      if (updateError) throw updateError;
+        if (updateError) throw updateError;
 
-      toast({
-        title: 'Note de frais soumise',
-        description: 'Votre manager recevra une notification',
-      });
+        toast({
+          title: 'Note de frais soumise',
+          description: 'Votre manager recevra une notification',
+        });
 
-      fetchExpenseReports();
-    } catch (err: any) {
-      toast({
-        title: 'Erreur',
-        description: err.message,
-        variant: 'destructive',
-      });
-    }
-  }, [toast, fetchExpenseReports]);
+        fetchExpenseReports();
+      } catch (err: any) {
+        toast({
+          title: 'Erreur',
+          description: err.message,
+          variant: 'destructive',
+        });
+      }
+    },
+    [toast, fetchExpenseReports]
+  );
 
-  const approveExpenseReport = useCallback(async (expenseId: string, approverId: string, approvalLevel: 'manager' | 'finance') => {
-    try {
-      const updates = approvalLevel === 'manager' 
-        ? {
-            status: 'approved_manager',
-            approved_by_manager: approverId,
-            approved_manager_at: new Date().toISOString(),
-          }
-        : {
-            status: 'approved_finance',
-            approved_by_finance: approverId,
-            approved_finance_at: new Date().toISOString(),
-          };
+  const approveExpenseReport = useCallback(
+    async (expenseId: string, approverId: string, approvalLevel: 'manager' | 'finance') => {
+      try {
+        const updates =
+          approvalLevel === 'manager'
+            ? {
+                status: 'approved_manager',
+                approved_by_manager: approverId,
+                approved_manager_at: new Date().toISOString(),
+              }
+            : {
+                status: 'approved_finance',
+                approved_by_finance: approverId,
+                approved_finance_at: new Date().toISOString(),
+              };
 
-      const { error: updateError } = await supabase
-        .from('expense_reports')
-        .update(updates)
-        .eq('id', expenseId);
+        const { error: updateError } = await supabase
+          .from('expense_reports')
+          .update(updates)
+          .eq('id', expenseId);
 
-      if (updateError) throw updateError;
+        if (updateError) throw updateError;
 
-      toast({
-        title: 'Note de frais approuvée',
-        description: `Approuvée par ${approvalLevel === 'manager' ? 'le manager' : 'la finance'}`,
-      });
+        toast({
+          title: 'Note de frais approuvée',
+          description: `Approuvée par ${approvalLevel === 'manager' ? 'le manager' : 'la finance'}`,
+        });
 
-      fetchExpenseReports();
-    } catch (err: any) {
-      toast({
-        title: 'Erreur',
-        description: err.message,
-        variant: 'destructive',
-      });
-    }
-  }, [toast, fetchExpenseReports]);
+        fetchExpenseReports();
+      } catch (err: any) {
+        toast({
+          title: 'Erreur',
+          description: err.message,
+          variant: 'destructive',
+        });
+      }
+    },
+    [toast, fetchExpenseReports]
+  );
 
   // ============================================================================
   // JUSTIFICATIFS D'ABSENCE
   // ============================================================================
-  
+
   const fetchAbsenceJustifications = useCallback(async () => {
     if (!userContext) return;
 
@@ -279,12 +292,12 @@ export function useHRSelfService() {
         .from('absence_justifications')
         .select('*')
         .order('absence_date', { ascending: false });
-      
+
       query = applyRoleFilters(query, userContext, 'absence_justifications');
 
       const { data, error: fetchError } = await query;
       if (fetchError) throw fetchError;
-      
+
       setAbsenceJustifications(data || []);
     } catch (err: any) {
       console.error('Erreur chargement justificatifs:', err);
@@ -292,46 +305,47 @@ export function useHRSelfService() {
     }
   }, [userContext]);
 
-  const createAbsenceJustification = useCallback(async (justification: Partial<AbsenceJustification>) => {
-    if (!profile) return;
+  const createAbsenceJustification = useCallback(
+    async (justification: Partial<AbsenceJustification>) => {
+      if (!profile) return;
 
-    try {
-      const { data: employee } = await supabase
-        .from('employees')
-        .select('id')
-        .eq('user_id', profile.userId)
-        .single();
+      try {
+        const { data: employee } = await supabase
+          .from('employees')
+          .select('id')
+          .eq('user_id', profile.userId)
+          .single();
 
-      if (!employee) throw new Error('Employé non trouvé');
+        if (!employee) throw new Error('Employé non trouvé');
 
-      const { error: insertError } = await supabase
-        .from('absence_justifications')
-        .insert({
+        const { error: insertError } = await supabase.from('absence_justifications').insert({
           ...justification,
           employee_id: employee.id,
         });
 
-      if (insertError) throw insertError;
+        if (insertError) throw insertError;
 
-      toast({
-        title: 'Justificatif soumis',
-        description: 'Votre justificatif d\'absence a été enregistré',
-      });
+        toast({
+          title: 'Justificatif soumis',
+          description: "Votre justificatif d'absence a été enregistré",
+        });
 
-      fetchAbsenceJustifications();
-    } catch (err: any) {
-      toast({
-        title: 'Erreur',
-        description: err.message,
-        variant: 'destructive',
-      });
-    }
-  }, [profile, toast, fetchAbsenceJustifications]);
+        fetchAbsenceJustifications();
+      } catch (err: any) {
+        toast({
+          title: 'Erreur',
+          description: err.message,
+          variant: 'destructive',
+        });
+      }
+    },
+    [profile, toast, fetchAbsenceJustifications]
+  );
 
   // ============================================================================
   // DEMANDES ADMINISTRATIVES
   // ============================================================================
-  
+
   const fetchAdministrativeRequests = useCallback(async () => {
     if (!userContext) return;
 
@@ -340,12 +354,12 @@ export function useHRSelfService() {
         .from('administrative_requests')
         .select('*')
         .order('created_at', { ascending: false });
-      
+
       query = applyRoleFilters(query, userContext, 'administrative_requests');
 
       const { data, error: fetchError } = await query;
       if (fetchError) throw fetchError;
-      
+
       setAdministrativeRequests(data || []);
     } catch (err: any) {
       console.error('Erreur chargement demandes admin:', err);
@@ -353,46 +367,47 @@ export function useHRSelfService() {
     }
   }, [userContext]);
 
-  const createAdministrativeRequest = useCallback(async (request: Partial<AdministrativeRequest>) => {
-    if (!profile) return;
+  const createAdministrativeRequest = useCallback(
+    async (request: Partial<AdministrativeRequest>) => {
+      if (!profile) return;
 
-    try {
-      const { data: employee } = await supabase
-        .from('employees')
-        .select('id')
-        .eq('user_id', profile.userId)
-        .single();
+      try {
+        const { data: employee } = await supabase
+          .from('employees')
+          .select('id')
+          .eq('user_id', profile.userId)
+          .single();
 
-      if (!employee) throw new Error('Employé non trouvé');
+        if (!employee) throw new Error('Employé non trouvé');
 
-      const { error: insertError } = await supabase
-        .from('administrative_requests')
-        .insert({
+        const { error: insertError } = await supabase.from('administrative_requests').insert({
           ...request,
           employee_id: employee.id,
         });
 
-      if (insertError) throw insertError;
+        if (insertError) throw insertError;
 
-      toast({
-        title: 'Demande envoyée',
-        description: 'Votre demande administrative a été enregistrée',
-      });
+        toast({
+          title: 'Demande envoyée',
+          description: 'Votre demande administrative a été enregistrée',
+        });
 
-      fetchAdministrativeRequests();
-    } catch (err: any) {
-      toast({
-        title: 'Erreur',
-        description: err.message,
-        variant: 'destructive',
-      });
-    }
-  }, [profile, toast, fetchAdministrativeRequests]);
+        fetchAdministrativeRequests();
+      } catch (err: any) {
+        toast({
+          title: 'Erreur',
+          description: err.message,
+          variant: 'destructive',
+        });
+      }
+    },
+    [profile, toast, fetchAdministrativeRequests]
+  );
 
   // ============================================================================
   // TIMESHEETS
   // ============================================================================
-  
+
   const fetchTimesheets = useCallback(async () => {
     if (!userContext) return;
 
@@ -401,12 +416,12 @@ export function useHRSelfService() {
         .from('timesheets')
         .select('*')
         .order('week_start_date', { ascending: false });
-      
+
       query = applyRoleFilters(query, userContext, 'timesheets');
 
       const { data, error: fetchError } = await query;
       if (fetchError) throw fetchError;
-      
+
       setTimesheets(data || []);
     } catch (err: any) {
       console.error('Erreur chargement timesheets:', err);
@@ -414,46 +429,47 @@ export function useHRSelfService() {
     }
   }, [userContext]);
 
-  const createTimesheet = useCallback(async (timesheet: Partial<Timesheet>) => {
-    if (!profile) return;
+  const createTimesheet = useCallback(
+    async (timesheet: Partial<Timesheet>) => {
+      if (!profile) return;
 
-    try {
-      const { data: employee } = await supabase
-        .from('employees')
-        .select('id')
-        .eq('user_id', profile.userId)
-        .single();
+      try {
+        const { data: employee } = await supabase
+          .from('employees')
+          .select('id')
+          .eq('user_id', profile.userId)
+          .single();
 
-      if (!employee) throw new Error('Employé non trouvé');
+        if (!employee) throw new Error('Employé non trouvé');
 
-      const { error: insertError } = await supabase
-        .from('timesheets')
-        .insert({
+        const { error: insertError } = await supabase.from('timesheets').insert({
           ...timesheet,
           employee_id: employee.id,
         });
 
-      if (insertError) throw insertError;
+        if (insertError) throw insertError;
 
-      toast({
-        title: 'Timesheet créé',
-        description: 'Votre feuille de temps a été créée',
-      });
+        toast({
+          title: 'Timesheet créé',
+          description: 'Votre feuille de temps a été créée',
+        });
 
-      fetchTimesheets();
-    } catch (err: any) {
-      toast({
-        title: 'Erreur',
-        description: err.message,
-        variant: 'destructive',
-      });
-    }
-  }, [profile, toast, fetchTimesheets]);
+        fetchTimesheets();
+      } catch (err: any) {
+        toast({
+          title: 'Erreur',
+          description: err.message,
+          variant: 'destructive',
+        });
+      }
+    },
+    [profile, toast, fetchTimesheets]
+  );
 
   // ============================================================================
   // TÉLÉTRAVAIL
   // ============================================================================
-  
+
   const fetchRemoteWorkRequests = useCallback(async () => {
     if (!userContext) return;
 
@@ -462,12 +478,12 @@ export function useHRSelfService() {
         .from('remote_work_requests')
         .select('*')
         .order('created_at', { ascending: false });
-      
+
       query = applyRoleFilters(query, userContext, 'remote_work_requests');
 
       const { data, error: fetchError } = await query;
       if (fetchError) throw fetchError;
-      
+
       setRemoteWorkRequests(data || []);
     } catch (err: any) {
       console.error('Erreur chargement demandes télétravail:', err);
@@ -475,47 +491,48 @@ export function useHRSelfService() {
     }
   }, [userContext]);
 
-  const createRemoteWorkRequest = useCallback(async (request: Partial<RemoteWorkRequest>) => {
-    if (!profile) return;
+  const createRemoteWorkRequest = useCallback(
+    async (request: Partial<RemoteWorkRequest>) => {
+      if (!profile) return;
 
-    try {
-      const { data: employee } = await supabase
-        .from('employees')
-        .select('id')
-        .eq('user_id', profile.userId)
-        .single();
+      try {
+        const { data: employee } = await supabase
+          .from('employees')
+          .select('id')
+          .eq('user_id', profile.userId)
+          .single();
 
-      if (!employee) throw new Error('Employé non trouvé');
+        if (!employee) throw new Error('Employé non trouvé');
 
-      const { error: insertError } = await supabase
-        .from('remote_work_requests')
-        .insert({
+        const { error: insertError } = await supabase.from('remote_work_requests').insert({
           ...request,
           employee_id: employee.id,
           request_date: new Date().toISOString(),
         });
 
-      if (insertError) throw insertError;
+        if (insertError) throw insertError;
 
-      toast({
-        title: 'Demande envoyée',
-        description: 'Votre demande de télétravail a été soumise',
-      });
+        toast({
+          title: 'Demande envoyée',
+          description: 'Votre demande de télétravail a été soumise',
+        });
 
-      fetchRemoteWorkRequests();
-    } catch (err: any) {
-      toast({
-        title: 'Erreur',
-        description: err.message,
-        variant: 'destructive',
-      });
-    }
-  }, [profile, toast, fetchRemoteWorkRequests]);
+        fetchRemoteWorkRequests();
+      } catch (err: any) {
+        toast({
+          title: 'Erreur',
+          description: err.message,
+          variant: 'destructive',
+        });
+      }
+    },
+    [profile, toast, fetchRemoteWorkRequests]
+  );
 
   // ============================================================================
   // CHARGEMENT INITIAL
   // ============================================================================
-  
+
   useEffect(() => {
     if (authLoading || !userContext) return;
 
@@ -545,7 +562,7 @@ export function useHRSelfService() {
   // ============================================================================
   // RETOUR API
   // ============================================================================
-  
+
   return {
     // Data
     expenseReports,
@@ -553,33 +570,33 @@ export function useHRSelfService() {
     administrativeRequests,
     timesheets,
     remoteWorkRequests,
-    
+
     // States
     loading,
     error,
-    
+
     // Actions - Notes de Frais
     fetchExpenseReports,
     createExpenseReport,
     submitExpenseReport,
     approveExpenseReport,
-    
+
     // Actions - Justificatifs
     fetchAbsenceJustifications,
     createAbsenceJustification,
-    
+
     // Actions - Demandes Admin
     fetchAdministrativeRequests,
     createAdministrativeRequest,
-    
+
     // Actions - Timesheets
     fetchTimesheets,
     createTimesheet,
-    
+
     // Actions - Télétravail
     fetchRemoteWorkRequests,
     createRemoteWorkRequest,
-    
+
     // Utils
     refresh: () => {
       fetchExpenseReports();

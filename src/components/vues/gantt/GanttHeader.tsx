@@ -10,9 +10,9 @@ interface GanttHeaderProps {
 }
 
 export const GanttHeader = ({ viewMode, onViewModeChange }: GanttHeaderProps) => (
-  <CardHeader className="pb-4 bg-gradient-to-r from-primary/10 to-accent/10 rounded-t-xl">
+  <CardHeader className="rounded-t-xl bg-gradient-to-r from-primary/10 to-accent/10 pb-4">
     <div className="flex items-center justify-between">
-      <CardTitle className="text-foreground text-xl bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+      <CardTitle className="bg-gradient-to-r from-primary to-accent bg-clip-text text-xl text-foreground text-transparent">
         Diagramme de Gantt Interactif
       </CardTitle>
       <div className="flex gap-2">
@@ -20,7 +20,7 @@ export const GanttHeader = ({ viewMode, onViewModeChange }: GanttHeaderProps) =>
           variant={viewMode === 'day' ? 'default' : 'outline'}
           size="sm"
           onClick={() => onViewModeChange('day')}
-          className="gap-1 transition-smooth hover-glow"
+          className="transition-smooth hover-glow gap-1"
         >
           <Clock className="h-4 w-4" />
           Jour
@@ -29,7 +29,7 @@ export const GanttHeader = ({ viewMode, onViewModeChange }: GanttHeaderProps) =>
           variant={viewMode === 'week' ? 'default' : 'outline'}
           size="sm"
           onClick={() => onViewModeChange('week')}
-          className="gap-1 transition-smooth hover-glow"
+          className="transition-smooth hover-glow gap-1"
         >
           <CalendarDays className="h-4 w-4" />
           Semaine
@@ -38,7 +38,7 @@ export const GanttHeader = ({ viewMode, onViewModeChange }: GanttHeaderProps) =>
           variant={viewMode === 'month' ? 'default' : 'outline'}
           size="sm"
           onClick={() => onViewModeChange('month')}
-          className="gap-1 transition-smooth hover-glow"
+          className="transition-smooth hover-glow gap-1"
         >
           <Calendar className="h-4 w-4" />
           Mois

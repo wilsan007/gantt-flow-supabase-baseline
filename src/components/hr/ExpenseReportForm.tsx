@@ -8,7 +8,13 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -39,7 +45,7 @@ interface ExpenseReportFormProps {
 
 export function ExpenseReportForm({ onSuccess, onCancel }: ExpenseReportFormProps) {
   const { createExpenseReport, loading } = useHRSelfService();
-  
+
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [category, setCategory] = useState('');
@@ -83,9 +89,7 @@ export function ExpenseReportForm({ onSuccess, onCancel }: ExpenseReportFormProp
           <Receipt className="h-5 w-5" />
           Nouvelle Note de Frais
         </CardTitle>
-        <CardDescription>
-          Soumettez vos frais professionnels pour remboursement
-        </CardDescription>
+        <CardDescription>Soumettez vos frais professionnels pour remboursement</CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -96,7 +100,7 @@ export function ExpenseReportForm({ onSuccess, onCancel }: ExpenseReportFormProp
               id="title"
               placeholder="Ex: Déplacement client Paris"
               value={title}
-              onChange={(e) => setTitle(e.target.value)}
+              onChange={e => setTitle(e.target.value)}
               required
             />
           </div>
@@ -109,7 +113,7 @@ export function ExpenseReportForm({ onSuccess, onCancel }: ExpenseReportFormProp
                 <SelectValue placeholder="Sélectionner une catégorie" />
               </SelectTrigger>
               <SelectContent>
-                {EXPENSE_CATEGORIES.map((cat) => (
+                {EXPENSE_CATEGORIES.map(cat => (
                   <SelectItem key={cat.value} value={cat.value}>
                     {cat.label}
                   </SelectItem>
@@ -129,7 +133,7 @@ export function ExpenseReportForm({ onSuccess, onCancel }: ExpenseReportFormProp
                 min="0"
                 placeholder="0.00"
                 value={amount}
-                onChange={(e) => setAmount(e.target.value)}
+                onChange={e => setAmount(e.target.value)}
                 required
               />
             </div>
@@ -140,7 +144,7 @@ export function ExpenseReportForm({ onSuccess, onCancel }: ExpenseReportFormProp
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {CURRENCIES.map((curr) => (
+                  {CURRENCIES.map(curr => (
                     <SelectItem key={curr.value} value={curr.value}>
                       {curr.label}
                     </SelectItem>
@@ -190,7 +194,7 @@ export function ExpenseReportForm({ onSuccess, onCancel }: ExpenseReportFormProp
               placeholder="Détails de la dépense..."
               rows={3}
               value={description}
-              onChange={(e) => setDescription(e.target.value)}
+              onChange={e => setDescription(e.target.value)}
             />
           </div>
 
@@ -203,7 +207,7 @@ export function ExpenseReportForm({ onSuccess, onCancel }: ExpenseReportFormProp
                 type="url"
                 placeholder="https://..."
                 value={receiptUrl}
-                onChange={(e) => setReceiptUrl(e.target.value)}
+                onChange={e => setReceiptUrl(e.target.value)}
               />
               <Button type="button" variant="outline" size="icon">
                 <Upload className="h-4 w-4" />
@@ -217,12 +221,7 @@ export function ExpenseReportForm({ onSuccess, onCancel }: ExpenseReportFormProp
           {/* Actions */}
           <div className="flex gap-2 pt-4">
             {onCancel && (
-              <Button
-                type="button"
-                variant="outline"
-                onClick={onCancel}
-                disabled={loading}
-              >
+              <Button type="button" variant="outline" onClick={onCancel} disabled={loading}>
                 Annuler
               </Button>
             )}

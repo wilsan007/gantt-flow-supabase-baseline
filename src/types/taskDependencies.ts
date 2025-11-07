@@ -2,16 +2,16 @@
  * Types pour le système de dépendances entre tâches
  */
 
-export type DependencyType = 
-  | 'finish-to-start'  // FS: La tâche B commence après la fin de A
-  | 'start-to-start'   // SS: La tâche B commence en même temps que A
+export type DependencyType =
+  | 'finish-to-start' // FS: La tâche B commence après la fin de A
+  | 'start-to-start' // SS: La tâche B commence en même temps que A
   | 'finish-to-finish' // FF: La tâche B finit en même temps que A
-  | 'start-to-finish';  // SF: La tâche B finit quand A commence (rare)
+  | 'start-to-finish'; // SF: La tâche B finit quand A commence (rare)
 
 export interface TaskDependency {
   id: string;
-  depends_on_task_id: string;  // Tâche dont on dépend (prédécesseur)
-  task_id: string;             // Tâche qui dépend (successeur)
+  depends_on_task_id: string; // Tâche dont on dépend (prédécesseur)
+  task_id: string; // Tâche qui dépend (successeur)
   dependency_type: string;
   tenant_id?: string;
   created_at?: string;

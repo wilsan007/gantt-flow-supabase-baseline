@@ -5,26 +5,29 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
-import { 
+import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { 
-  Loader2, 
-  Send, 
-  UserPlus, 
-  Mail, 
-  Users, 
+import {
+  Loader2,
+  Send,
+  UserPlus,
+  Mail,
+  Users,
   CheckCircle2,
   XCircle,
   Clock,
   Trash2,
-  RefreshCw
+  RefreshCw,
 } from 'lucide-react';
-import { useCollaboratorInvitation, CollaboratorInvitationForm } from '@/hooks/useCollaboratorInvitation';
+import {
+  useCollaboratorInvitation,
+  CollaboratorInvitationForm,
+} from '@/hooks/useCollaboratorInvitation';
 import { useMultiplePlaceholderHandler } from '@/hooks/usePlaceholderHandler';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -32,7 +35,7 @@ import { useToast } from '@/hooks/use-toast';
 /**
  * 🎯 Composant: CollaboratorInvitation
  * Pattern: Stripe, Notion, Linear - Interface d'invitation collaborateurs
- * 
+ *
  * Fonctionnalités:
  * - Formulaire d'invitation avec validation
  * - Liste des invitations en attente
@@ -63,7 +66,7 @@ export const CollaboratorInvitation: React.FC = () => {
   const [loadingRoles, setLoadingRoles] = useState(true);
 
   const { toast } = useToast();
-  
+
   const {
     sendInvitation,
     revokeInvitation,
@@ -94,7 +97,7 @@ export const CollaboratorInvitation: React.FC = () => {
     email: 'collaborateur@exemple.com',
     fullName: 'Marie Dupont',
     department: 'Développement',
-    jobPosition: 'Développeur Frontend'
+    jobPosition: 'Développeur Frontend',
   });
 
   // ============================================================================
@@ -105,13 +108,13 @@ export const CollaboratorInvitation: React.FC = () => {
     const fetchAvailableRoles = async () => {
       try {
         setLoadingRoles(true);
-        
+
         // Récupérer tous les rôles depuis la base de données
         const { data: roles, error } = await supabase
           .from('roles')
           .select('name, display_name, description')
           .order('hierarchy_level', { ascending: true });
-        
+
         if (error) {
           console.error('Erreur chargement rôles:', error);
           return;
@@ -119,18 +122,15 @@ export const CollaboratorInvitation: React.FC = () => {
 
         // Filtrer pour exclure super_admin et tenant_admin
         const filteredRoles = (roles || [])
-          .filter(role => 
-            role.name !== 'super_admin' && 
-            role.name !== 'tenant_admin'
-          )
+          .filter(role => role.name !== 'super_admin' && role.name !== 'tenant_admin')
           .map(role => ({
             value: role.name,
             label: role.display_name || role.name,
-            description: role.description || `Rôle ${role.display_name || role.name}`
+            description: role.description || `Rôle ${role.display_name || role.name}`,
           }));
 
         setAvailableRoles(filteredRoles);
-        
+
         console.log('✅ Rôles chargés:', filteredRoles.length, 'rôles disponibles');
       } catch (err) {
         console.error('Exception chargement rôles:', err);
@@ -170,25 +170,26 @@ export const CollaboratorInvitation: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Validation du rôle personnalisé
     if (showCustomRole && !customRole.trim()) {
       toast({
         title: '⚠️ Rôle manquant',
-        description: 'Veuillez spécifier le rôle personnalisé ou sélectionner un rôle dans la liste',
-        variant: 'destructive'
+        description:
+          'Veuillez spécifier le rôle personnalisé ou sélectionner un rôle dans la liste',
+        variant: 'destructive',
       });
       return;
     }
-    
+
     // Utiliser le rôle personnalisé si "Autre" est sélectionné
     const formToSubmit = {
       ...form,
-      roleToAssign: showCustomRole ? customRole.trim() : form.roleToAssign
+      roleToAssign: showCustomRole ? customRole.trim() : form.roleToAssign,
     };
-    
+
     const success = await sendInvitation(formToSubmit);
-    
+
     if (success) {
       // Réinitialiser le formulaire avec le premier rôle disponible
       setForm({
@@ -215,9 +216,9 @@ export const CollaboratorInvitation: React.FC = () => {
     const now = new Date();
     const diffMs = date.getTime() - now.getTime();
     const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
-    
+
     if (diffDays < 0) return 'Expirée';
-    if (diffDays === 0) return 'Expire aujourd\'hui';
+    if (diffDays === 0) return "Expire aujourd'hui";
     if (diffDays === 1) return 'Expire demain';
     return `Expire dans ${diffDays} jours`;
   };
@@ -231,7 +232,8 @@ export const CollaboratorInvitation: React.FC = () => {
       <Alert className="border-orange-200 bg-orange-50">
         <XCircle className="h-4 w-4 text-orange-600" />
         <AlertDescription className="text-orange-800">
-          <strong>Permissions insuffisantes</strong><br />
+          <strong>Permissions insuffisantes</strong>
+          <br />
           Seuls les administrateurs, managers et responsables RH peuvent inviter des collaborateurs.
         </AlertDescription>
       </Alert>
@@ -244,13 +246,12 @@ export const CollaboratorInvitation: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      
       {/* ============================================================================
           STATISTIQUES (Pattern Linear)
           ============================================================================ */}
-      
+
       {stats && (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
           <Card>
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
@@ -313,26 +314,18 @@ export const CollaboratorInvitation: React.FC = () => {
                 <UserPlus className="h-5 w-5" />
                 Inviter un collaborateur
               </CardTitle>
-              <CardDescription>
-                Ajoutez un nouveau membre à votre équipe
-              </CardDescription>
+              <CardDescription>Ajoutez un nouveau membre à votre équipe</CardDescription>
             </div>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={refreshInvitations}
-              disabled={isLoading}
-            >
+            <Button variant="outline" size="sm" onClick={refreshInvitations} disabled={isLoading}>
               <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
             </Button>
           </div>
         </CardHeader>
-        
+
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-6">
-            
             {/* Informations principales */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <div className="space-y-2">
                 <Label htmlFor="email">
                   Email <span className="text-red-500">*</span>
@@ -344,7 +337,7 @@ export const CollaboratorInvitation: React.FC = () => {
                     type="email"
                     placeholder={getPlaceholder('email', form.email)}
                     value={form.email}
-                    onChange={(e) => handleInputChange('email', e.target.value)}
+                    onChange={e => handleInputChange('email', e.target.value)}
                     onFocus={() => handleFocus('email')}
                     disabled={isSending}
                     className="pl-10"
@@ -362,7 +355,7 @@ export const CollaboratorInvitation: React.FC = () => {
                   type="text"
                   placeholder={getPlaceholder('fullName', form.fullName)}
                   value={form.fullName}
-                  onChange={(e) => handleInputChange('fullName', e.target.value)}
+                  onChange={e => handleInputChange('fullName', e.target.value)}
                   onFocus={() => handleFocus('fullName')}
                   disabled={isSending}
                   required
@@ -381,7 +374,9 @@ export const CollaboratorInvitation: React.FC = () => {
                 disabled={isSending || loadingRoles}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder={loadingRoles ? "Chargement des rôles..." : "Sélectionner un rôle"} />
+                  <SelectValue
+                    placeholder={loadingRoles ? 'Chargement des rôles...' : 'Sélectionner un rôle'}
+                  />
                 </SelectTrigger>
                 <SelectContent>
                   {loadingRoles ? (
@@ -401,7 +396,9 @@ export const CollaboratorInvitation: React.FC = () => {
                         <SelectItem key={role.value} value={role.value}>
                           <div className="flex flex-col">
                             <span className="font-medium">{role.label}</span>
-                            <span className="text-xs text-muted-foreground">{role.description}</span>
+                            <span className="text-xs text-muted-foreground">
+                              {role.description}
+                            </span>
                           </div>
                         </SelectItem>
                       ))}
@@ -409,7 +406,9 @@ export const CollaboratorInvitation: React.FC = () => {
                       <SelectItem value="autre">
                         <div className="flex flex-col">
                           <span className="font-medium">✏️ Autre</span>
-                          <span className="text-xs text-muted-foreground">Spécifier un rôle personnalisé</span>
+                          <span className="text-xs text-muted-foreground">
+                            Spécifier un rôle personnalisé
+                          </span>
                         </div>
                       </SelectItem>
                     </>
@@ -429,7 +428,7 @@ export const CollaboratorInvitation: React.FC = () => {
                   type="text"
                   placeholder="Ex: Consultant, Stagiaire, Freelance..."
                   value={customRole}
-                  onChange={(e) => setCustomRole(e.target.value)}
+                  onChange={e => setCustomRole(e.target.value)}
                   disabled={isSending}
                   required
                   className="border-primary"
@@ -441,7 +440,7 @@ export const CollaboratorInvitation: React.FC = () => {
             )}
 
             {/* Informations optionnelles */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <div className="space-y-2">
                 <Label htmlFor="department">Département (optionnel)</Label>
                 <Input
@@ -449,7 +448,7 @@ export const CollaboratorInvitation: React.FC = () => {
                   type="text"
                   placeholder={getPlaceholder('department', form.department || '')}
                   value={form.department}
-                  onChange={(e) => handleInputChange('department', e.target.value)}
+                  onChange={e => handleInputChange('department', e.target.value)}
                   onFocus={() => handleFocus('department')}
                   disabled={isSending}
                 />
@@ -462,7 +461,7 @@ export const CollaboratorInvitation: React.FC = () => {
                   type="text"
                   placeholder={getPlaceholder('jobPosition', form.jobPosition || '')}
                   value={form.jobPosition}
-                  onChange={(e) => handleInputChange('jobPosition', e.target.value)}
+                  onChange={e => handleInputChange('jobPosition', e.target.value)}
                   onFocus={() => handleFocus('jobPosition')}
                   disabled={isSending}
                 />
@@ -478,7 +477,7 @@ export const CollaboratorInvitation: React.FC = () => {
             )}
 
             {/* Bouton d'envoi */}
-            <Button 
+            <Button
               type="submit"
               disabled={isSending || !form.email.trim() || !form.fullName.trim()}
               className="w-full md:w-auto"
@@ -511,28 +510,31 @@ export const CollaboratorInvitation: React.FC = () => {
               Les invitations expirent automatiquement après 7 jours
             </CardDescription>
           </CardHeader>
-          
+
           <CardContent>
             <div className="space-y-3">
               {pendingInvitations.map(invitation => (
                 <div
                   key={invitation.id}
-                  className="flex items-center justify-between p-4 border rounded-lg hover:bg-accent/50 transition-colors"
+                  className="flex items-center justify-between rounded-lg border p-4 transition-colors hover:bg-accent/50"
                 >
                   <div className="flex-1 space-y-1">
                     <div className="flex items-center gap-2">
                       <p className="font-medium">{invitation.full_name}</p>
                       <Badge variant="outline" className="text-xs">
-                        {availableRoles.find(r => r.value === invitation.role_to_assign)?.label || invitation.role_to_assign}
+                        {availableRoles.find(r => r.value === invitation.role_to_assign)?.label ||
+                          invitation.role_to_assign}
                       </Badge>
                     </div>
                     <p className="text-sm text-muted-foreground">{invitation.email}</p>
                     {(invitation.department || invitation.job_position) && (
                       <p className="text-xs text-muted-foreground">
-                        {[invitation.department, invitation.job_position].filter(Boolean).join(' • ')}
+                        {[invitation.department, invitation.job_position]
+                          .filter(Boolean)
+                          .join(' • ')}
                       </p>
                     )}
-                    <p className="text-xs text-orange-600 font-medium">
+                    <p className="text-xs font-medium text-orange-600">
                       {formatDate(invitation.expires_at)}
                     </p>
                   </div>
@@ -541,7 +543,7 @@ export const CollaboratorInvitation: React.FC = () => {
                     variant="ghost"
                     size="sm"
                     onClick={() => handleRevoke(invitation.id)}
-                    className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                    className="text-red-600 hover:bg-red-50 hover:text-red-700"
                   >
                     <Trash2 className="h-4 w-4" />
                   </Button>
@@ -568,7 +570,6 @@ export const CollaboratorInvitation: React.FC = () => {
           <p>• Vous pouvez annuler une invitation en attente à tout moment</p>
         </CardContent>
       </Card>
-
     </div>
   );
 };

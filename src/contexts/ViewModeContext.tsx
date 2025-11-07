@@ -28,11 +28,13 @@ export const ViewModeProvider: React.FC<ViewModeProviderProps> = ({ children }) 
   };
 
   return (
-    <ViewModeContext.Provider value={{
-      defaultDisplayMode,
-      setDefaultDisplayMode,
-      resetToDefault
-    }}>
+    <ViewModeContext.Provider
+      value={{
+        defaultDisplayMode,
+        setDefaultDisplayMode,
+        resetToDefault,
+      }}
+    >
       {children}
     </ViewModeContext.Provider>
   );

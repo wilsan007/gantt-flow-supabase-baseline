@@ -1,7 +1,7 @@
 /**
  * 🎯 AdvancedFilters - Filtrage Multi-Critères pour Tâches
  * Pattern: Notion, Linear, Monday.com
- * 
+ *
  * Fonctionnalités:
  * - Filtres par statut, priorité, assigné, projet, dates
  * - Recherche textuelle
@@ -11,9 +11,17 @@
  */
 
 import { useState, useEffect } from 'react';
-import { 
-  Search, Filter, X, Calendar, User, Flag, 
-  FolderKanban, CheckCircle2, Clock, AlertCircle 
+import {
+  Search,
+  Filter,
+  X,
+  Calendar,
+  User,
+  Flag,
+  FolderKanban,
+  CheckCircle2,
+  Clock,
+  AlertCircle,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -25,11 +33,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 
@@ -109,7 +113,10 @@ export const AdvancedFilters = ({
     setFilters(prev => ({ ...prev, [key]: value }));
   };
 
-  const toggleArrayFilter = (key: 'status' | 'priority' | 'assignee' | 'project', value: string) => {
+  const toggleArrayFilter = (
+    key: 'status' | 'priority' | 'assignee' | 'project',
+    value: string
+  ) => {
     setFilters(prev => {
       const current = prev[key];
       const updated = current.includes(value)
@@ -124,10 +131,10 @@ export const AdvancedFilters = ({
     localStorage.removeItem('taskFilters');
   };
 
-  const activeFiltersCount = 
-    filters.status.length + 
-    filters.priority.length + 
-    filters.assignee.length + 
+  const activeFiltersCount =
+    filters.status.length +
+    filters.priority.length +
+    filters.assignee.length +
     filters.project.length +
     (filters.dateFrom ? 1 : 0) +
     (filters.dateTo ? 1 : 0);
@@ -137,14 +144,14 @@ export const AdvancedFilters = ({
   return (
     <div className="space-y-3">
       {/* Barre de recherche + Bouton filtres */}
-      <div className="flex flex-col sm:flex-row gap-3">
+      <div className="flex flex-col gap-3 sm:flex-row">
         {/* Recherche textuelle */}
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             placeholder="Rechercher par titre, description..."
             value={filters.search}
-            onChange={(e) => updateFilter('search', e.target.value)}
+            onChange={e => updateFilter('search', e.target.value)}
             className="pl-10 pr-10"
           />
           {filters.search && (
@@ -152,7 +159,7 @@ export const AdvancedFilters = ({
               variant="ghost"
               size="sm"
               onClick={() => updateFilter('search', '')}
-              className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7 p-0"
+              className="absolute right-1 top-1/2 h-7 w-7 -translate-y-1/2 p-0"
             >
               <X className="h-3 w-3" />
             </Button>
@@ -163,12 +170,12 @@ export const AdvancedFilters = ({
         <Popover open={isOpen} onOpenChange={setIsOpen}>
           <PopoverTrigger asChild>
             <Button variant="outline" className="relative">
-              <Filter className="h-4 w-4 mr-2" />
+              <Filter className="mr-2 h-4 w-4" />
               Filtres
               {activeFiltersCount > 0 && (
-                <Badge 
-                  variant="destructive" 
-                  className="ml-2 h-5 w-5 p-0 flex items-center justify-center text-xs"
+                <Badge
+                  variant="destructive"
+                  className="ml-2 flex h-5 w-5 items-center justify-center p-0 text-xs"
                 >
                   {activeFiltersCount}
                 </Badge>
@@ -179,15 +186,10 @@ export const AdvancedFilters = ({
             <div className="space-y-4">
               {/* Header */}
               <div className="flex items-center justify-between">
-                <h3 className="font-semibold text-sm">Filtres avancés</h3>
+                <h3 className="text-sm font-semibold">Filtres avancés</h3>
                 {hasActiveFilters && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={resetFilters}
-                    className="h-7 text-xs"
-                  >
-                    <X className="h-3 w-3 mr-1" />
+                  <Button variant="ghost" size="sm" onClick={resetFilters} className="h-7 text-xs">
+                    <X className="mr-1 h-3 w-3" />
                     Réinitialiser
                   </Button>
                 )}
@@ -197,23 +199,23 @@ export const AdvancedFilters = ({
 
               {/* Filtre Statut */}
               <div className="space-y-2">
-                <Label className="text-xs font-medium flex items-center gap-2">
+                <Label className="flex items-center gap-2 text-xs font-medium">
                   <CheckCircle2 className="h-3 w-3" />
                   Statut
                 </Label>
                 <div className="grid grid-cols-2 gap-2">
-                  {STATUS_OPTIONS.map((status) => {
+                  {STATUS_OPTIONS.map(status => {
                     const Icon = status.icon;
                     const isActive = filters.status.includes(status.value);
                     return (
                       <Button
                         key={status.value}
-                        variant={isActive ? "default" : "outline"}
+                        variant={isActive ? 'default' : 'outline'}
                         size="sm"
                         onClick={() => toggleArrayFilter('status', status.value)}
-                        className="justify-start text-xs h-8"
+                        className="h-8 justify-start text-xs"
                       >
-                        <Icon className={`h-3 w-3 mr-1 ${status.color}`} />
+                        <Icon className={`mr-1 h-3 w-3 ${status.color}`} />
                         {status.label}
                       </Button>
                     );
@@ -225,22 +227,24 @@ export const AdvancedFilters = ({
 
               {/* Filtre Priorité */}
               <div className="space-y-2">
-                <Label className="text-xs font-medium flex items-center gap-2">
+                <Label className="flex items-center gap-2 text-xs font-medium">
                   <Flag className="h-3 w-3" />
                   Priorité
                 </Label>
                 <div className="grid grid-cols-2 gap-2">
-                  {PRIORITY_OPTIONS.map((priority) => {
+                  {PRIORITY_OPTIONS.map(priority => {
                     const isActive = filters.priority.includes(priority.value);
                     return (
                       <Button
                         key={priority.value}
-                        variant={isActive ? "default" : "outline"}
+                        variant={isActive ? 'default' : 'outline'}
                         size="sm"
                         onClick={() => toggleArrayFilter('priority', priority.value)}
-                        className="justify-start text-xs h-8"
+                        className="h-8 justify-start text-xs"
                       >
-                        <div className={`h-2 w-2 rounded-full mr-2 ${priority.color.split(' ')[0]}`} />
+                        <div
+                          className={`mr-2 h-2 w-2 rounded-full ${priority.color.split(' ')[0]}`}
+                        />
                         {priority.label}
                       </Button>
                     );
@@ -254,19 +258,16 @@ export const AdvancedFilters = ({
               {employees.length > 0 && (
                 <>
                   <div className="space-y-2">
-                    <Label className="text-xs font-medium flex items-center gap-2">
+                    <Label className="flex items-center gap-2 text-xs font-medium">
                       <User className="h-3 w-3" />
                       Assigné à
                     </Label>
-                    <Select
-                      value=""
-                      onValueChange={(value) => toggleArrayFilter('assignee', value)}
-                    >
+                    <Select value="" onValueChange={value => toggleArrayFilter('assignee', value)}>
                       <SelectTrigger className="h-8 text-xs">
                         <SelectValue placeholder="Sélectionner..." />
                       </SelectTrigger>
                       <SelectContent>
-                        {employees.map((emp) => (
+                        {employees.map(emp => (
                           <SelectItem key={emp.id} value={emp.id} className="text-xs">
                             {emp.full_name}
                             {filters.assignee.includes(emp.id) && ' ✓'}
@@ -276,13 +277,13 @@ export const AdvancedFilters = ({
                     </Select>
                     {filters.assignee.length > 0 && (
                       <div className="flex flex-wrap gap-1">
-                        {filters.assignee.map((id) => {
+                        {filters.assignee.map(id => {
                           const emp = employees.find(e => e.id === id);
                           return (
                             <Badge key={id} variant="secondary" className="text-xs">
                               {emp?.full_name}
                               <X
-                                className="h-3 w-3 ml-1 cursor-pointer"
+                                className="ml-1 h-3 w-3 cursor-pointer"
                                 onClick={() => toggleArrayFilter('assignee', id)}
                               />
                             </Badge>
@@ -299,19 +300,16 @@ export const AdvancedFilters = ({
               {projects.length > 0 && (
                 <>
                   <div className="space-y-2">
-                    <Label className="text-xs font-medium flex items-center gap-2">
+                    <Label className="flex items-center gap-2 text-xs font-medium">
                       <FolderKanban className="h-3 w-3" />
                       Projet
                     </Label>
-                    <Select
-                      value=""
-                      onValueChange={(value) => toggleArrayFilter('project', value)}
-                    >
+                    <Select value="" onValueChange={value => toggleArrayFilter('project', value)}>
                       <SelectTrigger className="h-8 text-xs">
                         <SelectValue placeholder="Sélectionner..." />
                       </SelectTrigger>
                       <SelectContent>
-                        {projects.map((proj) => (
+                        {projects.map(proj => (
                           <SelectItem key={proj.id} value={proj.id} className="text-xs">
                             {proj.name}
                             {filters.project.includes(proj.id) && ' ✓'}
@@ -321,13 +319,13 @@ export const AdvancedFilters = ({
                     </Select>
                     {filters.project.length > 0 && (
                       <div className="flex flex-wrap gap-1">
-                        {filters.project.map((id) => {
+                        {filters.project.map(id => {
                           const proj = projects.find(p => p.id === id);
                           return (
                             <Badge key={id} variant="secondary" className="text-xs">
                               {proj?.name}
                               <X
-                                className="h-3 w-3 ml-1 cursor-pointer"
+                                className="ml-1 h-3 w-3 cursor-pointer"
                                 onClick={() => toggleArrayFilter('project', id)}
                               />
                             </Badge>
@@ -342,7 +340,7 @@ export const AdvancedFilters = ({
 
               {/* Filtre Dates */}
               <div className="space-y-2">
-                <Label className="text-xs font-medium flex items-center gap-2">
+                <Label className="flex items-center gap-2 text-xs font-medium">
                   <Calendar className="h-3 w-3" />
                   Période
                 </Label>
@@ -352,7 +350,7 @@ export const AdvancedFilters = ({
                     <Input
                       type="date"
                       value={filters.dateFrom}
-                      onChange={(e) => updateFilter('dateFrom', e.target.value)}
+                      onChange={e => updateFilter('dateFrom', e.target.value)}
                       className="h-8 text-xs"
                     />
                   </div>
@@ -361,7 +359,7 @@ export const AdvancedFilters = ({
                     <Input
                       type="date"
                       value={filters.dateTo}
-                      onChange={(e) => updateFilter('dateTo', e.target.value)}
+                      onChange={e => updateFilter('dateTo', e.target.value)}
                       className="h-8 text-xs"
                     />
                   </div>
@@ -373,13 +371,8 @@ export const AdvancedFilters = ({
 
         {/* Bouton Reset (visible si filtres actifs) */}
         {hasActiveFilters && (
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={resetFilters}
-            className="hidden sm:flex"
-          >
-            <X className="h-4 w-4 mr-1" />
+          <Button variant="ghost" size="sm" onClick={resetFilters} className="hidden sm:flex">
+            <X className="mr-1 h-4 w-4" />
             Réinitialiser
           </Button>
         )}

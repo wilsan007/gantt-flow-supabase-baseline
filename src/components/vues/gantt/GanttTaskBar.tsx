@@ -10,18 +10,22 @@ interface GanttTaskBarProps {
   config: ViewConfig;
   isDragging: boolean;
   isResizing: boolean;
-  onMouseDown: (e: React.MouseEvent, taskId: string, action: 'drag' | 'resize-left' | 'resize-right') => void;
+  onMouseDown: (
+    e: React.MouseEvent,
+    taskId: string,
+    action: 'drag' | 'resize-left' | 'resize-right'
+  ) => void;
 }
 
-export const GanttTaskBar = ({ 
-  task, 
-  index, 
-  rowHeight, 
-  startDate, 
-  config, 
-  isDragging, 
-  isResizing, 
-  onMouseDown 
+export const GanttTaskBar = ({
+  task,
+  index,
+  rowHeight,
+  startDate,
+  config,
+  isDragging,
+  isResizing,
+  onMouseDown,
 }: GanttTaskBarProps) => {
   const left = getUnitPosition(task.startDate, startDate, config);
   const width = getTaskWidth(task, config);
@@ -39,16 +43,16 @@ export const GanttTaskBar = ({
         top: index * rowHeight + 10,
         left: left,
         width: width,
-        height: rowHeight - 20
+        height: rowHeight - 20,
       }}
     >
       <div
-        className={`relative h-full rounded-lg border-2 group overflow-hidden ${
-          isDragging || isResizing ? 'shadow-lg scale-105 z-10' : 'hover:shadow-md'
-        } transition-all duration-200 shadow-sm`}
+        className={`group relative h-full overflow-hidden rounded-lg border-2 ${
+          isDragging || isResizing ? 'z-10 scale-105 shadow-lg' : 'hover:shadow-md'
+        } shadow-sm transition-all duration-200`}
         style={{
           backgroundColor: remainingColor, // Fond = partie non complétée
-          borderColor: baseColor
+          borderColor: baseColor,
         }}
       >
         {/* Partie complétée (progression) */}
@@ -56,41 +60,41 @@ export const GanttTaskBar = ({
           className="h-full rounded-l-lg transition-all duration-300"
           style={{
             width: `${task.progress}%`,
-            backgroundColor: completedColor
+            backgroundColor: completedColor,
           }}
         />
-        
+
         <div
-          className="absolute left-0 top-0 h-full w-4 cursor-ew-resize bg-white/20 dark:bg-white/10 opacity-0 group-hover:opacity-100 hover:!opacity-100 hover:bg-white/40 dark:hover:bg-white/30 transition-all flex items-center justify-center border-r border-white/30"
-          onMouseDown={(e) => {
+          className="absolute left-0 top-0 flex h-full w-4 cursor-ew-resize items-center justify-center border-r border-white/30 bg-white/20 opacity-0 transition-all hover:bg-white/40 hover:!opacity-100 group-hover:opacity-100 dark:bg-white/10 dark:hover:bg-white/30"
+          onMouseDown={e => {
             e.stopPropagation();
             e.preventDefault();
             onMouseDown(e, task.id, 'resize-left');
           }}
           title="Redimensionner le début"
         >
-          <div className="w-0.5 h-8 bg-white rounded opacity-90" />
+          <div className="h-8 w-0.5 rounded bg-white opacity-90" />
         </div>
-        
+
         <div
-          className="absolute right-0 top-0 h-full w-4 cursor-ew-resize bg-white/20 dark:bg-white/10 opacity-0 group-hover:opacity-100 hover:!opacity-100 hover:bg-white/40 dark:hover:bg-white/30 transition-all flex items-center justify-center border-l border-white/30"
-          onMouseDown={(e) => {
+          className="absolute right-0 top-0 flex h-full w-4 cursor-ew-resize items-center justify-center border-l border-white/30 bg-white/20 opacity-0 transition-all hover:bg-white/40 hover:!opacity-100 group-hover:opacity-100 dark:bg-white/10 dark:hover:bg-white/30"
+          onMouseDown={e => {
             e.stopPropagation();
             e.preventDefault();
             onMouseDown(e, task.id, 'resize-right');
           }}
           title="Redimensionner la fin"
         >
-          <div className="w-0.5 h-8 bg-white rounded opacity-90" />
+          <div className="h-8 w-0.5 rounded bg-white opacity-90" />
         </div>
-        
-        <div 
-          className="absolute inset-x-4 inset-y-0 cursor-move flex items-center justify-center px-2"
-          onMouseDown={(e) => onMouseDown(e, task.id, 'drag')}
+
+        <div
+          className="absolute inset-x-4 inset-y-0 flex cursor-move items-center justify-center px-2"
+          onMouseDown={e => onMouseDown(e, task.id, 'drag')}
           title="Déplacer la tâche"
         >
           {/* Taux de progression en gras et gros - centré */}
-          <span className="text-2xl font-extrabold pointer-events-none text-white dark:text-white drop-shadow-[0_2px_6px_rgba(0,0,0,0.9)] whitespace-nowrap">
+          <span className="pointer-events-none whitespace-nowrap text-2xl font-extrabold text-white drop-shadow-[0_2px_6px_rgba(0,0,0,0.9)] dark:text-white">
             {task.progress}%
           </span>
         </div>

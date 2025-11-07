@@ -46,7 +46,7 @@ export const PasswordSettings = () => {
 
     try {
       const { error } = await supabase.auth.updateUser({
-        password: newPassword
+        password: newPassword,
       });
 
       if (error) throw error;
@@ -101,7 +101,7 @@ export const PasswordSettings = () => {
                 id="newPassword"
                 type={showPassword ? 'text' : 'password'}
                 value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
+                onChange={e => setNewPassword(e.target.value)}
                 placeholder="••••••••"
               />
               <Button
@@ -123,29 +123,37 @@ export const PasswordSettings = () => {
               id="confirmPassword"
               type={showPassword ? 'text' : 'password'}
               value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
+              onChange={e => setConfirmPassword(e.target.value)}
               placeholder="••••••••"
             />
           </div>
 
           {/* Critères de validation */}
           {newPassword && (
-            <div className="space-y-2 p-4 bg-muted/50 rounded-lg">
-              <p className="text-sm font-medium mb-2">Critères de sécurité :</p>
+            <div className="space-y-2 rounded-lg bg-muted/50 p-4">
+              <p className="mb-2 text-sm font-medium">Critères de sécurité :</p>
               <ValidationItem valid={passwordValidation.minLength} text="Au moins 8 caractères" />
               <ValidationItem valid={passwordValidation.hasUpperCase} text="Une lettre majuscule" />
               <ValidationItem valid={passwordValidation.hasLowerCase} text="Une lettre minuscule" />
               <ValidationItem valid={passwordValidation.hasNumber} text="Un chiffre" />
-              <ValidationItem valid={passwordValidation.hasSpecialChar} text="Un caractère spécial (!@#$%...)" />
+              <ValidationItem
+                valid={passwordValidation.hasSpecialChar}
+                text="Un caractère spécial (!@#$%...)"
+              />
               {confirmPassword && (
-                <ValidationItem valid={passwordValidation.passwordsMatch} text="Les mots de passe correspondent" />
+                <ValidationItem
+                  valid={passwordValidation.passwordsMatch}
+                  text="Les mots de passe correspondent"
+                />
               )}
             </div>
           )}
 
           <Button type="submit" disabled={loading || !isValid}>
             {loading ? (
-              <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Modification...</>
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Modification...
+              </>
             ) : (
               'Modifier le mot de passe'
             )}

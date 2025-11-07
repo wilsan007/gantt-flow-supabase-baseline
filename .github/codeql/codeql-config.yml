@@ -1,0 +1,53 @@
+name: "CodeQL Configuration"
+
+# Chemins à exclure de l'analyse
+paths-ignore:
+  # Build outputs
+  - '**/dist/**'
+  - '**/build/**'
+  - '**/*_deploy_ready/**'
+  - '**/*_deploy/**'
+  
+  # Assets compilés
+  - '**/assets/**/*.js'
+  - '**/assets/**/*.css'
+  - '**/*.bundle.js'
+  - '**/*.bundle.js.map'
+  
+  # Node modules
+  - '**/node_modules/**'
+  
+  # Coverage
+  - '**/coverage/**'
+  
+  # Archives et tests locaux
+  - '**/.archive_*/**'
+  - '**/test-*.js'
+  
+  # Fichiers temporaires
+  - '**/*.backup'
+  - '**/*.backup.ts'
+  - '**/*.backup.json'
+  
+  # Documentation de build
+  - '**/LISTE_SELECTEURS_ASSIGNES.md'
+  - '**/ANALYSE_*.md'
+  - '**/NETTOYAGE_*.md'
+
+# Chemins à inclure (optionnel, si on veut être explicite)
+paths:
+  - 'src/**'
+  - 'supabase/functions/**'
+  - '.github/workflows/**'
+
+# Requêtes à exécuter
+queries:
+  - uses: security-and-quality
+
+# Désactiver certaines requêtes trop strictes pour du code généré
+query-filters:
+  - exclude:
+      id:
+        - js/useless-conditional
+        - js/useless-assignment-to-local
+        - js/superfluous-trailing-arguments

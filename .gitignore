@@ -10,11 +10,20 @@ lerna-debug.log*
 node_modules
 dist
 dist-ssr
+build
 *.local
 .vite
 .tsbuildinfo
 *.backup.json
 *.backup.ts
+
+# Build outputs (ne pas commiter)
+*_deploy_ready/
+*_deploy/
+*.bundle.js
+*.bundle.js.map
+assets/*.js
+assets/*.css
 
 # Test coverage
 coverage

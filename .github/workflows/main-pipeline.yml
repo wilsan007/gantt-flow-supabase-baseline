@@ -1,0 +1,172 @@
+name: CI/CD Pipeline - Test & Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+env:
+  NODE_VERSION: '20.x'
+
+jobs:
+  # Job 1: Quality Checks
+  quality-checks:
+    name: 🔍 Quality Checks
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
+      
+      - name: 🔧 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+      
+      - name: 📦 Install Dependencies
+        run: npm ci --legacy-peer-deps
+      
+      - name: 🔍 ESLint
+        run: npm run lint
+        continue-on-error: false
+      
+      - name: 💅 Prettier
+        run: npm run format:check
+        continue-on-error: false
+      
+      - name: 📝 TypeScript
+        run: npm run type-check
+        continue-on-error: false
+
+  # Job 2: Tests
+  tests:
+    name: 🧪 Tests
+    runs-on: ubuntu-latest
+    needs: quality-checks
+    
+    steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
+      
+      - name: 🔧 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+      
+      - name: 📦 Install Dependencies
+        run: npm ci --legacy-peer-deps
+      
+      - name: 🧪 Run Tests
+        run: npm run test -- --run
+        continue-on-error: false
+
+  # Job 3: Build
+  build:
+    name: 🏗️ Build
+    runs-on: ubuntu-latest
+    needs: tests
+    
+    steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
+      
+      - name: 🔧 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+      
+      - name: 📦 Install Dependencies
+        run: npm ci --legacy-peer-deps
+      
+      - name: 🏗️ Build Application
+        run: npm run build
+        env:
+          NODE_ENV: production
+          CI: false
+      
+      - name: 📊 Build Info
+        run: |
+          echo "## ✅ Build Successful" >> $GITHUB_STEP_SUMMARY
+          
+          if [ -d "dist" ]; then
+            BUILD_SIZE=$(du -sh dist | cut -f1)
+            FILE_COUNT=$(find dist -type f | wc -l)
+            echo "📦 **Size:** $BUILD_SIZE" >> $GITHUB_STEP_SUMMARY
+            echo "📄 **Files:** $FILE_COUNT" >> $GITHUB_STEP_SUMMARY
+          fi
+      
+      - name: 📤 Upload Build Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: production-build
+          path: dist/
+          retention-days: 7
+
+  # Job 4: Deploy to Hostinger (SEULEMENT si tous les tests passent)
+  deploy:
+    name: 🚀 Deploy to Hostinger
+    runs-on: ubuntu-latest
+    needs: build
+    if: success()
+    
+    steps:
+      - name: 📥 Download Build
+        uses: actions/download-artifact@v4
+        with:
+          name: production-build
+          path: dist/
+      
+      - name: 📋 List Files
+        run: |
+          echo "📁 Fichiers à déployer:"
+          ls -lah dist/
+      
+      - name: 🚀 Deploy via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: ./dist/
+          server-dir: ${{ secrets.FTP_REMOTE_DIR }}
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/node_modules/**
+            **/.vscode/**
+            **/.DS_Store
+          dangerous-clean-slate: false
+      
+      - name: ✅ Deployment Summary
+        run: |
+          echo "## 🎉 Deployment Successful!" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "✅ **Tests:** Passed" >> $GITHUB_STEP_SUMMARY
+          echo "✅ **Build:** Successful" >> $GITHUB_STEP_SUMMARY
+          echo "✅ **Deploy:** Completed" >> $GITHUB_STEP_SUMMARY
+          echo "🌐 **Server:** Hostinger" >> $GITHUB_STEP_SUMMARY
+          echo "📅 **Date:** $(date +'%Y-%m-%d %H:%M:%S UTC')" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "🔗 Votre site est maintenant à jour sur Hostinger!" >> $GITHUB_STEP_SUMMARY
+
+  # Job 5: Notification si échec
+  notify-failure:
+    name: ❌ Failure Notification
+    runs-on: ubuntu-latest
+    needs: [quality-checks, tests, build, deploy]
+    if: failure()
+    
+    steps:
+      - name: ❌ Failed Stage
+        run: |
+          echo "## ❌ Pipeline Failed" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Le déploiement n'a pas eu lieu car une étape a échoué." >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Vérifiez:" >> $GITHUB_STEP_SUMMARY
+          echo "- Les tests unitaires" >> $GITHUB_STEP_SUMMARY
+          echo "- Les erreurs ESLint" >> $GITHUB_STEP_SUMMARY
+          echo "- Les erreurs de build" >> $GITHUB_STEP_SUMMARY

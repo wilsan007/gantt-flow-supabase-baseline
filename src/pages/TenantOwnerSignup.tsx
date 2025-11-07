@@ -269,7 +269,7 @@ export const TenantOwnerSignup: React.FC = () => {
       
       console.log('🔐 ÉTAPE 1: Connexion avec le mot de passe temporaire...');
       console.log('📧 Email utilisé:', form.email.toLowerCase().trim());
-      console.log('🔑 Mot de passe temporaire:', tempPassword ? '***masqué***' : 'NON TROUVÉ');
+      console.log('🔑 Mot de passe temporaire: ***masqué***');
       
       // Vérifier d'abord l'état de l'utilisateur avant la connexion
       console.log('🔍 Vérification de l\'utilisateur avant connexion...');

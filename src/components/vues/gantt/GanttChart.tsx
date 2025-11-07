@@ -365,6 +365,7 @@ const GanttChart = () => {
   }
 
   return (
+    <>
     <Card className="w-full modern-card glow-primary transition-smooth">
       <GanttHeader
         viewMode={viewMode}
@@ -580,14 +581,9 @@ const GanttChart = () => {
         </div>
       </CardContent>
     </Card>
-  );
 
-  return (
-    <>
-      {ganttContent}
-
-      {/* ✅ Modal d'erreur centré pour les problèmes de mise à jour de dates */}
-      {dateUpdateError && (
+    {/* ✅ Modal d'erreur centré pour les problèmes de mise à jour de dates */}
+    {dateUpdateError && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-background border border-border rounded-lg p-6 max-w-md w-full mx-4 shadow-lg">
             <div className="flex items-start gap-3">

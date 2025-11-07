@@ -21,15 +21,28 @@ function generateSecureToken(length: number): string {
 }
 
 /**
+ * Génère un nombre aléatoire sans biais entre 0 et max (exclusif)
+ * Utilise rejection sampling pour éviter le modulo bias
+ */
+function getUnbiasedRandomInt(max: number): number {
+  const range = 256 - (256 % max);
+  let value: number;
+  do {
+    value = crypto.getRandomValues(new Uint8Array(1))[0];
+  } while (value >= range);
+  return value % max;
+}
+
+/**
  * Génère un mot de passe sécurisé
  * @returns Mot de passe avec lettres, chiffres et caractères spéciaux
  */
 function generateSecurePassword(): string {
   const lowercase = generateSecureToken(4);
   const uppercase = generateSecureToken(4).toUpperCase();
-  const numbers = Array.from(crypto.getRandomValues(new Uint8Array(2)), n => n % 10).join('');
+  const numbers = Array.from({ length: 2 }, () => getUnbiasedRandomInt(10)).join('');
   const special = '!@#$%';
-  const specialChar = special[crypto.getRandomValues(new Uint8Array(1))[0] % special.length];
+  const specialChar = special[getUnbiasedRandomInt(special.length)];
   return lowercase + uppercase + numbers + specialChar;
 }
 

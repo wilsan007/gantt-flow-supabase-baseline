@@ -273,7 +273,7 @@ export const HRDashboardMinimal = () => {
             </CardTitle>
           </CardHeader>
           <CardContent className="text-xs text-muted-foreground space-y-1">
-            <div>Super Admin: {isSuperAdmin ? '✅' : '❌'}</div>
+            <div>Super Admin: ✅</div>
             <div>Can Access: {canAccess ? '✅' : '❌'}</div>
             <div>Data Loaded: {new Date().toLocaleTimeString()}</div>
             <div>Total Items: {

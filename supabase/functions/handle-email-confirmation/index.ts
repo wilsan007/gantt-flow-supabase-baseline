@@ -820,6 +820,9 @@ serve(async (req)=>{
         console.error('   4. Vérifier les logs Supabase pour plus de détails');
         console.error('');
         
+        // Log stack trace en interne uniquement (pas dans la réponse)
+        console.error('🔍 Stack trace (interne):', error.stack);
+        
         const errorResponse = {
           success: false,
           error: 'Erreur critique lors de la confirmation automatique de l\'email',
@@ -827,11 +830,16 @@ serve(async (req)=>{
             error_name: error.name,
             error_message: error.message,
             error_code: error.code,
-            error_stack: error.stack,
+            // Ne pas exposer la stack trace dans la réponse
             user_id: user.id,
             user_email: user.email,
             validation_elements_count: Object.keys(validatedElements).length,
-            validation_elements_details: validatedElements,
+            validation_elements_details: {
+              ...validatedElements,
+              temp_password: validatedElements.temp_password ? '[MASQUÉ]' : undefined,
+              validation_code: validatedElements.validation_code ? '[MASQUÉ]' : undefined,
+              invitation_id: validatedElements.invitation_id ? '[MASQUÉ]' : undefined
+            },
             attempted_method: 'Service Role Admin (Méthode Leaders)',
             timestamp_error: new Date().toISOString(),
             process_stage: 'Email Confirmation',

@@ -46,25 +46,75 @@ export const TenantOwnerSignup: React.FC = () => {
   const [token, setToken] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  /**
+   * Valide et sanitise un token
+   * @param token Token à valider
+   * @returns Token validé ou null si invalide
+   */
+  const validateToken = (token: string | null): string | null => {
+    if (!token) return null;
+    
+    // Vérifier format: UUID ou token alphanumérique
+    const isValidFormat = /^[a-zA-Z0-9\-_]{10,100}$/.test(token);
+    if (!isValidFormat) {
+      console.error('⚠️ Format de token invalide');
+      return null;
+    }
+    
+    return token;
+  };
+
+  /**
+   * Redirection sécurisée vers une URL interne
+   * @param path Chemin relatif (commence par /)
+   * @param params Paramètres query string validés
+   */
+  const secureRedirect = (path: string, params?: Record<string, string>) => {
+    // Whitelist des chemins autorisés
+    const allowedPaths = ['/tenant-login', '/dashboard', '/'];
+    
+    if (!allowedPaths.includes(path)) {
+      console.error('⚠️ Chemin de redirection non autorisé:', path);
+      return;
+    }
+    
+    // Construire URL avec paramètres encodés
+    const url = new URL(path, window.location.origin);
+    if (params) {
+      Object.entries(params).forEach(([key, value]) => {
+        url.searchParams.append(key, value);
+      });
+    }
+    
+    window.location.href = url.toString();
+  };
+
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const tokenParam = urlParams.get('token');
     const typeParam = urlParams.get('type');
     
-    if (tokenParam) {
-      setToken(tokenParam);
+    // Valider le token
+    const validatedToken = validateToken(tokenParam);
+    
+    if (validatedToken) {
+      setToken(validatedToken);
       
-      if (typeParam === 'signup') {
+      // Valider le type (whitelist)
+      const validTypes = ['signup', 'invitation'];
+      const validatedType = typeParam && validTypes.includes(typeParam) ? typeParam : 'invitation';
+      
+      if (validatedType === 'signup') {
         // Token Supabase Auth - essayer d'abord la vérification Supabase
         console.log('🔗 Token Supabase Auth détecté');
-        verifySupabaseToken(tokenParam);
+        verifySupabaseToken(validatedToken);
       } else {
         // Token d'invitation classique - validation directe
         console.log('🎫 Token d\'invitation classique détecté');
-        validateInvitationToken(tokenParam);
+        validateInvitationToken(validatedToken);
       }
     } else {
-      setError('Token d\'invitation manquant dans l\'URL');
+      setError('Token d\'invitation manquant ou invalide dans l\'URL');
       setValidatingToken(false);
     }
   }, []);
@@ -73,8 +123,8 @@ export const TenantOwnerSignup: React.FC = () => {
     try {
       console.log('🔗 Redirection vers la page de connexion après validation email');
       
-      // Rediriger vers la page de connexion avec le token
-      window.location.href = `/tenant-login?token=${token}&type=signup`;
+      // Rediriger de façon sécurisée vers la page de connexion avec le token
+      secureRedirect('/tenant-login', { token, type: 'signup' });
       
     } catch (err) {
       console.error('❌ Erreur redirection:', err);
@@ -407,7 +457,7 @@ export const TenantOwnerSignup: React.FC = () => {
 
       // Redirection vers le dashboard après un court délai
       setTimeout(() => {
-        window.location.href = '/dashboard';
+        secureRedirect('/dashboard');
       }, 2000);
 
     } catch (error: any) {

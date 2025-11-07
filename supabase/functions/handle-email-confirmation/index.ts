@@ -257,7 +257,7 @@ serve(async (req)=>{
         validationErrors.push('6. ID unique d\'invitation manquant');
         console.log('❌ 6. Invitation ID: INVALIDE');
       } else {
-        console.log('✅ 6. Invitation ID: VALIDE (' + invitationId + ')');
+        console.log('✅ 6. Invitation ID: VALIDE ([MASQUÉ])');
       }
       
       // 7. Code de validation
@@ -266,7 +266,7 @@ serve(async (req)=>{
         validationErrors.push('7. Code de validation manquant');
         console.log('❌ 7. Code validation: INVALIDE');
       } else {
-        console.log('✅ 7. Code validation: VALIDE (' + validationCode + ')');
+        console.log('✅ 7. Code validation: VALIDE ([MASQUÉ])');
       }
       
       // 8. Timestamp de création
@@ -358,7 +358,12 @@ serve(async (req)=>{
         company_name: companyName
       };
       
-      console.log('💾 Éléments validés stockés:', validatedElements);
+      // Masquer données sensibles dans les logs
+      console.log('💾 Éléments validés stockés:', {
+        ...validatedElements,
+        temp_password: validatedElements.temp_password ? '[MASQUÉ]' : undefined,
+        validation_code: validatedElements.validation_code ? '[MASQUÉ]' : undefined
+      });
       
       // 📋 AFFICHAGE DÉTAILLÉ DES 10 ÉLÉMENTS RÉCUPÉRÉS
       console.log('');
@@ -397,12 +402,12 @@ serve(async (req)=>{
       console.log('    ✔️  Validation: ' + (invitationTenantId ? 'PASSÉE' : 'ÉCHOUÉE'));
       console.log('');
       console.log('6️⃣  INVITATION_ID:');
-      console.log('    ✅ Valeur:', invitationId);
+      console.log('    ✅ Valeur:', invitationId ? '[MASQUÉ]' : '[ABSENT]');
       console.log('    📍 Source: validation_elements.invitation_id || user_metadata.invitation_id');
       console.log('    ✔️  Validation: ' + (invitationId ? 'PASSÉE' : 'ÉCHOUÉE'));
       console.log('');
       console.log('7️⃣  VALIDATION_CODE:');
-      console.log('    ✅ Valeur:', validationCode);
+      console.log('    ✅ Valeur:', validationCode ? '[MASQUÉ]' : '[ABSENT]');
       console.log('    📍 Source: validation_elements.validation_code || user_metadata.validation_code');
       console.log('    ✔️  Validation: ' + (validationCode ? 'PASSÉE' : 'ÉCHOUÉE'));
       console.log('');

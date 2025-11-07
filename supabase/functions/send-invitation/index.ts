@@ -9,6 +9,30 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type'
 };
 
+/**
+ * Génère un token cryptographiquement sûr
+ * @param length Longueur du token
+ * @returns Token aléatoire sécurisé
+ */
+function generateSecureToken(length: number): string {
+  const array = new Uint8Array(length);
+  crypto.getRandomValues(array);
+  return Array.from(array, byte => byte.toString(36).padStart(2, '0')).join('').slice(0, length);
+}
+
+/**
+ * Génère un mot de passe sécurisé
+ * @returns Mot de passe avec lettres, chiffres et caractères spéciaux
+ */
+function generateSecurePassword(): string {
+  const lowercase = generateSecureToken(4);
+  const uppercase = generateSecureToken(4).toUpperCase();
+  const numbers = Array.from(crypto.getRandomValues(new Uint8Array(2)), n => n % 10).join('');
+  const special = '!@#$%';
+  const specialChar = special[crypto.getRandomValues(new Uint8Array(1))[0] % special.length];
+  return lowercase + uppercase + numbers + specialChar;
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders });
@@ -70,10 +94,10 @@ serve(async (req) => {
 
     // Génération des éléments
     const futureTenantId = crypto.randomUUID();
-    const tempPassword = Math.random().toString(36).slice(-8) + Math.random().toString(36).slice(-4).toUpperCase() + '1!';
+    const tempPassword = generateSecurePassword(); // Sécurisé avec crypto.getRandomValues()
     const invitationTimestamp = new Date().toISOString();
     const invitationId = crypto.randomUUID();
-    const validationCode = Math.random().toString(36).substring(2, 15);
+    const validationCode = generateSecureToken(13); // Sécurisé avec crypto.getRandomValues()
 
     // Vérifier utilisateur existant
     let userData;

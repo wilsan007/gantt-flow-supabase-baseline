@@ -12,6 +12,27 @@ const corsHeaders = {
 };
 
 /**
+ * Génère un token cryptographiquement sûr
+ */
+function generateSecureToken(length: number): string {
+  const array = new Uint8Array(length);
+  crypto.getRandomValues(array);
+  return Array.from(array, byte => byte.toString(36).padStart(2, '0')).join('').slice(0, length);
+}
+
+/**
+ * Génère un mot de passe sécurisé
+ */
+function generateSecurePassword(): string {
+  const lowercase = generateSecureToken(4);
+  const uppercase = generateSecureToken(4).toUpperCase();
+  const numbers = Array.from(crypto.getRandomValues(new Uint8Array(2)), n => n % 10).join('');
+  const special = '!@#$%';
+  const specialChar = special[crypto.getRandomValues(new Uint8Array(1))[0] % special.length];
+  return lowercase + uppercase + numbers + specialChar;
+}
+
+/**
  * 🎯 EDGE FUNCTION: send-collaborator-invitation
  * Pattern: Stripe, Notion, Linear - Invitation de collaborateurs
  * 
@@ -203,11 +224,10 @@ serve(async (req) => {
     // ÉTAPE 4: GÉNÉRATION DES ÉLÉMENTS DE SÉCURITÉ
     // ============================================================================
     
-    const tempPassword = Math.random().toString(36).slice(-8) + 
-                        Math.random().toString(36).slice(-4).toUpperCase() + '1!';
+    const tempPassword = generateSecurePassword(); // Sécurisé avec crypto.getRandomValues()
     const invitationTimestamp = new Date().toISOString();
     const invitationId = crypto.randomUUID();
-    const validationCode = Math.random().toString(36).substring(2, 15);
+    const validationCode = generateSecureToken(13); // Sécurisé avec crypto.getRandomValues()
 
     console.log('🔐 Éléments de sécurité générés');
     console.log('   - Invitation ID:', invitationId);

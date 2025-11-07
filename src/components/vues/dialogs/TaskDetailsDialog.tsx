@@ -169,13 +169,13 @@ export const TaskDetailsDialog = ({ open, onOpenChange, task }: TaskDetailsDialo
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  {taskDetails.description && (
+                  {taskDetails?.description && (
                     <div>
                       <h4 className="font-medium mb-2">Description</h4>
                       <p className="text-sm bg-muted p-3 rounded-lg">{taskDetails.description}</p>
                     </div>
                   )}
-                  {taskDetails.acceptance_criteria && (
+                  {taskDetails?.acceptance_criteria && (
                     <div>
                       <h4 className="font-medium mb-2">Critères d'acceptation</h4>
                       <p className="text-sm bg-muted p-3 rounded-lg">{taskDetails.acceptance_criteria}</p>

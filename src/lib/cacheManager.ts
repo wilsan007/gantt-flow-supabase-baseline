@@ -123,7 +123,11 @@ class EnterpriseCache {
    */
   invalidatePattern(pattern: string): number {
     let deletedCount = 0;
-    const regex = new RegExp(pattern.replace('*', '.*'));
+    // Échapper tous les caractères spéciaux regex sauf *
+    const escapedPattern = pattern
+      .replace(/[.+?^${}()|[\]\\]/g, '\\$&') // Échapper caractères spéciaux
+      .replace(/\*/g, '.*'); // Convertir * en .*
+    const regex = new RegExp(escapedPattern);
     
     for (const key of this.cache.keys()) {
       if (regex.test(key)) {

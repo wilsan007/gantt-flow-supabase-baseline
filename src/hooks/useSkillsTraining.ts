@@ -1,5 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { useUserFilterContext } from '@/hooks/useUserAuth';
+import { applyRoleFilters } from '@/lib/roleBasedFiltering';
 import { useToast } from '@/hooks/use-toast';
 
 export interface Skill {
@@ -9,6 +11,7 @@ export interface Skill {
   description?: string;
   tenant_id?: string;
   created_at: string;
+  updated_at: string;
 }
 
 export interface SkillAssessment {
@@ -27,21 +30,33 @@ export interface SkillAssessment {
   updated_at: string;
 }
 
-export const useSkillsTraining = () => {
+export function useSkillsTraining() {
   const [skills, setSkills] = useState<Skill[]>([]);
   const [skillAssessments, setSkillAssessments] = useState<SkillAssessment[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  
+  // 🔒 Contexte utilisateur pour le filtrage
+  const { userContext } = useUserFilterContext();
   const { toast } = useToast();
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
+    if (!userContext) return;
+    
     try {
       setLoading(true);
       setError(null);
 
+      // 🔒 Construire les queries avec filtrage
+      let skillsQuery = supabase.from('skills').select('*').order('created_at', { ascending: false });
+      skillsQuery = applyRoleFilters(skillsQuery, userContext, 'skills');
+      
+      let assessmentsQuery = supabase.from('skill_assessments').select('*').order('last_assessed', { ascending: false });
+      assessmentsQuery = applyRoleFilters(assessmentsQuery, userContext, 'skill_assessments');
+
       const [skillsRes, assessmentsRes] = await Promise.all([
-        supabase.from('skills').select('*').order('created_at', { ascending: false }),
-        supabase.from('skill_assessments').select('*').order('last_assessed', { ascending: false })
+        skillsQuery,
+        assessmentsQuery
       ]);
 
       if (skillsRes.error) throw skillsRes.error;
@@ -60,7 +75,7 @@ export const useSkillsTraining = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [userContext, toast]);
 
   const createSkill = async (skillData: Omit<Skill, 'id' | 'created_at'>) => {
     try {

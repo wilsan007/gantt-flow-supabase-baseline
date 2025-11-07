@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { useUserFilterContext } from '@/hooks/useUserAuth';
+import { applyRoleFilters } from '@/lib/roleBasedFiltering';
 
 interface Incident {
   id: string;
@@ -54,20 +56,30 @@ export const useHealthSafety = () => {
   const [trainingRecords, setTrainingRecords] = useState<TrainingRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  
+  // 🔒 Contexte utilisateur pour le filtrage
+  const { userContext } = useUserFilterContext();
 
   const fetchHealthSafetyData = async () => {
+    if (!userContext) return;
+    
     try {
       setLoading(true);
       
-      // Fetch incidents
-      const { data: incidentsData, error: incidentsError } = await supabase
+      // Fetch incidents avec filtrage
+      let incidentsQuery = supabase
         .from('safety_incidents')
         .select('*')
         .order('reported_date', { ascending: false });
+      
+      // 🔒 Appliquer le filtrage par rôle
+      incidentsQuery = applyRoleFilters(incidentsQuery, userContext, 'health_safety_incidents');
+      
+      const { data: incidentsData, error: incidentsError } = await incidentsQuery;
 
       if (incidentsError) throw incidentsError;
 
-      // Fetch safety documents
+      // Fetch safety documents (données de référence - pas de filtrage nécessaire)
       const { data: documentsData, error: documentsError } = await supabase
         .from('safety_documents')
         .select('*')

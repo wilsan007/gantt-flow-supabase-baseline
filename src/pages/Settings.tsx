@@ -5,32 +5,33 @@ import { Shield, User, Bell, Key } from 'lucide-react';
 
 export const Settings = () => {
   return (
-    <div className="container mx-auto py-8 px-4">
+    <div className="container mx-auto py-4 sm:py-8 px-4">
       <div className="max-w-4xl mx-auto">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold">Paramètres</h1>
-          <p className="text-muted-foreground mt-2">
+        <div className="mb-6 sm:mb-8">
+          <h1 className="text-2xl sm:text-3xl font-bold">Paramètres</h1>
+          <p className="text-sm sm:text-base text-muted-foreground mt-2">
             Gérez vos paramètres de compte et de sécurité
           </p>
         </div>
 
-        <Tabs defaultValue="security" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4">
-            <TabsTrigger value="security" className="flex items-center gap-2">
-              <Shield className="h-4 w-4" />
-              Sécurité
+        <Tabs defaultValue="security" className="space-y-4 sm:space-y-6">
+          {/* Tabs responsive: 2 colonnes sur mobile, 4 sur desktop */}
+          <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 gap-2 h-auto p-1">
+            <TabsTrigger value="security" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm py-2">
+              <Shield className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
+              <span className="truncate">Sécurité</span>
             </TabsTrigger>
-            <TabsTrigger value="profile" className="flex items-center gap-2">
-              <User className="h-4 w-4" />
-              Profil
+            <TabsTrigger value="profile" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm py-2">
+              <User className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
+              <span className="truncate">Profil</span>
             </TabsTrigger>
-            <TabsTrigger value="notifications" className="flex items-center gap-2">
-              <Bell className="h-4 w-4" />
-              Notifications
+            <TabsTrigger value="notifications" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm py-2">
+              <Bell className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
+              <span className="truncate">Notifs</span>
             </TabsTrigger>
-            <TabsTrigger value="password" className="flex items-center gap-2">
-              <Key className="h-4 w-4" />
-              Mot de passe
+            <TabsTrigger value="password" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm py-2">
+              <Key className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
+              <span className="truncate">Mot de passe</span>
             </TabsTrigger>
           </TabsList>
 

@@ -18,23 +18,24 @@ export default function ProjectPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="container mx-auto p-6 space-y-6">
-        {/* Navigation rapide */}
-        <div className="flex justify-between items-center">
-          <div>
-            <h1 className="text-3xl font-bold">Gestion de Projet</h1>
-            <p className="text-muted-foreground">
+      <div className="container mx-auto p-4 sm:p-6 space-y-4 sm:space-y-6">
+        {/* Navigation rapide - Responsive */}
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+          <div className="flex-1 min-w-0">
+            <h1 className="text-2xl sm:text-3xl font-bold truncate">Gestion de Projet</h1>
+            <p className="text-sm sm:text-base text-muted-foreground">
               Dashboard et outils de gestion de projet
             </p>
           </div>
-          <div className="flex gap-2">
-            <Button onClick={() => navigate('/tasks')}>
+          {/* Boutons stack sur mobile, côte à côte sur desktop */}
+          <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+            <Button onClick={() => navigate('/tasks')} className="w-full sm:w-auto justify-center">
               <CheckSquare className="h-4 w-4 mr-2" />
-              Gestion des Tâches
+              <span className="hidden md:inline">Gestion des </span>Tâches
             </Button>
-            <Button variant="outline" onClick={() => navigate('/hr')}>
+            <Button variant="outline" onClick={() => navigate('/hr')} className="w-full sm:w-auto justify-center">
               <Users className="h-4 w-4 mr-2" />
-              Ressources Humaines
+              <span className="hidden md:inline">Ressources </span><span className="md:hidden">RH</span><span className="hidden md:inline">Humaines</span>
             </Button>
           </div>
         </div>

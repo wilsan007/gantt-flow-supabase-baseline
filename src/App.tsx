@@ -21,6 +21,15 @@ import Index from "./pages/Index";
 // Lazy loading des pages (optimisation performance)
 const HRPage = lazy(() => import("./pages/HRPage"));
 const HRPageWithCollaboratorInvitation = lazy(() => import("./pages/HRPageWithCollaboratorInvitation"));
+const MyExpensesPage = lazy(() => import("./pages/MyExpensesPage"));
+const MyTimesheetsPage = lazy(() => import("./pages/MyTimesheetsPage"));
+const MyAbsencesPage = lazy(() => import("./pages/MyAbsencesPage"));
+const MyRemoteWorkPage = lazy(() => import("./pages/MyRemoteWorkPage"));
+const MyAdminRequestsPage = lazy(() => import("./pages/MyAdminRequestsPage"));
+const ApprovalsPage = lazy(() => import("./pages/ApprovalsPage"));
+const MySkillsPage = lazy(() => import("./pages/MySkillsPage"));
+const TrainingCatalogPage = lazy(() => import("./pages/TrainingCatalogPage"));
+const MyTrainingsPage = lazy(() => import("./pages/MyTrainingsPage"));
 const ProjectPage = lazy(() => import("./pages/ProjectPage"));
 const TaskManagementPage = lazy(() => import("./pages/TaskManagementPage"));
 const SuperAdminPage = lazy(() => import("./pages/SuperAdminPage"));
@@ -54,7 +63,14 @@ const PageLoader = () => (
 const MemoizedRoutes = memo(() => (
   <Suspense fallback={<PageLoader />}>
     <Routes>
-    <Route path="/" element={<Index />} />
+    <Route 
+      path="/" 
+      element={
+        <ProtectedRoute requiredAccess="canAccessTasks">
+          <Index />
+        </ProtectedRoute>
+      } 
+    />
     
     {/* Route dashboard - redirige vers la page d'accueil */}
     <Route path="/dashboard" element={<Navigate to="/" replace />} />
@@ -73,6 +89,78 @@ const MemoizedRoutes = memo(() => (
       element={
         <ProtectedRoute requiredAccess="canAccessHR">
           <HRPageWithCollaboratorInvitation />
+        </ProtectedRoute>
+      } 
+    />
+    <Route 
+      path="/my-expenses" 
+      element={
+        <ProtectedRoute requiredAccess="canAccessHR">
+          <MyExpensesPage />
+        </ProtectedRoute>
+      } 
+    />
+    <Route 
+      path="/my-timesheets" 
+      element={
+        <ProtectedRoute requiredAccess="canAccessHR">
+          <MyTimesheetsPage />
+        </ProtectedRoute>
+      } 
+    />
+    <Route 
+      path="/my-absences" 
+      element={
+        <ProtectedRoute requiredAccess="canAccessHR">
+          <MyAbsencesPage />
+        </ProtectedRoute>
+      } 
+    />
+    <Route 
+      path="/my-remote-work" 
+      element={
+        <ProtectedRoute requiredAccess="canAccessHR">
+          <MyRemoteWorkPage />
+        </ProtectedRoute>
+      } 
+    />
+    <Route 
+      path="/my-admin-requests" 
+      element={
+        <ProtectedRoute requiredAccess="canAccessHR">
+          <MyAdminRequestsPage />
+        </ProtectedRoute>
+      } 
+    />
+    <Route 
+      path="/approvals" 
+      element={
+        <ProtectedRoute requiredAccess="canAccessHR">
+          <ApprovalsPage />
+        </ProtectedRoute>
+      } 
+    />
+    <Route 
+      path="/my-skills" 
+      element={
+        <ProtectedRoute requiredAccess="canAccessHR">
+          <MySkillsPage />
+        </ProtectedRoute>
+      } 
+    />
+    <Route 
+      path="/training-catalog" 
+      element={
+        <ProtectedRoute requiredAccess="canAccessHR">
+          <TrainingCatalogPage />
+        </ProtectedRoute>
+      } 
+    />
+    <Route 
+      path="/my-trainings" 
+      element={
+        <ProtectedRoute requiredAccess="canAccessHR">
+          <MyTrainingsPage />
         </ProtectedRoute>
       } 
     />

@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { useUserFilterContext } from '@/hooks/useUserAuth';
+import { applyRoleFilters } from '@/lib/roleBasedFiltering';
 
 interface PayrollPeriod {
   id: string;
@@ -54,25 +56,40 @@ export const usePayrollManagement = () => {
   const [payrollChecks, setPayrollChecks] = useState<PayrollCheck[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  
+  // 🔒 Contexte utilisateur pour le filtrage
+  const { userContext } = useUserFilterContext();
 
   const fetchPayrollData = async () => {
+    if (!userContext) return;
+    
     try {
       setLoading(true);
       
-      // Fetch payroll periods
-      const { data: periods, error: periodsError } = await supabase
+      // Fetch payroll periods avec filtrage
+      let periodsQuery = supabase
         .from('payroll_periods')
         .select('*')
         .order('year', { ascending: false })
         .order('month', { ascending: false });
+      
+      // 🔒 Appliquer le filtrage par rôle (payroll_runs est l'équivalent)
+      periodsQuery = applyRoleFilters(periodsQuery, userContext, 'payroll_runs');
+      
+      const { data: periods, error: periodsError } = await periodsQuery;
 
       if (periodsError) throw periodsError;
 
-      // Fetch employee payrolls
-      const { data: payrolls, error: payrollsError } = await supabase
+      // Fetch employee payrolls avec filtrage
+      let payrollsQuery = supabase
         .from('employee_payrolls')
         .select('*')
         .order('employee_name');
+      
+      // 🔒 Appliquer le filtrage par rôle (payroll_items est l'équivalent)
+      payrollsQuery = applyRoleFilters(payrollsQuery, userContext, 'payroll_items');
+      
+      const { data: payrolls, error: payrollsError } = await payrollsQuery;
 
       if (payrollsError) throw payrollsError;
 

@@ -8,6 +8,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useTenant } from '@/hooks/useTenant';
 import { useRolesCompat as useUserRoles } from '@/contexts/RolesContext';
+import { useUserFilterContext } from '@/hooks/useUserAuth';
+import { applyRoleFilters } from '@/lib/roleBasedFiltering';
 
 interface Objective {
   id: string;
@@ -45,28 +47,43 @@ export const usePerformance = () => {
   const { tenantId } = useTenant();
   const { userRoles } = useUserRoles();
   
+  // 🔒 Contexte utilisateur pour le filtrage
+  const { userContext } = useUserFilterContext();
+  
   // SOLUTION TEMPORAIRE : Récupérer le tenant_id depuis user_roles si useTenant échoue
   const tenantIdFromRoles = userRoles[0]?.tenant_id;
   const effectiveTenantId = tenantId || tenantIdFromRoles;
 
   const fetchData = async () => {
+    if (!userContext) return;
+    
     try {
       setLoading(true);
       setError(null);
 
-      // Fetch objectives
-      const { data: objectivesData, error: objectivesError } = await supabase
+      // Fetch objectives avec filtrage
+      let objectivesQuery = supabase
         .from('objectives')
         .select('*')
         .order('created_at', { ascending: false });
+      
+      // 🔒 Appliquer le filtrage par rôle (performance_goals est l'équivalent)
+      objectivesQuery = applyRoleFilters(objectivesQuery, userContext, 'performance_goals');
+      
+      const { data: objectivesData, error: objectivesError } = await objectivesQuery;
 
       if (objectivesError) throw objectivesError;
 
-      // Fetch evaluations
-      const { data: evaluationsData, error: evaluationsError } = await supabase
+      // Fetch evaluations avec filtrage
+      let evaluationsQuery = supabase
         .from('evaluations')
         .select('*')
         .order('created_at', { ascending: false });
+      
+      // 🔒 Appliquer le filtrage par rôle (performance_reviews est l'équivalent)
+      evaluationsQuery = applyRoleFilters(evaluationsQuery, userContext, 'performance_reviews');
+      
+      const { data: evaluationsData, error: evaluationsError } = await evaluationsQuery;
 
       if (evaluationsError) throw evaluationsError;
 

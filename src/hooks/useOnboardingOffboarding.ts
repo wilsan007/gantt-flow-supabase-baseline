@@ -1,5 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { useUserFilterContext } from '@/hooks/useUserAuth';
+import { applyRoleFilters } from '@/lib/roleBasedFiltering';
 import { useToast } from '@/hooks/use-toast';
 
 export interface OnboardingProcess {
@@ -58,25 +60,43 @@ export interface OffboardingTask {
   tenant_id?: string;
 }
 
-export const useOnboardingOffboarding = () => {
+export function useOnboardingOffboarding() {
   const [onboardingProcesses, setOnboardingProcesses] = useState<OnboardingProcess[]>([]);
   const [offboardingProcesses, setOffboardingProcesses] = useState<OffboardingProcess[]>([]);
   const [onboardingTasks, setOnboardingTasks] = useState<OnboardingTask[]>([]);
   const [offboardingTasks, setOffboardingTasks] = useState<OffboardingTask[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  
+  // 🔒 Contexte utilisateur pour le filtrage
+  const { userContext } = useUserFilterContext();
   const { toast } = useToast();
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
+    if (!userContext) return;
+    
     try {
       setLoading(true);
       setError(null);
 
+      // 🔒 Construire les queries avec filtrage
+      let onboardingQuery = supabase.from('onboarding_processes').select('*').order('created_at', { ascending: false });
+      onboardingQuery = applyRoleFilters(onboardingQuery, userContext, 'onboarding_processes');
+      
+      let offboardingQuery = supabase.from('offboarding_processes').select('*').order('created_at', { ascending: false });
+      offboardingQuery = applyRoleFilters(offboardingQuery, userContext, 'offboarding_processes');
+      
+      let onboardingTasksQuery = supabase.from('onboarding_tasks').select('*').order('due_date');
+      onboardingTasksQuery = applyRoleFilters(onboardingTasksQuery, userContext, 'onboarding_tasks');
+      
+      let offboardingTasksQuery = supabase.from('offboarding_tasks').select('*').order('due_date');
+      offboardingTasksQuery = applyRoleFilters(offboardingTasksQuery, userContext, 'offboarding_tasks');
+
       const [onboardingRes, offboardingRes, onboardingTasksRes, offboardingTasksRes] = await Promise.all([
-        supabase.from('onboarding_processes').select('*').order('created_at', { ascending: false }),
-        supabase.from('offboarding_processes').select('*').order('created_at', { ascending: false }),
-        supabase.from('onboarding_tasks').select('*').order('due_date'),
-        supabase.from('offboarding_tasks').select('*').order('due_date')
+        onboardingQuery,
+        offboardingQuery,
+        onboardingTasksQuery,
+        offboardingTasksQuery
       ]);
 
       if (onboardingRes.error) throw onboardingRes.error;
@@ -94,7 +114,7 @@ export const useOnboardingOffboarding = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [userContext]);
 
   const createOnboardingProcess = async (data: Omit<OnboardingProcess, 'id' | 'created_at' | 'updated_at'>) => {
     try {

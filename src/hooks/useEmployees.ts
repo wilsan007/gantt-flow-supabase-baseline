@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { usePermissionFilters } from './usePermissionFilters';
+import { useUserFilterContext } from '@/hooks/useUserAuth';
+import { applyRoleFilters } from '@/lib/roleBasedFiltering';
 
 export interface Employee {
   id: string;
@@ -38,13 +39,17 @@ export const useEmployees = () => {
   const [departments, setDepartments] = useState<Department[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { filterEmployeesByPermissions } = usePermissionFilters();
+  
+  // 🔒 Contexte utilisateur pour le filtrage
+  const { userContext } = useUserFilterContext();
 
   useEffect(() => {
     fetchData();
   }, []);
 
   const fetchData = async () => {
+    if (!userContext) return;
+    
     try {
       setLoading(true);
       
@@ -56,11 +61,16 @@ export const useEmployees = () => {
       // } : 'Non connecté');
       
 
-      // Fetch employees from profiles table (they now have user_id)
-      const { data: employeesData, error: employeesError } = await supabase
+      // Fetch employees from profiles table avec filtrage
+      let employeesQuery = supabase
         .from('profiles')
         .select('*')
         .order('full_name');
+      
+      // 🔒 Appliquer le filtrage par rôle (profiles = employees)
+      employeesQuery = applyRoleFilters(employeesQuery, userContext, 'employees');
+      
+      const { data: employeesData, error: employeesError } = await employeesQuery;
 
       // console.log('👥 Employees query result:', {
       //   error: employeesError?.message,
@@ -84,10 +94,8 @@ export const useEmployees = () => {
         employee_id: profile.employee_id || `EMP${profile.id.slice(-4)}`
       }));
 
-      // Filtrer les employés selon les permissions
-      const filteredEmployees = await filterEmployeesByPermissions(mappedEmployees);
-
-      setEmployees(filteredEmployees);
+      // Déjà filtré par applyRoleFilters
+      setEmployees(mappedEmployees);
       setDepartments(departmentsData || []);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Une erreur est survenue');

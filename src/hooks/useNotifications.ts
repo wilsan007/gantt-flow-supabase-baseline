@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { useUserFilterContext } from '@/hooks/useUserAuth';
+import { applyRoleFilters } from '@/lib/roleBasedFiltering';
 
 export interface Notification {
   id: string;
@@ -34,18 +36,27 @@ export const useNotifications = () => {
   const [unviewedCount, setUnviewedCount] = useState(0); // Nouvelles notifications non vues
   const [lastViewedAt, setLastViewedAt] = useState<string | null>(null); // Dernière consultation
   const { toast } = useToast();
+  
+  // 🔒 Contexte utilisateur pour le filtrage
+  const { userContext } = useUserFilterContext();
 
   const fetchNotifications = async () => {
+    if (!userContext) return;
+    
     try {
       const { data: user } = await supabase.auth.getUser();
       if (!user.user) return;
 
-      const { data, error } = await supabase
+      let query = supabase
         .from('notifications')
         .select('*')
-        .eq('recipient_id', user.user.id)
         .order('created_at', { ascending: false })
         .limit(50);
+      
+      // 🔒 Appliquer le filtrage par rôle (notifications sont déjà filtrées par user_id dans roleBasedFiltering)
+      query = applyRoleFilters(query, userContext, 'notifications');
+      
+      const { data, error } = await query;
 
       if (error) throw error;
       

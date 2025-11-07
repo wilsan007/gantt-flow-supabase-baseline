@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { LandscapeWrapper } from "@/components/layout/LandscapeWrapper";
 // 🎨 Utilisation des vues ORIGINALES avec design complet + performance Enterprise
 import DynamicTable from "@/components/vues/table/DynamicTable";
 import KanbanBoard from "@/components/vues/kanban/KanbanBoard";
@@ -56,23 +57,39 @@ const Index = () => {
           
           {/* Table content - Full width with landscape optimization on mobile */}
           <TabsContent value="table" className="mt-0 flex-1 overflow-auto">
-            <div className={isMobile ? 'landscape-optimized' : ''}>
+            <LandscapeWrapper
+              viewType="table"
+              forceOnTablet={true}
+              customMessage="Pour profiter pleinement du tableau, veuillez tourner votre appareil en mode paysage"
+            >
               <DynamicTable />
-            </div>
+            </LandscapeWrapper>
           </TabsContent>
           
           {/* Kanban content - Full width */}
           <TabsContent value="kanban" className="mt-0 flex-1 overflow-auto">
-            <div className={`modern-card rounded-xl transition-smooth hover-glow ${isMobile ? 'landscape-optimized' : ''}`}>
-              <KanbanBoard />
-            </div>
+            <LandscapeWrapper
+              viewType="kanban"
+              forceOnTablet={true}
+              customMessage="Le tableau Kanban offre une meilleure expérience en mode paysage"
+            >
+              <div className="modern-card rounded-xl transition-smooth hover-glow">
+                <KanbanBoard />
+              </div>
+            </LandscapeWrapper>
           </TabsContent>
           
           {/* Gantt content - Full width */}
           <TabsContent value="gantt" className="mt-0 flex-1 overflow-auto">
-            <div className={`modern-card rounded-xl transition-smooth hover-glow ${isMobile ? 'landscape-optimized' : ''}`}>
-              <GanttChart />
-            </div>
+            <LandscapeWrapper
+              viewType="gantt"
+              forceOnTablet={true}
+              customMessage="Le diagramme de Gantt nécessite le mode paysage pour une visualisation optimale"
+            >
+              <div className="modern-card rounded-xl transition-smooth hover-glow">
+                <GanttChart />
+              </div>
+            </LandscapeWrapper>
           </TabsContent>
           
           {/* Temporarily commented out HR content

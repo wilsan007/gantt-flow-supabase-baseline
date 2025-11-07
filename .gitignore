@@ -37,7 +37,24 @@ coverage
 .env.example
 supabase/.temp/
 *.backup
+supabase/functions/**/*-backup.ts
+supabase/functions/**/*-minimal.ts
+supabase/functions/**/*-compact.ts
+supabase/functions/**/*-long.ts
+supabase/functions/**/*-with-*.ts
+supabase/functions/**/*-debug.ts
 
 # Baseline exports (optionnel - gardons-les pour GitHub)
 # baseline_schema.sql
 # baseline_roles.sql
+
+# Test files (contain secrets/tokens)
+test-*.js
+.archive_tests_dangereux/
+*.test-debug.js
+
+# SQL fix scripts (may contain sensitive data)
+fix-*.sql
+check-*.sql
+apply-*.sh
+repair-*.sql

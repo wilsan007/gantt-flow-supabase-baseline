@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { useUserFilterContext } from '@/hooks/useUserAuth';
+import { applyRoleFilters } from '@/lib/roleBasedFiltering';
 
 export interface AlertType {
   id: string;
@@ -66,6 +68,9 @@ export const useAlerts = () => {
   const [alertInstances, setAlertInstances] = useState<AlertInstance[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  
+  // 🔒 Contexte utilisateur pour le filtrage
+  const { userContext } = useUserFilterContext();
 
   useEffect(() => {
     fetchAllData();
@@ -88,27 +93,41 @@ export const useAlerts = () => {
   };
 
   const fetchAlertTypes = async () => {
-    const { data, error } = await supabase
+    if (!userContext) return;
+
+    let query = supabase
       .from('alert_types')
       .select('*')
       .order('created_at', { ascending: false });
+    
+    // 🔒 Appliquer le filtrage par rôle
+    query = applyRoleFilters(query, userContext, 'alert_types');
 
+    const { data, error } = await query;
     if (error) throw error;
     setAlertTypes((data || []) as AlertType[]);
   };
 
   const fetchAlertSolutions = async () => {
-    const { data, error } = await supabase
+    if (!userContext) return;
+
+    let query = supabase
       .from('alert_solutions')
       .select('*')
       .order('effectiveness_score', { ascending: false });
+    
+    // 🔒 Appliquer le filtrage par rôle
+    query = applyRoleFilters(query, userContext, 'alert_solutions');
 
+    const { data, error } = await query;
     if (error) throw error;
     setAlertSolutions((data || []) as AlertSolution[]);
   };
 
   const fetchAlertInstances = async () => {
-    const { data, error } = await supabase
+    if (!userContext) return;
+
+    let query = supabase
       .from('alert_instances')
       .select(`
         *,
@@ -119,7 +138,11 @@ export const useAlerts = () => {
         )
       `)
       .order('triggered_at', { ascending: false });
+    
+    // 🔒 Appliquer le filtrage par rôle
+    query = applyRoleFilters(query, userContext, 'alert_instances');
 
+    const { data, error } = await query;
     if (error) throw error;
     setAlertInstances((data || []) as AlertInstance[]);
   };

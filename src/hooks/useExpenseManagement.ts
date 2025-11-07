@@ -1,5 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { useUserFilterContext } from '@/hooks/useUserAuth';
+import { applyRoleFilters } from '@/lib/roleBasedFiltering';
 import { useToast } from '@/hooks/use-toast';
 
 export interface ExpenseReport {
@@ -46,23 +48,38 @@ export interface ExpenseCategory {
   tenant_id?: string;
 }
 
-export const useExpenseManagement = () => {
+export function useExpenseManagement() {
   const [expenseReports, setExpenseReports] = useState<ExpenseReport[]>([]);
   const [expenseItems, setExpenseItems] = useState<ExpenseItem[]>([]);
   const [expenseCategories, setExpenseCategories] = useState<ExpenseCategory[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  
+  // 🔒 Contexte utilisateur pour le filtrage
+  const { userContext } = useUserFilterContext();
   const { toast } = useToast();
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
+    if (!userContext) return;
+    
     try {
       setLoading(true);
       setError(null);
 
+      // 🔒 Construire les queries avec filtrage
+      let reportsQuery = supabase.from('expense_reports').select('*').order('created_at', { ascending: false });
+      reportsQuery = applyRoleFilters(reportsQuery, userContext, 'expense_reports');
+      
+      let itemsQuery = supabase.from('expense_items').select('*').order('expense_date', { ascending: false });
+      itemsQuery = applyRoleFilters(itemsQuery, userContext, 'expense_items');
+      
+      let categoriesQuery = supabase.from('expense_categories').select('*').order('name');
+      categoriesQuery = applyRoleFilters(categoriesQuery, userContext, 'expense_categories');
+
       const [reportsRes, itemsRes, categoriesRes] = await Promise.all([
-        supabase.from('expense_reports').select('*').order('created_at', { ascending: false }),
-        supabase.from('expense_items').select('*').order('expense_date', { ascending: false }),
-        supabase.from('expense_categories').select('*').order('name')
+        reportsQuery,
+        itemsQuery,
+        categoriesQuery
       ]);
 
       if (reportsRes.error) throw reportsRes.error;
@@ -78,7 +95,7 @@ export const useExpenseManagement = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [userContext]);
 
   const createExpenseReport = async (data: Omit<ExpenseReport, 'id' | 'created_at' | 'updated_at'>) => {
     try {

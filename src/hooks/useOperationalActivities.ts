@@ -9,6 +9,9 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useTenant } from '@/contexts/TenantContext';
+import { useUserRoles } from '@/hooks/useUserRoles';
+import { useSessionManager } from '@/hooks/useSessionManager';
+import { applyRoleFilters, UserContext } from '@/lib/roleBasedFiltering';
 
 // =====================================================
 // Types
@@ -126,6 +129,13 @@ function setCachedData(data: OperationalActivity[], filters?: any): void {
 export function useOperationalActivities(options: UseOperationalActivitiesOptions = {}) {
   const { autoFetch = true, filters } = options;
   const { currentTenant } = useTenant();
+  const { session } = useSessionManager();
+  const { getRoleNames, isSuperAdmin } = useUserRoles();
+  
+  const userId = session?.user?.id || '';
+  const tenantId = currentTenant?.id || '';
+  const roleNames = getRoleNames();
+  const userRole = (isSuperAdmin() ? 'super_admin' : roleNames[0] || 'employee') as any;
 
   // États
   const [activities, setActivities] = useState<OperationalActivity[]>([]);
@@ -176,7 +186,15 @@ export function useOperationalActivities(options: UseOperationalActivitiesOption
         .select('*')
         .order('created_at', { ascending: false });
 
-      // Appliquer les filtres
+      // 🔒 Appliquer le filtrage par rôle (SÉCURITÉ)
+      const userContext: UserContext = {
+        userId,
+        role: userRole,
+        tenantId,
+      };
+      query = applyRoleFilters(query, userContext, 'operational_activities');
+
+      // Appliquer les filtres additionnels
       if (filters?.kind) {
         query = query.eq('kind', filters.kind);
       }

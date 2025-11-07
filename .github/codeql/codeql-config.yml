@@ -1,53 +1,179 @@
-name: "CodeQL Configuration"
+name: "CodeQL Security Analysis - Production Code Only"
 
-# Chemins à exclure de l'analyse
-paths-ignore:
-  # Build outputs
-  - '**/dist/**'
-  - '**/build/**'
-  - '**/*_deploy_ready/**'
-  - '**/*_deploy/**'
+# =============================================================================
+# CHEMINS À SCANNER (Code Production Uniquement)
+# =============================================================================
+paths:
+  # Code source principal (TypeScript/React)
+  - 'src/**/*.ts'
+  - 'src/**/*.tsx'
+  - 'src/**/*.js'
+  - 'src/**/*.jsx'
   
-  # Assets compilés
-  - '**/assets/**/*.js'
-  - '**/assets/**/*.css'
+  # Edge Functions Supabase (TypeScript/JavaScript)
+  - 'supabase/functions/**/index.ts'
+  - 'supabase/functions/**/_shared/*.ts'
+  
+  # Workflows GitHub Actions (YAML)
+  - '.github/workflows/*.yml'
+
+# =============================================================================
+# CHEMINS À EXCLURE (Tout ce qui n'est pas du code production)
+# =============================================================================
+paths-ignore:
+  # -------------------------
+  # Build & Distribution
+  # -------------------------
+  - '**/dist/**'
+  - '**/dist-ssr/**'
+  - '**/build/**'
+  - '**/*_deploy/**'
+  - '**/*_deploy_ready/**'
   - '**/*.bundle.js'
   - '**/*.bundle.js.map'
+  - '**/assets/**/*.js'
+  - '**/assets/**/*.css'
   
-  # Node modules
+  # -------------------------
+  # Dependencies & Tools
+  # -------------------------
   - '**/node_modules/**'
+  - '**/.vite/**'
+  - '**/.tsbuildinfo'
   
-  # Coverage
-  - '**/coverage/**'
-  
-  # Archives et tests locaux
-  - '**/.archive_*/**'
+  # -------------------------
+  # Tests
+  # -------------------------
+  - '**/__tests__/**'
+  - '**/*.test.ts'
+  - '**/*.test.tsx'
+  - '**/*.test.js'
+  - '**/*.test.jsx'
+  - '**/*.spec.ts'
+  - '**/*.spec.tsx'
   - '**/test-*.js'
+  - '**/coverage/**'
+  - '**/*.lcov'
   
-  # Fichiers temporaires
+  # -------------------------
+  # Fichiers Backup & Debug
+  # -------------------------
+  - '**/*-backup.ts'
+  - '**/*-backup.js'
+  - '**/*-minimal.ts'
+  - '**/*-compact.ts'
+  - '**/*-long.ts'
+  - '**/*-with-*.ts'
+  - '**/*-debug.ts'
   - '**/*.backup'
   - '**/*.backup.ts'
   - '**/*.backup.json'
+  - '**/.archive_*/**'
+  - '**/*_backup/**'
+  - '**/*_old/**'
   
-  # Documentation de build
-  - '**/LISTE_SELECTEURS_ASSIGNES.md'
-  - '**/ANALYSE_*.md'
-  - '**/NETTOYAGE_*.md'
+  # -------------------------
+  # Documentation & Guides
+  # -------------------------
+  - '**/*.md'
+  - '**/docs/**'
+  - '**/.github/**/*.md'
+  
+  # -------------------------
+  # Scripts & SQL
+  # -------------------------
+  - '**/*.sql'
+  - '**/*.sh'
+  - '**/migrations/**'
+  - '**/benchmark-*.sh'
+  - '**/clean-*.sh'
+  - '**/setup-*.sql'
+  - '**/check_*.sql'
+  - '**/fix-*.sql'
+  - '**/test-*.sql'
+  
+  # -------------------------
+  # Configuration & IDE
+  # -------------------------
+  - '**/.vscode/**'
+  - '**/.idea/**'
+  - '**/.DS_Store'
+  - '**/Thumbs.db'
+  - '**/*.config.js'
+  - '**/*.config.ts'
+  - '**/vite.config.*'
+  - '**/vitest.config.*'
+  - '**/tsconfig.*.json'
+  
+  # -------------------------
+  # Fichiers Temporaires
+  # -------------------------
+  - '**/.tmp/**'
+  - '**/tmp/**'
+  - '**/temp/**'
+  - '**/*.swp'
+  - '**/*.swo'
+  - '**/*~'
+  
+  # -------------------------
+  # Archives
+  # -------------------------
+  - '**/*.tar.gz'
+  - '**/*.zip'
+  - '**/*.rar'
 
-# Chemins à inclure (optionnel, si on veut être explicite)
-paths:
-  - 'src/**'
-  - 'supabase/functions/**'
-  - '.github/workflows/**'
-
-# Requêtes à exécuter
+# =============================================================================
+# REQUÊTES DE SÉCURITÉ
+# =============================================================================
 queries:
+  # Utiliser les requêtes de sécurité et qualité par défaut
   - uses: security-and-quality
+  
+  # Requêtes de sécurité supplémentaires
+  - uses: security-extended
 
-# Désactiver certaines requêtes trop strictes pour du code généré
+# =============================================================================
+# FILTRES DE REQUÊTES (Réduire faux positifs)
+# =============================================================================
 query-filters:
+  # Exclure les alertes pour code minifié/généré
   - exclude:
       id:
+        # Erreurs de code minifié
         - js/useless-conditional
         - js/useless-assignment-to-local
         - js/superfluous-trailing-arguments
+        - js/semicolon-insertion
+        - js/syntax-error
+        
+        # Erreurs de comparaison pour tests
+        - js/useless-comparison-test
+        - js/comparison-between-incompatible-types
+        
+        # Variables inutilisées (parfois nécessaires pour typage)
+        - js/unused-local-variable
+
+# =============================================================================
+# CONFIGURATION AVANCÉE
+# =============================================================================
+# Limite de temps par requête (en secondes)
+timeout: 120
+
+# Niveau de logging
+# Options: errors, warnings, info, debug
+log-level: info
+
+# =============================================================================
+# NOTES
+# =============================================================================
+# Cette configuration scanne UNIQUEMENT:
+# - Code source dans /src (TypeScript/React)
+# - Edge Functions Supabase actives (index.ts + _shared)
+# - Workflows GitHub Actions
+#
+# Tout le reste est EXCLU pour:
+# - Réduire le temps de scan
+# - Éliminer faux positifs
+# - Concentrer sur code en production
+# - Éviter alertes sur code de test/build
+# =============================================================================

@@ -67,3 +67,80 @@ fix-*.sql
 check-*.sql
 apply-*.sh
 repair-*.sql
+test-*.sql
+
+# Documentation locale (non production)
+AUDIT_REPORT.md
+CONTINUER_*.md
+FEATURE_*.md
+GUIDE_*.md
+IMPLEMENTATION_*.md
+INDEX_DOCUMENTATION.md
+INTEGRATION_*.md
+MENU_*.md
+NOUVEAU_*.md
+OPTIMISATION_*.md
+RECAP_*.md
+REPONSE_*.md
+RESUME_*.md
+SECURITY_AUDIT_*.md
+SESSION_*.md
+SPRINT1_*.md
+SYSTEME_*.md
+TESTER_*.md
+TEST_*.md
+TROUBLESHOOTING_*.md
+ANALYSE_*.md
+NETTOYAGE_*.md
+WRAPPER_*.md
+*_RAPPORT.md
+*_STATUS_*.md
+
+# Scripts et outils de développement local
+benchmark-*.sh
+clean-git-history.sh
+setup-*.sql
+check_*.sql
+
+# Fichiers temporaires et caches
+*.swp
+*.swo
+*~
+.tmp/
+tmp/
+temp/
+
+# Archives et backups
+*.tar.gz
+*.zip
+*.rar
+.archive_*/
+*_backup/
+*_old/
+
+# IDE et outils
+.vscode/settings.json
+.idea/
+*.sublime-*
+
+# OS files
+Thumbs.db
+.DS_Store
+desktop.ini
+
+# Secrets et credentials (CRITIQUE)
+*.pem
+*.key
+*.cert
+*.p12
+*-key.json
+credentials.json
+secrets.json
+.env*
+!.env.example
+config.local.*
+*.secret
+
+# Fichiers de migration locale
+migrations/local_*.sql
+migrations/test_*.sql

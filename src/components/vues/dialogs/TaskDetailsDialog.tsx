@@ -121,7 +121,7 @@ export const TaskDetailsDialog = ({ open, onOpenChange, task }: TaskDetailsDialo
                     <div className="flex items-center gap-3">
                       <Euro className="h-4 w-4 text-muted-foreground" />
                       <span className="font-medium">Budget:</span>
-                      <span>{taskDetails.budget}€</span>
+                      <span>{taskDetails?.budget}€</span>
                     </div>
                   )}
                 </div>

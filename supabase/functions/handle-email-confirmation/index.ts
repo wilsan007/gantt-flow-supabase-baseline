@@ -392,7 +392,7 @@ serve(async (req)=>{
       console.log('    ✔️  Validation: ' + (userMetadata?.temp_user === true ? 'PASSÉE' : 'ÉCHOUÉE'));
       console.log('');
       console.log('4️⃣  TEMP_PASSWORD:');
-      console.log('    ✅ Valeur:', tempPassword ? '[PRÉSENT - ' + tempPassword.length + ' caractères]' : '[ABSENT]');
+      console.log('    ✅ Valeur:', tempPassword ? '[PRÉSENT]' : '[ABSENT]');
       console.log('    📍 Source: user.raw_user_meta_data.temp_password');
       console.log('    ✔️  Validation: ' + (tempPassword && tempPassword.length >= 8 ? 'PASSÉE' : 'ÉCHOUÉE'));
       console.log('');

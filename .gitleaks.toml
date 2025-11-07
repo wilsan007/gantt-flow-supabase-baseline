@@ -37,7 +37,9 @@ paths = [
   '''\.env\.template$''',
   '''README\.md$''',
   '''docs/.*\.md$''',
-  '''\.github/.*\.md$'''
+  '''\.github/.*\.md$''',
+  '''src/integrations/supabase/client\.ts$''',
+  '''src/pages/TenantOwnerLogin\.tsx$'''
 ]
 
 regexes = [

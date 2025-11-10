@@ -13,7 +13,7 @@ import { fr } from 'date-fns/locale';
 import { useNavigate } from 'react-router-dom';
 
 const STATUS_CONFIG = {
-  enrolled: { label: 'En cours', color: 'bg-blue-500', icon: PlayCircle },
+  pending: { label: 'En cours', color: 'bg-blue-500', icon: PlayCircle },
   completed: { label: 'Terminé', color: 'bg-green-500', icon: CheckCircle2 },
   cancelled: { label: 'Annulé', color: 'bg-gray-500', icon: XCircle },
 };
@@ -29,7 +29,7 @@ export default function MyTrainingsPage() {
     }))
     .filter(e => e.training);
 
-  const enrolled = myEnrollments.filter(e => e.status === 'enrolled');
+  const enrolled = myEnrollments.filter(e => e.status === 'pending' || e.status === 'approved');
   const completed = myEnrollments.filter(e => e.status === 'completed');
   const cancelled = myEnrollments.filter(e => e.status === 'cancelled');
 
@@ -169,29 +169,8 @@ export default function MyTrainingsPage() {
                                   })}
                                 </p>
                               </div>
-                              {enrollment.training?.certifiable && (
-                                <div>
-                                  <p className="text-muted-foreground">Certification</p>
-                                  <p className="flex items-center gap-1 font-medium text-primary">
-                                    <Award className="h-4 w-4" />
-                                    Disponible
-                                  </p>
-                                </div>
-                              )}
+                              {/* Certification - À implémenter si nécessaire */}
                             </div>
-
-                            {enrollment.training?.external_url && (
-                              <div className="mt-3">
-                                <a
-                                  href={enrollment.training.external_url}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="text-sm text-primary hover:underline"
-                                >
-                                  Accéder à la formation →
-                                </a>
-                              </div>
-                            )}
                           </div>
                         </div>
                       </CardContent>
@@ -244,15 +223,7 @@ export default function MyTrainingsPage() {
                                   {enrollment.training?.duration_hours}h
                                 </p>
                               </div>
-                              {enrollment.training?.certifiable && (
-                                <div>
-                                  <p className="text-muted-foreground">Certification</p>
-                                  <Button size="sm" variant="outline">
-                                    <Award className="mr-1 h-4 w-4" />
-                                    Télécharger
-                                  </Button>
-                                </div>
-                              )}
+                              {/* Certification - À implémenter si nécessaire */}
                             </div>
                           </div>
                         </div>

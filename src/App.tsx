@@ -15,6 +15,7 @@ import { SessionErrorBoundary } from '@/components/SessionErrorBoundary';
 import { TenantProvider } from './contexts/TenantContext';
 import { ViewModeProvider } from './contexts/ViewModeContext';
 import { RolesProvider } from './contexts/RolesContext';
+import { AuthProvider } from './contexts/AuthContext';
 // Pages chargées immédiatement (critiques)
 import Index from './pages/Index';
 
@@ -34,12 +35,17 @@ const TrainingCatalogPage = lazy(() => import('./pages/TrainingCatalogPage'));
 const MyTrainingsPage = lazy(() => import('./pages/MyTrainingsPage'));
 const ProjectPage = lazy(() => import('./pages/ProjectPage'));
 const TaskManagementPage = lazy(() => import('./pages/TaskManagementPage'));
+const CalendarPage = lazy(() => import('./pages/CalendarPage'));
 const SuperAdminPage = lazy(() => import('./pages/SuperAdminPage'));
 const TenantOwnerSignup = lazy(() => import('./pages/TenantOwnerSignup'));
 const AuthCallback = lazy(() => import('./pages/AuthCallback'));
 const SetupAccount = lazy(() => import('./pages/SetupAccount'));
 const InvitePage = lazy(() => import('./pages/InvitePage'));
 const NotFound = lazy(() => import('./pages/NotFound'));
+// Pages nouvellement routées
+const Analytics = lazy(() => import('./pages/Analytics'));
+const Settings = lazy(() => import('./pages/Settings'));
+const Inbox = lazy(() => import('./pages/Inbox'));
 const OperationsPage = lazy(() =>
   import('./components/operations').then(m => ({ default: m.OperationsPage }))
 );
@@ -185,6 +191,14 @@ const MemoizedRoutes = memo(() => (
         }
       />
       <Route
+        path="/calendar"
+        element={
+          <ProtectedRoute requiredAccess="canAccessTasks">
+            <CalendarPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
         path="/operations"
         element={
           <ProtectedRoute requiredAccess="canAccessTasks">
@@ -197,6 +211,32 @@ const MemoizedRoutes = memo(() => (
         element={
           <ProtectedRoute requiredAccess="canAccessSuperAdmin">
             <SuperAdminPage />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Routes utilisateur */}
+      <Route
+        path="/analytics"
+        element={
+          <ProtectedRoute requiredAccess="canAccessTasks">
+            <Analytics />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/settings"
+        element={
+          <ProtectedRoute requiredAccess="canAccessTasks">
+            <Settings />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/inbox"
+        element={
+          <ProtectedRoute requiredAccess="canAccessTasks">
+            <Inbox />
           </ProtectedRoute>
         }
       />
@@ -296,6 +336,7 @@ function App() {
     if (!stateChanged && stableStateRef.current) {
       return {
         accessRights: stableStateRef.current.accessRights,
+        accessLoading: stableStateRef.current.accessLoading,
         showWarning,
         timeLeftFormatted,
         signOut: handleSignOut,
@@ -305,12 +346,21 @@ function App() {
 
     return {
       accessRights,
+      accessLoading,
       showWarning,
       timeLeftFormatted,
       signOut: handleSignOut,
       isTenantAdmin,
     };
-  }, [stateChanged, accessRights, showWarning, timeLeftFormatted, handleSignOut, isTenantAdmin]);
+  }, [
+    stateChanged,
+    accessRights,
+    accessLoading,
+    showWarning,
+    timeLeftFormatted,
+    handleSignOut,
+    isTenantAdmin,
+  ]);
 
   // Protection anti-boucle stricte avec arrêt forcé
   const now = Date.now();
@@ -369,18 +419,20 @@ function App() {
       <TooltipProvider>
         <SessionErrorBoundary>
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-            <TenantProvider>
-              <RolesProvider>
-                <ViewModeProvider>
-                  <Sonner />
-                  <BrowserRouter>
-                    <AppLayoutWithSidebar {...headerProps}>
-                      <MemoizedRoutes />
-                    </AppLayoutWithSidebar>
-                  </BrowserRouter>
-                </ViewModeProvider>
-              </RolesProvider>
-            </TenantProvider>
+            <AuthProvider level={2} includeProjectIds={true}>
+              <TenantProvider>
+                <RolesProvider>
+                  <ViewModeProvider>
+                    <Sonner />
+                    <BrowserRouter>
+                      <AppLayoutWithSidebar {...headerProps}>
+                        <MemoizedRoutes />
+                      </AppLayoutWithSidebar>
+                    </BrowserRouter>
+                  </ViewModeProvider>
+                </RolesProvider>
+              </TenantProvider>
+            </AuthProvider>
           </ThemeProvider>
         </SessionErrorBoundary>
         <Toaster />

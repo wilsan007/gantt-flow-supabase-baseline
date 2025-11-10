@@ -508,62 +508,68 @@ export const TenantOwnerSignup: React.FC = () => {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-3 sm:p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="space-y-2 text-center sm:space-y-3">
-          <CardTitle className="flex items-center justify-center gap-2 text-xl sm:text-2xl">
-            <Building className="h-5 w-5 flex-shrink-0 sm:h-6 sm:w-6" />
+    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4 sm:p-6">
+      <Card className="w-full max-w-md shadow-2xl">
+        <CardHeader className="space-y-2 p-5 text-center sm:space-y-3 sm:p-6">
+          <CardTitle className="flex items-center justify-center gap-2 text-xl font-bold sm:text-2xl">
+            <Building className="h-6 w-6 shrink-0 sm:h-7 sm:w-7" />
             <span>Créer votre entreprise</span>
           </CardTitle>
-          <CardDescription className="text-sm">
+          <CardDescription className="text-sm sm:text-base">
             Finalisez votre inscription sur Wadashaqeen
           </CardDescription>
         </CardHeader>
 
-        <CardContent className="space-y-3 sm:space-y-4">
-          <Alert>
-            <UserPlus className="h-4 w-4 flex-shrink-0" />
-            <AlertDescription className="break-words text-sm">
+        <CardContent className="space-y-4 p-5 sm:space-y-5 sm:p-6">
+          <Alert className="border-blue-200 bg-blue-50/50">
+            <UserPlus className="h-4 w-4 shrink-0" />
+            <AlertDescription className="break-words text-xs sm:text-sm">
               <strong>Invitation pour :</strong> {invitationData.full_name}
               <br />
               <strong>Email :</strong> {invitationData.email}
             </AlertDescription>
           </Alert>
 
-          <div className="space-y-2">
-            <Label htmlFor="email">Email *</Label>
+          <div className="space-y-1.5 sm:space-y-2">
+            <Label htmlFor="email" className="text-sm font-medium sm:text-base">
+              Email *
+            </Label>
             <div className="relative">
-              <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+              <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <Input
                 id="email"
                 type="email"
                 value={form.email}
                 onChange={e => handleInputChange('email', e.target.value)}
                 disabled={true}
-                className="bg-muted pl-10"
+                className="h-11 bg-muted pl-10 text-base sm:h-10 sm:text-sm"
               />
             </div>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="fullName">Nom complet *</Label>
+          <div className="space-y-1.5 sm:space-y-2">
+            <Label htmlFor="fullName" className="text-sm font-medium sm:text-base">
+              Nom complet *
+            </Label>
             <div className="relative">
-              <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+              <User className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <Input
                 id="fullName"
                 type="text"
                 value={form.fullName}
                 onChange={e => handleInputChange('fullName', e.target.value)}
                 disabled={isLoading}
-                className="pl-10"
+                className="h-11 pl-10 text-base sm:h-10 sm:text-sm"
               />
             </div>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="companyName">Nom de l'entreprise *</Label>
+          <div className="space-y-1.5 sm:space-y-2">
+            <Label htmlFor="companyName" className="text-sm font-medium sm:text-base">
+              Nom de l'entreprise *
+            </Label>
             <div className="relative">
-              <Building className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+              <Building className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <Input
                 id="companyName"
                 type="text"
@@ -572,15 +578,17 @@ export const TenantOwnerSignup: React.FC = () => {
                 onChange={e => handleInputChange('companyName', e.target.value)}
                 onFocus={() => handleFocus('companyName')}
                 disabled={isLoading}
-                className="pl-10"
+                className="h-11 pl-10 text-base sm:h-10 sm:text-sm"
               />
             </div>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="password">Mot de passe *</Label>
+          <div className="space-y-1.5 sm:space-y-2">
+            <Label htmlFor="password" className="text-sm font-medium sm:text-base">
+              Mot de passe *
+            </Label>
             <div className="relative">
-              <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+              <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <Input
                 id="password"
                 type={showPassword ? 'text' : 'password'}
@@ -589,24 +597,29 @@ export const TenantOwnerSignup: React.FC = () => {
                 onChange={e => handleInputChange('password', e.target.value)}
                 onFocus={() => handleFocus('password')}
                 disabled={isLoading}
-                className="pl-10 pr-10"
+                className="h-11 pl-10 pr-12 text-base sm:h-10 sm:pr-10 sm:text-sm"
               />
               <Button
                 type="button"
                 variant="ghost"
                 size="sm"
-                className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                className="absolute right-0 top-1/2 h-10 w-10 -translate-y-1/2 p-0 hover:bg-transparent sm:h-9 sm:w-9"
                 onClick={() => setShowPassword(!showPassword)}
               >
                 {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                <span className="sr-only">
+                  {showPassword ? 'Masquer' : 'Afficher'} mot de passe
+                </span>
               </Button>
             </div>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="confirmPassword">Confirmer le mot de passe *</Label>
+          <div className="space-y-1.5 sm:space-y-2">
+            <Label htmlFor="confirmPassword" className="text-sm font-medium sm:text-base">
+              Confirmer le mot de passe *
+            </Label>
             <div className="relative">
-              <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+              <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <Input
                 id="confirmPassword"
                 type={showConfirmPassword ? 'text' : 'password'}
@@ -615,35 +628,42 @@ export const TenantOwnerSignup: React.FC = () => {
                 onChange={e => handleInputChange('confirmPassword', e.target.value)}
                 onFocus={() => handleFocus('confirmPassword')}
                 disabled={isLoading}
-                className="pl-10 pr-10"
+                className="h-11 pl-10 pr-12 text-base sm:h-10 sm:pr-10 sm:text-sm"
               />
               <Button
                 type="button"
                 variant="ghost"
                 size="sm"
-                className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                className="absolute right-0 top-1/2 h-10 w-10 -translate-y-1/2 p-0 hover:bg-transparent sm:h-9 sm:w-9"
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
               >
                 {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                <span className="sr-only">
+                  {showConfirmPassword ? 'Masquer' : 'Afficher'} mot de passe
+                </span>
               </Button>
             </div>
           </div>
 
-          <Button onClick={handleSignup} disabled={isLoading} className="w-full">
+          <Button
+            onClick={handleSignup}
+            disabled={isLoading}
+            className="mt-2 h-11 w-full text-base font-semibold sm:mt-0 sm:h-10 sm:text-sm"
+          >
             {isLoading ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Création en cours...
+                <span>Création en cours...</span>
               </>
             ) : (
               <>
                 <UserPlus className="mr-2 h-4 w-4" />
-                Enregistrer mon entreprise
+                <span>Enregistrer mon entreprise</span>
               </>
             )}
           </Button>
 
-          <div className="pt-2 text-center text-xs text-muted-foreground sm:text-sm">
+          <div className="pt-3 text-center text-xs text-muted-foreground sm:pt-2 sm:text-sm">
             <p>En créant votre compte, vous acceptez nos conditions d'utilisation</p>
           </div>
         </CardContent>

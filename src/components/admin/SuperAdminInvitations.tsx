@@ -187,10 +187,12 @@ export const SuperAdminInvitations: React.FC = () => {
             Envoyez une invitation pour créer un nouveau tenant avec son propriétaire
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-4 sm:space-y-5">
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <div className="space-y-2">
-              <Label htmlFor="email">Email *</Label>
+            <div className="space-y-1.5 sm:space-y-2">
+              <Label htmlFor="email" className="text-sm font-medium sm:text-base">
+                Email *
+              </Label>
               <Input
                 id="email"
                 type="email"
@@ -199,10 +201,13 @@ export const SuperAdminInvitations: React.FC = () => {
                 onChange={e => handleInputChange('email', e.target.value)}
                 onFocus={() => handleFocus('email')}
                 disabled={isLoading}
+                className="h-11 text-base sm:h-10 sm:text-sm"
               />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="fullName">Nom complet *</Label>
+            <div className="space-y-1.5 sm:space-y-2">
+              <Label htmlFor="fullName" className="text-sm font-medium sm:text-base">
+                Nom complet *
+              </Label>
               <Input
                 id="fullName"
                 type="text"
@@ -211,6 +216,7 @@ export const SuperAdminInvitations: React.FC = () => {
                 onChange={e => handleInputChange('fullName', e.target.value)}
                 onFocus={() => handleFocus('fullName')}
                 disabled={isLoading}
+                className="h-11 text-base sm:h-10 sm:text-sm"
               />
             </div>
           </div>
@@ -218,17 +224,17 @@ export const SuperAdminInvitations: React.FC = () => {
           <Button
             onClick={sendInvitation}
             disabled={isLoading || !form.email.trim() || !form.fullName.trim()}
-            className="w-full sm:w-auto"
+            className="h-11 w-full text-base font-semibold sm:h-10 sm:w-auto sm:text-sm"
           >
             {isLoading ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Envoi en cours...
+                <span>Envoi en cours...</span>
               </>
             ) : (
               <>
                 <Send className="mr-2 h-4 w-4" />
-                Envoyer l'invitation
+                <span>Envoyer l'invitation</span>
               </>
             )}
           </Button>
@@ -236,30 +242,39 @@ export const SuperAdminInvitations: React.FC = () => {
       </Card>
 
       {lastInvitation && (
-        <Alert>
-          <Send className="h-4 w-4" />
-          <AlertDescription>
+        <Alert className="border-green-200 bg-green-50">
+          <Send className="h-4 w-4 text-green-600" />
+          <AlertDescription className="text-xs sm:text-sm">
             <strong>Dernière invitation envoyée :</strong>
-            <br />
-            📧 Email : {lastInvitation.email}
-            <br />
-            👤 Nom : {lastInvitation.fullName}
-            <br />
-            🏢 Tenant ID : {lastInvitation.tenantId}
-            <br />
-            📅 Envoyée le : {new Date(lastInvitation.sentAt).toLocaleString('fr-FR')}
+            <div className="mt-2 space-y-1">
+              <div className="flex flex-wrap gap-x-2">
+                <span className="font-medium">📧 Email :</span>
+                <span className="break-all">{lastInvitation.email}</span>
+              </div>
+              <div className="flex flex-wrap gap-x-2">
+                <span className="font-medium">👤 Nom :</span>
+                <span>{lastInvitation.fullName}</span>
+              </div>
+              <div className="hidden sm:block">
+                <span className="font-medium">🏢 Tenant ID :</span> {lastInvitation.tenantId}
+              </div>
+              <div className="flex flex-wrap gap-x-2">
+                <span className="font-medium">📅 Envoyée le :</span>
+                <span>{new Date(lastInvitation.sentAt).toLocaleString('fr-FR')}</span>
+              </div>
+            </div>
           </AlertDescription>
         </Alert>
       )}
 
       <Card>
-        <CardHeader>
-          <CardTitle>ℹ️ Informations</CardTitle>
+        <CardHeader className="p-4 sm:p-6">
+          <CardTitle className="text-base sm:text-lg">ℹ️ Informations</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-2 text-sm text-muted-foreground">
+        <CardContent className="space-y-1.5 p-4 text-xs text-muted-foreground sm:space-y-2 sm:p-6 sm:text-sm">
           <p>• L'invitation expire automatiquement après 7 jours</p>
           <p>• Le tenant owner pourra créer son entreprise lors de l'inscription</p>
-          <p>• Un UUID unique sera pré-généré pour le futur tenant</p>
+          <p className="hidden sm:block">• Un UUID unique sera pré-généré pour le futur tenant</p>
           <p>• L'email d'invitation contient un lien sécurisé vers la page d'inscription</p>
         </CardContent>
       </Card>

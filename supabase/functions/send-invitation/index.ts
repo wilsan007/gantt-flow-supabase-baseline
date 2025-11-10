@@ -1,4 +1,4 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
 // @ts-ignore - Deno global disponible dans l'environnement Edge Functions
@@ -6,7 +6,7 @@ declare const Deno: any;
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type'
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
 /**
@@ -17,7 +17,9 @@ const corsHeaders = {
 function generateSecureToken(length: number): string {
   const array = new Uint8Array(length);
   crypto.getRandomValues(array);
-  return Array.from(array, byte => byte.toString(36).padStart(2, '0')).join('').slice(0, length);
+  return Array.from(array, byte => byte.toString(36).padStart(2, '0'))
+    .join('')
+    .slice(0, length);
 }
 
 /**
@@ -46,26 +48,30 @@ function generateSecurePassword(): string {
   return lowercase + uppercase + numbers + specialChar;
 }
 
-serve(async (req) => {
+serve(async req => {
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders });
   }
 
   try {
-    const supabaseClient = createClient(Deno.env.get('SUPABASE_URL') ?? '', Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '');
+    const supabaseClient = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+    );
 
     // Authentification (avec bypass Service Role pour test)
     const authHeader = req.headers.get('Authorization');
     if (!authHeader) {
       return new Response(JSON.stringify({ error: 'Header Authorization requis' }), {
-        status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        status: 401,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
 
     const token = authHeader.replace('Bearer ', '');
-    
+
     let user;
-    
+
     // Bypass pour Service Role Key (test uniquement)
     if (token === Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')) {
       console.log('🔄 BYPASS: Service Role Key détectée - Simulation utilisateur Super Admin');
@@ -73,88 +79,205 @@ serve(async (req) => {
       user = {
         id: '5c5731ce-75d0-4455-8184-bc42c626cb17',
         email: 'awalehnasri@gmail.com',
-        role: 'super_admin'
+        role: 'super_admin',
       };
     } else {
       // Authentification normale
       const { data: userData, error: authError } = await supabaseClient.auth.getUser(token);
 
       if (authError || !userData?.user) {
-        return new Response(JSON.stringify({ error: 'Token invalide ou expiré', details: authError?.message }), {
-          status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-        });
+        return new Response(
+          JSON.stringify({ error: 'Token invalide ou expiré', details: authError?.message }),
+          {
+            status: 401,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          }
+        );
       }
-      
+
       user = userData.user;
     }
 
     // Vérifier Super Admin
-    const { data: isSuperAdmin, error: roleError } = await supabaseClient.rpc('is_super_admin', { user_id: user.id });
+    const { data: isSuperAdmin, error: roleError } = await supabaseClient.rpc('is_super_admin', {
+      user_id: user.id,
+    });
     if (roleError || !isSuperAdmin) {
       return new Response(JSON.stringify({ error: 'Accès Super Admin requis' }), {
-        status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        status: 403,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
 
-    const { email, fullName, invitationType = 'tenant_owner', siteUrl, frontendPort } = await req.json();
+    const {
+      email,
+      fullName,
+      invitationType = 'tenant_owner',
+      siteUrl,
+      frontendPort,
+    } = await req.json();
 
     // Validation
     if (!email || !fullName) {
       return new Response(JSON.stringify({ error: 'Email et nom complet requis' }), {
-        status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
 
-    // Génération des éléments
+    // ================================================================
+    // 🔄 NOUVELLE APPROCHE: Créer l'invitation EN PREMIER
+    // pour garantir que l'ID en base correspond aux métadonnées
+    // ================================================================
+
+    // Génération des éléments (sans invitation_id pour l'instant)
     const futureTenantId = crypto.randomUUID();
-    const tempPassword = generateSecurePassword(); // Sécurisé avec crypto.getRandomValues()
+    const tempPassword = generateSecurePassword();
     const invitationTimestamp = new Date().toISOString();
-    const invitationId = crypto.randomUUID();
-    const validationCode = generateSecureToken(13); // Sécurisé avec crypto.getRandomValues()
+    const validationCode = generateSecureToken(13);
 
-    // Vérifier utilisateur existant
-    let userData;
-    const { data: existingUsers } = await supabaseClient.auth.admin.listUsers();
-    const existingUser = existingUsers?.users?.find((u) => u.email === email.toLowerCase());
+    console.log("📝 Étape 1: Création de l'invitation en base de données...");
 
-    if (existingUser) {
-      userData = { user: existingUser };
-    } else {
-      // Créer utilisateur
-      const { data: newUserData, error: userError } = await supabaseClient.auth.admin.createUser({
-        email: email,
-        password: tempPassword,
-        email_confirm: false,
-        user_metadata: {
-          // 10 ÉLÉMENTS DE VALIDATION REQUIS (exactement ce que handle-email-confirmation attend)
+    // ÉTAPE 1: Créer d'abord l'invitation en base (PostgreSQL génère l'ID)
+    const invitationData = {
+      // ❌ PAS d'ID ici - laissons PostgreSQL le générer!
+      email: email,
+      full_name: fullName,
+      tenant_id: futureTenantId,
+      invitation_type: invitationType,
+      invited_by: user.id,
+      status: 'pending',
+      expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+      token: 'TEMP_TOKEN', // Sera mis à jour après génération du Magic Link
+      metadata: {
+        config: {
+          locale: 'fr-FR',
+          timezone: 'Europe/Paris',
+          auto_confirm: true,
+          expected_role: 'tenant_admin',
+        },
+        temp_password: tempPassword,
+        validation_elements: {
           full_name: fullName,
           invitation_type: 'tenant_owner',
           temp_user: true,
           temp_password: tempPassword,
           tenant_id: futureTenantId,
-          invitation_id: invitationId,
           validation_code: validationCode,
           created_timestamp: invitationTimestamp,
           invited_by_type: 'super_admin',
           company_name: fullName.split(' ')[0] + ' Company',
-          
-          // Métadonnées supplémentaires pour compatibilité
+        },
+      },
+    };
+
+    const { data: invitation, error: invitationError } = await supabaseClient
+      .from('invitations')
+      .insert(invitationData)
+      .select()
+      .single();
+
+    if (invitationError || !invitation) {
+      return new Response(
+        JSON.stringify({ error: 'Erreur création invitation', details: invitationError?.message }),
+        {
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
+      );
+    }
+
+    // ✅ RÉCUPÉRER L'ID RÉEL généré par PostgreSQL
+    const realInvitationId = invitation.id;
+    console.log('✅ Invitation créée avec ID:', realInvitationId);
+
+    // ÉTAPE 2: Vérifier utilisateur existant
+    console.log('👤 Étape 2: Vérification/Création utilisateur...');
+    let userData;
+    const { data: existingUsers } = await supabaseClient.auth.admin.listUsers();
+    const existingUser = existingUsers?.users?.find(u => u.email === email.toLowerCase());
+
+    if (existingUser) {
+      console.log('ℹ️ Utilisateur existant trouvé, mise à jour des métadonnées...');
+      // Mettre à jour les métadonnées avec le VRAI invitation_id
+      const { data: updatedUser, error: updateError } =
+        await supabaseClient.auth.admin.updateUserById(existingUser.id, {
+          user_metadata: {
+            full_name: fullName,
+            invitation_type: 'tenant_owner',
+            temp_user: true,
+            temp_password: tempPassword,
+            tenant_id: futureTenantId,
+            invitation_id: realInvitationId, // ✅ ID RÉEL de la base
+            validation_code: validationCode,
+            created_timestamp: invitationTimestamp,
+            invited_by_type: 'super_admin',
+            company_name: fullName.split(' ')[0] + ' Company',
+            invitation_source: 'admin_panel',
+            expected_role: 'tenant_admin',
+            security_level: 'standard',
+            locale: 'fr-FR',
+            created_by_send_invitation: true,
+            ready_for_confirmation: true,
+            validation_elements_count: 10,
+          },
+        });
+
+      if (updateError) {
+        // Rollback: supprimer l'invitation créée
+        await supabaseClient.from('invitations').delete().eq('id', realInvitationId);
+        return new Response(
+          JSON.stringify({ error: 'Erreur mise à jour métadonnées', details: updateError.message }),
+          {
+            status: 500,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          }
+        );
+      }
+      userData = { user: updatedUser.user };
+    } else {
+      console.log('➕ Création nouvel utilisateur avec invitation_id:', realInvitationId);
+      // Créer utilisateur avec le VRAI invitation_id
+      const { data: newUserData, error: userError } = await supabaseClient.auth.admin.createUser({
+        email: email,
+        password: tempPassword,
+        email_confirm: false,
+        user_metadata: {
+          // 10 ÉLÉMENTS DE VALIDATION avec le BON invitation_id
+          full_name: fullName,
+          invitation_type: 'tenant_owner',
+          temp_user: true,
+          temp_password: tempPassword,
+          tenant_id: futureTenantId,
+          invitation_id: realInvitationId, // ✅ ID RÉEL de la base
+          validation_code: validationCode,
+          created_timestamp: invitationTimestamp,
+          invited_by_type: 'super_admin',
+          company_name: fullName.split(' ')[0] + ' Company',
+
+          // Métadonnées supplémentaires
           invitation_source: 'admin_panel',
           expected_role: 'tenant_admin',
           security_level: 'standard',
           locale: 'fr-FR',
-          
-          // Marqueurs pour handle-email-confirmation
+
+          // Marqueurs
           created_by_send_invitation: true,
           ready_for_confirmation: true,
-          validation_elements_count: 10
-        }
+          validation_elements_count: 10,
+        },
       });
 
       if (userError) {
-        return new Response(JSON.stringify({ error: 'Erreur création utilisateur', details: userError.message }), {
-          status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-        });
+        // Rollback: supprimer l'invitation créée
+        await supabaseClient.from('invitations').delete().eq('id', realInvitationId);
+        return new Response(
+          JSON.stringify({ error: 'Erreur création utilisateur', details: userError.message }),
+          {
+            status: 500,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          }
+        );
       }
       userData = newUserData;
     }
@@ -163,13 +286,13 @@ serve(async (req) => {
     const origin = req.headers.get('origin');
     const referer = req.headers.get('referer');
     const host = req.headers.get('host');
-    
+
     console.log('🌐 Headers détectés:');
     console.log('   - Origin:', origin);
     console.log('   - Referer:', referer);
     console.log('   - Host:', host);
     console.log('   - SiteUrl fourni:', siteUrl);
-    
+
     // Priorité de détection : Origin > Referer > SiteUrl > Défaut avec port flexible
     let baseUrl;
     if (origin) {
@@ -181,26 +304,34 @@ serve(async (req) => {
     } else if (siteUrl) {
       baseUrl = siteUrl.replace(/\/$/, '');
     } else {
-      // Défaut : utiliser le port fourni dans la requête ou depuis l'environnement
-      const port = frontendPort || Deno.env.get('FRONTEND_PORT') || '8080';
-      baseUrl = `http://localhost:${port}`;
+      // Défaut : utiliser SITE_URL de l'environnement, sinon localhost pour dev
+      baseUrl =
+        Deno.env.get('SITE_URL') ||
+        `http://localhost:${frontendPort || Deno.env.get('FRONTEND_PORT') || '8080'}`;
     }
-    
+
     console.log('🎯 URL finale utilisée:', baseUrl);
-    
+
     // Générer Magic Link (plus fiable que signup)
     const { data: linkData, error: linkError } = await supabaseClient.auth.admin.generateLink({
       type: 'magiclink',
       email: email,
-      options: { 
-        redirectTo: `${baseUrl}/auth/callback?email=${encodeURIComponent(email)}&type=magiclink&invitation=true`
-      }
+      options: {
+        redirectTo: `${baseUrl}/auth/callback?email=${encodeURIComponent(email)}&type=magiclink&invitation=true`,
+      },
     });
 
     if (linkError) {
-      return new Response(JSON.stringify({ error: 'Erreur génération lien de confirmation', details: linkError.message }), {
-        status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-      });
+      return new Response(
+        JSON.stringify({
+          error: 'Erreur génération lien de confirmation',
+          details: linkError.message,
+        }),
+        {
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
+      );
     }
 
     const confirmationUrl = linkData.properties.action_link;
@@ -209,86 +340,63 @@ serve(async (req) => {
 
     if (!confirmationToken) {
       return new Response(JSON.stringify({ error: 'Erreur extraction token' }), {
-        status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
 
-    // Créer invitation
-    const invitationData = {
-      email: email,
-      full_name: fullName,
-      tenant_id: futureTenantId,
-      invitation_type: invitationType,
-      invited_by: user.id,
-      status: 'pending',
-      expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-      token: confirmationToken,
-      metadata: {
-        config: { locale: 'fr-FR', timezone: 'Europe/Paris', auto_confirm: true, expected_role: 'tenant_admin' },
-        fresh_token: confirmationToken,
-        security_info: {
-          ip_address: req.headers.get('x-forwarded-for') || 'unknown',
-          user_agent: req.headers.get('user-agent') || 'unknown',
-          security_level: 'standard',
-          invitation_source: 'admin_panel'
-        },
-        temp_password: tempPassword,
-        confirmation_url: confirmationUrl,
-        supabase_user_id: userData.user.id,
-        validation_elements: {
-          // 10 ÉLÉMENTS DE VALIDATION REQUIS (synchronisés avec handle-email-confirmation)
-          full_name: fullName,                    // 1. Nom complet
-          invitation_type: 'tenant_owner',        // 2. Type d'invitation
-          temp_user: true,                        // 3. Flag utilisateur temporaire
-          temp_password: tempPassword,            // 4. Mot de passe temporaire
-          tenant_id: futureTenantId,             // 5. ID du futur tenant
-          invitation_id: invitationId,           // 6. ID unique d'invitation
-          validation_code: validationCode,       // 7. Code de validation
-          created_timestamp: invitationTimestamp, // 8. Timestamp de création
-          invited_by_type: 'super_admin',        // 9. Type d'inviteur
-          company_name: fullName.split(' ')[0] + ' Company' // 10. Nom de l'entreprise
-        }
-      }
-    };
+    // ÉTAPE 3: Mettre à jour l'invitation avec le token et les infos finales
+    console.log('🔄 Étape 3: Mise à jour invitation avec token et metadata complètes...');
 
-    // Log des 10 éléments de validation avant insertion
-    console.log('✅ 10 ÉLÉMENTS DE VALIDATION CRÉÉS:');
-    const validationElements = invitationData.metadata.validation_elements;
-    Object.entries(validationElements).forEach(([key, value], index) => {
-      console.log(`   ${index + 1}. ${key}: ${value}`);
-    });
-    console.log('📊 Total éléments:', Object.keys(validationElements).length);
-
-    const { data: invitation, error: invitationError } = await supabaseClient
+    const { error: updateInvitationError } = await supabaseClient
       .from('invitations')
-      .insert(invitationData)
-      .select()
-      .single();
+      .update({
+        token: confirmationToken,
+        metadata: {
+          ...invitation.metadata,
+          fresh_token: confirmationToken,
+          security_info: {
+            ip_address: req.headers.get('x-forwarded-for') || 'unknown',
+            user_agent: req.headers.get('user-agent') || 'unknown',
+            security_level: 'standard',
+            invitation_source: 'admin_panel',
+          },
+          confirmation_url: confirmationUrl,
+          supabase_user_id: userData.user.id,
+          validation_elements: {
+            ...invitation.metadata.validation_elements,
+            invitation_id: realInvitationId, // ✅ Confirmation de l'ID
+          },
+        },
+      })
+      .eq('id', realInvitationId);
 
-    if (invitationError) {
-      return new Response(JSON.stringify({ error: 'Erreur création invitation', details: invitationError.message }), {
-        status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-      });
+    if (updateInvitationError) {
+      console.error('⚠️ Erreur mise à jour invitation:', updateInvitationError);
+      // Ne pas bloquer le processus, l'invitation existe déjà
     }
 
-    console.log('✅ Invitation créée avec succès:', invitation.id);
+    console.log('✅ Invitation finalisée avec ID:', realInvitationId);
+    console.log('✅ user_metadata.invitation_id:', realInvitationId);
+    console.log('✅ invitations.id:', realInvitationId);
+    console.log('🎯 CONCORDANCE PARFAITE GARANTIE!');
 
     // ENVOI DE L'EMAIL
-    console.log('📧 Envoi de l\'email d\'invitation...');
+    console.log("📧 Envoi de l'email d'invitation...");
     console.log('🔍 Vérification RESEND_API_KEY...');
-    
+
     let emailSent = false;
     try {
       const resendApiKey = Deno.env.get('RESEND_API_KEY');
       console.log('🔑 RESEND_API_KEY présente:', !!resendApiKey);
-      
+
       if (resendApiKey) {
         console.log('✅ RESEND_API_KEY trouvée, préparation email...');
-        
+
         // En mode test Resend, utiliser l'email du propriétaire du compte
         const testEmail = 'osman.awaleh.adn@gmail.com';
         const actualRecipient = email;
-        
+
         const emailHtml = `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
             <div style="background: #007bff; color: white; padding: 20px; text-align: center;">
@@ -329,7 +437,7 @@ serve(async (req) => {
             </div>
           </div>
         `;
-        
+
         // Modifier le contenu pour indiquer le vrai destinataire
         const testEmailHtml = emailHtml.replace(
           `<strong>Email :</strong> ${email}`,
@@ -339,16 +447,16 @@ serve(async (req) => {
         console.log('📤 Envoi vers Resend API...');
         console.log('   - Destinataire:', testEmail);
         console.log('   - Sujet: [TEST] Bienvenue', fullName);
-        
+
         const response = await fetch('https://api.resend.com/emails', {
           method: 'POST',
-          headers: { 'Authorization': `Bearer ${resendApiKey}`, 'Content-Type': 'application/json' },
+          headers: { Authorization: `Bearer ${resendApiKey}`, 'Content-Type': 'application/json' },
           body: JSON.stringify({
             from: 'Wadashaqeen <onboarding@resend.dev>',
             to: [testEmail], // Utiliser l'email autorisé pour les tests
             subject: `[TEST] Bienvenue ${fullName} - Invitation pour ${actualRecipient}`,
-            html: testEmailHtml
-          })
+            html: testEmailHtml,
+          }),
         });
 
         console.log('📊 Réponse Resend:', response.status, response.statusText);
@@ -373,33 +481,38 @@ serve(async (req) => {
     console.log('📧 Email:', emailSent ? '✅ ENVOYÉ' : '❌ ÉCHEC');
 
     // Réponse finale
-    return new Response(JSON.stringify({
-      success: true,
-      message: 'Invitation envoyée avec succès',
-      data: {
-        invitation_id: invitation.id,
-        email: email,
-        full_name: fullName,
-        tenant_id: futureTenantId,
-        user_id: userData.user.id,
-        confirmation_url: confirmationUrl,
-        expires_at: invitation.expires_at,
-        temp_password: tempPassword,
-        validation_elements: Object.keys(invitationData.metadata.validation_elements).length,
-        email_sent: emailSent
+    return new Response(
+      JSON.stringify({
+        success: true,
+        message: 'Invitation envoyée avec succès',
+        data: {
+          invitation_id: invitation.id,
+          email: email,
+          full_name: fullName,
+          tenant_id: futureTenantId,
+          user_id: userData.user.id,
+          confirmation_url: confirmationUrl,
+          expires_at: invitation.expires_at,
+          temp_password: tempPassword,
+          validation_elements: Object.keys(invitationData.metadata.validation_elements).length,
+          email_sent: emailSent,
+        },
+      }),
+      {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       }
-    }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-    });
-
+    );
   } catch (error) {
-    return new Response(JSON.stringify({
-      success: false,
-      error: error.message,
-      timestamp: new Date().toISOString()
-    }), {
-      status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-    });
+    return new Response(
+      JSON.stringify({
+        success: false,
+        error: error.message,
+        timestamp: new Date().toISOString(),
+      }),
+      {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      }
+    );
   }
 });

@@ -39,12 +39,12 @@ export interface UserPermission {
   action: string;
 }
 
-interface UseUserAuthOptions {
+export interface UseUserAuthOptions {
   level?: 1 | 2 | 3; // Niveau de profondeur
   includeProjectIds?: boolean; // Charger les project_ids
 }
 
-interface UseUserAuthResult {
+export interface UseUserAuthResult {
   // Niveau 1 (toujours disponible)
   profile: UserProfile | null;
 
@@ -99,38 +99,47 @@ export function useUserAuth(options: UseUserAuthOptions = {}): UseUserAuthResult
       // === NIVEAU 1 : PROFIL (profiles table) ===
       const { data: profileData, error: profileError } = await supabase
         .from('profiles')
-        .select('full_name, tenant_id, is_super_admin')
+        .select('full_name, tenant_id')
         .eq('id', user.id)
-        .single();
+        .maybeSingle(); // ✅ Utiliser maybeSingle au lieu de single
 
-      if (profileError && profileError.code !== 'PGRST116') {
+      // Ignorer les erreurs 406 (RLS) et 404 silencieusement
+      if (profileError && !['406', 'PGRST116'].includes(profileError.code || '')) {
         console.error('Erreur récupération profil:', profileError);
-        setError(profileError.message);
-        setLoading(false);
-        return;
       }
 
-      // Récupérer le rôle depuis employees (fallback)
+      // Récupérer depuis employees (fallback) - Ignorer les erreurs silencieusement
       const { data: employeeData } = await supabase
         .from('employees')
-        .select('role, full_name, job_title, tenant_id')
+        .select('full_name, job_title, tenant_id') // ✅ Retirer 'role' qui n'existe pas
         .eq('user_id', user.id)
-        .single();
+        .maybeSingle();
+
+      // Vérifier si l'utilisateur est super_admin via user_roles
+      const { data: superAdminCheck } = await supabase
+        .from('user_roles')
+        .select('roles!inner(name)')
+        .eq('user_id', user.id)
+        .eq('is_active', true)
+        .eq('roles.name', 'super_admin')
+        .maybeSingle();
+
+      const isSuperAdmin = !!superAdminCheck;
 
       const userProfile: UserProfile = {
         userId: user.id,
         email: user.email || '',
         fullName: profileData?.full_name || employeeData?.full_name || user.email || 'Utilisateur',
-        role: (employeeData?.role as RoleName) || 'employee',
+        role: 'employee', // ✅ Défaut employee, sera mis à jour par user_roles
         tenantId: profileData?.tenant_id || employeeData?.tenant_id || null,
-        isSuperAdmin: profileData?.is_super_admin || false,
+        isSuperAdmin: isSuperAdmin,
         jobTitle: employeeData?.job_title,
       };
 
       // 🔓 CAS SUPER ADMIN : Rôle spécial
       if (userProfile.isSuperAdmin) {
         userProfile.role = 'super_admin';
-        console.log('🔓 Super Admin détecté - Accès complet');
+        // Note: Super Admin détecté (log retiré pour éviter pollution console)
       }
 
       setProfile(userProfile);
@@ -232,7 +241,8 @@ export function useUserAuth(options: UseUserAuthOptions = {}): UseUserAuthResult
 
   useEffect(() => {
     fetchAuth();
-  }, [fetchAuth]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [level, includeProjectIds]); // ✅ Dépendre seulement des options, pas de fetchAuth
 
   // Créer le contexte unifié pour le filtrage
   const userContext: UserContext | null = profile
@@ -311,7 +321,22 @@ export function useUserWithPermissions() {
 
 /**
  * Hook avec context complet pour filtrage (inclut projectIds)
+ *
+ * ⚠️ DEPRECATED: Utiliser useAuth() depuis @/contexts/AuthContext à la place
+ * Ce hook est conservé pour compatibilité mais appelle toujours useUserAuth
+ * ce qui cause des rendus multiples.
+ *
+ * Migration recommandée:
+ * ```
+ * // Ancien
+ * const { userContext } = useUserFilterContext();
+ *
+ * // Nouveau
+ * const { userContext } = useAuth();
+ * ```
  */
 export function useUserFilterContext() {
+  // ⚠️ Attention: Chaque appel crée une nouvelle instance
+  // Utiliser AuthProvider + useAuth() pour éviter les rendus multiples
   return useUserAuth({ level: 1, includeProjectIds: true });
 }

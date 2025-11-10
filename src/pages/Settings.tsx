@@ -16,34 +16,37 @@ export const Settings = () => {
 
         <Tabs defaultValue="security" className="space-y-4 sm:space-y-6">
           {/* Tabs responsive: 2 colonnes sur mobile, 4 sur desktop */}
-          <TabsList className="grid h-auto w-full grid-cols-2 gap-2 p-1 sm:grid-cols-4">
+          <TabsList className="grid h-auto w-full grid-cols-2 gap-1.5 p-1.5 sm:grid-cols-4 sm:gap-2 sm:p-2">
             <TabsTrigger
               value="security"
-              className="flex items-center gap-1 py-2 text-xs sm:gap-2 sm:text-sm"
+              className="flex items-center gap-1 py-2.5 text-xs sm:gap-2 sm:py-2 sm:text-sm"
             >
-              <Shield className="h-3 w-3 flex-shrink-0 sm:h-4 sm:w-4" />
+              <Shield className="h-3.5 w-3.5 shrink-0 sm:h-4 sm:w-4" />
               <span className="truncate">Sécurité</span>
             </TabsTrigger>
             <TabsTrigger
               value="profile"
-              className="flex items-center gap-1 py-2 text-xs sm:gap-2 sm:text-sm"
+              className="flex items-center gap-1 py-2.5 text-xs sm:gap-2 sm:py-2 sm:text-sm"
             >
-              <User className="h-3 w-3 flex-shrink-0 sm:h-4 sm:w-4" />
+              <User className="h-3.5 w-3.5 shrink-0 sm:h-4 sm:w-4" />
               <span className="truncate">Profil</span>
             </TabsTrigger>
             <TabsTrigger
               value="notifications"
-              className="flex items-center gap-1 py-2 text-xs sm:gap-2 sm:text-sm"
+              className="flex items-center gap-1 py-2.5 text-xs sm:gap-2 sm:py-2 sm:text-sm"
             >
-              <Bell className="h-3 w-3 flex-shrink-0 sm:h-4 sm:w-4" />
+              <Bell className="h-3.5 w-3.5 shrink-0 sm:h-4 sm:w-4" />
               <span className="truncate">Notifs</span>
             </TabsTrigger>
             <TabsTrigger
               value="password"
-              className="flex items-center gap-1 py-2 text-xs sm:gap-2 sm:text-sm"
+              className="flex items-center gap-1 py-2.5 text-xs sm:gap-2 sm:py-2 sm:text-sm"
             >
-              <Key className="h-3 w-3 flex-shrink-0 sm:h-4 sm:w-4" />
-              <span className="truncate">Mot de passe</span>
+              <Key className="h-3.5 w-3.5 shrink-0 sm:h-4 sm:w-4" />
+              <span className="truncate">
+                <span className="hidden sm:inline">Mot de passe</span>
+                <span className="sm:hidden">MDP</span>
+              </span>
             </TabsTrigger>
           </TabsList>
 
@@ -91,3 +94,5 @@ export const Settings = () => {
     </div>
   );
 };
+
+export default Settings;

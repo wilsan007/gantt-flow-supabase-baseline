@@ -19,13 +19,13 @@ import { BookOpen, Clock, Users, Search, Award } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 export default function TrainingCatalogPage() {
-  const { trainings, enrollments, createEnrollment, loading } = useTrainings();
+  const { trainings, myEnrollments, enrollInTraining, loading } = useTrainings();
   const { toast } = useToast();
 
   const [searchTerm, setSearchTerm] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('all');
 
-  const filtered = trainings.filter(training => {
+  const filtered = (trainings || []).filter(training => {
     const matchesSearch =
       training.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       training.description?.toLowerCase().includes(searchTerm.toLowerCase());
@@ -34,14 +34,13 @@ export default function TrainingCatalogPage() {
   });
 
   const isEnrolled = (trainingId: string) => {
-    return enrollments.some(e => e.training_id === trainingId && e.status !== 'cancelled');
+    return (myEnrollments || []).some(
+      e => e.training_id === trainingId && e.status !== 'cancelled'
+    );
   };
 
   const handleEnroll = async (trainingId: string) => {
-    await createEnrollment({
-      training_id: trainingId,
-      status: 'enrolled',
-    });
+    await enrollInTraining(trainingId);
 
     toast({
       title: 'Inscription réussie',
@@ -52,31 +51,37 @@ export default function TrainingCatalogPage() {
   const categories = ['all', ...Array.from(new Set(trainings.map(t => t.category)))];
 
   return (
-    <div className="container mx-auto space-y-6 p-6">
-      {/* Header */}
+    <div className="container mx-auto space-y-4 p-4 sm:space-y-6 sm:p-6">
+      {/* Header - Responsive */}
       <div>
-        <h1 className="flex items-center gap-2 text-3xl font-bold">
-          <BookOpen className="h-8 w-8" />
-          Catalogue de Formations
+        <h1 className="flex items-center gap-2 text-xl font-bold sm:text-2xl md:text-3xl">
+          <BookOpen className="h-6 w-6 shrink-0 sm:h-7 sm:w-7 md:h-8 md:w-8" />
+          <span className="truncate">
+            <span className="hidden sm:inline">Catalogue de Formations</span>
+            <span className="sm:hidden">Formations</span>
+          </span>
         </h1>
-        <p className="mt-1 text-muted-foreground">
-          Développez vos compétences avec notre catalogue de formations
+        <p className="mt-1 text-xs text-muted-foreground sm:text-sm md:text-base">
+          <span className="hidden sm:inline">
+            Développez vos compétences avec notre catalogue de formations
+          </span>
+          <span className="sm:hidden">Découvrez nos formations</span>
         </p>
       </div>
 
-      {/* Filtres */}
-      <div className="flex flex-col gap-4 md:flex-row">
+      {/* Filtres - Responsive */}
+      <div className="flex flex-col gap-3 sm:gap-4 md:flex-row">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transform text-muted-foreground" />
           <Input
             placeholder="Rechercher une formation..."
             value={searchTerm}
             onChange={e => setSearchTerm(e.target.value)}
-            className="pl-10"
+            className="h-11 pl-10 text-base sm:h-10 sm:text-sm"
           />
         </div>
         <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-          <SelectTrigger className="w-full md:w-[200px]">
+          <SelectTrigger className="h-11 w-full text-base sm:h-10 sm:text-sm md:w-[200px]">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -121,22 +126,7 @@ export default function TrainingCatalogPage() {
                     <Users className="h-4 w-4" />
                     <span>Niveau: {training.level}</span>
                   </div>
-                  {training.certifiable && (
-                    <div className="flex items-center gap-2 text-sm text-primary">
-                      <Award className="h-4 w-4" />
-                      <span>Certification disponible</span>
-                    </div>
-                  )}
-                  {training.external_url && (
-                    <a
-                      href={training.external_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-sm text-primary hover:underline"
-                    >
-                      Plus d'informations →
-                    </a>
-                  )}
+                  {/* Certification et lien externe - À implémenter si nécessaire */}
                 </div>
 
                 {isEnrolled(training.id) ? (

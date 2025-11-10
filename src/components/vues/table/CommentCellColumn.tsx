@@ -41,6 +41,12 @@ export const CommentCellColumn = ({ task, isSubtask }: CommentCellProps) => {
   const { toast } = useToast();
 
   const loadComments = async () => {
+    // Ne pas charger pour les tâches de démonstration (UUIDs fictifs)
+    if (task.id.startsWith('00000000-0000-0000-0000')) {
+      setComments([]);
+      return;
+    }
+
     try {
       const { data, error } = await supabase
         .from('task_comments')

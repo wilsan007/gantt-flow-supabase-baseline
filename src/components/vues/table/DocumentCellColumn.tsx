@@ -41,6 +41,12 @@ export const DocumentCellColumn = ({ task, isSubtask }: DocumentCellProps) => {
   const { currentTenant } = useTenant();
 
   const loadDocuments = async () => {
+    // Ne pas charger pour les tâches de démonstration (UUIDs fictifs)
+    if (task.id.startsWith('00000000-0000-0000-0000')) {
+      setDocuments([]);
+      return;
+    }
+
     try {
       const { data, error } = await supabase
         .from('task_documents')

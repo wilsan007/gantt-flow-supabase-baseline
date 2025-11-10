@@ -17,50 +17,71 @@ const HRPageWithCollaboratorInvitation: React.FC = () => {
   const [activeTab, setActiveTab] = useState('invitations');
 
   return (
-    <div className="container mx-auto space-y-6 p-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Ressources Humaines</h1>
-          <p className="text-muted-foreground">
-            Gestion des employés, congés, présences et invitations
+    <div className="container mx-auto space-y-4 p-4 sm:space-y-6 sm:p-6">
+      {/* Header - Responsive */}
+      <div className="flex items-start justify-between">
+        <div className="min-w-0 flex-1">
+          <h1 className="truncate text-2xl font-bold tracking-tight sm:text-3xl">
+            Ressources Humaines
+          </h1>
+          <p className="mt-1 text-sm text-muted-foreground sm:text-base">
+            <span className="hidden sm:inline">
+              Gestion des employés, congés, présences et invitations
+            </span>
+            <span className="sm:hidden">Gestion RH complète</span>
           </p>
         </div>
       </div>
 
-      {/* Tabs Navigation */}
+      {/* Tabs Navigation - Scroll horizontal mobile */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-        <TabsList className="grid w-full grid-cols-2 lg:grid-cols-5">
-          <TabsTrigger value="overview" className="flex items-center gap-2">
-            <TrendingUp className="h-4 w-4" />
-            <span className="hidden sm:inline">Vue d'ensemble</span>
-            <span className="sm:hidden">Vue</span>
-          </TabsTrigger>
+        <div className="-mx-4 sm:mx-0">
+          <TabsList className="flex w-full gap-1 overflow-x-auto p-2 sm:grid sm:grid-cols-2 sm:gap-2 lg:grid-cols-5">
+            <TabsTrigger
+              value="overview"
+              className="flex shrink-0 items-center gap-2 whitespace-nowrap px-3 text-xs sm:px-4 sm:text-sm"
+            >
+              <TrendingUp className="h-4 w-4" />
+              <span className="hidden sm:inline">Vue d'ensemble</span>
+              <span className="sm:hidden">Vue</span>
+            </TabsTrigger>
 
-          <TabsTrigger value="employees" className="flex items-center gap-2">
-            <Users className="h-4 w-4" />
-            <span className="hidden sm:inline">Employés</span>
-            <span className="sm:hidden">Staff</span>
-          </TabsTrigger>
+            <TabsTrigger
+              value="employees"
+              className="flex shrink-0 items-center gap-2 whitespace-nowrap px-3 text-xs sm:px-4 sm:text-sm"
+            >
+              <Users className="h-4 w-4" />
+              <span className="hidden sm:inline">Employés</span>
+              <span className="sm:hidden">Staff</span>
+            </TabsTrigger>
 
-          <TabsTrigger value="invitations" className="flex items-center gap-2">
-            <UserPlus className="h-4 w-4" />
-            <span className="hidden sm:inline">Invitations</span>
-            <span className="sm:hidden">Inviter</span>
-          </TabsTrigger>
+            <TabsTrigger
+              value="invitations"
+              className="flex shrink-0 items-center gap-2 whitespace-nowrap px-3 text-xs sm:px-4 sm:text-sm"
+            >
+              <UserPlus className="h-4 w-4" />
+              <span className="hidden sm:inline">Invitations</span>
+              <span className="sm:hidden">Inviter</span>
+            </TabsTrigger>
 
-          <TabsTrigger value="leaves" className="flex items-center gap-2">
-            <Calendar className="h-4 w-4" />
-            <span className="hidden sm:inline">Congés</span>
-            <span className="sm:hidden">Congés</span>
-          </TabsTrigger>
+            <TabsTrigger
+              value="leaves"
+              className="flex shrink-0 items-center gap-2 whitespace-nowrap px-3 text-xs sm:px-4 sm:text-sm"
+            >
+              <Calendar className="h-4 w-4" />
+              Congés
+            </TabsTrigger>
 
-          <TabsTrigger value="attendance" className="flex items-center gap-2">
-            <Clock className="h-4 w-4" />
-            <span className="hidden sm:inline">Présences</span>
-            <span className="sm:hidden">Présence</span>
-          </TabsTrigger>
-        </TabsList>
+            <TabsTrigger
+              value="attendance"
+              className="flex shrink-0 items-center gap-2 whitespace-nowrap px-3 text-xs sm:px-4 sm:text-sm"
+            >
+              <Clock className="h-4 w-4" />
+              <span className="hidden sm:inline">Présences</span>
+              <span className="sm:hidden">Prés.</span>
+            </TabsTrigger>
+          </TabsList>
+        </div>
 
         {/* Tab: Vue d'ensemble */}
         <TabsContent value="overview" className="space-y-4">

@@ -46,12 +46,14 @@ import { Separator } from '@/components/ui/separator';
 
 interface NotionStyleSidebarProps {
   accessRights: any;
+  accessLoading: boolean;
   isTenantAdmin: boolean;
   signOut: () => Promise<void>;
 }
 
 export const NotionStyleSidebar: React.FC<NotionStyleSidebarProps> = ({
   accessRights,
+  accessLoading,
   isTenantAdmin,
   signOut,
 }) => {
@@ -80,34 +82,42 @@ export const NotionStyleSidebar: React.FC<NotionStyleSidebarProps> = ({
   };
 
   // Section Accueil
+  // Stratégie optimiste : pendant le chargement, on affiche tous les liens de base
+  // Une fois chargé, on filtre selon les vrais droits
   const homeItems = [
     { to: '/', label: 'Tableau de bord', icon: Home, show: true },
     { to: '/inbox', label: 'Boîte de réception', icon: Inbox, show: true, badge: 3 },
-    { to: '/tasks', label: 'Mes tâches', icon: CheckSquare, show: accessRights.canAccessTasks },
+    {
+      to: '/tasks',
+      label: 'Mes tâches',
+      icon: CheckSquare,
+      show: accessLoading || accessRights.canAccessTasks,
+    },
     { to: '/calendar', label: 'Calendrier', icon: Calendar, show: true },
   ];
 
   // Section Espaces (Projets/Modules)
+  // Stratégie optimiste : afficher tous les espaces pendant le chargement
   const spaceItems = [
     {
       to: '/projects',
       label: 'Projets',
       icon: FolderKanban,
-      show: accessRights.canAccessProjects,
+      show: accessLoading || accessRights.canAccessProjects,
       color: 'text-blue-600',
     },
     {
       to: '/hr',
       label: 'Ressources Humaines',
       icon: Users,
-      show: accessRights.canAccessHR,
+      show: accessLoading || accessRights.canAccessHR,
       color: 'text-green-600',
     },
     {
       to: '/operations',
       label: 'Opérations',
       icon: Target,
-      show: accessRights.canAccessTasks,
+      show: accessLoading || accessRights.canAccessTasks,
       color: 'text-purple-600',
     },
     {
@@ -120,13 +130,14 @@ export const NotionStyleSidebar: React.FC<NotionStyleSidebarProps> = ({
   ];
 
   // Section Plus (Autres)
+  // Super Admin : NE PAS afficher pendant le chargement (sécurité)
   const moreItems = [
     { to: '/settings', label: 'Paramètres', icon: Settings, show: true },
     {
       to: '/super-admin',
       label: 'Super Admin',
       icon: Crown,
-      show: accessRights.canAccessSuperAdmin,
+      show: !accessLoading && accessRights.canAccessSuperAdmin, // Ne jamais afficher pendant le chargement
     },
   ];
 

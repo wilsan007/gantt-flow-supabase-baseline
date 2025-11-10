@@ -172,13 +172,6 @@ export const TaskActionColumns = ({
                   .find(task => task.id === selectedTaskId)
                   ?.task_actions?.some(action => action.title === actionTitle);
 
-              // IMPORTANT: Tronquer à 40 caractères maximum
-              const truncatedTitle = actionTitle.slice(0, 40);
-
-              // Diviser le titre en 2 lignes : 0-20 et 21-40
-              const line1 = truncatedTitle.slice(0, 20);
-              const line2 = truncatedTitle.slice(20, 40);
-
               return (
                 <TableHead
                   key={actionTitle}
@@ -188,9 +181,20 @@ export const TaskActionColumns = ({
                   title={actionTitle} // Tooltip avec le titre complet
                 >
                   <div className="flex flex-col items-center gap-0.5">
-                    <div className="text-xs leading-tight">
-                      <div className="font-bold">{line1}</div>
-                      {line2 && <div className="font-bold">{line2}</div>}
+                    <div
+                      className="px-1 text-xs font-bold leading-tight"
+                      style={{
+                        wordBreak: 'normal',
+                        overflowWrap: 'break-word',
+                        hyphens: 'auto',
+                        display: '-webkit-box',
+                        WebkitLineClamp: 3,
+                        WebkitBoxOrient: 'vertical',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                      }}
+                    >
+                      {actionTitle}
                     </div>
                     {isSelectedTaskAction && (
                       <div className="h-0.5 w-6 animate-pulse rounded-full bg-yellow-400" />

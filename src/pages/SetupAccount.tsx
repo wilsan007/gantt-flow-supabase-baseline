@@ -2,6 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useMultiplePlaceholderHandler } from '@/hooks/usePlaceholderHandler';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Lock, Building, Loader2, CheckCircle2, AlertCircle } from 'lucide-react';
 
 const SetupAccount: React.FC = () => {
   const navigate = useNavigate();
@@ -164,172 +170,196 @@ const SetupAccount: React.FC = () => {
   };
 
   return (
-    <div className="flex min-h-screen flex-col justify-center bg-gray-50 py-12 sm:px-6 lg:px-8">
-      <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="text-center">
-          <h2 className="mt-6 text-3xl font-extrabold text-gray-900">🎉 Bienvenue !</h2>
-          <p className="mt-2 text-sm text-gray-600">Configurez votre compte pour commencer</p>
+    <div className="flex min-h-screen flex-col justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4 sm:p-6">
+      <div className="mx-auto w-full max-w-md">
+        <div className="mb-6 text-center sm:mb-8">
+          <h2 className="text-2xl font-bold text-gray-900 sm:text-3xl">🎉 Bienvenue !</h2>
+          <p className="mt-1.5 text-sm text-gray-600 sm:mt-2 sm:text-base">
+            Configurez votre compte pour commencer
+          </p>
           {email && <p className="mt-1 text-xs text-gray-500">Connecté en tant que : {email}</p>}
         </div>
-      </div>
 
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="space-y-8 bg-white px-4 py-8 shadow sm:rounded-lg sm:px-10">
-          {/* Messages de succès */}
-          {success && (
-            <div className="rounded-md border border-green-200 bg-green-50 p-4">
-              <div className="flex">
-                <div className="flex-shrink-0">
-                  <svg className="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
-                    <path
-                      fillRule="evenodd"
-                      d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                </div>
-                <div className="ml-3">
-                  <p className="text-sm font-medium text-green-800">{success}</p>
-                </div>
+        <Card className="shadow-2xl">
+          <CardContent className="space-y-6 p-5 sm:space-y-8 sm:p-8">
+            {/* Messages de succès */}
+            {success && (
+              <Alert className="border-green-200 bg-green-50">
+                <CheckCircle2 className="h-4 w-4 text-green-600" />
+                <AlertDescription className="text-sm font-medium text-green-800 sm:text-base">
+                  {success}
+                </AlertDescription>
+              </Alert>
+            )}
+
+            {/* Formulaire changement mot de passe */}
+            <div className="space-y-4">
+              <div className="flex items-center gap-2">
+                <Lock className="h-5 w-5 text-indigo-600" />
+                <h3 className="text-base font-semibold text-gray-900 sm:text-lg">
+                  Changer votre mot de passe
+                </h3>
               </div>
-            </div>
-          )}
 
-          {/* Formulaire changement mot de passe */}
-          <div>
-            <h3 className="mb-4 text-lg font-medium text-gray-900">
-              🔐 Changer votre mot de passe
-            </h3>
+              <form onSubmit={handlePasswordChange} className="space-y-3.5 sm:space-y-4">
+                <div className="space-y-1.5">
+                  <Label htmlFor="current-password" className="text-sm font-medium sm:text-base">
+                    Mot de passe actuel
+                  </Label>
+                  <Input
+                    id="current-password"
+                    name="current-password"
+                    type="password"
+                    value={currentPassword}
+                    onChange={e => setCurrentPassword(e.target.value)}
+                    onFocus={() => handleFocus('currentPassword')}
+                    placeholder={getPlaceholder('currentPassword', currentPassword)}
+                    required
+                    className="h-11 text-base sm:h-10 sm:text-sm"
+                  />
+                  {currentPassword && (
+                    <p className="text-xs text-muted-foreground">
+                      💡 Pré-rempli avec votre mot de passe temporaire
+                    </p>
+                  )}
+                </div>
 
-            <form onSubmit={handlePasswordChange} className="space-y-4">
-              <div>
-                <label
-                  htmlFor="current-password"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  Mot de passe actuel
-                </label>
-                <input
-                  id="current-password"
-                  name="current-password"
-                  type="password"
-                  value={currentPassword}
-                  onChange={e => setCurrentPassword(e.target.value)}
-                  onFocus={() => handleFocus('currentPassword')}
-                  className="relative mt-1 block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
-                  placeholder={getPlaceholder('currentPassword', currentPassword)}
-                  required
-                />
-                {currentPassword && (
-                  <p className="mt-1 text-xs text-gray-500">
-                    💡 Pré-rempli avec votre mot de passe temporaire
-                  </p>
+                <div className="space-y-1.5">
+                  <Label htmlFor="new-password" className="text-sm font-medium sm:text-base">
+                    Nouveau mot de passe
+                  </Label>
+                  <Input
+                    id="new-password"
+                    name="new-password"
+                    type="password"
+                    value={newPassword}
+                    onChange={e => setNewPassword(e.target.value)}
+                    onFocus={() => handleFocus('newPassword')}
+                    placeholder={getPlaceholder('newPassword', newPassword)}
+                    required
+                    className="h-11 text-base sm:h-10 sm:text-sm"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <Label htmlFor="confirm-password" className="text-sm font-medium sm:text-base">
+                    Confirmer le nouveau mot de passe
+                  </Label>
+                  <Input
+                    id="confirm-password"
+                    name="confirm-password"
+                    type="password"
+                    value={confirmPassword}
+                    onChange={e => setConfirmPassword(e.target.value)}
+                    onFocus={() => handleFocus('confirmPassword')}
+                    placeholder={getPlaceholder('confirmPassword', confirmPassword)}
+                    required
+                    className="h-11 text-base sm:h-10 sm:text-sm"
+                  />
+                </div>
+
+                {passwordError && (
+                  <Alert variant="destructive">
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertDescription className="text-xs sm:text-sm">
+                      {passwordError}
+                    </AlertDescription>
+                  </Alert>
                 )}
-              </div>
 
-              <div>
-                <label htmlFor="new-password" className="block text-sm font-medium text-gray-700">
-                  Nouveau mot de passe
-                </label>
-                <input
-                  id="new-password"
-                  name="new-password"
-                  type="password"
-                  value={newPassword}
-                  onChange={e => setNewPassword(e.target.value)}
-                  onFocus={() => handleFocus('newPassword')}
-                  className="relative mt-1 block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
-                  placeholder={getPlaceholder('newPassword', newPassword)}
-                  required
-                />
-              </div>
-
-              <div>
-                <label
-                  htmlFor="confirm-password"
-                  className="block text-sm font-medium text-gray-700"
+                <Button
+                  type="submit"
+                  disabled={loading}
+                  className="h-11 w-full text-base font-semibold sm:h-10 sm:text-sm"
                 >
-                  Confirmer le nouveau mot de passe
-                </label>
-                <input
-                  id="confirm-password"
-                  name="confirm-password"
-                  type="password"
-                  value={confirmPassword}
-                  onChange={e => setConfirmPassword(e.target.value)}
-                  onFocus={() => handleFocus('confirmPassword')}
-                  className="relative mt-1 block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
-                  placeholder={getPlaceholder('confirmPassword', confirmPassword)}
-                  required
-                />
+                  {loading ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Mise à jour...
+                    </>
+                  ) : (
+                    'Changer le mot de passe'
+                  )}
+                </Button>
+              </form>
+            </div>
+
+            {/* Séparateur */}
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-gray-300" />
+              </div>
+              <div className="relative flex justify-center text-xs sm:text-sm">
+                <span className="bg-white px-3 text-muted-foreground">ET</span>
+              </div>
+            </div>
+
+            {/* Formulaire nom entreprise */}
+            <div className="space-y-4">
+              <div className="flex items-center gap-2">
+                <Building className="h-5 w-5 text-green-600" />
+                <h3 className="text-base font-semibold text-gray-900 sm:text-lg">
+                  Nom de votre entreprise
+                </h3>
               </div>
 
-              {passwordError && <div className="text-sm text-red-600">{passwordError}</div>}
+              <form onSubmit={handleCompanyNameChange} className="space-y-3.5 sm:space-y-4">
+                <div className="space-y-1.5">
+                  <Label htmlFor="company-name" className="text-sm font-medium sm:text-base">
+                    Nouveau nom d'entreprise
+                  </Label>
+                  <Input
+                    id="company-name"
+                    name="company-name"
+                    type="text"
+                    value={companyName}
+                    onChange={e => setCompanyName(e.target.value)}
+                    onFocus={() => handleFocus('companyName')}
+                    placeholder={getPlaceholder('companyName', companyName)}
+                    required
+                    className="h-11 text-base sm:h-10 sm:text-sm"
+                  />
+                </div>
 
-              <button
-                type="submit"
-                disabled={loading}
-                className="group relative flex w-full justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50"
-              >
-                {loading ? 'Mise à jour...' : 'Changer le mot de passe'}
-              </button>
-            </form>
-          </div>
+                {companyError && (
+                  <Alert variant="destructive">
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertDescription className="text-xs sm:text-sm">
+                      {companyError}
+                    </AlertDescription>
+                  </Alert>
+                )}
 
-          {/* Séparateur */}
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-300" />
+                <Button
+                  type="submit"
+                  disabled={loading}
+                  variant="default"
+                  className="h-11 w-full bg-green-600 text-base font-semibold hover:bg-green-700 sm:h-10 sm:text-sm"
+                >
+                  {loading ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Mise à jour...
+                    </>
+                  ) : (
+                    'Mettre à jour le nom'
+                  )}
+                </Button>
+              </form>
             </div>
-            <div className="relative flex justify-center text-sm">
-              <span className="bg-white px-2 text-gray-500">ET</span>
-            </div>
-          </div>
 
-          {/* Formulaire nom entreprise */}
-          <div>
-            <h3 className="mb-4 text-lg font-medium text-gray-900">🏢 Nom de votre entreprise</h3>
-
-            <form onSubmit={handleCompanyNameChange} className="space-y-4">
-              <div>
-                <label htmlFor="company-name" className="block text-sm font-medium text-gray-700">
-                  Nouveau nom d'entreprise
-                </label>
-                <input
-                  id="company-name"
-                  name="company-name"
-                  type="text"
-                  value={companyName}
-                  onChange={e => setCompanyName(e.target.value)}
-                  onFocus={() => handleFocus('companyName')}
-                  className="relative mt-1 block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
-                  placeholder={getPlaceholder('companyName', companyName)}
-                  required
-                />
-              </div>
-
-              {companyError && <div className="text-sm text-red-600">{companyError}</div>}
-
-              <button
-                type="submit"
-                disabled={loading}
-                className="group relative flex w-full justify-center rounded-md border border-transparent bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:opacity-50"
+            {/* Bouton reporter */}
+            <div className="pt-2 text-center">
+              <Button
+                onClick={handleSkipToLater}
+                variant="ghost"
+                className="text-xs text-muted-foreground underline hover:text-foreground sm:text-sm"
               >
-                {loading ? 'Mise à jour...' : 'Mettre à jour le nom'}
-              </button>
-            </form>
-          </div>
-
-          {/* Bouton reporter */}
-          <div className="text-center">
-            <button
-              onClick={handleSkipToLater}
-              className="text-sm text-gray-500 underline hover:text-gray-700"
-            >
-              ⏭️ Reporter la configuration et accéder au dashboard
-            </button>
-          </div>
-        </div>
+                ⏭️ Reporter la configuration et accéder au dashboard
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

@@ -1,0 +1,244 @@
+================================================================================
+🔍 DIAGNOSTIC: PROBLÈME "AUCUN RÔLE ASSIGNÉ"
+================================================================================
+
+Date: 9 novembre 2025
+Problème: Utilisateur invité par Super Admin arrive sur une page "Accès refusé"
+Message: "Aucun rôle assigné" + "Accès requis: canAccessTasks"
+
+================================================================================
+📊 ANALYSE DU PROBLÈME
+================================================================================
+
+1. **Edge Function handle-email-confirmation FONCTIONNE CORRECTEMENT**
+   ✅ Création du tenant
+   ✅ Création du user_role avec role_id de "tenant_admin"
+   ✅ Création du profil avec role = 'tenant_admin'
+   ✅ Création de l'employé
+
+2. **Le hook useUserRoles NE TROUVE PAS LES RÔLES**
+   - Requête: `SELECT * FROM user_roles WHERE user_id = ? AND is_active = true`
+   - Résultat: userRoles.length === 0
+   - Conséquence: canAccessTasks = false
+
+3. **CAUSES POSSIBLES:**
+
+   A. **RLS Policy bloque l'accès à user_roles**
+      - La policy sur user_roles peut filtrer par tenant_id
+      - L'utilisateur n'a peut-être pas le bon tenant_id dans ses métadonnées
+      - La policy ne reconnaît pas l'utilisateur comme ayant accès
+
+   B. **Métadonnées utilisateur incorrectes**
+      - user.user_metadata.tenant_id manquant ou incorrect
+      - user.app_metadata.tenant_id manquant ou incorrect
+      - L'utilisateur n'est pas reconnu comme membre du tenant
+
+   C. **Timing/Cache**
+      - Les données sont créées mais pas encore visibles (propagation)
+      - Le cache de Supabase n'est pas à jour
+      - L'utilisateur doit se déconnecter/reconnecter
+
+================================================================================
+🔧 SOLUTIONS À TESTER
+================================================================================
+
+**SOLUTION 1: Vérifier les RLS policies sur user_roles**
+
+Exécuter dans Supabase SQL Editor:
+
+```sql
+-- 1. Vérifier les policies existantes
+SELECT 
+  schemaname,
+  tablename,
+  policyname,
+  permissive,
+  roles,
+  cmd,
+  qual,
+  with_check
+FROM pg_policies
+WHERE tablename = 'user_roles'
+ORDER BY policyname;
+
+-- 2. Vérifier si la policy filtre par tenant
+-- Si oui, elle peut bloquer l'accès si tenant_id dans JWT ne match pas
+
+-- 3. Corriger la policy pour SELECT (si nécessaire)
+DROP POLICY IF EXISTS "user_roles_select_policy" ON public.user_roles;
+
+CREATE POLICY "user_roles_select_policy" 
+ON public.user_roles
+FOR SELECT
+USING (
+  -- Permettre à l'utilisateur de voir SES propres rôles
+  auth.uid() = user_id
+);
+
+-- Puis tester la requête manuellement
+SELECT 
+  ur.id,
+  ur.user_id,
+  ur.role_id,
+  ur.is_active,
+  ur.tenant_id,
+  ur.created_at,
+  r.name as role_name
+FROM user_roles ur
+INNER JOIN roles r ON r.id = ur.role_id
+WHERE ur.user_id = auth.uid()
+  AND ur.is_active = true;
+```
+
+**SOLUTION 2: Vérifier les métadonnées utilisateur**
+
+Exécuter dans Supabase SQL Editor:
+
+```sql
+-- Vérifier l'utilisateur avec son email
+SELECT 
+  id,
+  email,
+  email_confirmed_at,
+  raw_user_meta_data,
+  raw_app_meta_data
+FROM auth.users
+WHERE email = 'EMAIL_UTILISATEUR_ICI'
+LIMIT 1;
+
+-- Vérifier les données créées pour cet utilisateur
+-- Remplacer USER_ID par l'ID trouvé ci-dessus
+SELECT 
+  'profile' as type,
+  p.user_id,
+  p.tenant_id,
+  p.full_name,
+  p.role
+FROM profiles p
+WHERE p.user_id = 'USER_ID_ICI'
+
+UNION ALL
+
+SELECT 
+  'user_role' as type,
+  ur.user_id,
+  ur.tenant_id,
+  r.name as full_name,
+  ur.is_active::text as role
+FROM user_roles ur
+INNER JOIN roles r ON r.id = ur.role_id
+WHERE ur.user_id = 'USER_ID_ICI'
+
+UNION ALL
+
+SELECT 
+  'employee' as type,
+  e.user_id,
+  e.tenant_id,
+  e.full_name,
+  e.status as role
+FROM employees e
+WHERE e.user_id = 'USER_ID_ICI';
+```
+
+**SOLUTION 3: Mettre à jour les métadonnées de l'utilisateur**
+
+Si tenant_id manque dans raw_user_meta_data ou raw_app_meta_data:
+
+```sql
+-- Récupérer le tenant_id depuis le profil
+WITH user_tenant AS (
+  SELECT user_id, tenant_id
+  FROM profiles
+  WHERE email = 'EMAIL_UTILISATEUR_ICI'
+  LIMIT 1
+)
+UPDATE auth.users
+SET 
+  raw_user_meta_data = jsonb_set(
+    COALESCE(raw_user_meta_data, '{}'::jsonb),
+    '{tenant_id}',
+    to_jsonb((SELECT tenant_id FROM user_tenant))
+  ),
+  raw_app_meta_data = jsonb_set(
+    COALESCE(raw_app_meta_data, '{}'::jsonb),
+    '{tenant_id}',
+    to_jsonb((SELECT tenant_id FROM user_tenant))
+  )
+WHERE id = (SELECT user_id FROM user_tenant);
+```
+
+**SOLUTION 4: Déconnecter/Reconnecter**
+
+L'utilisateur doit:
+1. Se déconnecter complètement
+2. Vider le cache du navigateur (ou utiliser mode privé)
+3. Se reconnecter avec le lien d'invitation
+4. Les métadonnées JWT seront mises à jour
+
+**SOLUTION 5: Modifier handle-email-confirmation pour mettre à jour user_metadata**
+
+Ajouter dans handle-email-confirmation après la création du profil (ligne ~1195):
+
+```typescript
+// Mettre à jour les métadonnées utilisateur avec tenant_id
+console.log('🔄 Mise à jour métadonnées utilisateur avec tenant_id...');
+const { error: metadataError } = await supabaseAdmin.auth.admin.updateUserById(
+  user.id,
+  {
+    user_metadata: {
+      ...user.raw_user_meta_data,
+      tenant_id: invitation.tenant_id,
+      role: 'tenant_admin',
+      tenant_name: validatedCompanyName
+    },
+    app_metadata: {
+      ...user.raw_app_meta_data,
+      tenant_id: invitation.tenant_id,
+      role: 'tenant_admin'
+    }
+  }
+);
+
+if (metadataError) {
+  console.error('⚠️ Erreur mise à jour métadonnées (non critique):', metadataError);
+} else {
+  console.log('✅ Métadonnées utilisateur mises à jour avec tenant_id');
+}
+```
+
+================================================================================
+🎯 PLAN D'ACTION RECOMMANDÉ
+================================================================================
+
+1. **IMMÉDIAT** - Vérifier les RLS policies sur user_roles (Solution 1)
+2. **IMMÉDIAT** - Vérifier les métadonnées utilisateur (Solution 2)
+3. **SI NÉCESSAIRE** - Mettre à jour manuellement les métadonnées (Solution 3)
+4. **CORRECTIF PERMANENT** - Modifier handle-email-confirmation (Solution 5)
+5. **TEST** - Demander à l'utilisateur de se déconnecter/reconnecter (Solution 4)
+
+================================================================================
+📝 NOTES SUPPLÉMENTAIRES
+================================================================================
+
+- Le processus de création fonctionne (tenant, user_role, profile, employee créés)
+- Le problème est UNIQUEMENT dans la récupération des rôles côté frontend
+- C'est probablement un problème de RLS ou de métadonnées JWT
+- Une fois corrigé, tous les nouveaux utilisateurs invités fonctionneront
+
+================================================================================
+🔗 FICHIERS CONCERNÉS
+================================================================================
+
+Backend:
+- supabase/functions/handle-email-confirmation/index.ts (ligne 1195)
+
+Frontend:
+- src/hooks/useUserRoles.ts (ligne 33-47)
+- src/hooks/useRoleBasedAccess.ts (ligne 111)
+
+Database:
+- Tables: user_roles, profiles, auth.users
+- Policies RLS sur user_roles
+
+================================================================================

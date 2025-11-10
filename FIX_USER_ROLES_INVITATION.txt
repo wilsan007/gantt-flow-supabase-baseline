@@ -1,0 +1,192 @@
+================================================================================
+🔧 FIX: METTRE À JOUR HANDLE-EMAIL-CONFIRMATION
+================================================================================
+
+Pour résoudre définitivement le problème "Aucun rôle assigné",
+modifier la Edge Function handle-email-confirmation.
+
+================================================================================
+📍 MODIFICATION À APPORTER
+================================================================================
+
+Fichier: supabase/functions/handle-email-confirmation/index.ts
+Ligne: ~1195 (après la création du profil)
+
+AJOUTER CE CODE APRÈS LA CRÉATION DU PROFIL:
+
+```typescript
+// Mettre à jour les métadonnées utilisateur avec tenant_id
+// CRITIQUE: Sans cela, les RLS policies ne peuvent pas valider l'accès
+console.log('');
+console.log('🔄 ÉTAPE 10: Mise à jour métadonnées JWT avec tenant_id...');
+console.log('   - User ID:', user.id);
+console.log('   - Tenant ID à ajouter:', invitation.tenant_id);
+console.log('   - Rôle à ajouter: tenant_admin');
+
+const metadataStart = Date.now();
+const { data: updatedUser, error: metadataError } = await supabaseAdmin.auth.admin.updateUserById(
+  user.id,
+  {
+    user_metadata: {
+      ...user.raw_user_meta_data,
+      tenant_id: invitation.tenant_id,
+      role: 'tenant_admin',
+      tenant_name: validatedCompanyName,
+      onboarding_completed: false
+    },
+    app_metadata: {
+      tenant_id: invitation.tenant_id,
+      role: 'tenant_admin'
+    }
+  }
+);
+const metadataEnd = Date.now();
+
+console.log('   - Durée mise à jour:', (metadataEnd - metadataStart), 'ms');
+
+if (metadataError) {
+  console.error('');
+  console.error('⚠️ AVERTISSEMENT: Erreur mise à jour métadonnées');
+  console.error('   - Code erreur:', metadataError.code || 'NON DÉFINI');
+  console.error('   - Message:', metadataError.message || 'NON DÉFINI');
+  console.error('   - Impact: L\'utilisateur devra peut-être se reconnecter');
+  console.error('   - Non critique: Le processus continue');
+  console.error('');
+} else {
+  console.log('');
+  console.log('✅ ÉTAPE 10 RÉUSSIE: Métadonnées JWT mises à jour!');
+  console.log('   - tenant_id ajouté: OUI');
+  console.log('   - role ajouté: tenant_admin');
+  console.log('   - tenant_name ajouté:', validatedCompanyName);
+  console.log('   - Les RLS policies pourront maintenant valider l\'accès');
+  console.log('');
+}
+```
+
+================================================================================
+📍 EMPLACEMENT EXACT
+================================================================================
+
+Insérer APRÈS cette section (ligne ~1195):
+
+```typescript
+// 5. Créer le profil utilisateur
+console.log('📋 Création du profil...');
+const { error: profileError } = await supabaseAdmin.from('profiles').upsert({
+  user_id: user.id,
+  tenant_id: invitation.tenant_id,
+  full_name: invitation.full_name,
+  email: user.email,
+  role: 'tenant_admin',
+  updated_at: new Date().toISOString()
+}, {
+  onConflict: 'user_id'
+});
+if (profileError) {
+  console.error('❌ Erreur création profil:', profileError);
+  throw new Error(`Erreur création profil: ${profileError.message}`);
+}
+console.log('✅ Profil créé');
+
+// ← ← ← INSÉRER LE NOUVEAU CODE ICI ← ← ←
+
+// 6. Générer un employee_id unique
+console.log('🔢 Génération employee_id...');
+```
+
+================================================================================
+🎯 POURQUOI CETTE MODIFICATION?
+================================================================================
+
+1. **RLS Policies dépendent du tenant_id dans le JWT**
+   - Les policies sur user_roles vérifient probablement le tenant_id
+   - Sans tenant_id dans user_metadata/app_metadata, la policy bloque
+
+2. **Le JWT est créé à partir des métadonnées utilisateur**
+   - user_metadata → Accessible côté client
+   - app_metadata → Seulement côté serveur (plus sécurisé)
+   - Les deux sont inclus dans le JWT
+
+3. **Sans cette mise à jour:**
+   - L'utilisateur n'a pas tenant_id dans son JWT
+   - Les requêtes vers user_roles sont bloquées par RLS
+   - useUserRoles retourne userRoles = []
+   - canAccessTasks = false
+   - → "Accès refusé"
+
+4. **Avec cette mise à jour:**
+   - L'utilisateur a tenant_id dans son JWT
+   - Les RLS policies reconnaissent l'utilisateur comme membre du tenant
+   - useUserRoles retourne les rôles correctement
+   - canAccessTasks = true
+   - → Accès autorisé ✅
+
+================================================================================
+🧪 TESTER LE FIX
+================================================================================
+
+1. **Déployer la modification:**
+   ```bash
+   supabase functions deploy handle-email-confirmation
+   ```
+
+2. **Tester avec un nouvel utilisateur:**
+   - Envoyer une nouvelle invitation depuis le Super Admin
+   - L'utilisateur clique sur le lien d'invitation
+   - Vérifier qu'il arrive directement sur le dashboard
+   - Plus de message "Aucun rôle assigné"
+
+3. **Corriger les utilisateurs existants:**
+   - Exécuter le script SQL dans DIAGNOSTIC_ROLES_MANQUANTS.txt
+   - Solution 3: Mise à jour manuelle des métadonnées
+   - Demander aux utilisateurs de se déconnecter/reconnecter
+
+================================================================================
+📦 CHANGEMENTS DANS AUTRES FICHIERS (OPTIONNEL)
+================================================================================
+
+Si vous voulez aussi améliorer le feedback utilisateur:
+
+**Fichier: src/pages/PermissionsErrorPage.tsx**
+
+Ajouter un message plus utile:
+
+```typescript
+<CardDescription className="text-muted-foreground">
+  {errorCode === 'no_role_assigned' && (
+    <>
+      Vous n'avez pas encore de rôle assigné. Cela peut arriver si:
+      <ul className="mt-2 space-y-1 list-disc list-inside">
+        <li>Votre compte vient d'être créé (veuillez patienter 1-2 minutes)</li>
+        <li>Vous devez vous déconnecter et vous reconnecter</li>
+        <li>Un administrateur doit vous assigner un rôle</li>
+      </ul>
+      
+      <Button 
+        onClick={() => {
+          supabase.auth.signOut();
+          window.location.href = '/auth';
+        }}
+        className="mt-4"
+        variant="outline"
+      >
+        Se déconnecter et réessayer
+      </Button>
+    </>
+  )}
+</CardDescription>
+```
+
+================================================================================
+✅ CHECKLIST APRÈS MODIFICATION
+================================================================================
+
+- [ ] Code ajouté dans handle-email-confirmation
+- [ ] Edge Function redéployée
+- [ ] Test avec nouvelle invitation
+- [ ] Utilisateur arrive sur dashboard sans erreur
+- [ ] Vérification logs Supabase (métadonnées bien mises à jour)
+- [ ] Correction des utilisateurs existants (si nécessaire)
+- [ ] Documentation mise à jour
+
+================================================================================

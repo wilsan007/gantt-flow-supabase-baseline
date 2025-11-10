@@ -1,0 +1,333 @@
+================================================================================
+🎯 FEATURE: TEMPLATES D'ONBOARDING POUR NOUVEAUX TENANTS
+================================================================================
+
+Date: 9 novembre 2025
+Type: Nouvelle fonctionnalité
+Status: ✅ Implémenté, prêt pour test
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📋 DESCRIPTION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Quand un nouveau tenant se connecte et n'a pas encore créé de tâches,
+un écran d'onboarding interactif s'affiche avec 3 tâches template qui 
+guident l'utilisateur à travers les fonctionnalités clés:
+
+1. 🚀 Créer votre première tâche (4 étapes)
+2. 👥 Inviter un membre de l'équipe (3 étapes)
+3. 📊 Assigner une tâche à un responsable (4 étapes)
+
+Chaque template inclut:
+- Un titre et description explicatifs
+- Des actions détaillées (étapes à suivre)
+- Un temps estimé
+- Un message d'aide contextuel
+- Un bouton "Utiliser ce template" pour créer la tâche
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📁 FICHIERS CRÉÉS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. src/data/taskTemplates.ts (NEW)
+   - Définition des templates de tâches
+   - 3 templates d'onboarding principaux
+   - 1 template avancé (notifications)
+   - Types TypeScript: TaskTemplate, TemplateAction
+   - Fonctions utilitaires
+
+2. src/components/onboarding/EmptyStateWithTemplates.tsx (NEW)
+   - Composant UI pour afficher les templates
+   - Cards interactives et expansibles
+   - Progress bars pour chaque template
+   - Actions avec checkboxes
+   - Design moderne (pattern Linear/Notion)
+   - ~300 lignes de code
+
+3. src/components/onboarding/TaskTableWithOnboarding.tsx (NEW)
+   - Wrapper intelligent autour de DynamicTable
+   - Détecte si tasks.length === 0
+   - Affiche EmptyStateWithTemplates si vide
+   - Gère la création de tâches depuis templates
+   - Sauvegarde préférence dans localStorage
+   - Crée les task_actions automatiquement
+
+4. src/pages/Index.tsx (MODIFIED)
+   - Import TaskTableWithOnboarding au lieu de DynamicTable
+   - 2 lignes modifiées seulement
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🎨 UX/UI DESIGN
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Pattern inspiré de: Linear, Notion, Monday.com
+
+Header:
+  ✨ Icône Sparkles
+  │ ✨  Bienvenue sur Wadashaqayn! 
+  │                                                          │
+  │ Vous n'avez pas encore de tâches. Commencez avec ces    │
+  │ templates pour découvrir comment organiser votre        │
+  │ travail efficacement.                                    │
+  └─────────────────────────────────────────────────────────┘
+  - Icônes colorées par catégorie
+  - Badges de priorité (⚡ Prioritaire, Important, Recommandé)
+  - Temps estimé avec icône Clock
+  - Nombre d'étapes avec icône CheckCircle
+  - Bouton expand/collapse
+  - Progress bar si actions complétées
+  - Message d'aide en fond coloré
+  - Liste d'actions avec checkboxes
+  - Bouton CTA "Utiliser ce template"
+
+Footer:
+  - Bouton "Masquer les templates"
+  - Bouton "Voir le guide complet"
+  - Tip en petit texte
+
+Colors:
+  - Primary/Accent pour les gradients
+  - Rouge/Jaune/Bleu pour les priorités
+  - Vert pour les actions complétées
+  - Gris muted pour le texte secondaire
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+⚙️ FONCTIONNEMENT TECHNIQUE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. Détection tableau vide:
+   - TaskTableWithOnboarding utilise useTasks()
+   - Vérifie: !loading && tasks.length === 0
+   - Vérifie localStorage pour onboarding_dismissed
+
+2. Affichage templates:
+   - Si conditions remplies → EmptyStateWithTemplates
+   - Sinon → DynamicTable normal
+
+3. Création depuis template:
+   - User clique "Utiliser ce template"
+   - handleUseTemplate(template) appelé
+   - Crée la tâche via createTask()
+   - Récupère l'ID de la nouvelle tâche
+   - Crée toutes les actions via supabase.insert()
+   - Toast de confirmation
+   - Refresh automatique du tableau
+
+4. Masquer l'onboarding:
+   - User clique "Masquer les templates"
+   - Sauvegarde dans localStorage par tenant
+   - Affiche simple empty state avec### **Option 2: Forcer l'affichage (dev)**
+```javascript
+// Dans la console navigateur:
+localStorage.removeItem('wadashaqayn_onboarding_dismissed_' + tenantId);
+location.reload();
+```
+   - Option de réaffichage disponible
+
+5. Persistence:
+   - localStorage: wadashaqayn_onboarding_dismissed_{tenantId}
+   - Permet de masquer définitivement ou réafficher
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📊 DONNÉES DES TEMPLATES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Template 1: "🚀 Créer votre première tâche"
+  Priority: High
+  Category: Onboarding
+  Time: 5 min
+  Actions (4):
+    1. Cliquer sur "+ Nouvelle tâche" (25%)
+    2. Remplir informations de base (25%)
+    3. Choisir une priorité (25%)
+    4. Sauvegarder (25%)
+
+Template 2: "👥 Inviter un membre de l'équipe"
+  Priority: High
+  Category: Collaboration
+  Time: 3 min
+  Actions (3):
+    1. Aller dans menu RH > Inviter (30%)
+    2. Entrer email (30%)
+    3. Choisir rôle (40%)
+
+Template 3: "📊 Assigner une tâche"
+  Priority: Medium
+  Category: Setup
+  Time: 2 min
+  Actions (4):
+    1. Créer/sélectionner tâche (25%)
+    2. Cliquer "Assigné à" (25%)
+    3. Sélectionner membre (25%)
+    4. Notification envoyée (25%)
+
+Template 4 (Advanced): "🔔 Configurer notifications"
+  Priority: Low
+  Category: Setup
+  Time: 3 min
+  Actions (3):
+    1. Ouvrir paramètres (33%)
+    2. Onglet Notifications (33%)
+    3. Activer email/push (34%)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🧪 TESTS À EFFECTUER
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Test 1: Premier chargement (nouveau tenant)
+  1. Se connecter avec un nouveau tenant (0 tâches)
+  2. ✅ Vérifier que les 3 templates s'affichent
+  3. ✅ Vérifier le design (cards, icônes, couleurs)
+  4. ✅ Cliquer pour expand/collapse chaque template
+  5. ✅ Vérifier les actions et descriptions
+
+Test 2: Utiliser un template
+  1. Cliquer "Utiliser ce template" sur Template 1
+  2. ✅ Toast de confirmation apparaît
+  3. ✅ Tâche créée dans le tableau
+  4. ✅ Les 4 actions sont créées
+  5. ✅ Template disparaît → DynamicTable s'affiche
+
+Test 3: Masquer l'onboarding
+  1. Cliquer "Masquer les templates"
+  2. ✅ Toast de confirmation
+  3. ✅ Simple empty state s'affiche
+  4. ✅ Bouton "Afficher à nouveau" visible
+  5. ✅ Cliquer → Templates réapparaissent
+
+Test 4: Persistence localStorage
+  1. Masquer templates
+  2. Recharger la page (F5)
+  3. ✅ Templates toujours masqués
+  4. Supprimer localStorage
+  5. ✅ Templates réapparaissent
+
+Test 5: Multi-tenant
+  1. Se connecter avec Tenant A
+  2. Masquer templates
+  3. Se connecter avec Tenant B
+  4. ✅ Templates visibles pour Tenant B
+  5. ✅ localStorage isolé par tenant
+
+Test 6: Responsive
+  1. Tester sur mobile
+  2. ✅ Cards empilées verticalement
+  3. ✅ Boutons tactiles assez grands
+  4. ✅ Texte lisible
+  5. ✅ Scroll fluide
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🚀 AMÉLIORATIONS FUTURES (OPTIONNELLES)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. Templates personnalisés par industrie
+   - Choix au signup: Construction, IT, Marketing, etc.
+   - Templates adaptés au domaine
+
+2. Progress tracking
+   - Sauvegarder quelles étapes sont complétées
+   - Afficher progression globale "2/3 templates utilisés"
+
+3. Vidéos tutoriels
+   - Embed vidéo dans chaque template
+   - Liens vers documentation
+
+4. Gamification
+   - Badges "Premier pas", "Collaborateur", etc.
+   - Points de progression
+   - Celebration après complétion
+
+5. A/B Testing
+   - Tester différentes formulations
+   - Mesurer conversion (templates utilisés)
+
+6. Analytics
+   - Tracker quels templates sont les plus utilisés
+   - Temps moyen avant utilisation
+   - Taux d'abandon
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✅ CHECKLIST AVANT COMMIT
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Code:
+  [x] src/data/taskTemplates.ts créé
+  [x] src/components/onboarding/EmptyStateWithTemplates.tsx créé
+  [x] src/components/onboarding/TaskTableWithOnboarding.tsx créé
+  [x] src/pages/Index.tsx modifié
+
+TypeScript:
+  [ ] Compilation sans erreur
+  [ ] Tous les types définis
+  [ ] Imports corrects
+
+Tests manuels:
+  [ ] Affichage templates (nouveau tenant)
+  [ ] Utiliser template → Tâche créée
+  [ ] Actions créées automatiquement
+  [ ] Masquer/Réafficher fonctionne
+  [ ] localStorage persistence
+  [ ] Design responsive mobile
+
+Documentation:
+  [x] ONBOARDING_TEMPLATES_GUIDE.txt créé
+  [ ] Ajouter au CHANGES_READY_FOR_COMMIT.txt
+
+Performance:
+  [ ] Pas de ralentissement chargement
+  [ ] Transitions fluides
+  [ ] Pas de memory leaks
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📦 FICHIERS À COMMITTER
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Nouveaux fichiers:
+  src/data/taskTemplates.ts
+  src/components/onboarding/EmptyStateWithTemplates.tsx
+  src/components/onboarding/TaskTableWithOnboarding.tsx
+
+Fichiers modifiés:
+  src/pages/Index.tsx
+
+Documentation:
+  ONBOARDING_TEMPLATES_GUIDE.txt
+
+Total: 5 fichiers (3 nouveaux + 1 modifié + 1 doc)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+💬 MESSAGE DE COMMIT SUGGÉRÉ
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+feat: Ajouter templates d'onboarding pour nouveaux tenants
+
+🎯 Templates interactifs
+- 3 tâches template avec étapes détaillées
+- Affichage automatique quand tableau vide
+- Design moderne inspiré Linear/Notion
+- Cards expansibles avec progress bars
+
+🚀 Création automatique
+- Cliquer sur "Utiliser ce template" crée la tâche
+- Actions créées automatiquement dans task_actions
+- Toast de confirmation et refresh du tableau
+
+💾 Persistence
+- LocalStorage pour masquer définitivement
+- Isolé par tenant_id
+- Option de réaffichage disponible
+
+📱 Responsive
+- Mobile-friendly avec cards empilées
+- Boutons tactiles optimisés
+- Animations fluides
+
+Fichiers:
+- src/data/taskTemplates.ts (NEW)
+- src/components/onboarding/EmptyStateWithTemplates.tsx (NEW)
+- src/components/onboarding/TaskTableWithOnboarding.tsx (NEW)
+- src/pages/Index.tsx (MODIFIED)
+
+Pattern: Linear, Notion, Monday.com onboarding flows
+
+================================================================================

@@ -46,88 +46,107 @@ const HRPage = () => {
 
   return (
     <ResponsiveLayout>
-      {/* Header avec navigation retour */}
-      <div className={`mb-6 flex items-start justify-between ${isMobile ? 'mb-4' : 'mb-8'}`}>
-        <div className="flex items-center gap-4">
+      {/* Header avec navigation retour - Ultra compact mobile */}
+      <div className="mb-4 flex flex-col gap-3 sm:mb-6 md:mb-8 md:flex-row md:items-start md:justify-between">
+        <div className="flex items-center gap-2 sm:gap-4">
           <Button
             variant="outline"
-            size={isMobile ? 'sm' : 'default'}
+            size="sm"
             onClick={() => navigate('/')}
-            className="hover-glow"
+            className="hover-glow h-9 w-9 shrink-0 p-0 sm:h-10 sm:w-auto sm:px-4"
           >
-            <ArrowLeft className={isMobile ? 'h-3 w-3' : 'h-4 w-4'} />
-            {!isMobile && 'Retour'}
+            <ArrowLeft className="h-4 w-4" />
+            <span className="sr-only sm:not-sr-only sm:ml-2">Retour</span>
           </Button>
-          <div className="flex-1">
-            <h1
-              className={`bg-gradient-to-r from-primary via-accent to-tech-purple bg-clip-text font-bold text-transparent drop-shadow-sm ${isMobile ? 'text-2xl' : 'text-4xl'}`}
-            >
-              Gestion des Ressources Humaines
+          <div className="min-w-0 flex-1">
+            <h1 className="truncate bg-gradient-to-r from-primary via-accent to-tech-purple bg-clip-text text-xl font-bold text-transparent drop-shadow-sm sm:text-2xl md:text-4xl">
+              <span className="hidden sm:inline">Gestion des Ressources Humaines</span>
+              <span className="sm:hidden">RH</span>
             </h1>
-            <p className={`font-medium text-muted-foreground ${isMobile ? 'text-sm' : 'text-lg'}`}>
-              Module complet de gestion RH
+            <p className="mt-0.5 truncate text-xs font-medium text-muted-foreground sm:text-sm md:text-lg">
+              <span className="hidden sm:inline">Module complet de gestion RH</span>
+              <span className="sm:hidden">Gestion RH</span>
             </p>
           </div>
         </div>
-        <div className={isMobile ? 'ml-2' : 'ml-4'}>
+        <div className="self-end sm:self-auto">
           <ThemeToggle />
         </div>
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList
-          className={`modern-card glow-primary grid w-full border-2 bg-gradient-to-r from-primary/10 via-accent/10 to-tech-purple/10 ${isMobile ? 'mb-4 grid-cols-3 gap-2 p-2' : 'mb-8 grid-cols-6 gap-2 p-3'}`}
-        >
-          <TabsTrigger value="dashboard" className="flex items-center gap-2">
-            <Building className="h-4 w-4" />
-            {!isMobile && 'Dashboard'}
-          </TabsTrigger>
-          <TabsTrigger value="personnel" className="flex items-center gap-2">
-            <Users className="h-4 w-4" />
-            {!isMobile && 'Personnel'}
-          </TabsTrigger>
-          <TabsTrigger value="performance" className="flex items-center gap-2">
-            <TrendingUp className="h-4 w-4" />
-            {!isMobile && 'Performance'}
-          </TabsTrigger>
-          <TabsTrigger value="operations" className="flex items-center gap-2">
-            <Clock className="h-4 w-4" />
-            {!isMobile && 'Opérations'}
-          </TabsTrigger>
-          <TabsTrigger value="development" className="flex items-center gap-2">
-            <BookOpen className="h-4 w-4" />
-            {!isMobile && 'Développement'}
-          </TabsTrigger>
-          <TabsTrigger value="safety" className="flex items-center gap-2">
-            <Shield className="h-4 w-4" />
-            {!isMobile && 'Sécurité'}
-          </TabsTrigger>
-        </TabsList>
+        {/* Tabs principales - Scroll horizontal mobile */}
+        <div className="-mx-4 sm:mx-0">
+          <TabsList className="modern-card glow-primary flex w-full gap-1 overflow-x-auto border-2 bg-gradient-to-r from-primary/10 via-accent/10 to-tech-purple/10 p-2 sm:grid sm:grid-cols-6 sm:gap-2 sm:p-3 md:mb-8">
+            <TabsTrigger
+              value="dashboard"
+              className="flex shrink-0 items-center gap-2 whitespace-nowrap px-3 sm:px-4"
+            >
+              <Building className="h-4 w-4" />
+              <span className="hidden sm:inline">Dashboard</span>
+            </TabsTrigger>
+            <TabsTrigger
+              value="personnel"
+              className="flex shrink-0 items-center gap-2 whitespace-nowrap px-3 sm:px-4"
+            >
+              <Users className="h-4 w-4" />
+              <span className="hidden sm:inline">Personnel</span>
+            </TabsTrigger>
+            <TabsTrigger
+              value="performance"
+              className="flex shrink-0 items-center gap-2 whitespace-nowrap px-3 sm:px-4"
+            >
+              <TrendingUp className="h-4 w-4" />
+              <span className="hidden sm:inline">Performance</span>
+            </TabsTrigger>
+            <TabsTrigger
+              value="operations"
+              className="flex shrink-0 items-center gap-2 whitespace-nowrap px-3 sm:px-4"
+            >
+              <Clock className="h-4 w-4" />
+              <span className="hidden sm:inline">Opérations</span>
+            </TabsTrigger>
+            <TabsTrigger
+              value="development"
+              className="flex shrink-0 items-center gap-2 whitespace-nowrap px-3 sm:px-4"
+            >
+              <BookOpen className="h-4 w-4" />
+              <span className="hidden sm:inline">Développement</span>
+            </TabsTrigger>
+            <TabsTrigger
+              value="safety"
+              className="flex shrink-0 items-center gap-2 whitespace-nowrap px-3 sm:px-4"
+            >
+              <Shield className="h-4 w-4" />
+              <span className="hidden sm:inline">Sécurité</span>
+            </TabsTrigger>
+          </TabsList>
+        </div>
 
-        <TabsContent value="dashboard" className={isMobile ? 'mt-2' : 'mt-6'}>
+        <TabsContent value="dashboard" className="mt-4 sm:mt-6">
           <div className="modern-card transition-smooth hover-glow rounded-xl">
             <HRDashboard />
           </div>
         </TabsContent>
 
-        <TabsContent value="personnel" className={isMobile ? 'mt-2' : 'mt-6'}>
-          <div className="space-y-6">
-            <div className="mb-4 flex gap-2">
+        <TabsContent value="personnel" className="mt-4 sm:mt-6">
+          <div className="space-y-4 sm:space-y-6">
+            <div className="flex gap-2">
               <Button
                 variant={activeSubTab.employees === 'management' ? 'default' : 'outline'}
                 onClick={() => setActiveSubTab(prev => ({ ...prev, employees: 'management' }))}
-                className="flex-1"
+                className="h-10 flex-1 text-xs sm:h-auto sm:text-sm"
               >
-                <Users className="mr-2 h-4 w-4" />
-                Gestion Employés
+                <Users className="mr-1.5 h-4 w-4 sm:mr-2" />
+                <span className="hidden sm:inline">Gestion </span>Employés
               </Button>
               <Button
                 variant={activeSubTab.employees === 'departments' ? 'default' : 'outline'}
                 onClick={() => setActiveSubTab(prev => ({ ...prev, employees: 'departments' }))}
-                className="flex-1"
+                className="h-10 flex-1 text-xs sm:h-auto sm:text-sm"
               >
-                <Building className="mr-2 h-4 w-4" />
-                Départements
+                <Building className="mr-1.5 h-4 w-4 sm:mr-2" />
+                Départ.
               </Button>
             </div>
 
@@ -138,54 +157,55 @@ const HRPage = () => {
           </div>
         </TabsContent>
 
-        <TabsContent value="performance" className={isMobile ? 'mt-2' : 'mt-6'}>
+        <TabsContent value="performance" className="mt-4 sm:mt-6">
           <div className="modern-card transition-smooth hover-glow rounded-xl">
             <PerformanceManagement />
           </div>
         </TabsContent>
 
-        <TabsContent value="operations" className={isMobile ? 'mt-2' : 'mt-6'}>
-          <div className="space-y-6">
-            <div className="mb-4 flex flex-wrap gap-2">
+        <TabsContent value="operations" className="mt-4 sm:mt-6">
+          <div className="space-y-4 sm:space-y-6">
+            {/* Sous-tabs opérations - Grid responsive */}
+            <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap">
               <Button
                 variant={activeSubTab.operations === 'onboarding' ? 'default' : 'outline'}
                 onClick={() => setActiveSubTab(prev => ({ ...prev, operations: 'onboarding' }))}
-                className="min-w-32 flex-1"
+                className="h-10 justify-start text-xs sm:min-w-32 sm:flex-1 sm:justify-center sm:text-sm"
               >
-                <Users className="mr-2 h-4 w-4" />
-                Onboarding
+                <Users className="mr-1.5 h-4 w-4" />
+                <span className="truncate">Onboarding</span>
               </Button>
               <Button
                 variant={activeSubTab.operations === 'leaves' ? 'default' : 'outline'}
                 onClick={() => setActiveSubTab(prev => ({ ...prev, operations: 'leaves' }))}
-                className="min-w-32 flex-1"
+                className="h-10 justify-start text-xs sm:min-w-32 sm:flex-1 sm:justify-center sm:text-sm"
               >
-                <Calendar className="mr-2 h-4 w-4" />
-                Congés
+                <Calendar className="mr-1.5 h-4 w-4" />
+                <span className="truncate">Congés</span>
               </Button>
               <Button
                 variant={activeSubTab.operations === 'time' ? 'default' : 'outline'}
                 onClick={() => setActiveSubTab(prev => ({ ...prev, operations: 'time' }))}
-                className="min-w-32 flex-1"
+                className="h-10 justify-start text-xs sm:min-w-32 sm:flex-1 sm:justify-center sm:text-sm"
               >
-                <Clock className="mr-2 h-4 w-4" />
-                Temps
+                <Clock className="mr-1.5 h-4 w-4" />
+                <span className="truncate">Temps</span>
               </Button>
               <Button
                 variant={activeSubTab.operations === 'expenses' ? 'default' : 'outline'}
                 onClick={() => setActiveSubTab(prev => ({ ...prev, operations: 'expenses' }))}
-                className="min-w-32 flex-1"
+                className="h-10 justify-start text-xs sm:min-w-32 sm:flex-1 sm:justify-center sm:text-sm"
               >
-                <Building className="mr-2 h-4 w-4" />
-                Frais
+                <Building className="mr-1.5 h-4 w-4" />
+                <span className="truncate">Frais</span>
               </Button>
               <Button
                 variant={activeSubTab.operations === 'payroll' ? 'default' : 'outline'}
                 onClick={() => setActiveSubTab(prev => ({ ...prev, operations: 'payroll' }))}
-                className="min-w-32 flex-1"
+                className="h-10 justify-start text-xs sm:min-w-32 sm:flex-1 sm:justify-center sm:text-sm"
               >
-                <TrendingUp className="mr-2 h-4 w-4" />
-                Paie
+                <TrendingUp className="mr-1.5 h-4 w-4" />
+                <span className="truncate">Paie</span>
               </Button>
             </div>
 
@@ -193,29 +213,29 @@ const HRPage = () => {
               {activeSubTab.operations === 'onboarding' && <OnboardingOffboarding />}
               {activeSubTab.operations === 'leaves' && (
                 <div className="space-y-6">
-                  <div className="mb-4 flex flex-wrap gap-2">
+                  <div className="flex flex-wrap gap-2">
                     <Button
                       variant={activeSubTab.leaves === 'requests' ? 'default' : 'outline'}
                       onClick={() => setActiveSubTab(prev => ({ ...prev, leaves: 'requests' }))}
-                      className="min-w-32 flex-1"
+                      className="h-10 flex-1 text-xs sm:min-w-32 sm:text-sm"
                     >
-                      <Calendar className="mr-2 h-4 w-4" />
+                      <Calendar className="mr-1.5 h-4 w-4" />
                       Demandes
                     </Button>
                     <Button
                       variant={activeSubTab.leaves === 'balances' ? 'default' : 'outline'}
                       onClick={() => setActiveSubTab(prev => ({ ...prev, leaves: 'balances' }))}
-                      className="min-w-32 flex-1"
+                      className="h-10 flex-1 text-xs sm:min-w-32 sm:text-sm"
                     >
-                      <Clock className="mr-2 h-4 w-4" />
+                      <Clock className="mr-1.5 h-4 w-4" />
                       Soldes
                     </Button>
                     <Button
                       variant={activeSubTab.leaves === 'types' ? 'default' : 'outline'}
                       onClick={() => setActiveSubTab(prev => ({ ...prev, leaves: 'types' }))}
-                      className="min-w-32 flex-1"
+                      className="h-10 flex-1 text-xs sm:min-w-32 sm:text-sm"
                     >
-                      <Building className="mr-2 h-4 w-4" />
+                      <Building className="mr-1.5 h-4 w-4" />
                       Types
                     </Button>
                   </div>
@@ -228,22 +248,23 @@ const HRPage = () => {
               )}
               {activeSubTab.operations === 'time' && (
                 <div className="space-y-6">
-                  <div className="mb-4 flex gap-2">
+                  <div className="flex gap-2">
                     <Button
                       variant={activeSubTab.time === 'attendance' ? 'default' : 'outline'}
                       onClick={() => setActiveSubTab(prev => ({ ...prev, time: 'attendance' }))}
-                      className="flex-1"
+                      className="h-10 flex-1 text-xs sm:text-sm"
                     >
-                      <Clock className="mr-2 h-4 w-4" />
+                      <Clock className="mr-1.5 h-4 w-4" />
                       Présences
                     </Button>
                     <Button
                       variant={activeSubTab.time === 'timesheets' ? 'default' : 'outline'}
                       onClick={() => setActiveSubTab(prev => ({ ...prev, time: 'timesheets' }))}
-                      className="flex-1"
+                      className="h-10 flex-1 text-xs sm:text-sm"
                     >
-                      <Calendar className="mr-2 h-4 w-4" />
-                      Feuilles de temps
+                      <Calendar className="mr-1.5 h-4 w-4" />
+                      <span className="hidden sm:inline">Feuilles de temps</span>
+                      <span className="sm:hidden">Temps</span>
                     </Button>
                   </div>
                   <div>
@@ -258,16 +279,16 @@ const HRPage = () => {
           </div>
         </TabsContent>
 
-        <TabsContent value="development" className={isMobile ? 'mt-2' : 'mt-6'}>
-          <div className="space-y-6">
-            <div className="mb-4 flex gap-2">
+        <TabsContent value="development" className="mt-4 sm:mt-6">
+          <div className="space-y-4 sm:space-y-6">
+            <div className="flex gap-2">
               <Button
                 variant={activeSubTab.development === 'skills' ? 'default' : 'outline'}
                 onClick={() => setActiveSubTab(prev => ({ ...prev, development: 'skills' }))}
-                className="flex-1"
+                className="h-10 flex-1 text-xs sm:h-auto sm:text-sm"
               >
-                <TrendingUp className="mr-2 h-4 w-4" />
-                Compétences & Formation
+                <TrendingUp className="mr-1.5 h-4 w-4 sm:mr-2" />
+                <span className="hidden sm:inline">Compétences & </span>Formation
               </Button>
             </div>
 
@@ -277,7 +298,7 @@ const HRPage = () => {
           </div>
         </TabsContent>
 
-        <TabsContent value="safety" className={isMobile ? 'mt-2' : 'mt-6'}>
+        <TabsContent value="safety" className="mt-4 sm:mt-6">
           <div className="modern-card transition-smooth hover-glow rounded-xl">
             <HealthSafety />
           </div>

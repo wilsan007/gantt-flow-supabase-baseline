@@ -3,7 +3,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { LandscapeWrapper } from '@/components/layout/LandscapeWrapper';
 // 🎨 Utilisation des vues ORIGINALES avec design complet + performance Enterprise
-import DynamicTable from '@/components/vues/table/DynamicTable';
+import { TaskTableWithOnboarding } from '@/components/onboarding/TaskTableWithOnboarding';
 import KanbanBoard from '@/components/vues/kanban/KanbanBoard';
 import GanttChart from '@/components/vues/gantt/GanttChart';
 // import { HRDashboard } from "@/components/hr/HRDashboard"; // Temporarily commented out
@@ -30,23 +30,23 @@ const Index = () => {
     <div className="h-full w-full">
       <Tabs value={activeTab} onValueChange={setActiveTab} className="flex h-full w-full flex-col">
         <TabsList
-          className={`modern-card glow-primary grid w-full border-2 bg-gradient-to-r from-primary/10 via-accent/10 to-tech-purple/10 ${isMobile ? 'grid-cols-3 gap-1 p-1' : 'grid-cols-3 p-2'}`}
+          className={`modern-card glow-primary grid w-full border-2 bg-gradient-to-r from-primary/10 via-accent/10 to-tech-purple/10 ${isMobile ? 'grid-cols-3 gap-1 p-1.5' : 'grid-cols-3 gap-2 p-2'}`}
         >
           <TabsTrigger
             value="gantt"
-            className={`transition-smooth hover-glow font-semibold data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-accent data-[state=active]:text-white ${isMobile ? 'py-2 text-sm' : ''}`}
+            className={`transition-smooth hover-glow font-semibold data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-accent data-[state=active]:text-white ${isMobile ? 'min-h-[40px] py-2.5 text-xs' : 'text-sm'}`}
           >
             {isMobile ? 'Gantt' : 'Diagramme de Gantt'}
           </TabsTrigger>
           <TabsTrigger
             value="kanban"
-            className={`transition-smooth hover-glow font-semibold data-[state=active]:bg-gradient-to-r data-[state=active]:from-accent data-[state=active]:to-tech-purple data-[state=active]:text-white ${isMobile ? 'py-2 text-sm' : ''}`}
+            className={`transition-smooth hover-glow font-semibold data-[state=active]:bg-gradient-to-r data-[state=active]:from-accent data-[state=active]:to-tech-purple data-[state=active]:text-white ${isMobile ? 'min-h-[40px] py-2.5 text-xs' : 'text-sm'}`}
           >
             Kanban
           </TabsTrigger>
           <TabsTrigger
             value="table"
-            className={`transition-smooth hover-glow font-semibold data-[state=active]:bg-gradient-to-r data-[state=active]:from-tech-purple data-[state=active]:to-primary data-[state=active]:text-white ${isMobile ? 'py-2 text-sm' : ''}`}
+            className={`transition-smooth hover-glow font-semibold data-[state=active]:bg-gradient-to-r data-[state=active]:from-tech-purple data-[state=active]:to-primary data-[state=active]:text-white ${isMobile ? 'min-h-[40px] py-2.5 text-xs' : 'text-sm'}`}
           >
             {isMobile ? 'Tableau' : 'Tableau Dynamique'}
           </TabsTrigger>
@@ -67,7 +67,7 @@ const Index = () => {
             forceOnTablet={true}
             customMessage="Pour profiter pleinement du tableau, veuillez tourner votre appareil en mode paysage"
           >
-            <DynamicTable />
+            <TaskTableWithOnboarding />
           </LandscapeWrapper>
         </TabsContent>
 

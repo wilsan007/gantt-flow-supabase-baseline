@@ -19,13 +19,13 @@ const STATUS_CONFIG = {
 };
 
 export default function MyTrainingsPage() {
-  const { trainings, enrollments, loading } = useTrainings();
+  const { trainings, myEnrollments: enrollments, loading } = useTrainings();
   const navigate = useNavigate();
 
-  const myEnrollments = enrollments
+  const myEnrollments = (enrollments || [])
     .map(enrollment => ({
       ...enrollment,
-      training: trainings.find(t => t.id === enrollment.training_id),
+      training: (trainings || []).find(t => t.id === enrollment.training_id),
     }))
     .filter(e => e.training);
 
@@ -34,24 +34,31 @@ export default function MyTrainingsPage() {
   const cancelled = myEnrollments.filter(e => e.status === 'cancelled');
 
   return (
-    <div className="container mx-auto space-y-6 p-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="flex items-center gap-2 text-3xl font-bold">
-            <BookOpen className="h-8 w-8" />
-            Mes Formations
+    <div className="container mx-auto space-y-4 p-4 sm:space-y-6 sm:p-6">
+      {/* Header - Responsive */}
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="min-w-0 flex-1">
+          <h1 className="flex items-center gap-2 text-xl font-bold sm:text-2xl md:text-3xl">
+            <BookOpen className="h-6 w-6 shrink-0 sm:h-7 sm:w-7 md:h-8 md:w-8" />
+            <span className="truncate">Mes Formations</span>
           </h1>
-          <p className="mt-1 text-muted-foreground">
-            Suivez votre progression et vos certifications
+          <p className="mt-1 text-xs text-muted-foreground sm:text-sm md:text-base">
+            <span className="hidden sm:inline">Suivez votre progression et vos certifications</span>
+            <span className="sm:hidden">Progression formations</span>
           </p>
         </div>
 
-        <Button onClick={() => navigate('/training-catalog')}>Parcourir le catalogue</Button>
+        <Button
+          onClick={() => navigate('/training-catalog')}
+          className="h-11 w-full font-semibold sm:h-10 sm:w-auto"
+        >
+          <span className="hidden sm:inline">Parcourir le catalogue</span>
+          <span className="sm:hidden">Catalogue</span>
+        </Button>
       </div>
 
-      {/* Statistiques */}
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
+      {/* Statistiques - Grid 2 cols mobile */}
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-4">
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-medium text-muted-foreground">Total</CardTitle>

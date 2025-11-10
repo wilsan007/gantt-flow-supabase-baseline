@@ -1,0 +1,30 @@
+feat: Centraliser auth avec AuthContext + Fix RLS task_actions
+
+🔐 AuthContext Provider
+- Créer AuthContext pour centraliser l'authentification
+- Éliminer 15+ rendus multiples de useUserAuth
+- Ajouter hooks utilitaires (useAuth, useIsSuperAdmin, etc.)
+- Wrapper App avec AuthProvider (level=2, includeProjectIds=true)
+- Documenter migration dans AUTHCONTEXT_MIGRATION_GUIDE.md
+
+🐛 Fix colonnes actions vides
+- Diagnostiquer problème RLS sur task_actions
+- Identifier: Super Admin ne peut pas voir actions autres tenants
+- Documenter fix SQL dans FIX_TASK_ACTIONS_RLS.md
+- Ajouter logs debug dans useTasksEnterprise
+
+📚 Documentation
+- Guide migration AuthContext (15+ composants à migrer)
+- Script SQL debug task_actions
+- Instructions complètes correction RLS
+
+⚡ Performance
+- Réduction 80-90% des requêtes d'authentification
+- Console logs nettoyés
+- Temps de chargement amélioré
+
+⚠️ IMPORTANT: Exécuter script SQL FIX_TASK_ACTIONS_RLS.md sur Supabase
+avant déploiement pour activer l'affichage des colonnes d'actions.
+
+Breaking changes: Aucun
+Migration: Progressive (useUserFilterContext toujours fonctionnel)

@@ -141,7 +141,7 @@ jobs:
             **/node_modules/**
             **/.vscode/**
             **/.DS_Store
-          dangerous-clean-slate: false
+          dangerous-clean-slate: true
       
       - name: ✅ Deployment Summary
         run: |

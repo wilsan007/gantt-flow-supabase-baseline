@@ -22,6 +22,7 @@ import { SessionIndicator } from '@/components/SessionIndicator';
 interface AppLayoutWithSidebarProps {
   children: React.ReactNode;
   accessRights: any;
+  accessLoading: boolean;
   showWarning: boolean;
   timeLeftFormatted: string;
   signOut: () => Promise<void>;
@@ -31,6 +32,7 @@ interface AppLayoutWithSidebarProps {
 export const AppLayoutWithSidebar: React.FC<AppLayoutWithSidebarProps> = ({
   children,
   accessRights,
+  accessLoading,
   showWarning,
   timeLeftFormatted,
   signOut,
@@ -61,6 +63,7 @@ export const AppLayoutWithSidebar: React.FC<AppLayoutWithSidebarProps> = ({
       {/* Sidebar Desktop - Toujours visible sur large screens */}
       <NotionStyleSidebar
         accessRights={accessRights}
+        accessLoading={accessLoading}
         isTenantAdmin={isTenantAdmin}
         signOut={signOut}
       />
@@ -79,6 +82,7 @@ export const AppLayoutWithSidebar: React.FC<AppLayoutWithSidebarProps> = ({
           <div className="fixed inset-y-0 left-0 z-50 w-80 max-w-[85vw] lg:hidden">
             <NotionStyleSidebar
               accessRights={accessRights}
+              accessLoading={accessLoading}
               isTenantAdmin={isTenantAdmin}
               signOut={signOut}
             />

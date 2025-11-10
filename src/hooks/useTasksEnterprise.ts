@@ -260,13 +260,13 @@ export const useTasksEnterprise = (filters?: TaskFilters) => {
           }
         }
 
-        // console.log('🔄 Fetching tasks data:', {
-        //   tenant: tenantId || 'ALL_TENANTS (Super Admin)',
-        //   isSuperAdmin: isSuper,
-        //   filters,
-        //   page,
-        //   cacheKey
-        // });
+        console.log('🔄 Fetching tasks data:', {
+          tenant: tenantId || 'ALL_TENANTS (Super Admin)',
+          isSuperAdmin: isSuper,
+          filters,
+          page,
+          cacheKey,
+        });
 
         // Construction et exécution de la requête (Pattern Enterprise)
         const query = buildQuery(isSuper, tenantId, filters, page, pagination.limit);
@@ -274,6 +274,19 @@ export const useTasksEnterprise = (filters?: TaskFilters) => {
 
         if (tasksError) {
           throw new Error(tasksError.message);
+        }
+
+        // 🔍 DEBUG: Vérifier si task_actions est chargé
+        if (tasks && tasks.length > 0) {
+          console.log('🔍 DEBUG useTasksEnterprise:', {
+            totalTasks: tasks.length,
+            firstTask: tasks[0]?.title,
+            firstTaskId: tasks[0]?.id,
+            hasTaskActions: 'task_actions' in tasks[0],
+            firstTaskActions: tasks[0]?.task_actions,
+            taskActionsType: typeof tasks[0]?.task_actions,
+            allKeys: Object.keys(tasks[0] || {}),
+          });
         }
 
         // Calculer les métriques business (Pattern Salesforce)

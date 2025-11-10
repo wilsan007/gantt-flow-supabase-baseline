@@ -13,16 +13,21 @@ import { TaskFixedColumns } from './TaskFixedColumns';
 import { TaskActionColumns } from './TaskActionColumns';
 import { LoadingState } from '@/components/ui/loading-state';
 import { ErrorState } from '@/components/ui/error-state';
-import { TaskEditDialog } from '../dialogs/TaskEditDialog';
-import { TaskCreationDialog } from '../dialogs/TaskCreationDialog';
+import { ModernTaskEditDialog } from '@/components/tasks/ModernTaskEditDialog';
+import { ModernTaskCreationDialog } from '@/components/tasks/ModernTaskCreationDialog';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { ProjectTableView } from '../projects/ProjectTableView';
 import { AdvancedFilters, type TaskFilters } from '@/components/tasks/AdvancedFilters';
 import { useTaskFilters } from '@/hooks/useTaskFilters';
 
-const DynamicTable = () => {
+interface DynamicTableProps {
+  demoTasks?: Task[];
+  isDemoMode?: boolean;
+}
+
+const DynamicTable = ({ demoTasks, isDemoMode = false }: DynamicTableProps = {}) => {
   const {
-    tasks,
+    tasks: realTasks,
     loading,
     error,
     duplicateTask,
@@ -37,6 +42,9 @@ const DynamicTable = () => {
     createTask,
     updateTask,
   } = useTasks();
+
+  // Utiliser demoTasks si en mode démo, sinon utiliser les vraies tâches
+  const tasks = isDemoMode && demoTasks ? demoTasks : realTasks;
   const isMobile = useIsMobile();
   const { projects, loading: projectsLoading, error: projectsError } = useProjects();
 
@@ -92,6 +100,17 @@ const DynamicTable = () => {
   // Synchroniser les tâches optimistes avec les vraies tâches
   useEffect(() => {
     setOptimisticTasks(tasks);
+    // 🔍 DEBUG: Vérifier si les actions sont chargées
+    if (tasks.length > 0) {
+      console.log('📊 DEBUG - Total tasks:', tasks.length);
+      console.log('📊 DEBUG - First task:', tasks[0]?.title);
+      console.log('📊 DEBUG - First task actions:', tasks[0]?.task_actions);
+      const allActions = tasks.flatMap(t => t.task_actions || []);
+      console.log('📊 DEBUG - Total actions across all tasks:', allActions.length);
+      if (allActions.length > 0) {
+        console.log('📊 DEBUG - First action:', allActions[0]);
+      }
+    }
   }, [tasks]);
 
   // Fonction de synchronisation du scroll
@@ -199,10 +218,28 @@ const DynamicTable = () => {
   };
 
   const handleDuplicateTask = (taskId: string) => {
+    if (isDemoMode) {
+      // En mode démo, afficher un message informatif
+      const toast = require('@/hooks/use-toast').toast;
+      toast({
+        title: '🎨 Mode Découverte',
+        description: 'Ces données sont fictives. Créez votre première vraie tâche pour commencer!',
+      });
+      return;
+    }
     duplicateTask(taskId);
   };
 
   const handleDeleteTask = async (taskId: string) => {
+    if (isDemoMode) {
+      // En mode démo, afficher un message informatif
+      const toast = require('@/hooks/use-toast').toast;
+      toast({
+        title: '🎨 Mode Découverte',
+        description: 'Ces données sont fictives. Créez votre première vraie tâche pour commencer!',
+      });
+      return;
+    }
     await deleteTask(taskId);
     await refetch();
   };
@@ -433,18 +470,19 @@ const DynamicTable = () => {
       </CardContent>
 
       {/* Dialog de modification de tâche */}
-      <TaskEditDialog
+      <ModernTaskEditDialog
         open={editDialogOpen}
         onOpenChange={setEditDialogOpen}
         task={taskToEdit}
-        onSave={() => {
+        onSave={async taskData => {
+          await updateTask(taskData);
           refetch();
           setTaskToEdit(null);
         }}
       />
 
       {/* Dialog de création de tâche */}
-      <TaskCreationDialog
+      <ModernTaskCreationDialog
         open={createTaskDialogOpen}
         onOpenChange={setCreateTaskDialogOpen}
         onCreateTask={handleCreateMainTask}

@@ -6,7 +6,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Progress } from '@/components/ui/progress';
-import { Search, TrendingUp, Clock, Calendar } from 'lucide-react';
+import { Search, TrendingUp, Clock, Calendar } from '@/lib/icons';
 import { useEmployees } from '@/hooks/useEmployees';
 import { useSkillsTraining } from '@/hooks/useSkillsTraining';
 import { useTasksEnterprise as useTasks, type Task } from '@/hooks/useTasksEnterprise';

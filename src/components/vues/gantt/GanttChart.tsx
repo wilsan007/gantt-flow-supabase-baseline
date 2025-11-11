@@ -16,7 +16,7 @@ import { ExportButton } from '@/components/tasks/ExportButton';
 // ✅ NOUVEAUX IMPORTS POUR GESTION D'ERREUR
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
-import { AlertTriangle, X } from 'lucide-react';
+import { AlertTriangle, X } from '@/lib/icons';
 import { useToast } from '@/hooks/use-toast';
 import {
   ViewMode,

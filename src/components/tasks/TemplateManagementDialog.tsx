@@ -43,7 +43,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { BookTemplate, Plus, Trash2, Edit, Search, Globe, Lock, TrendingUp } from 'lucide-react';
+import { BookTemplate, Plus, Trash2, Edit, Search, Globe, Lock, TrendingUp } from '@/lib/icons';
 import { useTaskTemplates, TaskTemplate, TaskTemplateData } from '@/hooks/useTaskTemplates';
 
 const CATEGORIES = [

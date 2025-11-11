@@ -26,7 +26,7 @@ import {
   BarChart3,
   Users,
   Calendar,
-} from 'lucide-react';
+} from '@/lib/icons';
 import { useTasks } from '@/hooks/optimized';
 import { useHRMinimal } from '@/hooks/useHRMinimal';
 import {

@@ -2,7 +2,7 @@ import { TableRow, TableCell } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
-import { CalendarDays, Clock, User, Plus } from 'lucide-react';
+import { CalendarDays, Clock, User, Plus } from '@/lib/icons';
 import { type Task } from '@/hooks/optimized';
 import { priorityColors, statusColors, formatDate } from '@/lib/taskHelpers';
 import { TaskRowActions } from './TaskRowActions';

@@ -9,7 +9,7 @@
  * - Feedback visuel (toast)
  */
 
-import { Download, FileSpreadsheet, FileText, FileDown } from 'lucide-react';
+import { Download, FileSpreadsheet, FileText, FileDown } from '@/lib/icons';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,

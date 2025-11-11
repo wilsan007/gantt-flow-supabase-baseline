@@ -16,7 +16,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Plus, Save, X, BookTemplate, Sparkles } from 'lucide-react';
+import { Plus, Save, X, BookTemplate, Sparkles } from '@/lib/icons';
 import { useTaskTemplates } from '@/hooks/useTaskTemplates';
 import { TemplateManagementDialog } from '@/components/tasks/TemplateManagementDialog';
 import { Separator } from '@/components/ui/separator';

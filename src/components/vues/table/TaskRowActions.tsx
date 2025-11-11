@@ -5,7 +5,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { MoreHorizontal, Copy, Trash2, Edit } from 'lucide-react';
+import { MoreHorizontal, Copy, Trash2, Edit } from '@/lib/icons';
 
 interface TaskRowActionsProps {
   taskId: string;

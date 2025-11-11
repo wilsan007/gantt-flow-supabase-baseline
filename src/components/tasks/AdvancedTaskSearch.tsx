@@ -24,7 +24,7 @@ import {
 } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Search, Filter, Star, Download, Trash2, UserCheck, RefreshCw, X } from 'lucide-react';
+import { Search, Filter, Star, Download, Trash2, UserCheck, RefreshCw, X } from '@/lib/icons';
 import { useTasks, type Task } from '@/hooks/optimized';
 import { useProjects } from '@/hooks/optimized';
 import { useHRMinimal } from '@/hooks/useHRMinimal';

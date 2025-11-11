@@ -32,7 +32,7 @@ import {
   ChevronDown,
   ChevronUp,
   Save,
-} from 'lucide-react';
+} from '@/lib/icons';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { cn } from '@/lib/utils';

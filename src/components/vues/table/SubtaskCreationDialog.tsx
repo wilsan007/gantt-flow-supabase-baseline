@@ -15,7 +15,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { CalendarIcon, Plus, Trash2, Target, Link, User } from 'lucide-react';
+import { CalendarIcon, Plus, Trash2, Target, Link, User } from '@/lib/icons';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { type Task } from '@/hooks/optimized';

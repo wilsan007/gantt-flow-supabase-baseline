@@ -18,7 +18,7 @@ import {
 } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-import { Mail, UserPlus, Loader2, CheckCircle2 } from 'lucide-react';
+import { Mail, UserPlus, Loader2, CheckCircle2 } from '@/lib/icons';
 
 interface QuickInviteCollaboratorProps {
   open: boolean;

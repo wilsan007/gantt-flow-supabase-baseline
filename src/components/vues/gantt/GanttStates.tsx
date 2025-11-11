@@ -1,5 +1,5 @@
 import { Card, CardContent } from '@/components/ui/card';
-import { Loader2 } from 'lucide-react';
+import { Loader2 } from '@/lib/icons';
 
 export const GanttLoadingState = () => (
   <Card className="modern-card glow-primary w-full">

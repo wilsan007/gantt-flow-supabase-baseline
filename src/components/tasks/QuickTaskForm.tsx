@@ -25,7 +25,7 @@ import {
 } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Plus, Sparkles, CheckCircle2, AlertCircle, Clock, FileText, Bug, Zap } from 'lucide-react';
+import { Plus, Sparkles, CheckCircle2, AlertCircle, Clock, FileText, Bug, Zap } from '@/lib/icons';
 import { useTasks } from '@/hooks/optimized';
 import { useProjects } from '@/hooks/optimized';
 import { useHRMinimal } from '@/hooks/useHRMinimal';

@@ -20,7 +20,7 @@ import {
   Clock,
   AlertTriangle,
   CheckSquare,
-} from 'lucide-react';
+} from '@/lib/icons';
 import { useTasks, type Task } from '@/hooks/optimized';
 import {
   format,

@@ -20,7 +20,7 @@ import {
   TrendingUp,
   Link,
   History,
-} from 'lucide-react';
+} from '@/lib/icons';
 import { type Task } from '@/hooks/optimized';
 import { TaskHistorySection } from '@/components/task/TaskHistorySection';
 import { priorityColors, statusColors, formatDate } from '@/lib/taskHelpers';

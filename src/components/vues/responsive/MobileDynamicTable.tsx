@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Plus, CheckCircle2, Circle } from 'lucide-react';
+import { Plus, CheckCircle2, Circle } from '@/lib/icons';
 // Hooks optimisés avec cache intelligent et métriques
 import { useTasks, type Task } from '@/hooks/optimized';
 import { LoadingState } from '@/components/ui/loading-state';

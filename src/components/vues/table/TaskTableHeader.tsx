@@ -1,7 +1,7 @@
 import { CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Plus, Target } from 'lucide-react';
+import { Plus, Target } from '@/lib/icons';
 import { ActionCreationDialog } from './ActionCreationDialog';
 import { ExportButton } from '@/components/tasks/ExportButton';
 import { Task } from '@/hooks/optimized';

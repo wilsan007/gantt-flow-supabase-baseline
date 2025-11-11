@@ -3,7 +3,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { TableCell, TableRow } from '@/components/ui/table';
 import { Progress } from '@/components/ui/progress';
-import { Calendar, Clock, Plus, Trash2, Settings } from 'lucide-react';
+import { Calendar, Clock, Plus, Trash2, Settings } from '@/lib/icons';
 import { type Task } from '@/hooks/optimized';
 import { TaskRowActions } from './TaskRowActions';
 import { AssigneeSelect } from './AssigneeSelect';

@@ -13,7 +13,7 @@ import { Slider } from '@/components/ui/slider';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Textarea } from '@/components/ui/textarea';
-import { CalendarIcon, Plus } from 'lucide-react';
+import { CalendarIcon, Plus } from '@/lib/icons';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 

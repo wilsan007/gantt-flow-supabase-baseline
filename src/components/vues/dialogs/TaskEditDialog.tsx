@@ -16,7 +16,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Edit, Save, X } from 'lucide-react';
+import { Edit, Save, X } from '@/lib/icons';
 import { type Task } from '@/hooks/optimized';
 
 interface TaskEditDialogProps {

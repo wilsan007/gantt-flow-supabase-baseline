@@ -30,7 +30,7 @@ import {
   CalendarDays,
   User,
   RefreshCw,
-} from 'lucide-react';
+} from '@/lib/icons';
 import { useTasks, type Task } from '@/hooks/optimized';
 import { supabase } from '@/integrations/supabase/client';
 import { format, isToday, isThisWeek, isBefore, startOfDay, addDays, parseISO } from 'date-fns';

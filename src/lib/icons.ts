@@ -77,6 +77,56 @@ export { default as UserX } from 'lucide-react/dist/esm/icons/user-x';
 export { default as Wifi } from 'lucide-react/dist/esm/icons/wifi';
 export { default as Smartphone } from 'lucide-react/dist/esm/icons/smartphone';
 
+// Icônes /vues/ (DynamicTable, Gantt, Kanban, Dialogs) - 26 icônes nouvelles
+export { default as BookTemplate } from 'lucide-react/dist/esm/icons/book-template';
+export { default as CalendarDays } from 'lucide-react/dist/esm/icons/calendar-days';
+export { default as CalendarIcon } from 'lucide-react/dist/esm/icons/calendar';
+// CheckCircle2 déjà défini plus haut
+export { default as Copy } from 'lucide-react/dist/esm/icons/copy';
+export { default as Download } from 'lucide-react/dist/esm/icons/download';
+export { default as Edit } from 'lucide-react/dist/esm/icons/edit';
+export { default as Eye } from 'lucide-react/dist/esm/icons/eye';
+export { default as Link } from 'lucide-react/dist/esm/icons/link';
+// MessageSquare déjà défini plus haut
+export { default as Save } from 'lucide-react/dist/esm/icons/save';
+export { default as Send } from 'lucide-react/dist/esm/icons/send';
+export { default as Sparkles } from 'lucide-react/dist/esm/icons/sparkles';
+// Target déjà défini plus haut
+export { default as Trash2 } from 'lucide-react/dist/esm/icons/trash-2';
+export { default as Upload } from 'lucide-react/dist/esm/icons/upload';
+export { default as User } from 'lucide-react/dist/esm/icons/user';
+// Icônes additionnelles TaskDetailsDialog
+export { default as Building2 } from 'lucide-react/dist/esm/icons/building-2';
+// CheckSquare déjà défini plus haut
+export { default as Euro } from 'lucide-react/dist/esm/icons/euro';
+export { default as FolderOpen } from 'lucide-react/dist/esm/icons/folder-open';
+export { default as History } from 'lucide-react/dist/esm/icons/history';
+export { default as MessageCircle } from 'lucide-react/dist/esm/icons/message-circle';
+
+// Icônes /tasks/ et /onboarding/ - 15 icônes additionnelles
+export { default as Briefcase } from 'lucide-react/dist/esm/icons/briefcase';
+export { default as Bug } from 'lucide-react/dist/esm/icons/bug';
+export { default as File } from 'lucide-react/dist/esm/icons/file';
+export { default as FileDown } from 'lucide-react/dist/esm/icons/file-down';
+export { default as FileImage } from 'lucide-react/dist/esm/icons/file-image';
+export { default as FileSpreadsheet } from 'lucide-react/dist/esm/icons/file-spreadsheet';
+export { default as Globe } from 'lucide-react/dist/esm/icons/globe';
+// Star déjà défini plus haut
+export { default as UserCheck } from 'lucide-react/dist/esm/icons/user-check';
+export { default as UserMinus } from 'lucide-react/dist/esm/icons/user-minus';
+export { default as Zap } from 'lucide-react/dist/esm/icons/zap';
+export { default as Rocket } from 'lucide-react/dist/esm/icons/rocket';
+export { default as Flag } from 'lucide-react/dist/esm/icons/flag';
+export { default as Tag } from 'lucide-react/dist/esm/icons/tag';
+export { default as Link2 } from 'lucide-react/dist/esm/icons/link-2';
+export { default as Flame } from 'lucide-react/dist/esm/icons/flame';
+export { default as Package } from 'lucide-react/dist/esm/icons/package';
+export { default as Award } from 'lucide-react/dist/esm/icons/award';
+export { default as Smile } from 'lucide-react/dist/esm/icons/smile';
+export { default as Repeat } from 'lucide-react/dist/esm/icons/repeat';
+// FolderKanban déjà défini plus haut
+// BookTemplate, Edit, Filter déjà définis plus haut
+
 /**
  * Usage dans les fichiers critiques:
  *

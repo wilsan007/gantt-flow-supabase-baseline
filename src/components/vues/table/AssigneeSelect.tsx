@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { UserPlus, Check } from 'lucide-react';
+import { UserPlus, Check } from '@/lib/icons';
 import { useProfiles } from '@/hooks/useProfiles';
 
 interface AssigneeSelectProps {

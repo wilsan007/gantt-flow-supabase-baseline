@@ -11,7 +11,7 @@ import { useRolesCompat as useUserRoles } from '@/contexts/RolesContext';
 import { useUserFilterContext } from '@/hooks/useUserAuth';
 import { applyRoleFilters } from '@/lib/roleBasedFiltering';
 
-interface Objective {
+export interface Objective {
   id: string;
   employee_id: string;
   title: string;
@@ -23,7 +23,7 @@ interface Objective {
   updated_at?: string;
 }
 
-interface Evaluation {
+export interface Evaluation {
   id: string;
   employee_id: string;
   evaluator_id: string;

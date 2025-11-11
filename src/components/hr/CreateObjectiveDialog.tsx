@@ -64,9 +64,12 @@ const CreateObjectiveDialogBase = ({ onCreateObjective, trigger }: CreateObjecti
     const employee = employees.find(emp => emp.full_name === data.employee_name);
 
     onCreateObjective({
-      ...data,
-      employee_id: employee?.user_id || undefined,
-      department: employee?.job_title || data.department || 'Non spécifié',
+      employee_id: employee?.user_id || '',
+      title: data.title,
+      description: data.description,
+      target_date: data.due_date,
+      status: data.status,
+      progress: data.progress,
     });
 
     setIsOpen(false);

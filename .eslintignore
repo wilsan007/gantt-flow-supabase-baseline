@@ -1,0 +1,16 @@
+node_modules
+dist
+build
+.next
+coverage
+*.config.js
+*.config.ts
+.turbo
+.vercel
+*.log
+.env
+.env.local
+.DS_Store
+
+# Backups
+src-backup*

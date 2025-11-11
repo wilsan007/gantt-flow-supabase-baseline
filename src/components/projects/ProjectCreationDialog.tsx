@@ -18,8 +18,9 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Save, X } from 'lucide-react';
+import { Plus, Save, X } from '@/lib/icons';
 import { useEmployees } from '@/hooks/useEmployees';
+import { withUniversalDialog } from '@/components/ui/universal-dialog';
 import { QuickInviteCollaborator } from '@/components/tasks/QuickInviteCollaborator';
 import { useToast } from '@/hooks/use-toast';
 
@@ -37,7 +38,7 @@ interface ProjectCreationDialogProps {
   }) => void;
 }
 
-export const ProjectCreationDialog: React.FC<ProjectCreationDialogProps> = ({
+const ProjectCreationDialogBase: React.FC<ProjectCreationDialogProps> = ({
   open,
   onOpenChange,
   onCreateProject,
@@ -287,3 +288,6 @@ export const ProjectCreationDialog: React.FC<ProjectCreationDialogProps> = ({
     </Dialog>
   );
 };
+
+// 🎨 Export avec support mobile automatique + thème Projets
+export const ProjectCreationDialog = withUniversalDialog('projects', ProjectCreationDialogBase);

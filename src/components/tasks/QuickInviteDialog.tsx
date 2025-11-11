@@ -19,6 +19,7 @@ import {
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { Loader2, Mail, User, Briefcase, Building2 } from '@/lib/icons';
+import { withUniversalDialog } from '@/components/ui/universal-dialog';
 
 interface QuickInviteDialogProps {
   open: boolean;
@@ -26,7 +27,7 @@ interface QuickInviteDialogProps {
   onInviteSuccess?: () => void;
 }
 
-export const QuickInviteDialog: React.FC<QuickInviteDialogProps> = ({
+const QuickInviteDialogBase: React.FC<QuickInviteDialogProps> = ({
   open,
   onOpenChange,
   onInviteSuccess,
@@ -202,3 +203,6 @@ export const QuickInviteDialog: React.FC<QuickInviteDialogProps> = ({
     </Dialog>
   );
 };
+
+// 🎨 Export avec support mobile automatique + thème RH
+export const QuickInviteDialog = withUniversalDialog('hr', QuickInviteDialogBase);

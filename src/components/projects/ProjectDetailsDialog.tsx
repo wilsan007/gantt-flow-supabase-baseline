@@ -1,4 +1,5 @@
-import React from 'react';
+import { toast } from 'sonner';
+import { withUniversalDialog } from '@/components/ui/universal-dialog';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
@@ -28,7 +29,7 @@ interface ProjectDetailsDialogProps {
   project: Project | null;
 }
 
-export const ProjectDetailsDialog: React.FC<ProjectDetailsDialogProps> = ({
+const ProjectDetailsDialogBase: React.FC<ProjectDetailsDialogProps> = ({
   open,
   onOpenChange,
   project,
@@ -187,3 +188,6 @@ export const ProjectDetailsDialog: React.FC<ProjectDetailsDialogProps> = ({
     </Dialog>
   );
 };
+
+// 🎨 Export avec support mobile automatique + thème Projets
+export const ProjectDetailsDialog = withUniversalDialog('projects', ProjectDetailsDialogBase);

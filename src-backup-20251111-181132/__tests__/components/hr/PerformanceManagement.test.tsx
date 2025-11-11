@@ -12,12 +12,13 @@ vi.mock('@/contexts/RolesContext', () => ({
   }),
 }));
 
-vi.mock('@/hooks/useTenant', () => ({
+vi.mock('@/contexts/TenantContext', () => ({
   useTenant: () => ({
     tenantId: 'tenant-1',
     tenantName: 'Test Company',
     loading: false,
   }),
+  TenantProvider: ({ children }: { children: React.ReactNode }) => children,
 }));
 
 vi.mock('@/integrations/supabase/client', () => ({

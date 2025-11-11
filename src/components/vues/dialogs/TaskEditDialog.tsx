@@ -26,7 +26,7 @@ interface TaskEditDialogProps {
   onSave?: () => void;
 }
 
-export const TaskEditDialog: React.FC<TaskEditDialogProps> = ({
+const TaskEditDialogBase: React.FC<TaskEditDialogProps> = ({
   open,
   onOpenChange,
   task,
@@ -168,3 +168,5 @@ export const TaskEditDialog: React.FC<TaskEditDialogProps> = ({
     </Dialog>
   );
 };
+// 🎨 Export avec support mobile automatique + thème Tasks
+export const TaskEditDialog = withUniversalDialog('tasks', TaskEditDialogBase);

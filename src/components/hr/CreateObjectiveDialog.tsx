@@ -38,10 +38,7 @@ interface ObjectiveFormData {
   status: 'draft' | 'active';
 }
 
-export const CreateObjectiveDialog = ({
-  onCreateObjective,
-  trigger,
-}: CreateObjectiveDialogProps) => {
+const CreateObjectiveDialogBase = ({ onCreateObjective, trigger }: CreateObjectiveDialogProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const { employees, departments } = useEmployees();
   const {
@@ -204,3 +201,5 @@ export const CreateObjectiveDialog = ({
     </Dialog>
   );
 };
+// 🎨 Export avec support mobile automatique + thème Hr
+export const CreateObjectiveDialog = withUniversalDialog('hr', CreateObjectiveDialogBase);

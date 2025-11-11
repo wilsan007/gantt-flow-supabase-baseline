@@ -42,7 +42,7 @@ interface RemoteWorkRequestDialogProps {
   onSuccess?: () => void;
 }
 
-export function RemoteWorkRequestDialog({
+function RemoteWorkRequestDialogBase({
   open,
   onOpenChange,
   onSuccess,
@@ -226,3 +226,5 @@ export function RemoteWorkRequestDialog({
     </Dialog>
   );
 }
+// 🎨 Export avec support mobile automatique + thème Hr
+export const RemoteWorkRequestDialog = withUniversalDialog('hr', RemoteWorkRequestDialogBase);

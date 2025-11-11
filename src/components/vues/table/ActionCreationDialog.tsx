@@ -27,7 +27,7 @@ interface ActionCreationDialogProps {
   selectedTaskId?: string;
 }
 
-export const ActionCreationDialog = ({
+const ActionCreationDialogBase = ({
   onCreateAction,
   selectedTaskId,
 }: ActionCreationDialogProps) => {
@@ -146,3 +146,5 @@ export const ActionCreationDialog = ({
     </Dialog>
   );
 };
+// 🎨 Export avec support mobile automatique + thème Tasks
+export const ActionCreationDialog = withUniversalDialog('tasks', ActionCreationDialogBase);

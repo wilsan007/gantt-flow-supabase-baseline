@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { withUniversalDialog } from '@/components/ui/universal-dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -56,7 +57,7 @@ interface ModernTaskCreationDialogProps {
   };
 }
 
-export const ModernTaskCreationDialog: React.FC<ModernTaskCreationDialogProps> = ({
+const ModernTaskCreationDialogBase: React.FC<ModernTaskCreationDialogProps> = ({
   open,
   onOpenChange,
   onCreateTask,
@@ -790,3 +791,5 @@ export const ModernTaskCreationDialog: React.FC<ModernTaskCreationDialogProps> =
     </>
   );
 };
+// 🎨 Export avec support mobile automatique + thème Tasks
+export const ModernTaskCreationDialog = withUniversalDialog('tasks', ModernTaskCreationDialogBase);

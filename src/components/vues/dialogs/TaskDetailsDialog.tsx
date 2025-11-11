@@ -1,5 +1,6 @@
 import React from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { withUniversalDialog } from '@/components/ui/universal-dialog';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
@@ -31,7 +32,7 @@ interface TaskDetailsDialogProps {
   task: Task | null;
 }
 
-export const TaskDetailsDialog = ({ open, onOpenChange, task }: TaskDetailsDialogProps) => {
+const TaskDetailsDialogBase = ({ open, onOpenChange, task }: TaskDetailsDialogProps) => {
   // TODO: Réactiver quand useTaskDetails sera créé
   // const {
   //   taskDetails,
@@ -387,3 +388,5 @@ export const TaskDetailsDialog = ({ open, onOpenChange, task }: TaskDetailsDialo
     </Dialog>
   );
 };
+// 🎨 Export avec support mobile automatique + thème Tasks
+export const TaskDetailsDialog = withUniversalDialog('tasks', TaskDetailsDialogBase);

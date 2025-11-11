@@ -35,11 +35,7 @@ interface AlertDetailDialogProps {
   onOpenChange: (open: boolean) => void;
 }
 
-export const AlertDetailDialog: React.FC<AlertDetailDialogProps> = ({
-  alert,
-  open,
-  onOpenChange,
-}) => {
+const AlertDetailDialogBase: React.FC<AlertDetailDialogProps> = ({ alert, open, onOpenChange }) => {
   const [solutions, setSolutions] = useState<AlertSolution[]>([]);
   const [loadingSolutions, setLoadingSolutions] = useState(false);
   const { getSolutionsForAlertType } = useAlertSolutions();
@@ -399,3 +395,5 @@ export const AlertDetailDialog: React.FC<AlertDetailDialogProps> = ({
     </Dialog>
   );
 };
+// 🎨 Export avec support mobile automatique + thème Hr
+export const AlertDetailDialog = withUniversalDialog('hr', AlertDetailDialogBase);

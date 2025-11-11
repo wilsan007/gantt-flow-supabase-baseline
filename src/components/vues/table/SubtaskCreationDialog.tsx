@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { withUniversalDialog } from '@/components/ui/universal-dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -55,7 +56,7 @@ interface SubtaskCreationDialogProps {
   linkedActionId?: string;
 }
 
-export const SubtaskCreationDialog = ({
+const SubtaskCreationDialogBase = ({
   open,
   onOpenChange,
   parentTask,
@@ -580,3 +581,5 @@ export const SubtaskCreationDialog = ({
     </Dialog>
   );
 };
+// 🎨 Export avec support mobile automatique + thème Tasks
+export const SubtaskCreationDialog = withUniversalDialog('tasks', SubtaskCreationDialogBase);

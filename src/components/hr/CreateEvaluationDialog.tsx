@@ -35,7 +35,7 @@ interface EvaluationFormData {
   overall_score: number;
 }
 
-export const CreateEvaluationDialog = ({
+const CreateEvaluationDialogBase = ({
   onCreateEvaluation,
   trigger,
 }: CreateEvaluationDialogProps) => {
@@ -235,3 +235,5 @@ export const CreateEvaluationDialog = ({
     </Dialog>
   );
 };
+// 🎨 Export avec support mobile automatique + thème Hr
+export const CreateEvaluationDialog = withUniversalDialog('hr', CreateEvaluationDialogBase);

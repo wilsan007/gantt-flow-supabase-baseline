@@ -7,6 +7,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, Edit, Save, Calendar, CheckSquare, BarChart3, List } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { withUniversalDialog } from '@/components/ui/universal-dialog';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
@@ -30,7 +31,7 @@ interface ActivityDetailDialogProps {
   onOpenChange: (open: boolean) => void;
 }
 
-export const ActivityDetailDialog: React.FC<ActivityDetailDialogProps> = ({
+const ActivityDetailDialogBase: React.FC<ActivityDetailDialogProps> = ({
   activityId,
   open,
   onOpenChange,
@@ -337,3 +338,5 @@ export const ActivityDetailDialog: React.FC<ActivityDetailDialogProps> = ({
     </Dialog>
   );
 };
+// 🎨 Export avec support mobile automatique + thème Operations
+export const ActivityDetailDialog = withUniversalDialog('operations', ActivityDetailDialogBase);

@@ -77,7 +77,7 @@ interface TemplateFormData {
   template_data: TaskTemplateData;
 }
 
-export const TemplateManagementDialog = () => {
+const TemplateManagementDialogBase = () => {
   const { templates, loading, createTemplate, updateTemplate, deleteTemplate } = useTaskTemplates();
   const [open, setOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -504,3 +504,5 @@ export const TemplateManagementDialog = () => {
     </>
   );
 };
+// 🎨 Export avec support mobile automatique + thème Tasks
+export const TemplateManagementDialog = withUniversalDialog('tasks', TemplateManagementDialogBase);

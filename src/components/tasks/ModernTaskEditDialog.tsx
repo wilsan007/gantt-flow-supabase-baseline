@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { withUniversalDialog } from '@/components/ui/universal-dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -51,7 +52,7 @@ interface ModernTaskEditDialogProps {
   onSave: (taskData: any) => void;
 }
 
-export const ModernTaskEditDialog: React.FC<ModernTaskEditDialogProps> = ({
+const ModernTaskEditDialogBase: React.FC<ModernTaskEditDialogProps> = ({
   open,
   onOpenChange,
   task,
@@ -568,3 +569,5 @@ export const ModernTaskEditDialog: React.FC<ModernTaskEditDialogProps> = ({
     </Dialog>
   );
 };
+// 🎨 Export avec support mobile automatique + thème Tasks
+export const ModernTaskEditDialog = withUniversalDialog('tasks', ModernTaskEditDialogBase);

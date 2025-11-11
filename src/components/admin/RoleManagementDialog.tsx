@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { withUniversalDialog } from '@/components/ui/universal-dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -38,10 +39,7 @@ interface RoleManagementDialogProps {
   onOpenChange: (open: boolean) => void;
 }
 
-export const RoleManagementDialog: React.FC<RoleManagementDialogProps> = ({
-  open,
-  onOpenChange,
-}) => {
+const RoleManagementDialogBase: React.FC<RoleManagementDialogProps> = ({ open, onOpenChange }) => {
   const {
     roles,
     permissions,
@@ -463,3 +461,5 @@ export const RoleManagementDialog: React.FC<RoleManagementDialogProps> = ({
     </Dialog>
   );
 };
+// 🎨 Export avec support mobile automatique + thème Admin
+export const RoleManagementDialog = withUniversalDialog('admin', RoleManagementDialogBase);

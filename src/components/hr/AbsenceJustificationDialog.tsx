@@ -44,7 +44,7 @@ interface AbsenceJustificationDialogProps {
   onSuccess?: () => void;
 }
 
-export function AbsenceJustificationDialog({
+function AbsenceJustificationDialogBase({
   open,
   onOpenChange,
   onSuccess,
@@ -208,3 +208,5 @@ export function AbsenceJustificationDialog({
     </Dialog>
   );
 }
+// 🎨 Export avec support mobile automatique + thème Hr
+export const AbsenceJustificationDialog = withUniversalDialog('hr', AbsenceJustificationDialogBase);

@@ -35,7 +35,7 @@ interface TaskCreationDialogProps {
   }) => void;
 }
 
-export const TaskCreationDialog: React.FC<TaskCreationDialogProps> = ({
+const TaskCreationDialogBase: React.FC<TaskCreationDialogProps> = ({
   open,
   onOpenChange,
   onCreateTask,
@@ -298,3 +298,5 @@ export const TaskCreationDialog: React.FC<TaskCreationDialogProps> = ({
     </Dialog>
   );
 };
+// 🎨 Export avec support mobile automatique + thème Tasks
+export const TaskCreationDialog = withUniversalDialog('tasks', TaskCreationDialogBase);

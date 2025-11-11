@@ -46,6 +46,8 @@ import {
   ChevronRight,
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { ProjectCreationDialog } from '@/components/projects/ProjectCreationDialog';
+import { ProjectDetailsDialog } from '@/components/projects/ProjectDetailsDialog';
 
 interface ProjectDashboardEnterpriseProps {
   showMetrics?: boolean;
@@ -58,6 +60,11 @@ export const ProjectDashboardEnterprise: React.FC<ProjectDashboardEnterpriseProp
 }) => {
   // États locaux pour les filtres
   const [filters, setFilters] = useState<ProjectFilters>({});
+
+  // États pour les dialogs
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [selectedProject, setSelectedProject] = useState<any>(null);
+  const [isDetailsDialogOpen, setIsDetailsDialogOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string[]>([]);
   const [priorityFilter, setPriorityFilter] = useState<string[]>([]);
@@ -279,7 +286,12 @@ export const ProjectDashboardEnterprise: React.FC<ProjectDashboardEnterpriseProp
 
             {/* Actions principales - Stack sur mobile, inline sur desktop */}
             <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-              <Button variant="default" size="sm" className="w-full justify-center sm:w-auto">
+              <Button
+                variant="default"
+                size="sm"
+                className="w-full justify-center sm:w-auto"
+                onClick={() => setIsCreateDialogOpen(true)}
+              >
                 <Plus className="mr-2 h-4 w-4" />
                 Nouveau Projet
               </Button>
@@ -355,7 +367,11 @@ export const ProjectDashboardEnterprise: React.FC<ProjectDashboardEnterpriseProp
             <div className="py-8 text-center">
               <BarChart3 className="mx-auto mb-4 h-8 w-8 text-muted-foreground" />
               <p className="text-muted-foreground">Aucun projet trouvé</p>
-              <Button className="mt-4" variant="outline">
+              <Button
+                className="mt-4"
+                variant="outline"
+                onClick={() => setIsCreateDialogOpen(true)}
+              >
                 <Plus className="mr-2 h-4 w-4" />
                 Créer votre premier projet
               </Button>
@@ -372,6 +388,10 @@ export const ProjectDashboardEnterprise: React.FC<ProjectDashboardEnterpriseProp
                   return (
                     <Card
                       key={project.id}
+                      onClick={() => {
+                        setSelectedProject(project);
+                        setIsDetailsDialogOpen(true);
+                      }}
                       className={`group cursor-pointer transition-all duration-200 hover:shadow-lg active:scale-[0.98] ${
                         isOverdue
                           ? 'border-red-300 bg-red-50/30 dark:border-red-800 dark:bg-red-950/20'
@@ -597,6 +617,28 @@ export const ProjectDashboardEnterprise: React.FC<ProjectDashboardEnterpriseProp
           )}
         </CardContent>
       </Card>
+
+      {/* 🎨 Dialogs Projets Modernes */}
+      <ProjectCreationDialog
+        open={isCreateDialogOpen}
+        onOpenChange={setIsCreateDialogOpen}
+        onCreateProject={projectData => {
+          console.log('🎯 Création projet:', projectData);
+          // TODO: Implémenter la création via hook
+          toast({
+            title: '✅ Projet créé',
+            description: `Le projet "${projectData.name}" a été créé avec succès.`,
+          });
+          setIsCreateDialogOpen(false);
+          refresh(); // Recharge la liste
+        }}
+      />
+
+      <ProjectDetailsDialog
+        open={isDetailsDialogOpen}
+        onOpenChange={setIsDetailsDialogOpen}
+        project={selectedProject}
+      />
     </div>
   );
 };

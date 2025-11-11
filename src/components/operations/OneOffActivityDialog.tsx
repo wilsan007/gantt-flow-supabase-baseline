@@ -40,7 +40,7 @@ interface OneOffActivityDialogProps {
   onSuccess?: () => void;
 }
 
-export const OneOffActivityDialog: React.FC<OneOffActivityDialogProps> = ({
+const OneOffActivityDialogBase: React.FC<OneOffActivityDialogProps> = ({
   open,
   onOpenChange,
   onSuccess,
@@ -263,3 +263,5 @@ export const OneOffActivityDialog: React.FC<OneOffActivityDialogProps> = ({
     </Dialog>
   );
 };
+// 🎨 Export avec support mobile automatique + thème Operations
+export const OneOffActivityDialog = withUniversalDialog('operations', OneOffActivityDialogBase);

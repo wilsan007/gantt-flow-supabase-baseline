@@ -48,7 +48,7 @@ interface AdministrativeRequestDialogProps {
   onSuccess?: () => void;
 }
 
-export function AdministrativeRequestDialog({
+function AdministrativeRequestDialogBase({
   open,
   onOpenChange,
   onSuccess,
@@ -233,3 +233,8 @@ export function AdministrativeRequestDialog({
     </Dialog>
   );
 }
+// 🎨 Export avec support mobile automatique + thème Hr
+export const AdministrativeRequestDialog = withUniversalDialog(
+  'hr',
+  AdministrativeRequestDialogBase
+);

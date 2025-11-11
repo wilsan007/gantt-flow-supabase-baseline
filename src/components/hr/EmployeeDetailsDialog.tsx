@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { withUniversalDialog } from '@/components/ui/universal-dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -75,7 +76,7 @@ interface Absence {
   reason: string;
 }
 
-export const EmployeeDetailsDialog = ({
+const EmployeeDetailsDialogBase = ({
   employee,
   isOpen,
   onOpenChange,
@@ -668,3 +669,5 @@ export const EmployeeDetailsDialog = ({
     </Dialog>
   );
 };
+// 🎨 Export avec support mobile automatique + thème Hr
+export const EmployeeDetailsDialog = withUniversalDialog('hr', EmployeeDetailsDialogBase);

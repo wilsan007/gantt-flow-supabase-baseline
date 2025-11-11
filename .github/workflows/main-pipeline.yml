@@ -101,16 +101,37 @@ jobs:
             BUILD_SIZE=$(du -sh dist | cut -f1)
             BUILD_SIZE_KB=$(du -sk dist | cut -f1)
             FILE_COUNT=$(find dist -type f | wc -l)
-            JS_COUNT=$(find dist/assets -name "*.js" | wc -l)
+            JS_COUNT=$(find dist/assets -name "*.js" 2>/dev/null | wc -l)
+            CSS_COUNT=$(find dist/assets -name "*.css" 2>/dev/null | wc -l)
             
-            echo "📦 **Size:** $BUILD_SIZE" >> $GITHUB_STEP_SUMMARY
-            echo "📄 **Files:** $FILE_COUNT" >> $GITHUB_STEP_SUMMARY
+            echo "📊 BUILD ANALYSIS"
+            echo "📦 **Size:** $BUILD_SIZE ($BUILD_SIZE_KB KB)" >> $GITHUB_STEP_SUMMARY
+            echo "📄 **Total Files:** $FILE_COUNT" >> $GITHUB_STEP_SUMMARY
             echo "📜 **JS Files:** $JS_COUNT" >> $GITHUB_STEP_SUMMARY
+            echo "🎨 **CSS Files:** $CSS_COUNT" >> $GITHUB_STEP_SUMMARY
+            
+            # Logs détaillés
+            echo ""
+            echo "📂 dist/ structure:"
+            ls -lah dist/
+            echo ""
+            echo "📂 dist/assets/ contents:"
+            if [ -d "dist/assets" ]; then
+              ls -lah dist/assets/ | head -20
+              echo ""
+              echo "Total assets size:"
+              du -sh dist/assets/
+            else
+              echo "❌ dist/assets/ N'EXISTE PAS!"
+            fi
             
             # Vérification taille minimale (doit être > 2000 KB)
             if [ $BUILD_SIZE_KB -lt 2000 ]; then
               echo "❌ ERREUR: Build trop petit ($BUILD_SIZE_KB KB < 2000 KB)"
               echo "Le build est incomplet!"
+              echo ""
+              echo "🔍 Vérification package.json build script..."
+              cat package.json | grep -A5 "\"build\""
               exit 1
             fi
             
@@ -119,6 +140,19 @@ jobs:
             echo "❌ ERREUR: Dossier dist/ inexistant"
             exit 1
           fi
+      
+      - name: 📋 Pre-Upload Verification
+        run: |
+          echo "🔍 Vérification avant upload artifact..."
+          echo ""
+          echo "📊 Fichiers qui seront uploadés:"
+          find dist -type f -exec ls -lh {} \; | awk '{print $5, $9}' | sort -hr | head -20
+          echo ""
+          echo "📦 Les 10 plus gros fichiers JS:"
+          find dist/assets -name "*.js" -exec ls -lh {} \; 2>/dev/null | awk '{print $5, $9}' | sort -hr | head -10
+          echo ""
+          echo "💾 Taille totale qui DEVRAIT être uploadée:"
+          du -sh dist/
       
       - name: 📤 Upload Build Artifact
         uses: actions/upload-artifact@v4

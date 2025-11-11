@@ -1,12 +1,12 @@
-import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react-swc";
-import path from "path";
-import { componentTagger } from "lovable-tagger";
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react-swc';
+import path from 'path';
+import { componentTagger } from 'lovable-tagger';
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
   server: {
-    host: "::",
+    host: '::',
     port: 8080,
     headers: {
       // Content Security Policy
@@ -19,9 +19,9 @@ export default defineConfig(({ mode }) => ({
         "connect-src 'self' https://qliinxtanjdnwxlvnxji.supabase.co wss://qliinxtanjdnwxlvnxji.supabase.co",
         "frame-ancestors 'none'",
         "base-uri 'self'",
-        "form-action 'self'"
+        "form-action 'self'",
       ].join('; '),
-      
+
       // Autres headers de sécurité
       'X-Frame-Options': 'DENY',
       'X-Content-Type-Options': 'nosniff',
@@ -30,10 +30,10 @@ export default defineConfig(({ mode }) => ({
       'Permissions-Policy': 'geolocation=(), microphone=(), camera=()',
     },
   },
-  plugins: [react(), mode === "development" && componentTagger()].filter(Boolean),
+  plugins: [react(), mode === 'development' && componentTagger()].filter(Boolean),
   resolve: {
     alias: {
-      "@": path.resolve(__dirname, "./src"),
+      '@': path.resolve(__dirname, './src'),
     },
   },
   build: {
@@ -43,7 +43,7 @@ export default defineConfig(({ mode }) => ({
           // Vendor chunks - bibliothèques principales
           'vendor-react': ['react', 'react-dom', 'react-router-dom'],
           'vendor-query': ['@tanstack/react-query'],
-          
+
           // UI Components - Radix UI
           'ui-radix': [
             '@radix-ui/react-dialog',
@@ -57,7 +57,7 @@ export default defineConfig(({ mode }) => ({
             '@radix-ui/react-label',
             '@radix-ui/react-slot',
           ],
-          
+
           // DnD - Drag and Drop
           'vendor-dnd': [
             '@dnd-kit/core',
@@ -65,20 +65,35 @@ export default defineConfig(({ mode }) => ({
             '@dnd-kit/utilities',
             '@hello-pangea/dnd',
           ],
-          
+
           // Charts et visualisation
           'vendor-charts': ['recharts'],
-          
+
           // Supabase
           'vendor-supabase': ['@supabase/supabase-js'],
-          
+
           // Utilitaires
           'vendor-utils': ['date-fns', 'clsx', 'tailwind-merge'],
+
+          // 🔥 OPTIMISATIONS BUNDLE - Libs lourdes en chunks séparés
+          'vendor-excel': ['xlsx'], // 420KB - Lazy load
+          'vendor-pdf': ['jspdf', 'jspdf-autotable'], // 405KB - Lazy load
+          'vendor-canvas': ['html2canvas'], // 198KB - Lazy load
+          'vendor-icons': ['lucide-react'], // 148KB - À tree-shake
         },
       },
     },
     // Optimisations supplémentaires
     chunkSizeWarningLimit: 1000,
     sourcemap: mode === 'development',
+    // Minification agressive
+    minify: 'terser',
+    terserOptions: {
+      compress: {
+        drop_console: mode === 'production', // Supprimer console.log en prod
+        drop_debugger: true,
+        pure_funcs: ['console.log', 'console.info', 'console.debug'],
+      },
+    },
   },
 }));

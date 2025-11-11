@@ -1,0 +1,81 @@
+/* ========================================
+   LANDSCAPE OPTIMIZATION - Mobile/Tablet
+   ======================================== */
+
+/* Suggestion de rotation paysage sur mobile */
+@media (max-width: 768px) and (orientation: portrait) {
+  .landscape-optimized::before {
+    content: '📱 Pour une meilleure expérience, basculez en mode paysage';
+    display: block;
+    text-align: center;
+    padding: 12px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    font-size: 13px;
+    font-weight: 500;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    animation: pulse 2s infinite;
+  }
+}
+
+/* Optimisation paysage automatique */
+@media (max-width: 768px) and (orientation: landscape) {
+  .landscape-optimized {
+    width: 100vw;
+    max-width: 100vw;
+    margin-left: calc(-1 * var(--sidebar-width, 0px));
+    padding: 8px;
+  }
+
+  /* Tableau pleine largeur en paysage */
+  .landscape-optimized table {
+    width: 100%;
+    font-size: 11px;
+  }
+
+  .landscape-optimized th,
+  .landscape-optimized td {
+    padding: 6px 8px;
+  }
+}
+
+/* Animation pulse pour le message */
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+/* Optimisation tablette paysage */
+@media (min-width: 769px) and (max-width: 1024px) and (orientation: landscape) {
+  .landscape-optimized {
+    width: 100%;
+    max-width: 100%;
+  }
+}
+
+/* Desktop - Pleine largeur optimale */
+@media (min-width: 1025px) {
+  .landscape-optimized {
+    width: 100%;
+    max-width: 100%;
+  }
+}
+
+/* Force le tableau à utiliser tout l'espace disponible */
+.landscape-optimized > * {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+/* Masquer le message de rotation en mode paysage */
+@media (orientation: landscape) {
+  .landscape-optimized::before {
+    display: none !important;
+  }
+}

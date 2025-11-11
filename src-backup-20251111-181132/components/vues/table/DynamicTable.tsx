@@ -1,0 +1,494 @@
+// @ts-nocheck
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { Card, CardContent } from '@/components/ui/card';
+import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@/components/ui/resizable';
+// Hooks optimisés avec cache intelligent et métriques
+import { useTasks, type Task } from '@/hooks/optimized';
+import { useProjects } from '@/hooks/optimized';
+import { useViewMode } from '@/contexts/ViewModeContext';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { MobileDynamicTable } from '../responsive/MobileDynamicTable';
+import { TaskTableHeader } from './TaskTableHeader';
+import { TaskFixedColumns } from './TaskFixedColumns';
+import { TaskActionColumns } from './TaskActionColumns';
+import { LoadingState } from '@/components/ui/loading-state';
+import { ErrorState } from '@/components/ui/error-state';
+import { ModernTaskEditDialog } from '@/components/tasks/ModernTaskEditDialog';
+import { ModernTaskCreationDialog } from '@/components/tasks/ModernTaskCreationDialog';
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
+import { ProjectTableView } from '../projects/ProjectTableView';
+import { AdvancedFilters, type TaskFilters } from '@/components/tasks/AdvancedFilters';
+import { useTaskFilters } from '@/hooks/useTaskFilters';
+
+interface DynamicTableProps {
+  demoTasks?: Task[];
+  isDemoMode?: boolean;
+}
+
+const DynamicTable = ({ demoTasks, isDemoMode = false }: DynamicTableProps = {}) => {
+  const {
+    tasks: realTasks,
+    loading,
+    error,
+    duplicateTask,
+    deleteTask,
+    toggleAction,
+    addActionColumn,
+    addDetailedAction,
+    createSubTask,
+    createSubTaskWithActions,
+    updateTaskAssignee,
+    refetch,
+    createTask,
+    updateTask,
+  } = useTasks();
+
+  // Utiliser demoTasks si en mode démo, sinon utiliser les vraies tâches
+  const tasks = isDemoMode && demoTasks ? demoTasks : realTasks;
+  const isMobile = useIsMobile();
+  const { projects, loading: projectsLoading, error: projectsError } = useProjects();
+
+  // Wrapper pour createMainTask avec compatibilité ancienne API
+  const createMainTask = async (taskData: {
+    title: string;
+    assignee: string;
+    department: string;
+    project: string;
+    priority: 'low' | 'medium' | 'high' | 'urgent';
+    status: 'todo' | 'doing' | 'blocked' | 'done';
+    effort_estimate_h: number;
+  }) => {
+    const today = new Date();
+    const nextWeek = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
+
+    return createTask({
+      title: taskData.title,
+      description: '',
+      status: taskData.status,
+      priority: taskData.priority,
+      start_date: today.toISOString().split('T')[0],
+      due_date: nextWeek.toISOString().split('T')[0],
+    });
+  };
+  const { defaultDisplayMode } = useViewMode();
+
+  const [newActionTitle, setNewActionTitle] = useState('');
+  const [selectedTaskId, setSelectedTaskId] = useState<string>('');
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [taskToEdit, setTaskToEdit] = useState<Task | null>(null);
+  const [createTaskDialogOpen, setCreateTaskDialogOpen] = useState(false);
+  const [viewMode, setViewMode] = useState<'tasks' | 'projects'>(defaultDisplayMode);
+  const [optimisticTasks, setOptimisticTasks] = useState<Task[]>([]);
+  const [filters, setFilters] = useState<TaskFilters>({
+    search: '',
+    status: [],
+    priority: [],
+    assignee: [],
+    project: [],
+    dateFrom: '',
+    dateTo: '',
+  });
+
+  // Appliquer les filtres
+  const { filteredTasks, stats } = useTaskFilters(optimisticTasks, filters);
+
+  // Refs pour la synchronisation du scroll
+  const fixedColumnsScrollRef = useRef<HTMLDivElement>(null);
+  const actionColumnsScrollRef = useRef<HTMLDivElement>(null);
+  const isSyncingScroll = useRef(false);
+
+  // Synchroniser les tâches optimistes avec les vraies tâches
+  useEffect(() => {
+    setOptimisticTasks(tasks);
+    // 🔍 DEBUG: Vérifier si les actions sont chargées
+    if (tasks.length > 0) {
+      console.log('📊 DEBUG - Total tasks:', tasks.length);
+      console.log('📊 DEBUG - First task:', tasks[0]?.title);
+      console.log('📊 DEBUG - First task actions:', tasks[0]?.task_actions);
+      const allActions = tasks.flatMap(t => t.task_actions || []);
+      console.log('📊 DEBUG - Total actions across all tasks:', allActions.length);
+      if (allActions.length > 0) {
+        console.log('📊 DEBUG - First action:', allActions[0]);
+      }
+    }
+  }, [tasks]);
+
+  // Fonction de synchronisation du scroll
+  const syncScroll = useCallback((source: 'fixed' | 'action') => {
+    if (isSyncingScroll.current) return;
+
+    isSyncingScroll.current = true;
+
+    if (source === 'fixed' && fixedColumnsScrollRef.current && actionColumnsScrollRef.current) {
+      actionColumnsScrollRef.current.scrollTop = fixedColumnsScrollRef.current.scrollTop;
+    } else if (
+      source === 'action' &&
+      actionColumnsScrollRef.current &&
+      fixedColumnsScrollRef.current
+    ) {
+      fixedColumnsScrollRef.current.scrollTop = actionColumnsScrollRef.current.scrollTop;
+    }
+
+    setTimeout(() => {
+      isSyncingScroll.current = false;
+    }, 0);
+  }, []);
+
+  const handleAddActionColumn = async () => {
+    if (newActionTitle.trim() && selectedTaskId) {
+      try {
+        await addActionColumn(newActionTitle.trim(), selectedTaskId);
+        setNewActionTitle('');
+        setSelectedTaskId(undefined);
+        await refetch(); // Rafraîchir les données après l'ajout
+      } catch (error) {
+        console.error('Error adding action column:', error);
+      }
+    }
+  };
+
+  const handleCreateDetailedAction = async (actionData: {
+    title: string;
+    weight_percentage: number;
+    due_date?: string;
+    notes?: string;
+  }) => {
+    if (!selectedTaskId) return;
+
+    try {
+      await addDetailedAction(selectedTaskId, actionData);
+      await refetch(); // Rafraîchir les données après l'ajout
+    } catch (error) {
+      console.error('Error creating detailed action:', error);
+    }
+  };
+
+  const handleToggleAction = async (taskId: string, actionId: string) => {
+    try {
+      console.log('handleToggleAction called:', { taskId, actionId });
+
+      // Mise à jour optimiste : on met à jour l'interface immédiatement
+      const updatedTasks = optimisticTasks.map(task => {
+        if (task.id === taskId && task.task_actions) {
+          const updatedActions = task.task_actions.map(action =>
+            action.id === actionId ? { ...action, is_done: !action.is_done } : action
+          );
+
+          // Calculer la nouvelle progression
+          const totalWeight = updatedActions.reduce(
+            (sum, action) => sum + action.weight_percentage,
+            0
+          );
+          const completedWeight = updatedActions
+            .filter(action => action.is_done)
+            .reduce((sum, action) => sum + action.weight_percentage, 0);
+
+          const newProgress = totalWeight === 0 ? 0 : Math.round(completedWeight);
+
+          // Calculer le nouveau statut
+          let newStatus = task.status;
+          if (newProgress === 100) {
+            newStatus = 'done';
+          } else if (newProgress > 0) {
+            newStatus = 'doing';
+          } else {
+            newStatus = 'todo';
+          }
+
+          return {
+            ...task,
+            task_actions: updatedActions,
+            progress: newProgress,
+            status: newStatus as any,
+          };
+        }
+        return task;
+      });
+
+      setOptimisticTasks(updatedTasks);
+
+      // Ensuite on fait la vraie mise à jour
+      await toggleAction(taskId, actionId);
+      // La subscription temps réel synchronisera automatiquement
+    } catch (error) {
+      console.error('Error in handleToggleAction:', error);
+      // En cas d'erreur, on refetch pour revenir à l'état correct
+      await refetch();
+    }
+  };
+
+  const handleDuplicateTask = (taskId: string) => {
+    if (isDemoMode) {
+      // En mode démo, afficher un message informatif
+      const toast = require('@/hooks/use-toast').toast;
+      toast({
+        title: '🎨 Mode Découverte',
+        description: 'Ces données sont fictives. Créez votre première vraie tâche pour commencer!',
+      });
+      return;
+    }
+    duplicateTask(taskId);
+  };
+
+  const handleDeleteTask = async (taskId: string) => {
+    if (isDemoMode) {
+      // En mode démo, afficher un message informatif
+      const toast = require('@/hooks/use-toast').toast;
+      toast({
+        title: '🎨 Mode Découverte',
+        description: 'Ces données sont fictives. Créez votre première vraie tâche pour commencer!',
+      });
+      return;
+    }
+    await deleteTask(taskId);
+    await refetch();
+  };
+
+  const handleEditTask = (taskId: string) => {
+    const task = optimisticTasks.find(t => t.id === taskId);
+    if (task) {
+      setTaskToEdit(task);
+      setEditDialogOpen(true);
+    }
+  };
+
+  const handleCreateMainTask = async (taskData: {
+    title: string;
+    assignee: string;
+    department: string;
+    project: string;
+    priority: 'low' | 'medium' | 'high' | 'urgent';
+    status: 'todo' | 'doing' | 'blocked' | 'done';
+    effort_estimate_h: number;
+  }) => {
+    try {
+      await createMainTask(taskData);
+      await refetch(); // Recharger les données
+    } catch (error) {
+      console.error('Erreur lors de la création:', error);
+      throw error;
+    }
+  };
+
+  const handleCreateSubtask = async (
+    parentId: string,
+    linkedActionId?: string,
+    customData?: {
+      title: string;
+      start_date: string;
+      due_date: string;
+      effort_estimate_h: number;
+    }
+  ) => {
+    try {
+      console.log('Creating subtask with data:', { parentId, linkedActionId, customData });
+      const newSubtask = await createSubTask(parentId, linkedActionId, customData);
+      console.log('Subtask created successfully:', newSubtask);
+
+      // Rafraîchir les données immédiatement après la création
+      await refetch();
+    } catch (error) {
+      console.error('Error creating subtask:', error);
+    }
+  };
+
+  const handleCreateSubtaskWithActions = async (
+    parentId: string,
+    customData: {
+      title: string;
+      start_date: string;
+      due_date: string;
+      effort_estimate_h: number;
+    },
+    actions: Array<{
+      id: string;
+      title: string;
+      weight_percentage: number;
+      due_date?: string;
+      notes?: string;
+    }>
+  ) => {
+    try {
+      console.log('Creating subtask with actions:', { parentId, customData, actions });
+      const newSubtask = await createSubTaskWithActions(parentId, customData, actions);
+      console.log('Subtask with actions created successfully:', newSubtask);
+
+      // Rafraîchir les données immédiatement après la création
+      await refetch();
+    } catch (error) {
+      console.error('Error creating subtask with actions:', error);
+    }
+  };
+
+  const handleUpdateAssignee = async (taskId: string, assignee: string) => {
+    try {
+      await updateTaskAssignee(taskId, assignee);
+      await refetch();
+    } catch (error) {
+      console.error('Error updating assignee:', error);
+    }
+  };
+
+  const handleSelectTask = (taskId: string) => {
+    setSelectedTaskId(taskId === selectedTaskId ? undefined : taskId);
+  };
+
+  const isActionButtonEnabled = !!(selectedTaskId && newActionTitle.trim());
+
+  if (loading || (viewMode === 'projects' && projectsLoading)) {
+    return <LoadingState />;
+  }
+
+  if (error || (viewMode === 'projects' && projectsError)) {
+    return <ErrorState error={error || projectsError} />;
+  }
+
+  // Use mobile version on small screens
+  if (isMobile) {
+    return (
+      <MobileDynamicTable
+        tasks={filteredTasks}
+        loading={loading}
+        error={error}
+        duplicateTask={duplicateTask}
+        deleteTask={handleDeleteTask}
+        toggleAction={handleToggleAction}
+        addActionColumn={addActionColumn}
+        createSubTask={handleCreateSubtask}
+        updateTaskAssignee={handleUpdateAssignee}
+        refetch={refetch}
+      />
+    );
+  }
+
+  return (
+    <Card className="modern-card glow-accent transition-smooth w-full">
+      <TaskTableHeader
+        newActionTitle={newActionTitle}
+        setNewActionTitle={setNewActionTitle}
+        onAddActionColumn={handleAddActionColumn}
+        onCreateDetailedAction={handleCreateDetailedAction}
+        selectedTaskId={selectedTaskId}
+        isActionButtonEnabled={isActionButtonEnabled}
+        onCreateTask={() => setCreateTaskDialogOpen(true)}
+        tasks={filteredTasks}
+        filters={filters}
+      />
+
+      {/* Boutons de basculement Projet/Tâches */}
+      <div className="px-6 pb-4">
+        <ToggleGroup
+          type="single"
+          value={viewMode}
+          onValueChange={value => value && setViewMode(value as 'tasks' | 'projects')}
+          className="justify-start"
+        >
+          <ToggleGroupItem
+            value="tasks"
+            className="data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
+          >
+            📝 Tâches
+          </ToggleGroupItem>
+          <ToggleGroupItem
+            value="projects"
+            className="data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
+          >
+            📁 Projets
+          </ToggleGroupItem>
+        </ToggleGroup>
+      </div>
+
+      {/* Filtres avancés - uniquement en mode Tâches */}
+      {viewMode === 'tasks' && (
+        <div className="px-6 pb-4">
+          <AdvancedFilters
+            onFiltersChange={setFilters}
+            projects={projects}
+            employees={[]}
+            totalTasks={optimisticTasks.length}
+            filteredCount={filteredTasks.length}
+          />
+        </div>
+      )}
+      <CardContent className="bg-gantt-header/20 backdrop-blur-sm">
+        {viewMode === 'tasks' ? (
+          <ResizablePanelGroup
+            direction="horizontal"
+            className="overflow-hidden rounded-lg border border-border/50"
+          >
+            <ResizablePanel defaultSize={60} minSize={40} maxSize={80}>
+              <TaskFixedColumns
+                tasks={filteredTasks}
+                onDuplicate={handleDuplicateTask}
+                onDelete={handleDeleteTask}
+                onEdit={handleEditTask}
+                onCreateSubtask={handleCreateSubtask}
+                onCreateSubtaskWithActions={handleCreateSubtaskWithActions}
+                onUpdateAssignee={handleUpdateAssignee}
+                selectedTaskId={selectedTaskId}
+                onSelectTask={handleSelectTask}
+                scrollRef={fixedColumnsScrollRef}
+                onScroll={() => syncScroll('fixed')}
+              />
+            </ResizablePanel>
+
+            <ResizableHandle withHandle />
+
+            <ResizablePanel defaultSize={40} minSize={20} maxSize={60}>
+              <TaskActionColumns
+                tasks={filteredTasks}
+                onToggleAction={handleToggleAction}
+                selectedTaskId={selectedTaskId}
+                scrollRef={actionColumnsScrollRef}
+                onScroll={() => syncScroll('action')}
+              />
+            </ResizablePanel>
+          </ResizablePanelGroup>
+        ) : (
+          <ProjectTableView
+            projects={projects.map(p => ({
+              id: p.id,
+              name: p.name,
+              status: p.status,
+              progress: p.progress || 0,
+              manager: p.manager_name || 'Non assigné',
+              skills: [], // À implémenter avec une table séparée
+              start_date: p.start_date || '',
+              end_date: p.end_date || '',
+            }))}
+            tasks={optimisticTasks.map(t => ({
+              id: t.id,
+              title: t.title,
+              project_id: t.project_id,
+              project_name: t.project_name || '',
+              progress: t.progress,
+              assignee: t.assignee,
+              status: t.status,
+            }))}
+          />
+        )}
+      </CardContent>
+
+      {/* Dialog de modification de tâche */}
+      <ModernTaskEditDialog
+        open={editDialogOpen}
+        onOpenChange={setEditDialogOpen}
+        task={taskToEdit}
+        onSave={async taskData => {
+          await updateTask(taskData);
+          refetch();
+          setTaskToEdit(null);
+        }}
+      />
+
+      {/* Dialog de création de tâche */}
+      <ModernTaskCreationDialog
+        open={createTaskDialogOpen}
+        onOpenChange={setCreateTaskDialogOpen}
+        onCreateTask={handleCreateMainTask}
+      />
+    </Card>
+  );
+};
+
+export default DynamicTable;

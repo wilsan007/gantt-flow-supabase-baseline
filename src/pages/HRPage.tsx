@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, lazy, Suspense } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -16,21 +16,142 @@ import { useNavigate } from 'react-router-dom';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { ResponsiveLayout } from '@/components/responsive/ResponsiveLayout';
-import { HRDashboardMinimal as HRDashboard } from '@/components/hr/HRDashboardMinimal';
-import { LeaveManagement } from '@/components/hr/LeaveManagement';
-import { AttendanceManagement } from '@/components/hr/AttendanceManagement';
-import { EnhancedEmployeeManagement } from '@/components/hr/EnhancedEmployeeManagement';
-import { AbsenceTypeManagement } from '@/components/hr/AbsenceTypeManagement';
-import { LeaveBalanceManagement } from '@/components/hr/LeaveBalanceManagement';
-import { TimesheetManagement } from '@/components/hr/TimesheetManagement';
-import { DepartmentManagement } from '@/components/hr/DepartmentManagement';
-import { OnboardingOffboarding } from '@/components/hr/OnboardingOffboarding';
-import { PerformanceManagement } from '@/components/hr/PerformanceManagement';
-import { SkillsTraining } from '@/components/hr/SkillsTraining';
-import { ExpenseManagement } from '@/components/hr/ExpenseManagement';
-import { PayrollManagement } from '@/components/hr/PayrollManagement';
-import { HealthSafety } from '@/components/hr/HealthSafety';
-// AdvancedHRDashboard supprimé - composant obsolète
+
+// 🚀 OPTIMISATION BUNDLE - Lazy loading des composants HR lourds
+const HRDashboard = lazy(() =>
+  import('@/components/hr/HRDashboardMinimal').then(m => ({ default: m.HRDashboardMinimal }))
+);
+const LeaveManagement = lazy(() =>
+  import('@/components/hr/LeaveManagement').then(m => ({ default: m.LeaveManagement }))
+);
+const AttendanceManagement = lazy(() =>
+  import('@/components/hr/AttendanceManagement').then(m => ({ default: m.AttendanceManagement }))
+);
+const EnhancedEmployeeManagement = lazy(() =>
+  import('@/components/hr/EnhancedEmployeeManagement').then(m => ({
+    default: m.EnhancedEmployeeManagement,
+  }))
+);
+const AbsenceTypeManagement = lazy(() =>
+  import('@/components/hr/AbsenceTypeManagement').then(m => ({ default: m.AbsenceTypeManagement }))
+);
+const LeaveBalanceManagement = lazy(() =>
+  import('@/components/hr/LeaveBalanceManagement').then(m => ({
+    default: m.LeaveBalanceManagement,
+  }))
+);
+const TimesheetManagement = lazy(() =>
+  import('@/components/hr/TimesheetManagement').then(m => ({ default: m.TimesheetManagement }))
+);
+const DepartmentManagement = lazy(() =>
+  import('@/components/hr/DepartmentManagement').then(m => ({ default: m.DepartmentManagement }))
+);
+const OnboardingOffboarding = lazy(() =>
+  import('@/components/hr/OnboardingOffboarding').then(m => ({ default: m.OnboardingOffboarding }))
+);
+const PerformanceManagement = lazy(() =>
+  import('@/components/hr/PerformanceManagement').then(m => ({ default: m.PerformanceManagement }))
+);
+const SkillsTraining = lazy(() =>
+  import('@/components/hr/SkillsTraining').then(m => ({ default: m.SkillsTraining }))
+);
+const ExpenseManagement = lazy(() =>
+  import('@/components/hr/ExpenseManagement').then(m => ({ default: m.ExpenseManagement }))
+);
+const PayrollManagement = lazy(() =>
+  import('@/components/hr/PayrollManagement').then(m => ({ default: m.PayrollManagement }))
+);
+const HealthSafety = lazy(() =>
+  import('@/components/hr/HealthSafety').then(m => ({ default: m.HealthSafety }))
+);
+
+// Composant de chargement
+const LoadingFallback = () => (
+  <div className="flex items-center justify-center p-8">
+    <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+  </div>
+);
+
+// Helper pour envelopper les composants lazy avec Suspense
+const withSuspense = (Component: React.LazyExoticComponent<any>) => {
+  return () => (
+    <Suspense fallback={<LoadingFallback />}>
+      <Component />
+    </Suspense>
+  );
+};
+
+// Composants enveloppés
+const HRDashboardWithSuspense = () => (
+  <Suspense fallback={<LoadingFallback />}>
+    <HRDashboard />
+  </Suspense>
+);
+const LeaveManagementWithSuspense = () => (
+  <Suspense fallback={<LoadingFallback />}>
+    <LeaveManagement />
+  </Suspense>
+);
+const AttendanceManagementWithSuspense = () => (
+  <Suspense fallback={<LoadingFallback />}>
+    <AttendanceManagement />
+  </Suspense>
+);
+const EnhancedEmployeeManagementWithSuspense = () => (
+  <Suspense fallback={<LoadingFallback />}>
+    <EnhancedEmployeeManagement />
+  </Suspense>
+);
+const AbsenceTypeManagementWithSuspense = () => (
+  <Suspense fallback={<LoadingFallback />}>
+    <AbsenceTypeManagement />
+  </Suspense>
+);
+const LeaveBalanceManagementWithSuspense = () => (
+  <Suspense fallback={<LoadingFallback />}>
+    <LeaveBalanceManagement />
+  </Suspense>
+);
+const TimesheetManagementWithSuspense = () => (
+  <Suspense fallback={<LoadingFallback />}>
+    <TimesheetManagement />
+  </Suspense>
+);
+const DepartmentManagementWithSuspense = () => (
+  <Suspense fallback={<LoadingFallback />}>
+    <DepartmentManagement />
+  </Suspense>
+);
+const OnboardingOffboardingWithSuspense = () => (
+  <Suspense fallback={<LoadingFallback />}>
+    <OnboardingOffboarding />
+  </Suspense>
+);
+const PerformanceManagementWithSuspense = () => (
+  <Suspense fallback={<LoadingFallback />}>
+    <PerformanceManagement />
+  </Suspense>
+);
+const SkillsTrainingWithSuspense = () => (
+  <Suspense fallback={<LoadingFallback />}>
+    <SkillsTraining />
+  </Suspense>
+);
+const ExpenseManagementWithSuspense = () => (
+  <Suspense fallback={<LoadingFallback />}>
+    <ExpenseManagement />
+  </Suspense>
+);
+const PayrollManagementWithSuspense = () => (
+  <Suspense fallback={<LoadingFallback />}>
+    <PayrollManagement />
+  </Suspense>
+);
+const HealthSafetyWithSuspense = () => (
+  <Suspense fallback={<LoadingFallback />}>
+    <HealthSafety />
+  </Suspense>
+);
 
 const HRPage = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -125,7 +246,7 @@ const HRPage = () => {
 
         <TabsContent value="dashboard" className="mt-4 sm:mt-6">
           <div className="modern-card transition-smooth hover-glow rounded-xl">
-            <HRDashboard />
+            <HRDashboardWithSuspense />
           </div>
         </TabsContent>
 
@@ -151,15 +272,17 @@ const HRPage = () => {
             </div>
 
             <div className="modern-card transition-smooth hover-glow rounded-xl">
-              {activeSubTab.employees === 'management' && <EnhancedEmployeeManagement />}
-              {activeSubTab.employees === 'departments' && <DepartmentManagement />}
+              {activeSubTab.employees === 'management' && (
+                <EnhancedEmployeeManagementWithSuspense />
+              )}
+              {activeSubTab.employees === 'departments' && <DepartmentManagementWithSuspense />}
             </div>
           </div>
         </TabsContent>
 
         <TabsContent value="performance" className="mt-4 sm:mt-6">
           <div className="modern-card transition-smooth hover-glow rounded-xl">
-            <PerformanceManagement />
+            <PerformanceManagementWithSuspense />
           </div>
         </TabsContent>
 
@@ -210,7 +333,7 @@ const HRPage = () => {
             </div>
 
             <div className="modern-card transition-smooth hover-glow rounded-xl">
-              {activeSubTab.operations === 'onboarding' && <OnboardingOffboarding />}
+              {activeSubTab.operations === 'onboarding' && <OnboardingOffboardingWithSuspense />}
               {activeSubTab.operations === 'leaves' && (
                 <div className="space-y-6">
                   <div className="flex flex-wrap gap-2">
@@ -240,9 +363,9 @@ const HRPage = () => {
                     </Button>
                   </div>
                   <div>
-                    {activeSubTab.leaves === 'requests' && <LeaveManagement />}
-                    {activeSubTab.leaves === 'balances' && <LeaveBalanceManagement />}
-                    {activeSubTab.leaves === 'types' && <AbsenceTypeManagement />}
+                    {activeSubTab.leaves === 'requests' && <LeaveManagementWithSuspense />}
+                    {activeSubTab.leaves === 'balances' && <LeaveBalanceManagementWithSuspense />}
+                    {activeSubTab.leaves === 'types' && <AbsenceTypeManagementWithSuspense />}
                   </div>
                 </div>
               )}
@@ -268,13 +391,13 @@ const HRPage = () => {
                     </Button>
                   </div>
                   <div>
-                    {activeSubTab.time === 'attendance' && <AttendanceManagement />}
-                    {activeSubTab.time === 'timesheets' && <TimesheetManagement />}
+                    {activeSubTab.time === 'attendance' && <AttendanceManagementWithSuspense />}
+                    {activeSubTab.time === 'timesheets' && <TimesheetManagementWithSuspense />}
                   </div>
                 </div>
               )}
-              {activeSubTab.operations === 'expenses' && <ExpenseManagement />}
-              {activeSubTab.operations === 'payroll' && <PayrollManagement />}
+              {activeSubTab.operations === 'expenses' && <ExpenseManagementWithSuspense />}
+              {activeSubTab.operations === 'payroll' && <PayrollManagementWithSuspense />}
             </div>
           </div>
         </TabsContent>
@@ -293,14 +416,14 @@ const HRPage = () => {
             </div>
 
             <div className="modern-card transition-smooth hover-glow rounded-xl">
-              {activeSubTab.development === 'skills' && <SkillsTraining />}
+              {activeSubTab.development === 'skills' && <SkillsTrainingWithSuspense />}
             </div>
           </div>
         </TabsContent>
 
         <TabsContent value="safety" className="mt-4 sm:mt-6">
           <div className="modern-card transition-smooth hover-glow rounded-xl">
-            <HealthSafety />
+            <HealthSafetyWithSuspense />
           </div>
         </TabsContent>
       </Tabs>

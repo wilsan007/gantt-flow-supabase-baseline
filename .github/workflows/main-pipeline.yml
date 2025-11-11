@@ -116,14 +116,6 @@ jobs:
       url: https://wadashaqayn.org
     
     steps:
-      - name: 🚀 Start Deployment
-        uses: bobheadxi/deployments@v1
-        id: deployment
-        with:
-          step: start
-          token: ${{ secrets.GITHUB_TOKEN }}
-          env: production
-      
       - name: 📥 Download Build
         uses: actions/download-artifact@v4
         with:
@@ -153,16 +145,6 @@ jobs:
             **/.vscode/**
             **/.DS_Store
           dangerous-clean-slate: true
-      
-      - name: ✅ Update Deployment Status
-        uses: bobheadxi/deployments@v1
-        if: always()
-        with:
-          step: finish
-          token: ${{ secrets.GITHUB_TOKEN }}
-          status: ${{ job.status }}
-          env: production
-          deployment_id: ${{ steps.deployment.outputs.deployment_id }}
       
       - name: ✅ Deployment Summary
         run: |

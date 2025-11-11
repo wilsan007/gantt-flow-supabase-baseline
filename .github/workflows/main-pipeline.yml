@@ -160,6 +160,8 @@ jobs:
           name: production-build
           path: dist/
           retention-days: 7
+          compression-level: 0  # Désactiver compression pour tester
+          include-hidden-files: true
 
   # Job 4: Deploy to Hostinger (SEULEMENT si tous les tests passent)
   deploy:

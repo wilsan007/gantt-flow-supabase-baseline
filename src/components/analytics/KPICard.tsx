@@ -5,7 +5,7 @@
 
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
-import { TrendingUp, TrendingDown, Minus, LucideIcon } from 'lucide-react';
+import { TrendingUp, TrendingDown, Minus, LucideIcon } from '@/lib/icons';
 import { cn } from '@/lib/utils';
 
 interface KPICardProps {

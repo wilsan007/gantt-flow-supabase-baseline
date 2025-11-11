@@ -1,11 +1,21 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, lazy, Suspense } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { LandscapeWrapper } from '@/components/layout/LandscapeWrapper';
 // 🎨 Utilisation des vues ORIGINALES avec design complet + performance Enterprise
 import { TaskTableWithOnboarding } from '@/components/onboarding/TaskTableWithOnboarding';
-import KanbanBoard from '@/components/vues/kanban/KanbanBoard';
-import GanttChart from '@/components/vues/gantt/GanttChart';
+
+// 🚀 OPTIMISATION BUNDLE - Lazy loading vues lourdes
+const KanbanBoard = lazy(() => import('@/components/vues/kanban/KanbanBoard'));
+const GanttChart = lazy(() => import('@/components/vues/gantt/GanttChart'));
+
+// Composant de chargement
+const ViewLoading = () => (
+  <div className="flex items-center justify-center p-12">
+    <div className="h-12 w-12 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+  </div>
+);
+
 // import { HRDashboard } from "@/components/hr/HRDashboard"; // Temporarily commented out
 
 const Index = () => {
@@ -79,7 +89,9 @@ const Index = () => {
             customMessage="Le tableau Kanban offre une meilleure expérience en mode paysage"
           >
             <div className="modern-card transition-smooth hover-glow rounded-xl">
-              <KanbanBoard />
+              <Suspense fallback={<ViewLoading />}>
+                <KanbanBoard />
+              </Suspense>
             </div>
           </LandscapeWrapper>
         </TabsContent>
@@ -92,7 +104,9 @@ const Index = () => {
             customMessage="Le diagramme de Gantt nécessite le mode paysage pour une visualisation optimale"
           >
             <div className="modern-card transition-smooth hover-glow rounded-xl">
-              <GanttChart />
+              <Suspense fallback={<ViewLoading />}>
+                <GanttChart />
+              </Suspense>
             </div>
           </LandscapeWrapper>
         </TabsContent>

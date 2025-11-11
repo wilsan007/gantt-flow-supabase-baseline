@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/toast';
 import { useToast } from '@/hooks/use-toast';
 import { AppError, ErrorSeverity } from '@/lib/errorTypes';
-import { AlertTriangle, XCircle, AlertCircle, Info, RefreshCw, ExternalLink } from 'lucide-react';
+import { AlertTriangle, XCircle, AlertCircle, Info, RefreshCw, ExternalLink } from '@/lib/icons';
 import { cn } from '@/lib/utils';
 
 const severityConfig = {

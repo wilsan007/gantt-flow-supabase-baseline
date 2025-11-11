@@ -5,6 +5,11 @@ import { componentTagger } from 'lovable-tagger';
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
+  // 🚀 OPTIMISATION - Tree-shaking automatique lucide-react
+  optimizeDeps: {
+    include: ['lucide-react'],
+    exclude: [],
+  },
   server: {
     host: '::',
     port: 8080,
@@ -79,7 +84,7 @@ export default defineConfig(({ mode }) => ({
           'vendor-excel': ['xlsx'], // 420KB - Lazy load
           'vendor-pdf': ['jspdf', 'jspdf-autotable'], // 405KB - Lazy load
           'vendor-canvas': ['html2canvas'], // 198KB - Lazy load
-          'vendor-icons': ['lucide-react'], // 148KB - À tree-shake
+          // vendor-icons SUPPRIMÉ - Tree-shaking via @/lib/icons
         },
       },
     },

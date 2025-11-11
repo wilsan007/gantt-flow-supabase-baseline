@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import { Loader2 } from 'lucide-react';
+import { Loader2 } from '@/lib/icons';
 import { Card, CardContent } from '@/components/ui/card';
 
 export const LoadingState: React.FC = () => {

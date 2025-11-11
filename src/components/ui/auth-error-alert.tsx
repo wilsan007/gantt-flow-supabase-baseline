@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import { AlertTriangle, Wifi, Lock, Mail, Clock, RefreshCw, ExternalLink } from 'lucide-react';
+import { AlertTriangle, Wifi, Lock, Mail, Clock, RefreshCw, ExternalLink } from '@/lib/icons';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { AuthErrorType } from '@/lib/authErrorHandler';

@@ -5,7 +5,7 @@
  */
 
 import React from 'react';
-import { Smartphone, X } from 'lucide-react';
+import { Smartphone, X } from '@/lib/icons';
 import { Button } from '@/components/ui/button';
 
 interface RotateDeviceMessageProps {

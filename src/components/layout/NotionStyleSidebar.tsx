@@ -13,6 +13,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+// 🚀 OPTIMISATION BUNDLE - Import depuis barrel export optimisé
 import {
   ChevronDown,
   ChevronRight,
@@ -38,7 +39,7 @@ import {
   Bell,
   Sun,
   Moon,
-} from 'lucide-react';
+} from '@/lib/icons';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { ScrollArea } from '@/components/ui/scroll-area';

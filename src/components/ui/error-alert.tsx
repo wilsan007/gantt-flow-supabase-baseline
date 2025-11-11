@@ -11,7 +11,7 @@ import {
   X,
   Clock,
   CheckCircle2,
-} from 'lucide-react';
+} from '@/lib/icons';
 import { AppError, ErrorSeverity, ErrorType } from '@/lib/errorTypes';
 import { cn } from '@/lib/utils';
 

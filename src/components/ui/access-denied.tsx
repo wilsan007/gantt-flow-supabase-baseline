@@ -7,7 +7,7 @@ import React from 'react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Shield, Lock, UserX, AlertCircle, Info, Mail, ArrowLeft } from 'lucide-react';
+import { Shield, Lock, UserX, AlertCircle, Info, Mail, ArrowLeft } from '@/lib/icons';
 import { useNavigate } from 'react-router-dom';
 
 export type AccessDeniedReason =

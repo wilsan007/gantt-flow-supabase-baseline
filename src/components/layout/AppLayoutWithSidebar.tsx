@@ -11,7 +11,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import { Menu, X } from 'lucide-react';
+// 🚀 OPTIMISATION BUNDLE - Import depuis barrel export optimisé
+import { Menu, X } from '@/lib/icons';
 import { Button } from '@/components/ui/button';
 import { NotionStyleSidebar } from './NotionStyleSidebar';
 import { ThemeToggle } from '@/components/ThemeToggle';

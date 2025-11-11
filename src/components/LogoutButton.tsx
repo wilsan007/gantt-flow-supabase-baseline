@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { LogOut } from 'lucide-react';
+import { LogOut } from '@/lib/icons';
 import { useToast } from '@/hooks/use-toast';
 
 interface LogoutButtonProps {

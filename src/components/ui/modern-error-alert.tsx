@@ -11,7 +11,7 @@ import {
   Mail,
   Lock,
   Shield,
-} from 'lucide-react';
+} from '@/lib/icons';
 
 export interface ModernErrorProps {
   type: 'error' | 'warning' | 'info' | 'success';

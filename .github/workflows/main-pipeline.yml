@@ -78,6 +78,12 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
       
+      - name: 🧹 Clean Previous Build
+        run: |
+          rm -rf dist/
+          rm -rf node_modules/.vite
+          echo "✅ Nettoyage terminé"
+      
       - name: 📦 Install Dependencies
         run: npm ci --legacy-peer-deps
       
@@ -87,15 +93,31 @@ jobs:
           NODE_ENV: production
           CI: false
       
-      - name: 📊 Build Info
+      - name: 📊 Build Info & Verification
         run: |
           echo "## ✅ Build Successful" >> $GITHUB_STEP_SUMMARY
           
           if [ -d "dist" ]; then
             BUILD_SIZE=$(du -sh dist | cut -f1)
+            BUILD_SIZE_KB=$(du -sk dist | cut -f1)
             FILE_COUNT=$(find dist -type f | wc -l)
+            JS_COUNT=$(find dist/assets -name "*.js" | wc -l)
+            
             echo "📦 **Size:** $BUILD_SIZE" >> $GITHUB_STEP_SUMMARY
             echo "📄 **Files:** $FILE_COUNT" >> $GITHUB_STEP_SUMMARY
+            echo "📜 **JS Files:** $JS_COUNT" >> $GITHUB_STEP_SUMMARY
+            
+            # Vérification taille minimale (doit être > 2000 KB)
+            if [ $BUILD_SIZE_KB -lt 2000 ]; then
+              echo "❌ ERREUR: Build trop petit ($BUILD_SIZE_KB KB < 2000 KB)"
+              echo "Le build est incomplet!"
+              exit 1
+            fi
+            
+            echo "✅ Build de taille correcte: $BUILD_SIZE_KB KB"
+          else
+            echo "❌ ERREUR: Dossier dist/ inexistant"
+            exit 1
           fi
       
       - name: 📤 Upload Build Artifact

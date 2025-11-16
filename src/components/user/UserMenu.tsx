@@ -67,6 +67,7 @@ interface UserMenuProps {
     };
   };
   isTenantAdmin?: boolean;
+  isSuperAdmin?: boolean;
   tenantName?: string;
   onSignOut?: () => Promise<void>;
 }
@@ -76,6 +77,7 @@ type UserStatus = 'online' | 'away' | 'busy' | 'offline';
 export const UserMenu: React.FC<UserMenuProps> = ({
   user,
   isTenantAdmin = false,
+  isSuperAdmin = false,
   tenantName,
   onSignOut,
 }) => {
@@ -148,7 +150,12 @@ export const UserMenu: React.FC<UserMenuProps> = ({
         <button className="flex items-center gap-2 rounded-lg px-2 py-1.5 transition-colors hover:bg-accent">
           <div className="relative">
             <Avatar className="h-8 w-8">
-              <AvatarImage src={avatarUrl} alt={fullName} />
+              <AvatarImage
+                src={avatarUrl}
+                alt={fullName}
+                referrerPolicy="no-referrer"
+                loading="lazy"
+              />
               <AvatarFallback className="bg-primary text-xs text-primary-foreground">
                 {initials}
               </AvatarFallback>
@@ -170,7 +177,12 @@ export const UserMenu: React.FC<UserMenuProps> = ({
         <DropdownMenuLabel className="font-normal">
           <div className="flex items-center gap-3 py-2">
             <Avatar className="h-12 w-12">
-              <AvatarImage src={avatarUrl} alt={fullName} />
+              <AvatarImage
+                src={avatarUrl}
+                alt={fullName}
+                referrerPolicy="no-referrer"
+                loading="lazy"
+              />
               <AvatarFallback className="bg-primary text-primary-foreground">
                 {initials}
               </AvatarFallback>
@@ -212,59 +224,67 @@ export const UserMenu: React.FC<UserMenuProps> = ({
           </DropdownMenuSubContent>
         </DropdownMenuSub>
 
-        {/* Désactiver les notifications */}
-        <DropdownMenuSub>
-          <DropdownMenuSubTrigger>
-            <BellOff className="mr-2 h-4 w-4" />
-            <span>Désactiver les notifications</span>
-            <ChevronRight className="ml-auto h-4 w-4" />
-          </DropdownMenuSubTrigger>
-          <DropdownMenuSubContent>
-            <DropdownMenuItem onClick={handleNotificationSettings}>
-              <Clock className="mr-2 h-4 w-4" />
-              <span>30 minutes</span>
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={handleNotificationSettings}>
-              <Clock className="mr-2 h-4 w-4" />
-              <span>1 heure</span>
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={handleNotificationSettings}>
-              <Clock className="mr-2 h-4 w-4" />
-              <span>2 heures</span>
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={handleNotificationSettings}>
-              <Settings className="mr-2 h-4 w-4" />
-              <span>Gérer les notifications</span>
-            </DropdownMenuItem>
-          </DropdownMenuSubContent>
-        </DropdownMenuSub>
+        {/* Désactiver les notifications - 🔒 Super-Admin uniquement */}
+        {isSuperAdmin && (
+          <DropdownMenuSub>
+            <DropdownMenuSubTrigger>
+              <BellOff className="mr-2 h-4 w-4" />
+              <span>Désactiver les notifications</span>
+              <ChevronRight className="ml-auto h-4 w-4" />
+            </DropdownMenuSubTrigger>
+            <DropdownMenuSubContent>
+              <DropdownMenuItem onClick={handleNotificationSettings}>
+                <Clock className="mr-2 h-4 w-4" />
+                <span>30 minutes</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={handleNotificationSettings}>
+                <Clock className="mr-2 h-4 w-4" />
+                <span>1 heure</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={handleNotificationSettings}>
+                <Clock className="mr-2 h-4 w-4" />
+                <span>2 heures</span>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={handleNotificationSettings}>
+                <Settings className="mr-2 h-4 w-4" />
+                <span>Gérer les notifications</span>
+              </DropdownMenuItem>
+            </DropdownMenuSubContent>
+          </DropdownMenuSub>
+        )}
 
         <DropdownMenuSeparator />
 
         {/* Actions utilisateur */}
-        <DropdownMenuItem onClick={() => navigate('/settings')}>
-          <Settings className="mr-2 h-4 w-4" />
-          <span>Paramètres</span>
-        </DropdownMenuItem>
+        {isSuperAdmin && (
+          <DropdownMenuItem onClick={() => navigate('/settings')}>
+            <Settings className="mr-2 h-4 w-4" />
+            <span>Paramètres</span>
+          </DropdownMenuItem>
+        )}
 
         <DropdownMenuItem onClick={handleChangePassword}>
           <KeyRound className="mr-2 h-4 w-4" />
           <span>Modifier le mot de passe</span>
         </DropdownMenuItem>
 
-        <DropdownMenuItem onClick={() => navigate('/settings?tab=appearance')}>
-          <Palette className="mr-2 h-4 w-4" />
-          <span>Thèmes</span>
-        </DropdownMenuItem>
+        {isSuperAdmin && (
+          <>
+            <DropdownMenuItem onClick={() => navigate('/settings?tab=appearance')}>
+              <Palette className="mr-2 h-4 w-4" />
+              <span>Thèmes</span>
+            </DropdownMenuItem>
 
-        <DropdownMenuItem onClick={() => navigate('/settings?tab=language')}>
-          <Globe className="mr-2 h-4 w-4" />
-          <span>Langue</span>
-        </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => navigate('/settings?tab=language')}>
+              <Globe className="mr-2 h-4 w-4" />
+              <span>Langue</span>
+            </DropdownMenuItem>
+          </>
+        )}
 
-        {/* Actions admin entreprise */}
-        {isTenantAdmin && (
+        {/* Actions admin entreprise - 🔒 Super-Admin uniquement */}
+        {isSuperAdmin && isTenantAdmin && (
           <>
             <DropdownMenuSeparator />
             <DropdownMenuLabel className="text-xs text-muted-foreground">

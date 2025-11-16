@@ -17,8 +17,8 @@ export default function ProjectPage() {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto space-y-4 p-4 sm:space-y-6 sm:p-6">
+    <div className="h-full">
+      <div className="container mx-auto space-y-4 sm:space-y-6">
         {/* Navigation rapide - Responsive */}
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="min-w-0 flex-1">

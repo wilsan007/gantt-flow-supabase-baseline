@@ -1,82 +1,145 @@
-import { useState } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { UserPlus, Check } from '@/lib/icons';
-import { useProfiles } from '@/hooks/useProfiles';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { UserPlus, Check, User, X } from '@/lib/icons';
+import { useEmployees } from '@/hooks/useEmployees';
 
 interface AssigneeSelectProps {
-  assignee: string;
+  assignee: string | { full_name: string } | null | undefined;
   onChange: (value: string) => void;
   taskId: string;
+  taskTenantId?: string; // Tenant ID de la tâche pour filtrer les profils
 }
 
-export const AssigneeSelect = ({ assignee, onChange, taskId }: AssigneeSelectProps) => {
-  const { profiles, loading } = useProfiles();
+export const AssigneeSelect = ({
+  assignee,
+  onChange,
+  taskId,
+  taskTenantId,
+}: AssigneeSelectProps) => {
+  const { employees, loading } = useEmployees();
   const [isOpen, setIsOpen] = useState(false);
-  const [newAssignee, setNewAssignee] = useState('');
 
-  const handleProfileSelect = (profileName: string) => {
-    onChange(profileName);
+  // 🔒 SÉCURITÉ STRICTE: FILTRER LES EMPLOYÉS PAR TENANT_ID DE LA TÂCHE
+  const filteredEmployees = useMemo(() => {
+    // 🚨 CRITIQUE: Si pas de tenant_id, ne rien afficher (sécurité)
+    if (!taskTenantId) {
+      console.warn('⚠️ SÉCURITÉ: Aucun tenant_id fourni pour la tâche, isolation impossible');
+      return [];
+    }
+
+    // Filtrer STRICTEMENT par tenant_id
+    const filtered = employees.filter(emp => emp.tenant_id === taskTenantId);
+
+    // 🔒 LOG DE SÉCURITÉ: Vérifier l'isolation
+    if (filtered.length === 0 && employees.length > 0) {
+      console.warn('⚠️ SÉCURITÉ: Aucun employé trouvé pour tenant_id:', taskTenantId);
+    }
+
+    return filtered;
+  }, [employees, taskTenantId]);
+
+  const handleProfileSelect = (profileId: string) => {
+    onChange(profileId);
     setIsOpen(false);
   };
 
-  const handleNewAssignee = () => {
-    if (newAssignee.trim()) {
-      onChange(newAssignee.trim());
-      setNewAssignee('');
-      setIsOpen(false);
-    }
+  const handleUnassign = () => {
+    onChange('');
+    setIsOpen(false);
   };
 
-  // Gérer assignee comme string ou objet { full_name: string }
-  const assigneeStr = typeof assignee === 'string' ? assignee : (assignee as any)?.full_name || '';
-  const currentAssignees = assigneeStr ? assigneeStr.split(', ').filter(Boolean) : [];
+  // Normaliser assignee (peut être string, objet, null, undefined)
+  const normalizedAssignee = (() => {
+    if (!assignee) return null;
+    if (typeof assignee === 'string') return assignee;
+    // Si c'est un objet avec full_name ou id
+    return (assignee as any)?.full_name || (assignee as any)?.id || null;
+  })();
+
+  // Trouver l'employé assigné
+  const assignedEmployee = normalizedAssignee
+    ? filteredEmployees.find(
+        e =>
+          e.id === normalizedAssignee ||
+          e.user_id === normalizedAssignee ||
+          e.full_name === normalizedAssignee
+      )
+    : null;
 
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild>
-        <Button variant="ghost" className="w-full justify-start text-left font-normal">
-          {assigneeStr || 'Non assigné'}
+        <Button
+          variant="ghost"
+          className="h-auto w-full justify-start py-1 text-left font-normal hover:bg-accent"
+        >
+          {assignedEmployee ? (
+            <div className="flex items-center gap-2">
+              <Avatar className="h-6 w-6">
+                <AvatarImage src={assignedEmployee.avatar_url} />
+                <AvatarFallback className="text-xs">
+                  {assignedEmployee.full_name.slice(0, 2).toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
+              <span className="text-sm">{assignedEmployee.full_name}</span>
+            </div>
+          ) : (
+            <div className="flex items-center gap-2 text-muted-foreground">
+              <User className="h-4 w-4" />
+              <span className="text-sm">Non assigné</span>
+            </div>
+          )}
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-80 border bg-background p-0" align="start">
-        <div className="space-y-4 p-4">
-          <div className="space-y-2">
-            <h4 className="font-medium">Responsables disponibles</h4>
+        <div className="space-y-2 p-4">
+          <div className="flex items-center justify-between">
+            <h4 className="text-sm font-medium">Assigner à</h4>
+            <span className="text-xs text-muted-foreground">
+              {filteredEmployees.length} personne{filteredEmployees.length > 1 ? 's' : ''}
+            </span>
+          </div>
+
+          {/* Option Non assigné */}
+          <button
+            onClick={handleUnassign}
+            className="flex w-full items-center gap-2 rounded-sm px-2 py-2 text-left text-sm hover:bg-accent"
+          >
+            <User className="h-5 w-5 text-muted-foreground" />
+            <span className="flex-1">Non assigné</span>
+            {!assignedEmployee && <Check className="h-4 w-4 text-green-600" />}
+          </button>
+
+          <div className="border-t pt-2">
             {loading ? (
-              <div className="text-sm text-muted-foreground">Chargement...</div>
+              <div className="py-2 text-sm text-muted-foreground">Chargement...</div>
+            ) : filteredEmployees.length === 0 ? (
+              <div className="py-2 text-sm text-muted-foreground">Aucun employé dans ce tenant</div>
             ) : (
-              <div className="max-h-32 space-y-1 overflow-y-auto">
-                {profiles.map(profile => (
+              <div className="max-h-48 space-y-1 overflow-y-auto">
+                {filteredEmployees.map(employee => (
                   <button
-                    key={profile.id}
-                    onClick={() => handleProfileSelect(profile.full_name)}
-                    className="flex w-full items-center justify-between rounded-sm px-2 py-1 text-left text-sm hover:bg-accent"
+                    key={employee.id}
+                    onClick={() => handleProfileSelect(employee.user_id || employee.id)}
+                    className="flex w-full items-center gap-2 rounded-sm px-2 py-2 text-left text-sm hover:bg-accent"
                   >
-                    <span>{profile.full_name}</span>
-                    {currentAssignees.includes(profile.full_name) && (
-                      <Check className="h-4 w-4 text-success" />
+                    <Avatar className="h-6 w-6">
+                      <AvatarImage src={employee.avatar_url} />
+                      <AvatarFallback className="text-xs">
+                        {employee.full_name.slice(0, 2).toUpperCase()}
+                      </AvatarFallback>
+                    </Avatar>
+                    <span className="flex-1">{employee.full_name}</span>
+                    {assignedEmployee?.id === employee.id && (
+                      <Check className="h-4 w-4 text-green-600" />
                     )}
                   </button>
                 ))}
               </div>
             )}
-          </div>
-
-          <div className="space-y-2">
-            <h4 className="font-medium">Ajouter nouveau responsable</h4>
-            <div className="flex gap-2">
-              <Input
-                placeholder="Nom du responsable..."
-                value={newAssignee}
-                onChange={e => setNewAssignee(e.target.value)}
-                onKeyPress={e => e.key === 'Enter' && handleNewAssignee()}
-              />
-              <Button onClick={handleNewAssignee} size="sm">
-                <UserPlus className="h-4 w-4" />
-              </Button>
-            </div>
           </div>
         </div>
       </PopoverContent>

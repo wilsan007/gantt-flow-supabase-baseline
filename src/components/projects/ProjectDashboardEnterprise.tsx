@@ -48,6 +48,8 @@ import {
 import { useToast } from '@/hooks/use-toast';
 import { ProjectCreationDialog } from '@/components/projects/ProjectCreationDialog';
 import { ProjectDetailsDialog } from '@/components/projects/ProjectDetailsDialog';
+import { ProjectTableInline } from '@/components/projects/ProjectTableInline';
+import { LayoutGrid, LayoutList } from 'lucide-react';
 
 interface ProjectDashboardEnterpriseProps {
   showMetrics?: boolean;
@@ -68,6 +70,7 @@ export const ProjectDashboardEnterprise: React.FC<ProjectDashboardEnterpriseProp
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string[]>([]);
   const [priorityFilter, setPriorityFilter] = useState<string[]>([]);
+  const [viewMode, setViewMode] = useState<'grid' | 'table'>('table'); // ✅ Table par défaut pour édition inline
 
   // Hook enterprise optimisé
   const {
@@ -89,9 +92,31 @@ export const ProjectDashboardEnterprise: React.FC<ProjectDashboardEnterpriseProp
     setFilters: updateFilters,
     isDataStale,
     cacheKey,
+    updateProject,
   } = useProjectsEnterprise(filters);
 
   const { toast } = useToast();
+
+  // Handler pour mise à jour inline
+  const handleUpdateProject = useCallback(
+    async (projectId: string, updates: any) => {
+      try {
+        await updateProject(projectId, updates);
+        toast({
+          title: 'Projet mis à jour',
+          description: 'Les modifications ont été sauvegardées.',
+        });
+      } catch (error) {
+        console.error('Erreur mise à jour projet:', error);
+        toast({
+          title: 'Erreur',
+          description: 'Impossible de mettre à jour le projet.',
+          variant: 'destructive',
+        });
+      }
+    },
+    [updateProject, toast]
+  );
 
   // Filtres memoizés pour performance
   const appliedFilters = useMemo(
@@ -296,6 +321,26 @@ export const ProjectDashboardEnterprise: React.FC<ProjectDashboardEnterpriseProp
                 Nouveau Projet
               </Button>
 
+              {/* Toggle vue grille/tableau */}
+              <div className="flex gap-1 rounded-md border p-1">
+                <Button
+                  variant={viewMode === 'grid' ? 'default' : 'ghost'}
+                  size="sm"
+                  className="h-7 px-2"
+                  onClick={() => setViewMode('grid')}
+                >
+                  <LayoutGrid className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant={viewMode === 'table' ? 'default' : 'ghost'}
+                  size="sm"
+                  className="h-7 px-2"
+                  onClick={() => setViewMode('table')}
+                >
+                  <LayoutList className="h-4 w-4" />
+                </Button>
+              </div>
+
               <Button variant="outline" size="sm" className="w-full justify-center sm:w-auto">
                 <Download className="mr-2 h-4 w-4" />
                 <span className="hidden sm:inline">Exporter</span>
@@ -376,6 +421,17 @@ export const ProjectDashboardEnterprise: React.FC<ProjectDashboardEnterpriseProp
                 Créer votre premier projet
               </Button>
             </div>
+          ) : viewMode === 'table' ? (
+            <ProjectTableInline
+              projects={projects}
+              onUpdateProject={handleUpdateProject}
+              onProjectClick={project => {
+                setSelectedProject(project);
+                setIsDetailsDialogOpen(true);
+              }}
+              selectedProjectId={selectedProject?.id}
+              compactMode={compactMode}
+            />
           ) : (
             <>
               <div className="grid grid-cols-1 gap-4 sm:gap-6 md:grid-cols-2 lg:grid-cols-3">

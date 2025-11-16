@@ -6,7 +6,9 @@ import { CalendarDays, Clock, User, Plus } from '@/lib/icons';
 import { type Task } from '@/hooks/optimized';
 import { priorityColors, statusColors, formatDate } from '@/lib/taskHelpers';
 import { TaskRowActions } from './TaskRowActions';
+import { SimpleAssigneeDisplay } from './SimpleAssigneeDisplay';
 import { AssigneeSelect } from './AssigneeSelect';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
 interface SubTaskRowProps {
   task: Task;
@@ -47,14 +49,21 @@ export const SubTaskRow = ({
       </TableCell>
 
       <TableCell>
-        <div className="flex items-center gap-2 text-sm">
-          <User className="h-3 w-3 text-muted-foreground" />
-          <AssigneeSelect
-            assignee={task.assignee}
-            onChange={assignee => onUpdateAssignee(task.id, assignee)}
-            taskId={task.id}
-          />
-        </div>
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button variant="ghost" className="w-full justify-start px-2 text-sm hover:bg-accent">
+              <SimpleAssigneeDisplay assignee={task.assignee} />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-80" align="start">
+            <AssigneeSelect
+              assignee={task.assignee}
+              onChange={assignee => onUpdateAssignee(task.id, assignee)}
+              taskId={task.id}
+              taskTenantId={task.tenant_id}
+            />
+          </PopoverContent>
+        </Popover>
       </TableCell>
 
       <TableCell>

@@ -21,7 +21,7 @@ interface Task {
   project_id?: string;
   project_name?: string;
   progress: number;
-  assignee: string;
+  assignee: string | { full_name: string } | null;
   status: string;
 }
 
@@ -67,6 +67,12 @@ export const ProjectTableView: React.FC<ProjectTableViewProps> = ({ projects, ta
     return (
       statusConfig[status as keyof typeof statusConfig] || { label: status, color: 'bg-gray-500' }
     );
+  };
+
+  const getAssigneeName = (assignee: string | { full_name: string } | null): string => {
+    if (!assignee) return 'Non assigné';
+    if (typeof assignee === 'string') return assignee;
+    return assignee.full_name || 'Non assigné';
   };
 
   return (
@@ -207,7 +213,7 @@ export const ProjectTableView: React.FC<ProjectTableViewProps> = ({ projects, ta
                             <div className="flex-1">
                               <h5 className="font-medium">{task.title}</h5>
                               <div className="text-sm text-muted-foreground">
-                                Assigné à: {task.assignee}
+                                Assigné à: {getAssigneeName(task.assignee)}
                               </div>
                             </div>
                             <div className="space-y-1 text-right">
@@ -246,7 +252,7 @@ export const ProjectTableView: React.FC<ProjectTableViewProps> = ({ projects, ta
                             <div className="flex-1">
                               <h5 className="font-medium">{task.title}</h5>
                               <div className="text-sm text-muted-foreground">
-                                Assigné à: {task.assignee}
+                                Assigné à: {getAssigneeName(task.assignee)}
                               </div>
                             </div>
                             <div className="space-y-1 text-right">

@@ -3,6 +3,7 @@ import { useState } from 'react';
 // Hooks optimisés avec cache intelligent et métriques
 import { useTasks } from '@/hooks/optimized';
 import { useProjects } from '@/hooks/optimized';
+import { useEmployees } from '@/hooks/useEmployees';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { MobileKanbanBoard } from '../responsive/MobileKanbanBoard';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -74,12 +75,23 @@ function KanbanCard({ task }: KanbanCardProps) {
           <CardTitle className="text-sm font-medium text-foreground">
             {task.title || task.name}
           </CardTitle>
-          <div className="flex items-center justify-between">
+
+          {/* Badges priorité et projet */}
+          <div className="flex flex-wrap items-center gap-1 py-1">
             <Badge
               className={`border text-xs font-medium ${PRIORITY_COLORS[task.priority] || PRIORITY_COLORS.medium}`}
             >
               {task.priority}
             </Badge>
+            {(task.projects?.name || task.project_name) && (
+              <Badge variant="secondary" className="text-xs">
+                📁 {task.projects?.name || task.project_name}
+              </Badge>
+            )}
+          </div>
+
+          {/* Assigné avec nom complet */}
+          <div className="flex items-center gap-2 pt-1">
             <Avatar className="h-6 w-6 ring-2 ring-primary/40">
               {(() => {
                 // Normaliser assignee qui peut être string ou objet
@@ -97,6 +109,15 @@ function KanbanCard({ task }: KanbanCardProps) {
                 );
               })()}
             </Avatar>
+            <span className="flex-1 truncate text-xs text-muted-foreground">
+              {(() => {
+                const assigneeStr =
+                  typeof task.assignee === 'string'
+                    ? task.assignee
+                    : (task.assignee as any)?.full_name || task.manager_name || 'Non assigné';
+                return assigneeStr;
+              })()}
+            </span>
           </div>
         </CardHeader>
         <CardContent className="pt-0">
@@ -158,6 +179,7 @@ function KanbanColumn({ column, tasks }: KanbanColumnProps) {
 export default function KanbanBoard() {
   const { tasks, updateTaskStatus, loading } = useTasks();
   const { projects, loading: projectsLoading } = useProjects();
+  const { employees } = useEmployees();
   const [activeTask, setActiveTask] = useState<Task | null>(null);
   const [displayMode, setDisplayMode] = useState<'tasks' | 'projects'>('tasks');
   const isMobile = useIsMobile();
@@ -280,7 +302,7 @@ export default function KanbanBoard() {
         <AdvancedFilters
           onFiltersChange={setFilters}
           projects={projects}
-          employees={[]}
+          employees={employees}
           totalTasks={tasks.length}
           filteredCount={filteredTasks.length}
         />

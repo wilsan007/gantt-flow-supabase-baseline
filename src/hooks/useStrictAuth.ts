@@ -165,12 +165,14 @@ export function useStrictAuth() {
   }, []);
 
   /**
-   * Déconnexion manuelle
+   * 🔒 Déconnexion sécurisée avec nettoyage complet
    */
   const signOut = useCallback(async () => {
+    console.log('🔒 SÉCURITÉ: Déconnexion sécurisée initiée...');
     setState(prev => ({ ...prev, loading: true }));
 
-    await invalidateSession();
+    // 🚨 CRITIQUE: Utiliser le nettoyage sécurisé complet
+    await secureLogout();
 
     setState({
       user: null,

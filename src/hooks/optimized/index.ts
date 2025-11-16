@@ -349,8 +349,10 @@ export function useTasks() {
   );
 
   // ✅ updateTaskAssignee (ancienne fonctionnalité)
+  // 🔒 CORRECTION: Utiliser assignee_id (colonne réelle PostgreSQL)
   const updateTaskAssignee = useCallback(
     async (taskId: string, assigneeId: string) => {
+      console.log('🔄 updateTaskAssignee:', { taskId, assigneeId });
       return updateTask(taskId, { assignee_id: assigneeId } as any);
     },
     [updateTask]

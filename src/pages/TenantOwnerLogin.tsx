@@ -87,36 +87,42 @@ export const TenantOwnerLogin: React.FC = () => {
     try {
       console.log('🚀 Déclenchement Edge Function pour:', user.email);
 
-      // Utiliser la clé service pour l'Edge Function (plus de permissions)
-      const SUPABASE_SERVICE_KEY =
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFsaWlueHRhbmpkbnd4bHZueGppIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1NzE2ODYxMywiZXhwIjoyMDcyNzQ0NjEzfQ.THSC4CaaEh0IJPP-zPRXGFIbltg79wpOGoEG4diLZAI';
+      // Récupérer le token de session de l'utilisateur connecté
+      const { data: sessionData } = await supabase.auth.getSession();
+      const userToken = sessionData?.session?.access_token;
 
-      const response = await fetch(
-        'https://qliinxtanjdnwxlvnxji.supabase.co/functions/v1/handle-email-confirmation',
-        {
-          method: 'POST',
-          headers: {
-            Authorization: `Bearer ${SUPABASE_SERVICE_KEY}`,
-            'Content-Type': 'application/json',
-            apikey: SUPABASE_SERVICE_KEY,
+      if (!userToken) {
+        console.error('❌ Pas de token de session disponible');
+        return;
+      }
+
+      const supabaseUrl =
+        import.meta.env.VITE_SUPABASE_URL || 'https://qliinxtanjdnwxlvnxji.supabase.co';
+      const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
+
+      const response = await fetch(`${supabaseUrl}/functions/v1/handle-email-confirmation`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${userToken}`,
+          'Content-Type': 'application/json',
+          apikey: supabaseAnonKey,
+        },
+        body: JSON.stringify({
+          type: 'UPDATE',
+          table: 'users',
+          schema: 'auth',
+          record: {
+            id: user.id,
+            email: user.email,
+            email_confirmed_at: new Date().toISOString(), // Forcer la confirmation
           },
-          body: JSON.stringify({
-            type: 'UPDATE',
-            table: 'users',
-            schema: 'auth',
-            record: {
-              id: user.id,
-              email: user.email,
-              email_confirmed_at: new Date().toISOString(), // Forcer la confirmation
-            },
-            old_record: {
-              id: user.id,
-              email: user.email,
-              email_confirmed_at: null,
-            },
-          }),
-        }
-      );
+          old_record: {
+            id: user.id,
+            email: user.email,
+            email_confirmed_at: null,
+          },
+        }),
+      });
 
       if (!response.ok) {
         const errorText = await response.text();

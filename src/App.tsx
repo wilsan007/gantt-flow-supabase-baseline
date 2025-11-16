@@ -51,10 +51,10 @@ const OperationsPage = lazy(() =>
 );
 const PerformanceMonitor = lazy(() => import('./components/dev/PerformanceMonitor'));
 
-import { useUserRoles } from '@/hooks/useUserRoles';
 import { useInactivityTimer } from '@/hooks/useInactivityTimer';
-import { useSessionManager } from '@/hooks/useSessionManager';
-import { useRoleBasedAccess } from '@/hooks/useRoleBasedAccess';
+import { useSessionManager } from './hooks/useSessionManager';
+import { useUserRoles } from './hooks/useUserRoles';
+import { useRoleBasedAccess } from './hooks/useRoleBasedAccess';
 // import { useRenderTracker } from "@/hooks/usePerformanceMonitor";
 import { cacheManager } from '@/lib/cacheManager';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
@@ -274,6 +274,8 @@ function App() {
 
   // Hooks avec protection anti-boucle renforcée
   const { session, loading, signOut, handleAuthStateChange } = useSessionManager();
+  const user = session?.user;
+
   // Note: useUserRoles sera appelé UNE SEULE FOIS dans RolesProvider
   // Ici on garde juste pour la logique initiale (sera retiré progressivement)
   const {
@@ -351,6 +353,7 @@ function App() {
       timeLeftFormatted,
       signOut: handleSignOut,
       isTenantAdmin,
+      user,
     };
   }, [
     stateChanged,
@@ -360,6 +363,7 @@ function App() {
     timeLeftFormatted,
     handleSignOut,
     isTenantAdmin,
+    user,
   ]);
 
   // Protection anti-boucle stricte avec arrêt forcé

@@ -44,23 +44,19 @@ export const useEmployees = () => {
   const { userContext } = useUserFilterContext();
 
   useEffect(() => {
-    fetchData();
-  }, []);
+    if (userContext) {
+      fetchData();
+    }
+  }, [userContext?.userId, userContext?.tenantId]); // Dépendances stables
 
   const fetchData = async () => {
-    if (!userContext) return;
+    if (!userContext) {
+      setLoading(false);
+      return;
+    }
 
     try {
       setLoading(true);
-
-      // Log de l'utilisateur connecté
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-      // console.log('👥 Fetch employees - Utilisateur:', session?.user ? {
-      //   id: session.user.id,
-      //   email: session.user.email
-      // } : 'Non connecté');
 
       // Fetch employees from profiles table avec filtrage
       let employeesQuery = supabase.from('profiles').select('*').order('full_name');
@@ -70,11 +66,7 @@ export const useEmployees = () => {
 
       const { data: employeesData, error: employeesError } = await employeesQuery;
 
-      // console.log('👥 Employees query result:', {
-      //   error: employeesError?.message,
-      //   count: employeesData?.length || 0,
-      //   data: employeesData?.slice(0, 2) // Afficher les 2 premiers pour debug
-      // });
+      // Employés chargés
 
       if (employeesError) throw employeesError;
 
@@ -107,37 +99,38 @@ export const useEmployees = () => {
     employeeData: Omit<Employee, 'id' | 'created_at' | 'updated_at'>
   ) => {
     try {
-      // Create auth user first, then create profile
-      // console.log('Creating employee with data:', employeeData);
-      // For now, just create in profiles table
-      const { data, error } = await supabase
-        .from('profiles')
-        .insert([
-          {
-            full_name: employeeData.full_name,
-            job_title: employeeData.job_title,
-            employee_id: employeeData.employee_id || `EMP${Date.now().toString().slice(-6)}`,
-            hire_date: employeeData.hire_date,
-            contract_type: employeeData.contract_type || 'CDI',
-            phone: employeeData.phone,
-            salary: employeeData.salary,
-            weekly_hours: employeeData.weekly_hours || 35,
-            manager_id: employeeData.manager_id,
-            emergency_contact: employeeData.emergency_contact,
-          },
-        ])
-        .select()
-        .single();
+      // TODO: La création d'employés doit passer par le système d'invitation (send-collaborator-invitation)
+      // Cette fonction nécessite un email, tenant_id et user_id qui ne sont pas fournis ici
+      // Pour créer un employé, utilisez la fonctionnalité d'invitation depuis l'interface RH
 
-      if (error) throw error;
+      throw new Error(
+        "La création directe d'employés n'est pas supportée. Utilisez le système d'invitation."
+      );
 
-      const mappedEmployee = {
-        ...data,
-        employee_id: data.employee_id || `EMP${data.id.slice(-4)}`,
-      };
+      // const { data, error } = await supabase
+      //   .from('profiles')
+      //   .insert([
+      //     {
+      //       email: '', // REQUIS mais non fourni
+      //       tenant_id: '', // REQUIS mais non fourni
+      //       user_id: '', // REQUIS mais non fourni
+      //       full_name: employeeData.full_name,
+      //       job_title: employeeData.job_title,
+      //       employee_id: employeeData.employee_id || `EMP${Date.now().toString().slice(-6)}`,
+      //       hire_date: employeeData.hire_date,
+      //       contract_type: employeeData.contract_type || 'CDI',
+      //       phone: employeeData.phone,
+      //       salary: employeeData.salary,
+      //       weekly_hours: employeeData.weekly_hours || 35,
+      //       manager_id: employeeData.manager_id,
+      //       emergency_contact: employeeData.emergency_contact,
+      //     },
+      //   ])
+      //   .select()
+      //   .single();
+      // if (error) throw error;
 
-      setEmployees(prev => [...prev, mappedEmployee]);
-      return mappedEmployee;
+      // return mappedEmployee;
     } catch (err) {
       console.error('Error creating employee:', err);
       throw err;

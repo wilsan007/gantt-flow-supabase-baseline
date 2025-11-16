@@ -112,17 +112,21 @@ serve(async req => {
     const {
       email,
       fullName,
+      companyName,
       invitationType = 'tenant_owner',
       siteUrl,
       frontendPort,
     } = await req.json();
 
     // Validation
-    if (!email || !fullName) {
-      return new Response(JSON.stringify({ error: 'Email et nom complet requis' }), {
-        status: 400,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
+    if (!email || !fullName || !companyName) {
+      return new Response(
+        JSON.stringify({ error: "Email, nom de la personne et nom de l'entreprise requis" }),
+        {
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
+      );
     }
 
     // ================================================================
@@ -144,6 +148,7 @@ serve(async req => {
       email: email,
       full_name: fullName,
       tenant_id: futureTenantId,
+      tenant_name: companyName,
       invitation_type: invitationType,
       invited_by: user.id,
       status: 'pending',
@@ -166,7 +171,7 @@ serve(async req => {
           validation_code: validationCode,
           created_timestamp: invitationTimestamp,
           invited_by_type: 'super_admin',
-          company_name: fullName.split(' ')[0] + ' Company',
+          company_name: companyName,
         },
       },
     };

@@ -56,8 +56,8 @@ export default function Analytics() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
-      <div className="container mx-auto space-y-4 p-4 sm:space-y-6 sm:p-6">
+    <div className="h-full">
+      <div className="container mx-auto space-y-4 sm:space-y-6">
         {/* Header - Ultra responsive avec gradient */}
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-2 sm:gap-4">

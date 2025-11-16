@@ -32,18 +32,41 @@ import {
   RefreshCw,
 } from '@/lib/icons';
 import { useTasks, type Task } from '@/hooks/optimized';
+import { useProjects } from '@/hooks/optimized';
+import { useEmployees } from '@/hooks/useEmployees';
+import { useTaskEditPermissions } from '@/hooks/useTaskEditPermissions';
+import { EditableTaskTitle } from '@/components/tasks/inline/EditableTaskTitle';
+import { EditableTaskPriority } from '@/components/tasks/inline/EditableTaskPriority';
+import { EditableTaskStatus } from '@/components/tasks/inline/EditableTaskStatus';
+import { EditableTaskAssignee } from '@/components/tasks/inline/EditableTaskAssignee';
 import { supabase } from '@/integrations/supabase/client';
 import { format, isToday, isThisWeek, isBefore, startOfDay, addDays, parseISO } from 'date-fns';
 import { fr } from 'date-fns/locale';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Filter } from 'lucide-react';
 
 interface TaskItemProps {
   task: Task;
   onComplete: (taskId: string) => void;
   onPostpone: (taskId: string) => void;
   onDelegate: (taskId: string) => void;
+  onUpdate: (taskId: string, field: string, value: any) => Promise<void>;
 }
 
-const TaskItem: React.FC<TaskItemProps> = ({ task, onComplete, onPostpone, onDelegate }) => {
+const TaskItem: React.FC<TaskItemProps> = ({
+  task,
+  onComplete,
+  onPostpone,
+  onDelegate,
+  onUpdate,
+}) => {
+  const permissions = useTaskEditPermissions({ task });
   const getPriorityColor = (priority: string) => {
     switch (priority?.toLowerCase()) {
       case 'high':
@@ -84,7 +107,11 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, onComplete, onPostpone, onDel
       <div className="flex items-start justify-between gap-4">
         <div className="flex-1 space-y-2">
           <div className="flex items-center gap-2">
-            <h4 className="font-medium">{task.title}</h4>
+            <EditableTaskTitle
+              value={task.title}
+              onChange={value => onUpdate(task.id, 'title', value)}
+              readOnly={!permissions.canEditTitle}
+            />
             {isOverdue && (
               <Badge variant="destructive" className="text-xs">
                 En retard
@@ -105,16 +132,36 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, onComplete, onPostpone, onDel
             )}
 
             {task.priority && (
-              <Badge className={getPriorityColor(task.priority)}>{task.priority}</Badge>
+              <EditableTaskPriority
+                value={task.priority}
+                onChange={value => onUpdate(task.id, 'priority', value)}
+                readOnly={!permissions.canEditPriority}
+              />
             )}
 
-            {task.status && <Badge className={getStatusColor(task.status)}>{task.status}</Badge>}
+            {task.status && (
+              <EditableTaskStatus
+                value={task.status}
+                onChange={value => onUpdate(task.id, 'status', value)}
+                readOnly={!permissions.canEditStatus}
+              />
+            )}
 
-            {task.project_id && (
+            {(task.projects?.name || task.project_id) && (
               <Badge variant="secondary" className="gap-1">
-                Projet #{task.project_id.slice(0, 8)}
+                📁 {task.projects?.name || `Projet #${task.project_id.slice(0, 8)}`}
               </Badge>
             )}
+
+            {/* Assigné - Éditable avec permissions + Isolation Tenant */}
+            <div className="inline-flex">
+              <EditableTaskAssignee
+                value={task.assigned_to || task.assignee_id || null}
+                onChange={value => onUpdate(task.id, 'assigned_to', value)}
+                readOnly={!permissions.canEditAssignee}
+                taskTenantId={task.tenant_id}
+              />
+            </div>
           </div>
         </div>
 
@@ -139,9 +186,24 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, onComplete, onPostpone, onDel
   );
 };
 
-export const MyTasksView: React.FC = () => {
+interface MyTasksViewProps {
+  showAllTasks?: boolean; // Si true, afficher toutes les tâches visibles selon permissions
+}
+
+export const MyTasksView: React.FC<MyTasksViewProps> = ({ showAllTasks = false }) => {
   const { tasks, loading, error, updateTask, refresh } = useTasks();
+  const { projects } = useProjects();
+  const { employees, loading: employeesLoading } = useEmployees();
   const [user, setUser] = React.useState<any>(null);
+  const [selectedProject, setSelectedProject] = React.useState<string>('all');
+  const [selectedAssignee, setSelectedAssignee] = React.useState<string>('all');
+
+  // Debug employees
+  console.log('📋 MyTasksView - Employees:', {
+    count: employees.length,
+    loading: employeesLoading,
+    sample: employees.slice(0, 3).map(e => ({ id: e.id, name: e.full_name })),
+  });
 
   React.useEffect(() => {
     supabase.auth.getUser().then(({ data }) => setUser(data.user));
@@ -153,28 +215,79 @@ export const MyTasksView: React.FC = () => {
     completed: false,
   });
 
-  // Filtrer les tâches de l'utilisateur
+  // Filtrer les tâches selon le mode ET les filtres
   const myTasks = useMemo(() => {
     if (!user) return [];
-    return tasks.filter(
-      task =>
-        (task.assigned_to || task.assignee_id) === user.id &&
-        task.status !== 'completed' &&
-        task.status !== 'done'
-    );
-  }, [tasks, user]);
+
+    let filteredTasks = tasks;
+
+    // Filtre de base selon le mode
+    if (showAllTasks) {
+      // Mode "Toutes les tâches" : afficher toutes les tâches visibles
+      filteredTasks = tasks.filter(task => task.status !== 'completed' && task.status !== 'done');
+    } else {
+      // Mode "Mes tâches assignées" : uniquement les tâches assignées à moi
+      filteredTasks = tasks.filter(
+        task =>
+          (task.assigned_to || task.assignee_id) === user.id &&
+          task.status !== 'completed' &&
+          task.status !== 'done'
+      );
+    }
+
+    // 🔍 Filtre par projet
+    if (selectedProject !== 'all') {
+      filteredTasks = filteredTasks.filter(task => task.project_id === selectedProject);
+    }
+
+    // 🔍 Filtre par personne assignée (disponible dans tous les modes)
+    if (selectedAssignee !== 'all') {
+      filteredTasks = filteredTasks.filter(
+        task => (task.assigned_to || task.assignee_id) === selectedAssignee
+      );
+    }
+
+    return filteredTasks;
+  }, [tasks, user, showAllTasks, selectedProject, selectedAssignee]);
 
   const completedTasks = useMemo(() => {
     if (!user) return [];
     const twoDaysAgo = addDays(new Date(), -2);
-    return tasks.filter(
-      task =>
-        (task.assigned_to || task.assignee_id) === user.id &&
-        (task.status === 'completed' || task.status === 'done') &&
-        task.updated_at &&
-        parseISO(task.updated_at) > twoDaysAgo
-    );
-  }, [tasks, user]);
+
+    let filteredTasks = tasks;
+
+    if (showAllTasks) {
+      // Mode "Toutes les tâches" : toutes les tâches terminées récemment
+      filteredTasks = tasks.filter(
+        task =>
+          (task.status === 'completed' || task.status === 'done') &&
+          task.updated_at &&
+          parseISO(task.updated_at) > twoDaysAgo
+      );
+    } else {
+      // Mode "Mes tâches assignées" : uniquement mes tâches terminées
+      filteredTasks = tasks.filter(
+        task =>
+          (task.assigned_to || task.assignee_id) === user.id &&
+          (task.status === 'completed' || task.status === 'done') &&
+          task.updated_at &&
+          parseISO(task.updated_at) > twoDaysAgo
+      );
+    }
+
+    // 🔍 Appliquer les mêmes filtres aux tâches terminées
+    if (selectedProject !== 'all') {
+      filteredTasks = filteredTasks.filter(task => task.project_id === selectedProject);
+    }
+
+    if (selectedAssignee !== 'all') {
+      filteredTasks = filteredTasks.filter(
+        task => (task.assigned_to || task.assignee_id) === selectedAssignee
+      );
+    }
+
+    return filteredTasks;
+  }, [tasks, user, showAllTasks, selectedProject, selectedAssignee]);
 
   // Catégoriser les tâches
   const categorizedTasks = useMemo(() => {
@@ -231,6 +344,25 @@ export const MyTasksView: React.FC = () => {
     console.log('Déléguer tâche:', taskId);
   };
 
+  const handleUpdateTask = async (taskId: string, field: string, value: any) => {
+    try {
+      const updateData: any = { [field]: value };
+
+      // Normaliser certains champs
+      if (field === 'assigned_to' || field === 'assignee') {
+        updateData.assigned_to = value;
+        delete updateData.assignee;
+      }
+
+      await updateTask(taskId, updateData);
+
+      // Pas besoin de toast, updateTask gère déjà ça
+    } catch (error) {
+      console.error(`Erreur mise à jour ${field}:`, error);
+      throw error; // Propager l'erreur aux composants inline
+    }
+  };
+
   const toggleSection = (section: keyof typeof expandedSections) => {
     setExpandedSections(prev => ({ ...prev, [section]: !prev[section] }));
   };
@@ -262,9 +394,12 @@ export const MyTasksView: React.FC = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold">Mes Tâches</h2>
+          <h2 className="text-2xl font-bold">
+            {showAllTasks ? 'Toutes les Tâches' : 'Mes Tâches Assignées'}
+          </h2>
           <p className="text-muted-foreground">
             {myTasks.length} tâche{myTasks.length > 1 ? 's' : ''} en cours
+            {showAllTasks && ' (selon vos permissions)'}
           </p>
         </div>
         <Button variant="outline" size="sm" onClick={refresh}>
@@ -272,6 +407,78 @@ export const MyTasksView: React.FC = () => {
           Actualiser
         </Button>
       </div>
+
+      {/* 🔍 Filtres */}
+      <Card>
+        <CardContent className="pt-6">
+          <div className="flex flex-wrap items-center gap-4">
+            <div className="flex items-center gap-2">
+              <Filter className="h-4 w-4 text-muted-foreground" />
+              <span className="text-sm font-medium">Filtres :</span>
+            </div>
+
+            {/* Filtre par projet */}
+            <div className="flex items-center gap-2">
+              <label className="text-sm text-muted-foreground">Projet :</label>
+              <Select value={selectedProject} onValueChange={setSelectedProject}>
+                <SelectTrigger className="w-[200px]">
+                  <SelectValue placeholder="Tous les projets" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Tous les projets</SelectItem>
+                  {projects.map(project => (
+                    <SelectItem key={project.id} value={project.id}>
+                      {project.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Filtre par personne assignée (disponible dans tous les modes) */}
+            <div className="flex items-center gap-2">
+              <label className="text-sm text-muted-foreground">Assigné à :</label>
+              <Select
+                value={selectedAssignee}
+                onValueChange={setSelectedAssignee}
+                disabled={employeesLoading}
+              >
+                <SelectTrigger className="w-[200px]">
+                  <SelectValue
+                    placeholder={employeesLoading ? 'Chargement...' : 'Toutes les personnes'}
+                  />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Toutes les personnes</SelectItem>
+                  {employeesLoading ? (
+                    <SelectItem value="loading" disabled>
+                      Chargement...
+                    </SelectItem>
+                  ) : employees.length === 0 ? (
+                    <SelectItem value="empty" disabled>
+                      Aucun employé trouvé
+                    </SelectItem>
+                  ) : (
+                    employees.map(employee => (
+                      <SelectItem key={employee.id} value={employee.id}>
+                        {employee.full_name}
+                      </SelectItem>
+                    ))
+                  )}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Compteur de filtres actifs */}
+            {(selectedProject !== 'all' || selectedAssignee !== 'all') && (
+              <Badge variant="secondary" className="ml-auto">
+                {[selectedProject !== 'all', selectedAssignee !== 'all'].filter(Boolean).length}{' '}
+                filtre(s) actif(s)
+              </Badge>
+            )}
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Statistiques rapides */}
       <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
@@ -353,6 +560,7 @@ export const MyTasksView: React.FC = () => {
                   onComplete={handleComplete}
                   onPostpone={handlePostpone}
                   onDelegate={handleDelegate}
+                  onUpdate={handleUpdateTask}
                 />
               ))
             )}
@@ -391,6 +599,7 @@ export const MyTasksView: React.FC = () => {
                   onComplete={handleComplete}
                   onPostpone={handlePostpone}
                   onDelegate={handleDelegate}
+                  onUpdate={handleUpdateTask}
                 />
               ))
             )}
@@ -427,6 +636,7 @@ export const MyTasksView: React.FC = () => {
                   onComplete={handleComplete}
                   onPostpone={handlePostpone}
                   onDelegate={handleDelegate}
+                  onUpdate={handleUpdateTask}
                 />
               ))
             )}

@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import type { User, Session } from '@supabase/supabase-js';
+import { secureLogout } from '@/lib/security';
 
 const SESSION_TIMEOUT = 15 * 60 * 1000; // 15 minutes en millisecondes
 const LAST_ACTIVITY_KEY = 'lastActivity';
@@ -32,20 +33,21 @@ export const useSessionManager = () => {
     return timeSinceLastActivity > SESSION_TIMEOUT;
   }, []);
 
-  // Déconnexion sécurisée
+  // 🔒 Déconnexion sécurisée avec nettoyage complet
   const signOut = useCallback(async () => {
     try {
-      // Marquer comme déconnexion manuelle
-      localStorage.setItem(MANUAL_LOGOUT_KEY, 'true');
-      localStorage.removeItem(LAST_ACTIVITY_KEY);
+      console.log('🔒 SÉCURITÉ: Déconnexion via useSessionManager...');
 
-      // Déconnecter de Supabase
-      await supabase.auth.signOut();
+      // 🚨 CRITIQUE: Utiliser le système de sécurité centralisé
+      await secureLogout();
 
+      // États React (déjà nettoyés mais on les reset quand même)
       setUser(null);
       setSession(null);
     } catch (error) {
-      console.error('Erreur lors de la déconnexion:', error);
+      console.error('❌ Erreur lors de la déconnexion sécurisée:', error);
+      // En cas d'erreur, rediriger quand même vers login
+      window.location.replace('/login?error=logout_failed');
     }
   }, []);
 

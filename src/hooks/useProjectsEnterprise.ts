@@ -165,10 +165,16 @@ export const useProjectsEnterprise = (filters?: ProjectFilters) => {
       limit: number = 50
     ) => {
       // Construction de la requête avec le bon type
-      // Note: Pas de relation profiles car created_by n'est pas une FK
+      // ✅ Inclure le join avec profiles pour récupérer le nom du manager
       let query = isSuper
-        ? supabase.from('projects').select('*, tenants:tenant_id(name)', { count: 'exact' })
-        : supabase.from('projects').select('*', { count: 'exact' });
+        ? supabase
+            .from('projects')
+            .select('*, tenants:tenant_id(name), manager:manager_id(id, full_name)', {
+              count: 'exact',
+            })
+        : supabase
+            .from('projects')
+            .select('*, manager:manager_id(id, full_name)', { count: 'exact' });
 
       // Filtrage par tenant (sécurité enterprise)
       if (!isSuper && tenantId) {
@@ -256,8 +262,13 @@ export const useProjectsEnterprise = (filters?: ProjectFilters) => {
           throw new Error(projectsError.message);
         }
 
-        // Cast pour éviter les erreurs de typage Supabase
-        const projectsList = (projects || []) as Project[];
+        // Cast et mapping pour éviter les erreurs de typage Supabase
+        const projectsList = (projects || []).map((p: any) => ({
+          ...p,
+          // ✅ Mapper le manager depuis le join profiles (si la FK existe)
+          manager: p.manager?.full_name || p.owner_name || null,
+          owner_name: p.manager?.full_name || p.owner_name || null,
+        })) as Project[];
 
         // Calculer les métriques business (Pattern Salesforce)
         const activeProjects = projectsList.filter(p => p.status === 'active').length;
@@ -412,6 +423,27 @@ export const useProjectsEnterprise = (filters?: ProjectFilters) => {
     };
   }, []);
 
+  // ✅ Fonction pour mettre à jour un projet (ÉDITION INLINE)
+  const updateProject = useCallback(
+    async (projectId: string, updates: Partial<Project>) => {
+      try {
+        const { error: updateError } = await supabase
+          .from('projects')
+          .update(updates)
+          .eq('id', projectId);
+
+        if (updateError) throw updateError;
+
+        // Invalider le cache et refresh
+        refresh();
+      } catch (error: any) {
+        console.error('Error updating project:', error);
+        throw error;
+      }
+    },
+    [refresh]
+  );
+
   // Cleanup lors du démontage
   useEffect(() => {
     return () => {
@@ -464,6 +496,7 @@ export const useProjectsEnterprise = (filters?: ProjectFilters) => {
     loadMore,
     clearCache,
     getCacheStats,
+    updateProject, // ✅ Fonction d'édition inline
 
     // Utilitaires
     isDataStale: metrics.lastUpdate && Date.now() - metrics.lastUpdate.getTime() > CACHE_TTL,

@@ -36,7 +36,9 @@ AS $$
 DECLARE
     webhook_url TEXT := 'https://qliinxtanjdnwxlvnxji.supabase.co/functions/v1/handle-email-confirmation';
     -- ⚠️ REMPLACEZ PAR VOTRE SERVICE ROLE KEY
-    service_role_key TEXT := 'VOTRE_SERVICE_ROLE_KEY_ICI';
+    service_role_key TEXT := '
+    
+    ';
     payload JSONB;
     request_id BIGINT;
     is_invitation_user BOOLEAN;

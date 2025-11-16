@@ -87,7 +87,13 @@ export const NotionStyleSidebar: React.FC<NotionStyleSidebarProps> = ({
   // Une fois chargé, on filtre selon les vrais droits
   const homeItems = [
     { to: '/', label: 'Tableau de bord', icon: Home, show: true },
-    { to: '/inbox', label: 'Boîte de réception', icon: Inbox, show: true, badge: 3 },
+    {
+      to: '/inbox',
+      label: 'Boîte de réception',
+      icon: Inbox,
+      show: !accessLoading && accessRights.canAccessSuperAdmin, // 🔒 Super-Admin uniquement
+      badge: 3,
+    },
     {
       to: '/tasks',
       label: 'Mes tâches',
@@ -125,7 +131,7 @@ export const NotionStyleSidebar: React.FC<NotionStyleSidebarProps> = ({
       to: '/analytics',
       label: 'Analytics',
       icon: BarChart3,
-      show: true,
+      show: !accessLoading && accessRights.canAccessSuperAdmin, // 🔒 Super-Admin uniquement
       color: 'text-orange-600',
     },
   ];
@@ -133,7 +139,12 @@ export const NotionStyleSidebar: React.FC<NotionStyleSidebarProps> = ({
   // Section Plus (Autres)
   // Super Admin : NE PAS afficher pendant le chargement (sécurité)
   const moreItems = [
-    { to: '/settings', label: 'Paramètres', icon: Settings, show: true },
+    {
+      to: '/settings',
+      label: 'Paramètres',
+      icon: Settings,
+      show: !accessLoading && accessRights.canAccessSuperAdmin, // 🔒 Super-Admin uniquement
+    },
     {
       to: '/super-admin',
       label: 'Super Admin',

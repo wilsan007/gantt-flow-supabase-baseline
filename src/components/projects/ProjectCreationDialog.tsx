@@ -47,7 +47,7 @@ const ProjectCreationDialogBase: React.FC<ProjectCreationDialogProps> = ({
   const { employees, refetch: refetchEmployees } = useEmployees();
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
-  const [manager, setManager] = useState('');
+  const [manager, setManager] = useState('unassigned'); // ✅ Valeur par défaut valide pour Radix UI
   const [status, setStatus] = useState<'en_cours' | 'a_venir' | 'termine'>('a_venir');
   const [priority, setPriority] = useState<'low' | 'medium' | 'high' | 'urgent'>('medium');
   const [budget, setBudget] = useState<number | undefined>();
@@ -78,8 +78,8 @@ const ProjectCreationDialogBase: React.FC<ProjectCreationDialogProps> = ({
   };
 
   const handleSubmit = async () => {
-    if (!name.trim() || !manager) {
-      alert('Le nom et le manager sont obligatoires');
+    if (!name.trim()) {
+      alert('Le nom du projet est obligatoire');
       return;
     }
 
@@ -88,7 +88,7 @@ const ProjectCreationDialogBase: React.FC<ProjectCreationDialogProps> = ({
       await onCreateProject({
         name: name.trim(),
         description: description.trim(),
-        manager,
+        manager: manager === 'unassigned' ? null : manager, // ✅ Convertir "unassigned" en null
         status,
         priority,
         skills_required: skills,
@@ -98,7 +98,7 @@ const ProjectCreationDialogBase: React.FC<ProjectCreationDialogProps> = ({
       // Reset form
       setName('');
       setDescription('');
-      setManager('');
+      setManager('unassigned'); // ✅ Réinitialiser à une valeur valide
       setStatus('a_venir');
       setPriority('medium');
       setBudget(undefined);
@@ -145,13 +145,13 @@ const ProjectCreationDialogBase: React.FC<ProjectCreationDialogProps> = ({
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label>Manager / Chef de projet *</Label>
+              <Label>Manager / Chef de projet</Label>
               <Select value={manager} onValueChange={setManager}>
                 <SelectTrigger>
                   <SelectValue placeholder="Sélectionner un manager" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Non assigné</SelectItem>
+                  <SelectItem value="unassigned">Non assigné</SelectItem>
                   {employees.map(employee => (
                     <SelectItem key={employee.id} value={employee.id}>
                       {employee.full_name}
@@ -262,7 +262,7 @@ const ProjectCreationDialogBase: React.FC<ProjectCreationDialogProps> = ({
             <X className="mr-2 h-4 w-4" />
             Annuler
           </Button>
-          <Button onClick={handleSubmit} disabled={loading || !name.trim() || !manager}>
+          <Button onClick={handleSubmit} disabled={loading || !name.trim()}>
             <Save className="mr-2 h-4 w-4" />
             {loading ? 'Création...' : 'Créer le Projet'}
           </Button>

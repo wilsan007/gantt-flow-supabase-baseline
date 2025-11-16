@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { TableCell, TableRow } from '@/components/ui/table';
@@ -6,11 +7,20 @@ import { Progress } from '@/components/ui/progress';
 import { Calendar, Clock, Plus, Trash2, Settings } from '@/lib/icons';
 import { type Task } from '@/hooks/optimized';
 import { TaskRowActions } from './TaskRowActions';
+import { SimpleAssigneeDisplay } from './SimpleAssigneeDisplay';
 import { AssigneeSelect } from './AssigneeSelect';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { priorityColors, statusColors, formatDate } from '@/lib/taskHelpers';
 import { DocumentCellColumn } from './DocumentCellColumn';
 import { CommentCellColumn } from './CommentCellColumn';
 import { SubtaskCreationDialog } from './SubtaskCreationDialog';
+import { EditableCell } from './cells/EditableCell';
+import { EditableCellWithDebounce } from './cells/EditableCellWithDebounce';
+import { EditableTitleCell } from './cells/EditableTitleCell';
+import { EditableDateCell } from './cells/EditableDateCell';
+import { EditableSelectCell } from './cells/EditableSelectCell';
+import { useTaskEditPermissions } from '@/hooks/useTaskEditPermissions';
+import { EditableWithPermission } from '@/components/permissions/PermissionGate';
 
 interface TaskRowProps {
   task: Task;
@@ -47,6 +57,7 @@ interface TaskRowProps {
   onDuplicate: (taskId: string) => void;
   onEdit: (taskId: string) => void;
   onUpdateAssignee: (taskId: string, assignee: string) => void;
+  onUpdateTask?: (taskId: string, updates: Partial<Task>) => void;
 }
 
 export const TaskRow = ({
@@ -60,9 +71,13 @@ export const TaskRow = ({
   onDuplicate,
   onEdit,
   onUpdateAssignee,
+  onUpdateTask,
 }: TaskRowProps) => {
   const isSubtask = (task.task_level || 0) > 0;
   const [subtaskDialogOpen, setSubtaskDialogOpen] = useState(false);
+
+  // 🔒 Permissions pour cette tâche
+  const permissions = useTaskEditPermissions({ task });
 
   return (
     <>
@@ -87,121 +102,132 @@ export const TaskRow = ({
         }}
       >
         {/* Titre de la tâche avec actions */}
-        <TableCell
-          className={`font-medium ${isSubtask ? 'py-0 text-sm' : 'py-0'}`}
-          style={{ height: isSubtask ? '51px' : '64px' }}
-        >
-          <div
-            className="flex items-center gap-1"
-            style={{ paddingLeft: `${(task.task_level || 0) * 20}px` }}
-          >
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={e => {
-                e.stopPropagation();
-                if (isSubtask) {
-                  onDelete(task.id);
-                } else {
-                  setSubtaskDialogOpen(true); // Ouvrir le dialog complet
-                }
-              }}
-              className="h-6 w-6 p-0 opacity-70 hover:opacity-100"
-              title={isSubtask ? 'Supprimer la sous-tâche' : 'Créer une sous-tâche'}
-            >
-              {isSubtask ? (
-                <Trash2 className="h-3 w-3 text-destructive" />
-              ) : (
-                <Plus className="h-3 w-3" />
-              )}
-            </Button>
-            <span
-              className={`${isSubtask ? 'text-xs italic text-foreground/70' : 'text-foreground'}`}
-            >
-              <span className={`mr-2 text-foreground/60 ${isSubtask ? 'text-xs' : 'text-xs'}`}>
-                {task.display_order || '1'}
-              </span>
-              {task.title}
-            </span>
-          </div>
-        </TableCell>
+        <EditableTitleCell
+          value={task.title}
+          onChange={async value => onUpdateTask?.(task.id, { title: value })}
+          displayOrder={task.display_order || '1'}
+          taskLevel={task.task_level || 0}
+          isSubtask={isSubtask}
+          onActionClick={() => {
+            if (isSubtask) {
+              onDelete(task.id);
+            } else {
+              setSubtaskDialogOpen(true);
+            }
+          }}
+          actionTitle={isSubtask ? 'Supprimer la sous-tâche' : 'Créer une sous-tâche'}
+          debounceMs={800}
+          readOnly={!permissions.canEditTitle}
+        />
 
-        {/* Responsable */}
+        {/* Projet - Affichage du nom du projet lié avec design futuriste */}
         <TableCell
           className={isSubtask ? 'py-0 text-xs' : 'py-0'}
           style={{ height: isSubtask ? '51px' : '64px' }}
         >
-          <AssigneeSelect
-            assignee={task.assignee}
-            taskId={task.id}
-            onChange={assignee => onUpdateAssignee(task.id, assignee)}
-          />
+          <div className="flex h-full items-center px-2">
+            {task.project_name ? (
+              <div className="group relative">
+                <div className="absolute -inset-0.5 rounded-lg bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-500 opacity-30 blur transition duration-300 group-hover:opacity-60"></div>
+                <Badge
+                  variant="outline"
+                  className="relative border-cyan-300 bg-gradient-to-r from-cyan-50 to-blue-50 text-xs font-medium text-cyan-700 shadow-sm transition-all duration-300 hover:scale-105 hover:shadow-md dark:border-cyan-700 dark:from-cyan-950 dark:to-blue-950 dark:text-cyan-300"
+                >
+                  <span className="flex items-center gap-1.5">
+                    <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-gradient-to-r from-cyan-400 to-blue-500"></span>
+                    {task.project_name}
+                  </span>
+                </Badge>
+              </div>
+            ) : (
+              <Badge
+                variant="outline"
+                className="border-dashed border-slate-300 text-xs font-normal text-slate-400 opacity-60 dark:border-slate-700 dark:text-slate-500"
+              >
+                <span className="flex items-center gap-1.5">
+                  <span className="h-1.5 w-1.5 rounded-full bg-slate-300 dark:bg-slate-700"></span>
+                  Aucun projet
+                </span>
+              </Badge>
+            )}
+          </div>
+        </TableCell>
+
+        {/* Responsable - Affichage simple + Popover pour modification */}
+        <TableCell
+          className={isSubtask ? 'py-0 text-xs' : 'py-0'}
+          style={{ height: isSubtask ? '51px' : '64px' }}
+        >
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="ghost" className="h-full w-full justify-start px-2 hover:bg-accent">
+                <SimpleAssigneeDisplay assignee={task.assignee} />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-80" align="start">
+              <AssigneeSelect
+                assignee={task.assignee}
+                taskId={task.id}
+                taskTenantId={task.tenant_id}
+                onChange={assignee => onUpdateAssignee(task.id, assignee)}
+              />
+            </PopoverContent>
+          </Popover>
         </TableCell>
 
         {/* Date de début */}
-        <TableCell
-          className={isSubtask ? 'py-0 text-xs' : 'py-0'}
-          style={{ height: isSubtask ? '51px' : '64px' }}
-        >
-          <div className="flex items-center gap-2">
-            <Calendar className={`${isSubtask ? 'h-3 w-3' : 'h-4 w-4'} text-foreground/60`} />
-            <span className={`${isSubtask ? 'text-xs' : ''} text-foreground`}>
-              {formatDate(task.start_date)}
-            </span>
-          </div>
-        </TableCell>
+        <EditableDateCell
+          value={task.start_date}
+          onChange={value => onUpdateTask?.(task.id, { start_date: value })}
+          isSubtask={isSubtask}
+        />
 
         {/* Échéance */}
-        <TableCell
-          className={isSubtask ? 'py-0 text-xs' : 'py-0'}
-          style={{ height: isSubtask ? '51px' : '64px' }}
-        >
-          <div className="flex items-center gap-2">
-            <Calendar className={`${isSubtask ? 'h-3 w-3' : 'h-4 w-4'} text-foreground/60`} />
-            <span className={`${isSubtask ? 'text-xs' : ''} text-foreground`}>
-              {formatDate(task.due_date)}
-            </span>
-          </div>
-        </TableCell>
+        <EditableDateCell
+          value={task.due_date}
+          onChange={value => onUpdateTask?.(task.id, { due_date: value })}
+          isSubtask={isSubtask}
+        />
 
         {/* Priorité */}
-        <TableCell
-          className={isSubtask ? 'py-0 text-xs' : 'py-0'}
-          style={{ height: isSubtask ? '51px' : '64px' }}
-        >
-          <Badge
-            className={`${priorityColors[task.priority]} ${isSubtask ? 'px-1 py-0 text-xs' : ''}`}
-            variant="outline"
-          >
-            {task.priority}
-          </Badge>
-        </TableCell>
+        <EditableSelectCell
+          value={task.priority}
+          options={[
+            { value: 'low', label: 'Basse', variant: 'outline' },
+            { value: 'medium', label: 'Moyenne', variant: 'outline' },
+            { value: 'high', label: 'Haute', variant: 'outline' },
+            { value: 'urgent', label: 'Urgente', variant: 'destructive' },
+          ]}
+          onChange={value => onUpdateTask?.(task.id, { priority: value as any })}
+          getColorClass={value => priorityColors[value]}
+          isSubtask={isSubtask}
+        />
 
         {/* Statut */}
-        <TableCell
-          className={isSubtask ? 'py-0 text-xs' : 'py-0'}
-          style={{ height: isSubtask ? '51px' : '64px' }}
-        >
-          <Badge
-            className={`${statusColors[task.status]} ${isSubtask ? 'px-1 py-0 text-xs' : ''}`}
-            variant="outline"
-          >
-            {task.status}
-          </Badge>
-        </TableCell>
+        <EditableSelectCell
+          value={task.status}
+          options={[
+            { value: 'todo', label: 'À faire', variant: 'outline' },
+            { value: 'doing', label: 'En cours', variant: 'outline' },
+            { value: 'blocked', label: 'Bloquée', variant: 'destructive' },
+            { value: 'done', label: 'Terminée', variant: 'outline' },
+          ]}
+          onChange={value => onUpdateTask?.(task.id, { status: value as any })}
+          getColorClass={value => statusColors[value]}
+          isSubtask={isSubtask}
+        />
 
         {/* Charge */}
-        <TableCell
-          className={isSubtask ? 'py-0 text-xs' : 'py-0'}
-          style={{ height: isSubtask ? '51px' : '64px' }}
-        >
-          <div className="flex items-center gap-2">
-            <Clock className={`${isSubtask ? 'h-3 w-3' : 'h-4 w-4'} text-foreground/60`} />
-            <span className={`${isSubtask ? 'text-xs' : ''} text-foreground`}>
-              {task.effort_estimate_h}h
-            </span>
-          </div>
-        </TableCell>
+        <EditableCellWithDebounce
+          value={task.effort_estimate_h || 0}
+          onChange={async value =>
+            onUpdateTask?.(task.id, { effort_estimate_h: parseFloat(value) || 0 })
+          }
+          type="number"
+          placeholder="0h"
+          isSubtask={isSubtask}
+          debounceMs={800}
+        />
 
         {/* Progression */}
         <TableCell
@@ -246,16 +272,19 @@ export const TaskRow = ({
         </TableCell>
       </TableRow>
 
-      {/* Dialog de création de sous-tâche personnalisée */}
-      {!isSubtask && (
-        <SubtaskCreationDialog
-          open={subtaskDialogOpen}
-          onOpenChange={setSubtaskDialogOpen}
-          parentTask={task}
-          onCreateSubtask={onCreateSubtask}
-          onCreateSubtaskWithActions={onCreateSubtaskWithActions}
-        />
-      )}
+      {/* Dialog de création de sous-tâche personnalisée - rendu via Portal */}
+      {!isSubtask &&
+        subtaskDialogOpen &&
+        createPortal(
+          <SubtaskCreationDialog
+            open={subtaskDialogOpen}
+            onOpenChange={setSubtaskDialogOpen}
+            parentTask={task}
+            onCreateSubtask={onCreateSubtask}
+            onCreateSubtaskWithActions={onCreateSubtaskWithActions}
+          />,
+          document.body
+        )}
     </>
   );
 };

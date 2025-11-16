@@ -22,6 +22,15 @@ import {
   CheckSquare,
 } from '@/lib/icons';
 import { useTasks, type Task } from '@/hooks/optimized';
+import { useEmployees } from '@/hooks/useEmployees';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Filter } from 'lucide-react';
 import {
   format,
   startOfMonth,
@@ -42,9 +51,18 @@ type ViewMode = 'month' | 'week' | 'day';
 
 export const TaskCalendar: React.FC = () => {
   const { tasks, loading } = useTasks();
+  const { employees, loading: employeesLoading } = useEmployees();
   const [viewMode, setViewMode] = useState<ViewMode>('month');
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [selectedAssignee, setSelectedAssignee] = useState<string>('all');
+
+  // Debug employees
+  console.log('📅 TaskCalendar - Employees:', {
+    count: employees.length,
+    loading: employeesLoading,
+    sample: employees.slice(0, 3).map(e => ({ id: e.id, name: e.full_name })),
+  });
 
   // Calculer la plage de dates affichée
   const { startDate, endDate, days } = useMemo(() => {
@@ -77,11 +95,19 @@ export const TaskCalendar: React.FC = () => {
     }
   }, [currentDate, viewMode]);
 
+  // Filtrer les tâches par personne assignée
+  const filteredTasks = useMemo(() => {
+    if (selectedAssignee === 'all') {
+      return tasks;
+    }
+    return tasks.filter(task => (task.assigned_to || task.assignee_id) === selectedAssignee);
+  }, [tasks, selectedAssignee]);
+
   // Grouper les tâches par jour
   const tasksByDate = useMemo(() => {
     const map = new Map<string, Task[]>();
 
-    tasks.forEach(task => {
+    filteredTasks.forEach(task => {
       if (!task.due_date) return;
 
       const dueDate = parseISO(task.due_date);
@@ -94,7 +120,7 @@ export const TaskCalendar: React.FC = () => {
     });
 
     return map;
-  }, [tasks]);
+  }, [filteredTasks]);
 
   // Tâches du jour sélectionné
   const selectedDayTasks = useMemo(() => {
@@ -228,6 +254,51 @@ export const TaskCalendar: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* 🔍 Filtre par personne assignée */}
+      <Card>
+        <CardContent className="pt-6">
+          <div className="flex flex-wrap items-center gap-4">
+            <div className="flex items-center gap-2">
+              <Filter className="h-4 w-4 text-muted-foreground" />
+              <label className="text-sm font-medium">Filtrer par personne :</label>
+            </div>
+            <Select
+              value={selectedAssignee}
+              onValueChange={setSelectedAssignee}
+              disabled={employeesLoading}
+            >
+              <SelectTrigger className="w-[250px]">
+                <SelectValue
+                  placeholder={employeesLoading ? 'Chargement...' : 'Toutes les personnes'}
+                />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Toutes les personnes</SelectItem>
+                {employeesLoading ? (
+                  <SelectItem value="loading" disabled>
+                    Chargement des employés...
+                  </SelectItem>
+                ) : employees.length === 0 ? (
+                  <SelectItem value="empty" disabled>
+                    Aucun employé trouvé
+                  </SelectItem>
+                ) : (
+                  employees.map(employee => (
+                    <SelectItem key={employee.id} value={employee.id}>
+                      {employee.full_name}
+                    </SelectItem>
+                  ))
+                )}
+              </SelectContent>
+            </Select>
+            {selectedAssignee !== 'all' && <Badge variant="secondary">Filtre actif</Badge>}
+            {!employeesLoading && employees.length === 0 && (
+              <span className="text-xs text-muted-foreground">(Aucun employé disponible)</span>
+            )}
+          </div>
+        </CardContent>
+      </Card>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         {/* Calendrier Principal - Design Futuriste */}

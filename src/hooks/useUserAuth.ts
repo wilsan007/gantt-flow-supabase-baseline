@@ -79,124 +79,130 @@ export function useUserAuth(options: UseUserAuthOptions = {}): UseUserAuthResult
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchAuth = useCallback(async () => {
-    try {
-      setLoading(true);
-      setError(null);
+  const fetchAuth = useCallback(
+    async (forceRefresh = false) => {
+      try {
+        setLoading(true);
+        setError(null);
 
-      // Récupérer l'utilisateur authentifié
-      const {
-        data: { user },
-        error: authError,
-      } = await supabase.auth.getUser();
+        if (forceRefresh) {
+          // Force refresh user profile
+        }
 
-      if (authError || !user) {
-        setProfile(null);
-        setLoading(false);
-        return;
-      }
+        // Récupérer l'utilisateur authentifié
+        const {
+          data: { user },
+          error: authError,
+        } = await supabase.auth.getUser();
 
-      // === NIVEAU 1 : PROFIL (profiles table) ===
-      const { data: profileData, error: profileError } = await supabase
-        .from('profiles')
-        .select('full_name, tenant_id')
-        .eq('id', user.id)
-        .maybeSingle(); // ✅ Utiliser maybeSingle au lieu de single
+        if (authError || !user) {
+          setProfile(null);
+          setLoading(false);
+          return;
+        }
 
-      // Ignorer les erreurs 406 (RLS) et 404 silencieusement
-      if (profileError && !['406', 'PGRST116'].includes(profileError.code || '')) {
-        console.error('Erreur récupération profil:', profileError);
-      }
+        // === NIVEAU 1 : PROFIL (profiles table) ===
+        const { data: profileData, error: profileError } = await supabase
+          .from('profiles')
+          .select('full_name, tenant_id')
+          .eq('id', user.id)
+          .maybeSingle(); // ✅ Utiliser maybeSingle au lieu de single
 
-      // Récupérer depuis employees (fallback) - Ignorer les erreurs silencieusement
-      const { data: employeeData } = await supabase
-        .from('employees')
-        .select('full_name, job_title, tenant_id') // ✅ Retirer 'role' qui n'existe pas
-        .eq('user_id', user.id)
-        .maybeSingle();
+        // Ignorer les erreurs 406 (RLS) et 404 silencieusement
+        if (profileError && !['406', 'PGRST116'].includes(profileError.code || '')) {
+          console.error('Erreur récupération profil:', profileError);
+        }
 
-      // Vérifier si l'utilisateur est super_admin via user_roles
-      const { data: superAdminCheck } = await supabase
-        .from('user_roles')
-        .select('roles!inner(name)')
-        .eq('user_id', user.id)
-        .eq('is_active', true)
-        .eq('roles.name', 'super_admin')
-        .maybeSingle();
-
-      const isSuperAdmin = !!superAdminCheck;
-
-      const userProfile: UserProfile = {
-        userId: user.id,
-        email: user.email || '',
-        fullName: profileData?.full_name || employeeData?.full_name || user.email || 'Utilisateur',
-        role: 'employee', // ✅ Défaut employee, sera mis à jour par user_roles
-        tenantId: profileData?.tenant_id || employeeData?.tenant_id || null,
-        isSuperAdmin: isSuperAdmin,
-        jobTitle: employeeData?.job_title,
-      };
-
-      // 🔓 CAS SUPER ADMIN : Rôle spécial
-      if (userProfile.isSuperAdmin) {
-        userProfile.role = 'super_admin';
-        // Note: Super Admin détecté (log retiré pour éviter pollution console)
-      }
-
-      setProfile(userProfile);
-
-      // Si Niveau 1 uniquement, on s'arrête ici
-      if (level === 1) {
-        setLoading(false);
-        return;
-      }
-
-      // === NIVEAU 2 : RÔLE ACTIF (user_roles table) ===
-      if (level >= 2 && !userProfile.isSuperAdmin) {
-        const { data: userRoleData, error: roleError } = await supabase
-          .from('user_roles')
-          .select('id, role_id, tenant_id, is_active, expires_at')
+        // Récupérer depuis employees (fallback) - Ignorer les erreurs silencieusement
+        const { data: employeeData } = await supabase
+          .from('employees')
+          .select('full_name, job_title, tenant_id') // ✅ Retirer 'role' qui n'existe pas
           .eq('user_id', user.id)
-          .eq('is_active', true)
-          .order('created_at', { ascending: false })
-          .limit(1)
           .maybeSingle();
 
-        if (userRoleData) {
-          // Récupérer le nom du rôle
-          const { data: roleData } = await supabase
-            .from('roles')
-            .select('name')
-            .eq('id', userRoleData.role_id)
-            .single();
+        // Vérifier si l'utilisateur est super_admin via user_roles
+        const { data: superAdminCheck } = await supabase
+          .from('user_roles')
+          .select('roles!inner(name)')
+          .eq('user_id', user.id)
+          .eq('is_active', true)
+          .eq('roles.name', 'super_admin')
+          .maybeSingle();
 
-          setActiveRole({
-            id: userRoleData.id,
-            roleId: userRoleData.role_id,
-            roleName: (roleData?.name as RoleName) || userProfile.role,
-            tenantId: userRoleData.tenant_id,
-            isActive: userRoleData.is_active,
-            expiresAt: userRoleData.expires_at,
-          });
+        const isSuperAdmin = !!superAdminCheck;
 
-          // Mettre à jour le profil avec le rôle vérifié
-          setProfile(prev =>
-            prev ? { ...prev, role: (roleData?.name as RoleName) || prev.role } : null
-          );
+        const userProfile: UserProfile = {
+          userId: user.id,
+          email: user.email || '',
+          fullName:
+            profileData?.full_name || employeeData?.full_name || user.email || 'Utilisateur',
+          role: 'employee', // ✅ Défaut employee, sera mis à jour par user_roles
+          tenantId: profileData?.tenant_id || employeeData?.tenant_id || null,
+          isSuperAdmin: isSuperAdmin,
+          jobTitle: employeeData?.job_title,
+        };
+
+        // 🔓 CAS SUPER ADMIN : Rôle spécial
+        if (userProfile.isSuperAdmin) {
+          userProfile.role = 'super_admin';
+          // Note: Super Admin détecté (log retiré pour éviter pollution console)
         }
-      }
 
-      // Si Niveau 2 uniquement, on s'arrête ici
-      if (level === 2) {
-        setLoading(false);
-        return;
-      }
+        setProfile(userProfile);
 
-      // === NIVEAU 3 : PERMISSIONS (role_permissions + permissions) ===
-      if (level === 3 && activeRole && !userProfile.isSuperAdmin) {
-        const { data: permData } = await supabase
-          .from('role_permissions')
-          .select(
-            `
+        // Si Niveau 1 uniquement, on s'arrête ici
+        if (level === 1) {
+          setLoading(false);
+          return;
+        }
+
+        // === NIVEAU 2 : RÔLE ACTIF (user_roles table) ===
+        if (level >= 2 && !userProfile.isSuperAdmin) {
+          const { data: userRoleData, error: roleError } = await supabase
+            .from('user_roles')
+            .select('id, role_id, tenant_id, is_active, expires_at')
+            .eq('user_id', user.id)
+            .eq('is_active', true)
+            .order('created_at', { ascending: false })
+            .limit(1)
+            .maybeSingle();
+
+          if (userRoleData) {
+            // Récupérer le nom du rôle
+            const { data: roleData } = await supabase
+              .from('roles')
+              .select('name')
+              .eq('id', userRoleData.role_id)
+              .single();
+
+            setActiveRole({
+              id: userRoleData.id,
+              roleId: userRoleData.role_id,
+              roleName: (roleData?.name as RoleName) || userProfile.role,
+              tenantId: userRoleData.tenant_id,
+              isActive: userRoleData.is_active,
+              expiresAt: userRoleData.expires_at,
+            });
+
+            // Mettre à jour le profil avec le rôle vérifié
+            setProfile(prev =>
+              prev ? { ...prev, role: (roleData?.name as RoleName) || prev.role } : null
+            );
+          }
+        }
+
+        // Si Niveau 2 uniquement, on s'arrête ici
+        if (level === 2) {
+          setLoading(false);
+          return;
+        }
+
+        // === NIVEAU 3 : PERMISSIONS (role_permissions + permissions) ===
+        if (level === 3 && activeRole && !userProfile.isSuperAdmin) {
+          const { data: permData } = await supabase
+            .from('role_permissions')
+            .select(
+              `
             permissions!inner(
               name,
               code,
@@ -204,45 +210,73 @@ export function useUserAuth(options: UseUserAuthOptions = {}): UseUserAuthResult
               action
             )
           `
-          )
-          .eq('role_id', activeRole.roleId);
+            )
+            .eq('role_id', activeRole.roleId);
 
-        if (permData) {
-          const perms = permData.map((rp: any) => ({
-            permissionName: rp.permissions.name,
-            permissionCode: rp.permissions.code,
-            resource: rp.permissions.resource,
-            action: rp.permissions.action,
-          }));
-          setPermissions(perms);
+          if (permData) {
+            const perms = permData.map((rp: any) => ({
+              permissionName: rp.permissions.name,
+              permissionCode: rp.permissions.code,
+              resource: rp.permissions.resource,
+              action: rp.permissions.action,
+            }));
+            setPermissions(perms);
+          }
         }
-      }
 
-      // Charger les project_ids si demandé
-      if (includeProjectIds && user.id) {
-        const { data: projectMembers } = await supabase
-          .from('project_members')
-          .select('project_id')
-          .eq('user_id', user.id)
-          .eq('status', 'active');
-
-        if (projectMembers) {
-          setProjectIds(projectMembers.map(pm => pm.project_id));
+        // Charger les project_ids si demandé
+        if (includeProjectIds && user.id) {
+          // TODO: Implémenter quand la table project_members sera créée
+          // const { data: projectMembers } = await supabase
+          //   .from('project_members')
+          //   .select('project_id')
+          //   .eq('user_id', user.id)
+          //   .eq('status', 'active');
+          // if (projectMembers) {
+          //   setProjectIds(projectMembers.map(pm => pm.project_id));
+          // }
+          setProjectIds([]);
         }
-      }
 
-      setLoading(false);
-    } catch (err: any) {
-      console.error('Erreur useUserAuth:', err);
-      setError(err.message);
-      setLoading(false);
-    }
-  }, [level, includeProjectIds]);
+        setLoading(false);
+      } catch (err: any) {
+        console.error('Erreur useUserAuth:', err);
+        setError(err.message);
+        setLoading(false);
+      }
+    },
+    [level, includeProjectIds]
+  );
 
   useEffect(() => {
     fetchAuth();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [level, includeProjectIds]); // ✅ Dépendre seulement des options, pas de fetchAuth
+
+    // 🔒 SÉCURITÉ: Listener pour gérer les changements d'auth
+    const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
+      // Auth event tracking
+
+      if (event === 'SIGNED_IN') {
+        // Nouvelle connexion, refetch profil
+        fetchAuth(true); // Force refresh
+      } else if (event === 'TOKEN_REFRESHED') {
+        // Token rafraîchi, refetch profil
+        fetchAuth(true);
+      } else if (event === 'SIGNED_OUT') {
+        // Déconnexion, nettoyage des états
+        // 🚨 NETTOYAGE IMMÉDIAT de tous les états
+        setProfile(null);
+        setActiveRole(null);
+        setPermissions([]);
+        setProjectIds([]);
+        setLoading(false);
+        setError(null);
+      }
+    });
+
+    return () => {
+      authListener.subscription.unsubscribe();
+    };
+  }, [fetchAuth]);
 
   // Créer le contexte unifié pour le filtrage
   const userContext: UserContext | null = profile

@@ -5,6 +5,7 @@ import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@/componen
 // Hooks optimisés avec cache intelligent et métriques
 import { useTasks, type Task } from '@/hooks/optimized';
 import { useProjects } from '@/hooks/optimized';
+import { useEmployees } from '@/hooks/useEmployees';
 import { useViewMode } from '@/contexts/ViewModeContext';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { MobileDynamicTable } from '../responsive/MobileDynamicTable';
@@ -47,6 +48,7 @@ const DynamicTable = ({ demoTasks, isDemoMode = false }: DynamicTableProps = {})
   const tasks = isDemoMode && demoTasks ? demoTasks : realTasks;
   const isMobile = useIsMobile();
   const { projects, loading: projectsLoading, error: projectsError } = useProjects();
+  const { employees } = useEmployees();
 
   // Wrapper pour createMainTask avec compatibilité ancienne API
   const createMainTask = async (taskData: {
@@ -100,17 +102,7 @@ const DynamicTable = ({ demoTasks, isDemoMode = false }: DynamicTableProps = {})
   // Synchroniser les tâches optimistes avec les vraies tâches
   useEffect(() => {
     setOptimisticTasks(tasks);
-    // 🔍 DEBUG: Vérifier si les actions sont chargées
-    if (tasks.length > 0) {
-      console.log('📊 DEBUG - Total tasks:', tasks.length);
-      console.log('📊 DEBUG - First task:', tasks[0]?.title);
-      console.log('📊 DEBUG - First task actions:', tasks[0]?.task_actions);
-      const allActions = tasks.flatMap(t => t.task_actions || []);
-      console.log('📊 DEBUG - Total actions across all tasks:', allActions.length);
-      if (allActions.length > 0) {
-        console.log('📊 DEBUG - First action:', allActions[0]);
-      }
-    }
+    // Vérifier si les actions sont chargées
   }, [tasks]);
 
   // Fonction de synchronisation du scroll
@@ -165,8 +157,6 @@ const DynamicTable = ({ demoTasks, isDemoMode = false }: DynamicTableProps = {})
 
   const handleToggleAction = async (taskId: string, actionId: string) => {
     try {
-      console.log('handleToggleAction called:', { taskId, actionId });
-
       // Mise à jour optimiste : on met à jour l'interface immédiatement
       const updatedTasks = optimisticTasks.map(task => {
         if (task.id === taskId && task.task_actions) {
@@ -281,9 +271,7 @@ const DynamicTable = ({ demoTasks, isDemoMode = false }: DynamicTableProps = {})
     }
   ) => {
     try {
-      console.log('Creating subtask with data:', { parentId, linkedActionId, customData });
       const newSubtask = await createSubTask(parentId, linkedActionId, customData);
-      console.log('Subtask created successfully:', newSubtask);
 
       // Rafraîchir les données immédiatement après la création
       await refetch();
@@ -309,9 +297,7 @@ const DynamicTable = ({ demoTasks, isDemoMode = false }: DynamicTableProps = {})
     }>
   ) => {
     try {
-      console.log('Creating subtask with actions:', { parentId, customData, actions });
       const newSubtask = await createSubTaskWithActions(parentId, customData, actions);
-      console.log('Subtask with actions created successfully:', newSubtask);
 
       // Rafraîchir les données immédiatement après la création
       await refetch();
@@ -326,6 +312,25 @@ const DynamicTable = ({ demoTasks, isDemoMode = false }: DynamicTableProps = {})
       await refetch();
     } catch (error) {
       console.error('Error updating assignee:', error);
+    }
+  };
+
+  const handleUpdateTask = async (taskId: string, updates: Partial<Task>) => {
+    if (isDemoMode) {
+      return; // Mode démo : pas de mise à jour
+    }
+
+    try {
+      // Mise à jour optimiste
+      setOptimisticTasks(prev =>
+        prev.map(task => (task.id === taskId ? { ...task, ...updates } : task))
+      );
+
+      // Mise à jour réelle
+      await updateTask(taskId, updates);
+    } catch (error) {
+      console.error('Error updating task:', error);
+      await refetch(); // Recharger en cas d'erreur
     }
   };
 
@@ -404,7 +409,7 @@ const DynamicTable = ({ demoTasks, isDemoMode = false }: DynamicTableProps = {})
           <AdvancedFilters
             onFiltersChange={setFilters}
             projects={projects}
-            employees={[]}
+            employees={employees}
             totalTasks={optimisticTasks.length}
             filteredCount={filteredTasks.length}
           />
@@ -425,6 +430,7 @@ const DynamicTable = ({ demoTasks, isDemoMode = false }: DynamicTableProps = {})
                 onCreateSubtask={handleCreateSubtask}
                 onCreateSubtaskWithActions={handleCreateSubtaskWithActions}
                 onUpdateAssignee={handleUpdateAssignee}
+                onUpdateTask={handleUpdateTask}
                 selectedTaskId={selectedTaskId}
                 onSelectTask={handleSelectTask}
                 scrollRef={fixedColumnsScrollRef}

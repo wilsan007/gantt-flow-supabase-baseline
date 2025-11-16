@@ -12,18 +12,21 @@ import { useMultiplePlaceholderHandler } from '@/hooks/usePlaceholderHandler';
 interface InvitationForm {
   email: string;
   fullName: string;
+  companyName: string;
 }
 
 export const SuperAdminInvitations: React.FC = () => {
   const [form, setForm] = useState<InvitationForm>({
     email: '',
     fullName: '',
+    companyName: '',
   });
 
   // Gestion des placeholders
   const { handleFocus, getPlaceholder } = useMultiplePlaceholderHandler({
     email: 'tenant.owner@exemple.com',
     fullName: 'Jean Dupont',
+    companyName: 'Société XYZ',
   });
 
   const [isLoading, setIsLoading] = useState(false);
@@ -47,7 +50,16 @@ export const SuperAdminInvitations: React.FC = () => {
     if (!form.fullName.trim()) {
       toast({
         title: 'Erreur',
-        description: 'Le nom complet est requis',
+        description: 'Le nom de la personne est requis',
+        variant: 'destructive',
+      });
+      return false;
+    }
+
+    if (!form.companyName.trim()) {
+      toast({
+        title: 'Erreur',
+        description: "Le nom de l'entreprise est requis",
         variant: 'destructive',
       });
       return false;
@@ -92,6 +104,7 @@ export const SuperAdminInvitations: React.FC = () => {
           body: JSON.stringify({
             email: form.email.toLowerCase().trim(),
             fullName: form.fullName.trim(),
+            companyName: form.companyName.trim(),
             invitationType: 'tenant_owner',
             siteUrl: window.location.origin,
           }),
@@ -107,13 +120,15 @@ export const SuperAdminInvitations: React.FC = () => {
       // Succès
       setLastInvitation({
         email: form.email,
+        fullName: form.fullName,
+        companyName: form.companyName,
         tenantId: result.tenant_id,
         invitationId: result.invitation_id,
         sentAt: new Date().toISOString(),
       });
 
       // Réinitialiser le formulaire
-      setForm({ email: '', fullName: '' });
+      setForm({ email: '', fullName: '', companyName: '' });
 
       toast({
         title: '✅ Invitation envoyée !',
@@ -206,7 +221,7 @@ export const SuperAdminInvitations: React.FC = () => {
             </div>
             <div className="space-y-1.5 sm:space-y-2">
               <Label htmlFor="fullName" className="text-sm font-medium sm:text-base">
-                Nom complet *
+                👤 Nom de la personne *
               </Label>
               <Input
                 id="fullName"
@@ -221,9 +236,27 @@ export const SuperAdminInvitations: React.FC = () => {
             </div>
           </div>
 
+          <div className="space-y-1.5 sm:space-y-2">
+            <Label htmlFor="companyName" className="text-sm font-medium sm:text-base">
+              🏢 Nom de l'entreprise *
+            </Label>
+            <Input
+              id="companyName"
+              type="text"
+              placeholder={getPlaceholder('companyName', form.companyName)}
+              value={form.companyName}
+              onChange={e => handleInputChange('companyName', e.target.value)}
+              onFocus={() => handleFocus('companyName')}
+              disabled={isLoading}
+              className="h-11 text-base sm:h-10 sm:text-sm"
+            />
+          </div>
+
           <Button
             onClick={sendInvitation}
-            disabled={isLoading || !form.email.trim() || !form.fullName.trim()}
+            disabled={
+              isLoading || !form.email.trim() || !form.fullName.trim() || !form.companyName.trim()
+            }
             className="h-11 w-full text-base font-semibold sm:h-10 sm:w-auto sm:text-sm"
           >
             {isLoading ? (
@@ -252,11 +285,15 @@ export const SuperAdminInvitations: React.FC = () => {
                 <span className="break-all">{lastInvitation.email}</span>
               </div>
               <div className="flex flex-wrap gap-x-2">
-                <span className="font-medium">👤 Nom :</span>
+                <span className="font-medium">👤 Personne :</span>
                 <span>{lastInvitation.fullName}</span>
               </div>
+              <div className="flex flex-wrap gap-x-2">
+                <span className="font-medium">🏢 Entreprise :</span>
+                <span>{lastInvitation.companyName}</span>
+              </div>
               <div className="hidden sm:block">
-                <span className="font-medium">🏢 Tenant ID :</span> {lastInvitation.tenantId}
+                <span className="font-medium">🆔 Tenant ID :</span> {lastInvitation.tenantId}
               </div>
               <div className="flex flex-wrap gap-x-2">
                 <span className="font-medium">📅 Envoyée le :</span>

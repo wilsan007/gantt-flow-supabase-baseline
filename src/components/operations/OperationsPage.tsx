@@ -6,7 +6,16 @@
  */
 
 import React, { useState } from 'react';
-import { CalendarClock, CalendarDays, Plus, Search, Filter } from 'lucide-react';
+import {
+  CalendarClock,
+  CalendarDays,
+  Plus,
+  Search,
+  Filter,
+  LayoutGrid,
+  LayoutList,
+} from 'lucide-react';
+import { OperationalTaskTableInline } from './OperationalTaskTableInline';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -19,10 +28,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { useOperationalActivities } from '@/hooks/useOperationalActivities';
-import { useOperationalActionTemplates } from '@/hooks/useOperationalActionTemplates';
-import { useOperationalSchedules } from '@/hooks/useOperationalSchedules';
-import { ActivityCard } from './ActivityCard';
+import { useOperationalTasksEnterprise } from '@/hooks/useOperationalTasksEnterprise';
 import { ActivityFormWithAssignment } from './ActivityFormWithAssignment';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { toast } from 'sonner';
@@ -36,38 +42,40 @@ export const OperationsPage: React.FC = () => {
   const [createActivityKind, setCreateActivityKind] = useState<'recurring' | 'one_off'>(
     'recurring'
   );
+  const [viewMode, setViewMode] = useState<'cards' | 'table'>('cards');
+  const [selectedActivity, setSelectedActivity] = useState<any>(null);
 
-  // Hook pour charger les activités
+  // ✅ Hook Enterprise optimisé pour les tâches opérationnelles
   const {
-    activities,
+    tasks,
     loading,
     error,
     metrics,
-    createActivity,
-    updateActivity,
-    deleteActivity,
-    toggleActive,
+    todoCount,
+    inProgressCount,
+    completedCount,
+    recurringCount,
     refresh,
-  } = useOperationalActivities({
-    autoFetch: true,
-    filters: {
-      kind: filterKind === 'all' ? undefined : filterKind,
-      isActive: filterStatus === 'all' ? undefined : filterStatus === 'active',
-      search: searchTerm || undefined,
-    },
+    updateTask,
+  } = useOperationalTasksEnterprise({
+    search: searchTerm || undefined,
+    isRecurring: filterKind === 'recurring' ? true : filterKind === 'one_off' ? false : undefined,
   });
 
-  // Filtrer les activités
-  const filteredActivities = activities.filter(activity => {
-    const matchesKind = filterKind === 'all' || activity.kind === filterKind;
+  // Filtrer les tâches
+  const filteredTasks = tasks.filter(task => {
+    const matchesKind =
+      filterKind === 'all' ||
+      (filterKind === 'recurring' && task.is_recurring) ||
+      (filterKind === 'one_off' && !task.is_recurring);
     const matchesStatus =
       filterStatus === 'all' ||
-      (filterStatus === 'active' && activity.is_active) ||
-      (filterStatus === 'inactive' && !activity.is_active);
+      (filterStatus === 'active' && task.status !== 'done') ||
+      (filterStatus === 'inactive' && task.status === 'done');
     const matchesSearch =
       !searchTerm ||
-      activity.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      activity.description?.toLowerCase().includes(searchTerm.toLowerCase());
+      task.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      task.description?.toLowerCase().includes(searchTerm.toLowerCase());
 
     return matchesKind && matchesStatus && matchesSearch;
   });
@@ -78,101 +86,12 @@ export const OperationsPage: React.FC = () => {
     setIsCreateDialogOpen(true);
   };
 
-  const { createTemplate } = useOperationalActionTemplates();
-  const { upsertSchedule } = useOperationalSchedules();
-
+  // ⚠️ Handlers de création d'activités désactivés temporairement
   const handleSaveActivity = async (formData: any) => {
-    const loadingToast = toast.loading("Création de l'activité en cours...");
-
-    try {
-      console.log('📝 Données du formulaire:', formData);
-
-      // 1. Extraire les action_templates et schedule
-      const { action_templates, schedule, ...activityData } = formData;
-
-      // 2. Valider les données requises
-      if (!activityData.name?.trim()) {
-        throw new Error("Le nom de l'activité est requis");
-      }
-
-      console.log('📤 Envoi données activité:', activityData);
-
-      // 3. Créer l'activité
-      const newActivity = await createActivity(activityData);
-
-      console.log('✅ Activité créée:', newActivity);
-
-      if (!newActivity) {
-        throw new Error("Échec de la création de l'activité - Aucune donnée retournée");
-      }
-
-      // 3. Créer la planification si récurrent
-      if (schedule && formData.kind === 'recurring') {
-        await upsertSchedule({
-          ...schedule,
-          activity_id: newActivity.id,
-        });
-      }
-
-      // 4. Créer les templates d'actions si présents
-      if (action_templates && action_templates.length > 0) {
-        for (const [index, template] of action_templates.entries()) {
-          if (template.title?.trim()) {
-            await createTemplate({
-              activity_id: newActivity.id,
-              title: template.title,
-              description: template.description || null,
-              position: index,
-            });
-          }
-        }
-      }
-
-      // Succès !
-      toast.success('Activité créée avec succès ! 🎉', {
-        description: `"${newActivity.name}" est maintenant active`,
-        duration: 4000,
-      });
-
-      setIsCreateDialogOpen(false);
-      await refresh();
-    } catch (error: any) {
-      console.error('❌ Erreur création activité:', error);
-
-      // Messages d'erreur contextuels
-      let errorMessage = "Impossible de créer l'activité";
-      let errorDescription = error?.message || "Une erreur inattendue s'est produite";
-
-      if (error?.code === '42501') {
-        errorMessage = 'Permission refusée';
-        errorDescription = error?.message?.includes('created_by')
-          ? 'Utilisateur non authentifié. Veuillez vous reconnecter.'
-          : 'Erreur de sécurité RLS. Vérifiez que vous êtes connecté à un tenant actif.';
-      } else if (error?.code === 'PGRST204') {
-        errorMessage = 'Erreur de schéma de base de données';
-        errorDescription = 'Certains champs ne sont pas reconnus. Contactez le support.';
-      } else if (error?.code === '23505') {
-        errorMessage = 'Activité déjà existante';
-        errorDescription = 'Une activité avec ce nom existe déjà';
-      } else if (error?.message?.includes('permission')) {
-        errorMessage = 'Permission refusée';
-        errorDescription = "Vous n'avez pas les droits pour créer cette activité";
-      } else if (error?.message?.includes('tenant')) {
-        errorMessage = 'Tenant manquant';
-        errorDescription = 'Aucun tenant actif détecté. Reconnectez-vous.';
-      }
-
-      toast.error(errorMessage, {
-        description: errorDescription,
-        duration: 6000,
-        action: {
-          label: 'Réessayer',
-          onClick: () => handleSaveActivity(formData),
-        },
-      });
-    } finally {
-      toast.dismiss(loadingToast);
-    }
+    toast.error('Fonctionnalité temporairement désactivée', {
+      description: 'Utilisez le mode Table pour gérer vos tâches opérationnelles',
+    });
+    setIsCreateDialogOpen(false);
   };
 
   // Render
@@ -188,6 +107,26 @@ export const OperationsPage: React.FC = () => {
         </div>
 
         <div className="flex gap-2">
+          {/* Toggle vue cards/tableau */}
+          <div className="flex gap-1 rounded-md border p-1">
+            <Button
+              variant={viewMode === 'cards' ? 'default' : 'ghost'}
+              size="sm"
+              className="h-7 px-2"
+              onClick={() => setViewMode('cards')}
+            >
+              <LayoutGrid className="h-4 w-4" />
+            </Button>
+            <Button
+              variant={viewMode === 'table' ? 'default' : 'ghost'}
+              size="sm"
+              className="h-7 px-2"
+              onClick={() => setViewMode('table')}
+            >
+              <LayoutList className="h-4 w-4" />
+            </Button>
+          </div>
+
           <Button onClick={() => handleCreateClick('recurring')} className="gap-2">
             <CalendarClock className="h-4 w-4" />
             Nouvelle Récurrente
@@ -206,40 +145,40 @@ export const OperationsPage: React.FC = () => {
             <CardTitle className="text-sm font-medium">Total Activités</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{metrics.totalCount}</div>
+            <div className="text-2xl font-bold">{tasks.length}</div>
             <p className="mt-1 text-xs text-muted-foreground">
-              {metrics.cacheHit ? '⚡ Cache' : `${metrics.fetchTime}ms`}
+              {metrics.cacheHit ? '⚡ Cache' : `${metrics.fetchTime.toFixed(0)}ms`}
             </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Actives</CardTitle>
+            <CardTitle className="text-sm font-medium">À faire</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-600">{metrics.activeCount}</div>
-            <p className="mt-1 text-xs text-muted-foreground">En génération</p>
+            <div className="text-2xl font-bold text-gray-600">{todoCount}</div>
+            <p className="mt-1 text-xs text-muted-foreground">Non commencées</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Récurrentes</CardTitle>
+            <CardTitle className="text-sm font-medium">En cours</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-blue-600">{metrics.recurringCount}</div>
-            <p className="mt-1 text-xs text-muted-foreground">Automatiques</p>
+            <div className="text-2xl font-bold text-blue-600">{inProgressCount}</div>
+            <p className="mt-1 text-xs text-muted-foreground">Actives</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Ponctuelles</CardTitle>
+            <CardTitle className="text-sm font-medium">Terminées</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-purple-600">{metrics.oneOffCount}</div>
-            <p className="mt-1 text-xs text-muted-foreground">Manuelles</p>
+            <div className="text-2xl font-bold text-green-600">{completedCount}</div>
+            <p className="mt-1 text-xs text-muted-foreground">Complétées</p>
           </CardContent>
         </Card>
       </div>
@@ -290,8 +229,8 @@ export const OperationsPage: React.FC = () => {
         </CardContent>
       </Card>
 
-      {/* Liste des activités */}
-      {loading && activities.length === 0 ? (
+      {/* Liste des tâches */}
+      {loading && tasks.length === 0 ? (
         <div className="py-12 text-center">
           <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
           <p className="text-muted-foreground">Chargement des activités...</p>
@@ -308,7 +247,7 @@ export const OperationsPage: React.FC = () => {
             </div>
           </CardContent>
         </Card>
-      ) : filteredActivities.length === 0 ? (
+      ) : filteredTasks.length === 0 ? (
         <Card>
           <CardContent className="pt-6">
             <div className="py-12 text-center">
@@ -326,19 +265,31 @@ export const OperationsPage: React.FC = () => {
             </div>
           </CardContent>
         </Card>
+      ) : viewMode === 'table' ? (
+        <OperationalTaskTableInline
+          tasks={filteredTasks}
+          onUpdateTask={async (taskId, updates) => {
+            await updateTask(taskId, updates);
+            await refresh();
+          }}
+          onTaskClick={task => setSelectedActivity(task)}
+          selectedTaskId={selectedActivity?.id}
+        />
       ) : (
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {filteredActivities.map(activity => (
-            <ActivityCard
-              key={activity.id}
-              activity={activity}
-              onUpdate={updateActivity}
-              onDelete={deleteActivity}
-              onToggleActive={toggleActive}
-              onRefresh={refresh}
-            />
-          ))}
-        </div>
+        <Card>
+          <CardContent className="pt-6">
+            <div className="py-12 text-center">
+              <CalendarClock className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
+              <p className="text-lg font-semibold">Mode Cards temporairement désactivé</p>
+              <p className="mt-2 text-sm text-muted-foreground">
+                Utilisez le mode Tableau pour gérer vos tâches opérationnelles
+              </p>
+              <Button onClick={() => setViewMode('table')} className="mt-4">
+                Basculer en mode Tableau
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
       )}
 
       {/* Dialog de création */}

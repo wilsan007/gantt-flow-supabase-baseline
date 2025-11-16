@@ -28,6 +28,7 @@ interface TenantContextType {
   userMembership: TenantMember | null;
   tenantId: string | null;
   loading: boolean;
+  refreshTenant: () => Promise<void>;
 }
 
 const TenantContext = createContext<TenantContextType | undefined>(undefined);
@@ -43,6 +44,32 @@ export const TenantProvider: React.FC<{ children: ReactNode }> = ({ children }) 
   const [currentTenant, setCurrentTenant] = useState<Tenant | null>(null);
   const [userMembership, setUserMembership] = useState<TenantMember | null>(null);
   const [loading, setLoading] = useState(true);
+
+  // 🔒 SÉCURITÉ: Vider le cache à CHAQUE changement d'auth
+  useEffect(() => {
+    const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
+      // Auth event tracking
+
+      // 🚨 CRITIQUE: Vider le cache pour TOUT événement
+      tenantCache = null;
+
+      if (event === 'SIGNED_OUT') {
+        // Nettoyage immédiat des états
+        setCurrentTenant(null);
+        setUserMembership(null);
+        setLoading(false);
+      }
+
+      if (event === 'SIGNED_IN' && session) {
+        // Nouvelle session: forcer le refetch
+        setLoading(true);
+      }
+    });
+
+    return () => {
+      authListener.subscription.unsubscribe();
+    };
+  }, []);
 
   useEffect(() => {
     // Si on a déjà les données en cache, les utiliser
@@ -88,12 +115,23 @@ export const TenantProvider: React.FC<{ children: ReactNode }> = ({ children }) 
         }
 
         if (profile && profile.tenant_id) {
-          const defaultTenant = {
-            id: profile.tenant_id,
-            name: 'Wadashaqeen SaaS',
-            slug: 'wadashaqeen',
-            status: 'active',
-          };
+          // Récupérer les vraies données du tenant
+          let { data: tenantData, error: tenantError } = await supabase
+            .from('tenants')
+            .select('*')
+            .eq('id', profile.tenant_id)
+            .single();
+
+          if (tenantError || !tenantData) {
+            console.error('Error fetching tenant:', tenantError);
+            // Fallback sur données par défaut
+            tenantData = {
+              id: profile.tenant_id,
+              name: 'Mon Entreprise',
+              slug: 'default',
+              status: 'active',
+            } as any;
+          }
 
           const membership = {
             id: profile.id,
@@ -102,21 +140,21 @@ export const TenantProvider: React.FC<{ children: ReactNode }> = ({ children }) 
             role: profile.role || 'admin',
             status: 'active',
             permissions: { admin: true, manage_all: true },
-            tenant: defaultTenant,
+            tenant: tenantData as Tenant,
           };
 
           // Mettre en cache
           tenantCache = {
-            currentTenant: defaultTenant as Tenant,
+            currentTenant: tenantData as Tenant,
             userMembership: membership,
             tenantId: profile.tenant_id,
             loading: false,
           };
 
           if (isMounted) {
-            setCurrentTenant(defaultTenant as Tenant);
+            setCurrentTenant(tenantData as Tenant);
             setUserMembership(membership);
-            // console.log('✅ TenantProvider: Tenant loaded and cached');
+            // Tenant loaded
           }
         }
       } catch (error) {
@@ -137,8 +175,48 @@ export const TenantProvider: React.FC<{ children: ReactNode }> = ({ children }) 
 
   const tenantId = currentTenant?.id || null;
 
+  // Fonction pour rafraîchir les données du tenant
+  const refreshTenant = async () => {
+    // Refresh tenant demandé
+    // Vider le cache
+    tenantCache = null;
+    // Recharger
+    setLoading(true);
+
+    try {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('user_id', user.id)
+        .single();
+
+      if (profile && profile.tenant_id) {
+        let { data: tenantData } = await supabase
+          .from('tenants')
+          .select('*')
+          .eq('id', profile.tenant_id)
+          .single();
+
+        if (tenantData) {
+          setCurrentTenant(tenantData as Tenant);
+        }
+      }
+    } catch (error) {
+      console.error('Erreur refresh tenant:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <TenantContext.Provider value={{ currentTenant, userMembership, tenantId, loading }}>
+    <TenantContext.Provider
+      value={{ currentTenant, userMembership, tenantId, loading, refreshTenant }}
+    >
       {children}
     </TenantContext.Provider>
   );

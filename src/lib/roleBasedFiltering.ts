@@ -235,37 +235,56 @@ function applyResourceSpecificFilters(
       tenant_admin: () => query,
       hr_manager: () => query,
 
-      // Autres rôles : pas d'accès (sauf leurs propres congés)
+      // Project Manager : Voit tous les employés du tenant (pour filtres/assignations)
       project_manager: () => {
         if (resource === 'leave_requests') {
-          return query.eq('employee_id', userId); // Ses propres congés
+          return query.eq('employee_id', userId); // Ses propres congés seulement
         }
-        return query.eq('id', '00000000-0000-0000-0000-000000000000');
+        // Pour employees : Voit tous les employés du tenant (déjà filtré par tenant_id)
+        return query;
       },
 
+      // Team Lead : Voit tous les employés du tenant (pour filtres/assignations)
       team_lead: () => {
         if (resource === 'leave_requests') {
-          return query.eq('employee_id', userId);
+          return query.eq('employee_id', userId); // Ses propres congés seulement
         }
-        return query.eq('id', '00000000-0000-0000-0000-000000000000');
+        // Pour employees : Voit tous les employés du tenant (déjà filtré par tenant_id)
+        return query;
       },
 
+      // Employee : Voit tous les employés du tenant (pour filtres)
       employee: () => {
-        // Employee peut voir :
-        // - Ses demandes de congés (leave_requests)
-        // - Son propre profil RH complet (employees)
+        if (resource === 'leave_requests') {
+          return query.eq('employee_id', userId); // Ses propres congés seulement
+        }
+        // Pour employees : Voit tous les employés du tenant (pour filtres de sélection)
+        return query;
+      },
+
+      contractor: () => {
         if (resource === 'leave_requests') {
           return query.eq('employee_id', userId);
         }
-        return query.eq('user_id', userId); // Son propre profil (adresse, infos perso, absences, etc.)
+        return query; // Voit tous les employés (pour filtres)
       },
 
-      contractor: () => query.eq('id', '00000000-0000-0000-0000-000000000000'),
-      intern: () => query.eq('id', '00000000-0000-0000-0000-000000000000'),
-      viewer: () => query.eq('id', '00000000-0000-0000-0000-000000000000'),
+      intern: () => {
+        if (resource === 'leave_requests') {
+          return query.eq('employee_id', userId);
+        }
+        return query; // Voit tous les employés (pour filtres)
+      },
+
+      viewer: () => {
+        if (resource === 'leave_requests') {
+          return query.eq('employee_id', userId);
+        }
+        return query; // Voit tous les employés (pour filtres)
+      },
     };
 
-    return hrFilters[role]?.() || query.eq('id', '00000000-0000-0000-0000-000000000000');
+    return hrFilters[role]?.() || query;
   }
 
   // === COMPÉTENCES (SKILLS) ===

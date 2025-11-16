@@ -145,6 +145,12 @@ export const useHRMinimal = () => {
   const { tenantId } = useTenant();
   const { isSuperAdmin, isLoading: rolesLoading, userRoles } = useUserRoles();
 
+  // ✅ CORRECTION BOUCLE INFINIE: Calculer directement depuis userRoles
+  // Éviter d'appeler isSuperAdmin() car c'est une fonction qui change
+  const isSuperAdminValue = useMemo(() => {
+    return userRoles.some(role => role.roles?.name === 'super_admin');
+  }, [userRoles]);
+
   // Refs pour éviter les boucles et optimisations
   const fetchedRef = useRef(false);
   const tenantIdRef = useRef<string | null>(null);
@@ -154,10 +160,14 @@ export const useHRMinimal = () => {
   // Cache TTL (5 minutes comme Stripe)
   const CACHE_TTL = 5 * 60 * 1000;
 
-  // Fonction de cache intelligent (Pattern Stripe/Salesforce) - Utilise le cache global
-  const getCacheKey = useCallback((tenantId: string | null, isSuperAdmin: boolean) => {
-    return createCacheKey('hr', isSuperAdmin ? 'super_admin' : tenantId || 'no_tenant');
-  }, []);
+  // Fonction pour générer une clé de cache unique - Contextuelle (Pattern Stripe)
+  // ✅ CORRECTION: Stabiliser avec useCallback
+  const getCacheKey = useCallback((tenant: string | null, isSuper: boolean) => {
+    if (isSuper) {
+      return 'hr_super_admin'; // Super Admin voit tout
+    }
+    return tenant ? `hr_${tenant}` : 'hr_no_tenant';
+  }, []); // Pas de dépendances, c'est une pure function
 
   const getCachedData = useCallback((cacheKey: string): HRData | null => {
     return cacheManager.get<HRData>(cacheKey);
@@ -176,14 +186,14 @@ export const useHRMinimal = () => {
     }
 
     // Super Admin peut accéder aux données même sans tenant_id
-    if (!tenantId && !isSuperAdmin()) {
+    if (!tenantId && !isSuperAdminValue) {
       // // console.log('⚠️ No tenant ID available and not Super Admin');
       setLoading(false);
       return;
     }
 
     // Protection STRICTE contre les refetch - hash stable
-    const currentTenantHash = `${tenantId || 'null'}-${isSuperAdmin()}`;
+    const currentTenantHash = `${tenantId || 'null'}-${isSuperAdminValue}`;
     const lastTenantHash = tenantIdRef.current || '';
 
     // ARRÊT COMPLET si mêmes paramètres et déjà fetché
@@ -192,7 +202,7 @@ export const useHRMinimal = () => {
     }
 
     // Vérifier le cache avant tout fetch
-    const cacheKey = getCacheKey(tenantId, isSuperAdmin());
+    const cacheKey = getCacheKey(tenantId, isSuperAdminValue);
     const cachedData = getCachedData(cacheKey);
 
     if (cachedData && currentTenantHash === lastTenantHash) {
@@ -217,7 +227,7 @@ export const useHRMinimal = () => {
         setLoading(true);
         setError(null);
 
-        const isSuper = isSuperAdmin();
+        const isSuper = isSuperAdminValue; // ✅ Utiliser la valeur stable
         const cacheKey = getCacheKey(tenantId, isSuper);
 
         // Vérifier le cache d'abord (Pattern Stripe)
@@ -384,17 +394,17 @@ export const useHRMinimal = () => {
     };
 
     fetchData();
-  }, [tenantId, rolesLoading, isSuperAdmin, toast]);
+  }, [tenantId, rolesLoading, isSuperAdminValue, getCacheKey, getCachedData]); // ✅ Toutes dépendances stables
 
   // Fonction de refresh optimisée avec invalidation cache global
   const refresh = useCallback(() => {
-    const cacheKey = getCacheKey(tenantId, isSuperAdmin());
+    const cacheKey = getCacheKey(tenantId, isSuperAdminValue); // ✅ Utiliser la valeur stable
     cacheManager.invalidate(cacheKey);
     fetchedRef.current = false;
     tenantIdRef.current = null;
     setLoading(true);
     // console.log('🔄 Cache invalidated and refresh triggered:', cacheKey);
-  }, [tenantId, isSuperAdmin, getCacheKey]);
+  }, [tenantId, isSuperAdminValue, getCacheKey]);
 
   // Fonction pour vider tout le cache HR (utilise le cache global)
   const clearCache = useCallback(() => {
@@ -426,22 +436,12 @@ export const useHRMinimal = () => {
 
   // Vérifier si l'utilisateur a le bon rôle
   const hasRequiredRole =
-    isSuperAdmin() || currentUserRole === 'manager_hr' || currentUserRole === 'tenant_admin';
+    isSuperAdminValue || currentUserRole === 'manager_hr' || currentUserRole === 'tenant_admin';
 
   const hasAccess = hasRequiredRole && !!effectiveTenantId;
 
-  // Debug : Afficher les informations d'accès (désactivé en production)
-  if (process.env.NODE_ENV === 'development') {
-    console.log('🔍 HR Access Check:', {
-      currentUserRole,
-      tenantId,
-      tenantIdFromRoles,
-      effectiveTenantId,
-      hasRequiredRole,
-      hasAccess,
-      isSuperAdmin: isSuperAdmin(),
-    });
-  }
+  // ✅ CORRECTION: Console.log supprimé - causait la boucle infinie
+  // Debug désactivé car il s'exécutait à chaque render
 
   return {
     // Données
@@ -457,7 +457,7 @@ export const useHRMinimal = () => {
 
     // Permissions optimisées
     canAccess: hasAccess,
-    isSuperAdmin: isSuperAdmin(),
+    isSuperAdmin: isSuperAdminValue,
 
     // Informations d'accès pour l'UX
     accessInfo: {
@@ -478,6 +478,6 @@ export const useHRMinimal = () => {
 
     // Utilitaires
     isDataStale: metrics.lastUpdate && Date.now() - metrics.lastUpdate.getTime() > CACHE_TTL,
-    cacheKey: getCacheKey(tenantId, isSuperAdmin()),
+    cacheKey: getCacheKey(tenantId, isSuperAdminValue),
   };
 };

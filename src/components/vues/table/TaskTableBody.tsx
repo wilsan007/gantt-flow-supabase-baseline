@@ -37,6 +37,7 @@ interface TaskTableBodyProps {
   onDuplicate: (taskId: string) => void;
   onEdit: (taskId: string) => void;
   onUpdateAssignee: (taskId: string, assignee: string) => void;
+  onUpdateTask?: (taskId: string, updates: Partial<Task>) => void;
 }
 
 export const TaskTableBody = ({
@@ -50,6 +51,7 @@ export const TaskTableBody = ({
   onDuplicate,
   onEdit,
   onUpdateAssignee,
+  onUpdateTask,
 }: TaskTableBodyProps) => {
   // Trier les tâches par display_order pour afficher les sous-tâches correctement
   const sortedTasks = [...tasks].sort((a, b) => {
@@ -79,6 +81,7 @@ export const TaskTableBody = ({
           onDuplicate={onDuplicate}
           onEdit={onEdit}
           onUpdateAssignee={onUpdateAssignee}
+          onUpdateTask={onUpdateTask}
         />
       ))}
     </TableBody>

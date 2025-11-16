@@ -1,8 +1,9 @@
 /**
  * TaskManagementPage - Hub de Gestion Opérationnelle des Tâches
  *
- * Phase 1 + Phase 2 (5 onglets complets) :
- * - 👤 Mes Tâches : Vue personnalisée par utilisateur
+ * Phase 1 + Phase 2 (6 onglets complets) :
+ * - 👤 Mes Tâches Assignées : Tâches assignées personnellement
+ * - 📋 Toutes les Tâches : Toutes les tâches visibles selon permissions
  * - ➕ Création Rapide : Formulaire optimisé
  * - 📊 Analytics : Statistiques et KPIs
  * - 🔍 Recherche : Filtres avancés et recherches sauvegardées
@@ -24,13 +25,13 @@ import { ArrowLeft, User, PlusCircle, BarChart3, Search, Calendar } from 'lucide
 
 export default function TaskManagementPage() {
   const [activeTab, setActiveTab] = useState<
-    'my-tasks' | 'create' | 'analytics' | 'search' | 'calendar'
-  >('my-tasks');
+    'my-assigned-tasks' | 'all-tasks' | 'create' | 'analytics' | 'search' | 'calendar'
+  >('my-assigned-tasks');
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto space-y-6 p-6">
+    <div className="h-full">
+      <div className="container mx-auto space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
@@ -47,10 +48,14 @@ export default function TaskManagementPage() {
 
         {/* Tabs pour les vues */}
         <Tabs value={activeTab} onValueChange={v => setActiveTab(v as any)} className="w-full">
-          <TabsList className="grid w-full grid-cols-5">
-            <TabsTrigger value="my-tasks" className="flex items-center gap-2">
+          <TabsList className="grid w-full grid-cols-6">
+            <TabsTrigger value="my-assigned-tasks" className="flex items-center gap-2">
               <User className="h-4 w-4" />
-              👤 Mes Tâches
+              👤 Mes Tâches Assignées
+            </TabsTrigger>
+            <TabsTrigger value="all-tasks" className="flex items-center gap-2">
+              <User className="h-4 w-4" />
+              📋 Toutes les Tâches
             </TabsTrigger>
             <TabsTrigger value="create" className="flex items-center gap-2">
               <PlusCircle className="h-4 w-4" />➕ Création
@@ -69,8 +74,12 @@ export default function TaskManagementPage() {
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="my-tasks" className="mt-6">
+          <TabsContent value="my-assigned-tasks" className="mt-6">
             <MyTasksView />
+          </TabsContent>
+
+          <TabsContent value="all-tasks" className="mt-6">
+            <MyTasksView showAllTasks />
           </TabsContent>
 
           <TabsContent value="create" className="mt-6">

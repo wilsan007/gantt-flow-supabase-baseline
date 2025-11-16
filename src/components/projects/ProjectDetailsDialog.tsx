@@ -9,18 +9,19 @@ import { Calendar, Users, Target, DollarSign, Activity, Clock } from 'lucide-rea
 interface Project {
   id: string;
   name: string;
-  description: string;
-  status: 'en_cours' | 'a_venir' | 'termine';
-  start_date: string;
-  end_date: string;
-  progress: number;
-  manager: string;
-  team_members: string[];
-  skills_required: string[];
+  description?: string;
+  status: string; // Peut être n'importe quelle valeur
+  start_date?: string;
+  end_date?: string;
+  progress?: number;
+  manager?: string;
+  owner_name?: string;
+  team_members?: string[];
+  skills_required?: string[];
   budget?: number;
-  priority: 'low' | 'medium' | 'high' | 'urgent';
-  created_at: string;
-  updated_at: string;
+  priority?: string; // Peut être n'importe quelle valeur
+  created_at?: string;
+  updated_at?: string;
 }
 
 interface ProjectDetailsDialogProps {
@@ -36,23 +37,30 @@ const ProjectDetailsDialogBase: React.FC<ProjectDetailsDialogProps> = ({
 }) => {
   if (!project) return null;
 
-  const getStatusBadge = (status: Project['status']) => {
-    const statusConfig = {
+  const getStatusBadge = (status?: string) => {
+    if (!status) return { label: 'Inconnu', color: 'bg-gray-400' };
+
+    const statusConfig: Record<string, { label: string; color: string }> = {
       en_cours: { label: 'En cours', color: 'bg-blue-500' },
       a_venir: { label: 'À venir', color: 'bg-gray-500' },
       termine: { label: 'Terminé', color: 'bg-green-500' },
+      active: { label: 'Actif', color: 'bg-green-500' },
+      completed: { label: 'Terminé', color: 'bg-blue-500' },
+      planning: { label: 'Planification', color: 'bg-yellow-500' },
     };
-    return statusConfig[status];
+    return statusConfig[status] || { label: status, color: 'bg-gray-400' };
   };
 
-  const getPriorityBadge = (priority: Project['priority']) => {
-    const priorityConfig = {
+  const getPriorityBadge = (priority?: string) => {
+    if (!priority) return { label: '⚪ Non défini', color: 'bg-gray-100 text-gray-800' };
+
+    const priorityConfig: Record<string, { label: string; color: string }> = {
       low: { label: '🟢 Faible', color: 'bg-green-100 text-green-800' },
       medium: { label: '🟡 Moyenne', color: 'bg-yellow-100 text-yellow-800' },
       high: { label: '🟠 Élevée', color: 'bg-orange-100 text-orange-800' },
       urgent: { label: '🔴 Urgente', color: 'bg-red-100 text-red-800' },
     };
-    return priorityConfig[priority];
+    return priorityConfig[priority] || { label: priority, color: 'bg-gray-100 text-gray-800' };
   };
 
   const mockHistory = [
@@ -90,18 +98,24 @@ const ProjectDetailsDialogBase: React.FC<ProjectDetailsDialogProps> = ({
               <p className="text-muted-foreground">{project.description}</p>
 
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                <div className="flex items-center gap-2">
-                  <Calendar className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-sm">
-                    {new Date(project.start_date).toLocaleDateString()} -{' '}
-                    {new Date(project.end_date).toLocaleDateString()}
-                  </span>
-                </div>
+                {project.start_date && project.end_date && (
+                  <div className="flex items-center gap-2">
+                    <Calendar className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-sm">
+                      {new Date(project.start_date).toLocaleDateString()} -{' '}
+                      {new Date(project.end_date).toLocaleDateString()}
+                    </span>
+                  </div>
+                )}
 
-                <div className="flex items-center gap-2">
-                  <Users className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-sm">Manager: {project.manager}</span>
-                </div>
+                {(project.manager || project.owner_name) && (
+                  <div className="flex items-center gap-2">
+                    <Users className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-sm">
+                      Manager: {project.manager || project.owner_name}
+                    </span>
+                  </div>
+                )}
 
                 {project.budget && (
                   <div className="flex items-center gap-2">
@@ -112,47 +126,51 @@ const ProjectDetailsDialogBase: React.FC<ProjectDetailsDialogProps> = ({
 
                 <div className="flex items-center gap-2">
                   <Activity className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-sm">Progression: {project.progress}%</span>
+                  <span className="text-sm">Progression: {project.progress ?? 0}%</span>
                 </div>
               </div>
 
               <div>
-                <Progress value={project.progress} className="w-full" />
+                <Progress value={project.progress ?? 0} className="w-full" />
               </div>
             </CardContent>
           </Card>
 
           {/* Équipe */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">Équipe du Projet</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex flex-wrap gap-2">
-                {project.team_members.map(member => (
-                  <Badge key={member} variant="outline">
-                    {member}
-                  </Badge>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+          {project.team_members && project.team_members.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Équipe du Projet</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex flex-wrap gap-2">
+                  {project.team_members.map(member => (
+                    <Badge key={member} variant="outline">
+                      {member}
+                    </Badge>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
 
           {/* Compétences requises */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">Compétences Requises</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex flex-wrap gap-2">
-                {project.skills_required.map(skill => (
-                  <Badge key={skill} className="bg-primary/10 text-primary">
-                    {skill}
-                  </Badge>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+          {project.skills_required && project.skills_required.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Compétences Requises</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex flex-wrap gap-2">
+                  {project.skills_required.map(skill => (
+                    <Badge key={skill} className="bg-primary/10 text-primary">
+                      {skill}
+                    </Badge>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
 
           {/* Historique des modifications */}
           <Card>

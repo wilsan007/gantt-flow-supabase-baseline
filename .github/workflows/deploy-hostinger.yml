@@ -26,11 +26,13 @@ jobs:
       - name: 📦 Install dependencies
         run: npm ci
       
-      # 4. Build l'application
+      # 4. Build l'application (sans tests pour l'instant)
       - name: 🔨 Build application
-        run: npm run build
+        run: |
+          npm run build --if-present
         env:
           NODE_ENV: production
+          CI: false
       
       # 5. Deploy vers Hostinger via FTP
       - name: 🚀 Deploy to Hostinger

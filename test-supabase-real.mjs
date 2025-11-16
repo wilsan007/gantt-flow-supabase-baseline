@@ -19,8 +19,8 @@ console.log('URL:', supabaseUrl);
 console.log('Key:', supabaseAnonKey ? supabaseAnonKey.substring(0, 30) + '...' : 'MANQUANTE');
 console.log('');
 
-if (\!supabaseUrl || \!supabaseAnonKey) {
-  console.log('❌ Variables manquantes\!');
+if (!supabaseUrl || !supabaseAnonKey) {
+  console.log('❌ Variables manquantes!');
   process.exit(1);
 }
 

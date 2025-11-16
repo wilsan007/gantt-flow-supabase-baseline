@@ -20,24 +20,10 @@ vi.mock('@/hooks/useTenant', () => ({
   }),
 }));
 
+import { createSupabaseMock } from '@/test/mocks/supabase';
+
 vi.mock('@/integrations/supabase/client', () => ({
-  supabase: {
-    from: vi.fn(() => ({
-      select: vi.fn(() => ({
-        eq: vi.fn(() => ({
-          order: vi.fn(() => Promise.resolve({ data: [], error: null })),
-        })),
-      })),
-    })),
-    auth: {
-      getUser: vi.fn(() =>
-        Promise.resolve({
-          data: { user: { id: 'user-1' } },
-          error: null,
-        })
-      ),
-    },
-  },
+  supabase: createSupabaseMock(),
 }));
 
 // Import real component

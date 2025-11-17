@@ -42,7 +42,7 @@
    ```
    http://localhost:8083
    http://localhost:5173
-   https://wadashaqayn.org
+   https://wadashaqayn.com
    https://qliinxtanjdnwxlvnxji.supabase.co
    ```
 
@@ -93,7 +93,7 @@
 
 ### Test 2 : En Production (après déploiement)
 
-1. Aller sur : https://wadashaqayn.org
+1. Aller sur : https://wadashaqayn.com
 2. Cliquer "Se connecter avec Google"
 3. Sélectionner un compte Google
 4. ✅ Redirection vers l'app + connexion réussie

@@ -9,6 +9,7 @@ Votre projet SaaS Wadashaqayn est **100% prêt** à être déployé sur Hostinge
 ## 📦 Fichiers Préparés
 
 ### 1️⃣ Dossier : `wadashaqayn_deploy_ready/`
+
 - **Emplacement** : `/home/awaleh/Bureau/Wadashaqeen-SaaS/gantt-flow-next/wadashaqayn_deploy_ready/`
 - **Contenu** :
   ```
@@ -24,6 +25,7 @@ Votre projet SaaS Wadashaqayn est **100% prêt** à être déployé sur Hostinge
   ```
 
 ### 2️⃣ Archive ZIP : `wadashaqayn_build_ready.zip`
+
 - **Emplacement** : `/home/awaleh/Bureau/Wadashaqeen-SaaS/gantt-flow-next/wadashaqayn_build_ready.zip`
 - **Taille** : 409 KB (compressé)
 - **Contenu** : Tous les fichiers du dossier ci-dessus
@@ -47,7 +49,7 @@ Votre projet SaaS Wadashaqayn est **100% prêt** à être déployé sur Hostinge
    - Gardez uniquement `.htaccess` système si présent (backup avant)
 
 4. **Upload des fichiers**
-   
+
    **Méthode 1 : Upload du ZIP** (Plus rapide)
    - Cliquez sur **Upload** dans File Manager
    - Sélectionnez `wadashaqayn_build_ready.zip`
@@ -73,7 +75,7 @@ Votre projet SaaS Wadashaqayn est **100% prêt** à être déployé sur Hostinge
 
 6. **Test en ligne**
    - Ouvrez votre navigateur
-   - Allez sur `https://wadashaqayn.org`
+   - Allez sur `https://wadashaqayn.com`
    - L'application devrait se charger immédiatement
    - Testez la navigation entre les pages (React Router)
    - Testez l'authentification Google OAuth
@@ -85,7 +87,7 @@ Votre projet SaaS Wadashaqayn est **100% prêt** à être déployé sur Hostinge
 Si vous préférez utiliser FileZilla ou un client FTP :
 
 1. **Connexion FTP**
-   - Host : `ftp.wadashaqayn.org` (ou IP fournie par Hostinger)
+   - Host : `ftp.wadashaqayn.com` (ou IP fournie par Hostinger)
    - Username : Votre nom d'utilisateur FTP
    - Password : Votre mot de passe FTP
    - Port : 21 (ou 22 pour SFTP)
@@ -104,6 +106,7 @@ Si vous préférez utiliser FileZilla ou un client FTP :
 Le fichier `.htaccess` inclus configure automatiquement :
 
 ### ✅ Fonctionnalités Activées :
+
 - **React Router** : Toutes les routes redirigent vers `index.html`
 - **Cache intelligent** :
   - Assets (JS/CSS/Images) : 1 an de cache
@@ -114,6 +117,7 @@ Le fichier `.htaccess` inclus configure automatiquement :
   - Politique de référence stricte
 
 ### Contenu du .htaccess :
+
 ```apache
 # --- Vite React SPA deployment pour Hostinger ---
 DirectoryIndex index.html index.php
@@ -152,7 +156,7 @@ DirectoryIndex index.html index.php
 
 Après le déploiement, vérifiez :
 
-1. **Page d'accueil** : `https://wadashaqayn.org`
+1. **Page d'accueil** : `https://wadashaqayn.com`
    - ✅ L'application se charge
    - ✅ Pas d'erreurs dans la console (F12)
 
@@ -182,29 +186,37 @@ Après le déploiement, vérifiez :
 ## 🆘 Dépannage
 
 ### Problème 1 : Page blanche
+
 **Cause** : Fichiers non uploadés correctement
-**Solution** : 
+**Solution** :
+
 - Vérifiez que `.htaccess` est présent dans `/public_html/`
 - Vérifiez que le dossier `assets/` contient bien les fichiers JS/CSS
 
 ### Problème 2 : Erreur 404 sur les routes
+
 **Cause** : `.htaccess` non pris en compte
 **Solution** :
+
 - Vérifiez que `mod_rewrite` est activé sur Hostinger (normalement activé par défaut)
 - Contactez le support Hostinger si nécessaire
 
 ### Problème 3 : CSS/JS non chargés
+
 **Cause** : Chemins incorrects ou permissions
 **Solution** :
+
 - Vérifiez les permissions des fichiers (644 pour fichiers, 755 pour dossiers)
 - Vérifiez dans la console navigateur (F12) les erreurs de chargement
 
 ### Problème 4 : OAuth Google ne fonctionne pas
+
 **Cause** : Configuration Supabase
 **Solution** :
+
 - Allez dans Supabase Dashboard → Authentication → Settings
-- Ajoutez `https://wadashaqayn.org` dans les **Redirect URLs**
-- Ajoutez `https://wadashaqayn.org` dans **Site URL**
+- Ajoutez `https://wadashaqayn.com` dans les **Redirect URLs**
+- Ajoutez `https://wadashaqayn.com` dans **Site URL**
 
 ---
 
@@ -214,7 +226,7 @@ Après le déploiement, vérifiez :
 - **Build Tool** : Vite 5
 - **Backend** : Supabase (hébergé séparément)
 - **Serveur Web** : Apache (Hostinger)
-- **Domaine** : https://wadashaqayn.org
+- **Domaine** : https://wadashaqayn.com
 - **Taille totale** : ~1.5 MB (non compressé), 409 KB (ZIP)
 - **Temps de chargement estimé** : < 2 secondes
 
@@ -224,7 +236,7 @@ Après le déploiement, vérifiez :
 
 Une fois les fichiers uploadés dans `/public_html/`, votre application sera **immédiatement accessible** sur :
 
-🌐 **https://wadashaqayn.org**
+🌐 **https://wadashaqayn.com**
 
 Bonne chance avec votre déploiement \! 🚀
 

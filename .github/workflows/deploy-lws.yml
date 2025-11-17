@@ -1,4 +1,4 @@
-name: Deploy to Hostinger
+name: Deploy to LWS (wadashaqayn.com)
 
 'on':
   push:
@@ -75,8 +75,8 @@ jobs:
           fi
           echo "✅ Build successful!"
       
-      # 7. Deploy vers Hostinger via FTP
-      - name: 🚀 Deploy to Hostinger
+      # 7. Deploy vers LWS via FTP
+      - name: 🚀 Deploy to LWS
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: ${{ secrets.FTP_SERVER }}
@@ -90,8 +90,16 @@ jobs:
             **/.htpasswd
             **/cgi-bin/**
           
-      # 6. Notification de succès
+      # 8. Notification de succès
       - name: ✅ Deployment successful
         run: |
-          echo "🎉 Application déployée avec succès sur Hostinger!"
+          echo "🎉 Application déployée avec succès sur LWS!"
+          echo "🌐 URL: https://wadashaqayn.com"
           echo "📊 Build size: $(du -sh dist | cut -f1)"
+          echo ""
+          echo "## 🚀 Deployment Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "✅ **Status:** Deployed Successfully" >> $GITHUB_STEP_SUMMARY
+          echo "🌐 **URL:** https://wadashaqayn.com" >> $GITHUB_STEP_SUMMARY
+          echo "🖥️  **Server:** LWS" >> $GITHUB_STEP_SUMMARY
+          echo "📅 **Date:** $(date +'%Y-%m-%d %H:%M:%S UTC')" >> $GITHUB_STEP_SUMMARY

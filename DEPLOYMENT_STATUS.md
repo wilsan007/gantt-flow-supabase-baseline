@@ -10,7 +10,7 @@
 
 ### 1. DNS Inexistant
 
-**Domaine :** `wadashaqayn.org`  
+**Domaine :** `wadashaqayn.com`  
 **Statut :** ❌ NXDOMAIN (domaine non trouvé)
 
 **Solution :**

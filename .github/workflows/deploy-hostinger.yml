@@ -22,11 +22,39 @@ jobs:
           node-version: '20'
           cache: 'npm'
       
-      # 3. Install dependencies
+      # 3. Vérifier que tous les secrets sont configurés
+      - name: 🔍 Verify secrets are configured
+        run: |
+          echo "Checking if all required secrets are set..."
+          if [ -z "${{ secrets.VITE_SUPABASE_URL }}" ]; then
+            echo "❌ ERROR: VITE_SUPABASE_URL is not set!"
+            exit 1
+          fi
+          if [ -z "${{ secrets.VITE_SUPABASE_ANON_KEY }}" ]; then
+            echo "❌ ERROR: VITE_SUPABASE_ANON_KEY is not set!"
+            exit 1
+          fi
+          if [ -z "${{ secrets.FTP_SERVER }}" ]; then
+            echo "❌ ERROR: FTP_SERVER is not set!"
+            exit 1
+          fi
+          if [ -z "${{ secrets.FTP_USERNAME }}" ]; then
+            echo "❌ ERROR: FTP_USERNAME is not set!"
+            exit 1
+          fi
+          if [ -z "${{ secrets.FTP_PASSWORD }}" ]; then
+            echo "❌ ERROR: FTP_PASSWORD is not set!"
+            exit 1
+          fi
+          echo "✅ All secrets are configured!"
+          echo "📡 FTP Server: ${{ secrets.FTP_SERVER }}"
+          echo "👤 FTP Username: ${{ secrets.FTP_USERNAME }}"
+      
+      # 4. Install dependencies
       - name: 📦 Install dependencies
         run: npm ci
       
-      # 4. Build l'application avec variables d'environnement
+      # 5. Build l'application avec variables d'environnement
       - name: 🔨 Build application
         run: npm run build
         env:
@@ -34,7 +62,20 @@ jobs:
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
       
-      # 5. Deploy vers Hostinger via FTP
+      # 6. Vérifier que le build a créé des fichiers
+      - name: 📊 Check build output
+        run: |
+          echo "Build directory contents:"
+          ls -lah dist/
+          echo ""
+          echo "Build size: $(du -sh dist | cut -f1)"
+          if [ ! -f "dist/index.html" ]; then
+            echo "❌ ERROR: index.html not found in dist!"
+            exit 1
+          fi
+          echo "✅ Build successful!"
+      
+      # 7. Deploy vers Hostinger via FTP
       - name: 🚀 Deploy to Hostinger
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
@@ -44,6 +85,7 @@ jobs:
           local-dir: ./dist/
           server-dir: /public_html/
           dangerous-clean-slate: true
+          log-level: verbose
           exclude: |
             **/.htpasswd
             **/cgi-bin/**

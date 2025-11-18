@@ -92,7 +92,7 @@ STRIPE_SECRET_KEY=sk_live_...         # Clés paiement
 wget https://repo1.maven.org/maven2/com/madgag/bfg/1.14.0/bfg-1.14.0.jar
 
 # Nettoyer
-cd /home/awaleh/Bureau/Wadashaqeen-SaaS/gantt-flow-next
+cd /home/awaleh/Bureau/Wadashaqayn-SaaS/gantt-flow-next
 java -jar ../bfg-1.14.0.jar --delete-files .env
 git reflog expire --expire=now --all
 git gc --prune=now --aggressive
@@ -102,7 +102,7 @@ git push --force origin main
 #### Option 2 : git filter-branch
 
 ```bash
-cd /home/awaleh/Bureau/Wadashaqeen-SaaS/gantt-flow-next
+cd /home/awaleh/Bureau/Wadashaqayn-SaaS/gantt-flow-next
 
 git filter-branch --force --index-filter \
   "git rm --cached --ignore-unmatch .env" \
@@ -229,7 +229,7 @@ cd git-secrets
 sudo make install
 
 # Configurer
-cd /home/awaleh/Bureau/Wadashaqeen-SaaS/gantt-flow-next
+cd /home/awaleh/Bureau/Wadashaqayn-SaaS/gantt-flow-next
 git secrets --install
 git secrets --register-aws
 ```

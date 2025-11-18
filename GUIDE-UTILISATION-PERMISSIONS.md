@@ -2,7 +2,7 @@
 
 ## 🎯 Vue d'Ensemble
 
-Le système de permissions de Wadashaqeen est maintenant **entièrement documenté** dans le code pour éviter toute confusion future.
+Le système de permissions de Wadashaqayn est maintenant **entièrement documenté** dans le code pour éviter toute confusion future.
 
 ### 📁 **Fichiers Clés**
 
@@ -50,15 +50,15 @@ import { RoleNames } from '@/lib/permissionsSystem';
 
 const MyComponent = () => {
   const { hasRole, isSuperAdmin, isTenantAdmin } = useUserRoles();
-  
+
   // Méthode 1: Fonctions helper
   const isAdmin = isSuperAdmin();
   const isTenant = isTenantAdmin();
-  
+
   // Méthode 2: Vérification directe
   const isHR = hasRole(RoleNames.MANAGER_HR);
   const isPM = hasRole(RoleNames.PROJECT_MANAGER);
-  
+
   return (
     <div>
       {isAdmin && <SuperAdminPanel />}
@@ -77,11 +77,11 @@ import { PermissionNames } from '@/lib/permissionsSystem';
 
 const MyComponent = () => {
   const { hasPermission } = useUserRoles();
-  
+
   const canManageUsers = hasPermission(PermissionNames.MANAGE_USERS);
   const canCreateTenant = hasPermission(PermissionNames.CREATE_TENANT);
   const canViewReports = hasPermission(PermissionNames.VIEW_REPORTS);
-  
+
   return (
     <div>
       {canManageUsers && <UserManagementButton />}
@@ -95,41 +95,53 @@ const MyComponent = () => {
 ## 🎭 **Hiérarchie des Rôles**
 
 ### **1. Super Admin** 👑
+
 ```tsx
 // Accès complet au système
 const { isSuperAdmin } = useUserRoles();
 
 // Boutons visibles UNIQUEMENT pour super_admin
-{isSuperAdmin() && (
-  <>
-    <Link to="/super-admin">👑 Super Admin</Link>
-    <RoleManagementButton />
-  </>
-)}
+{
+  isSuperAdmin() && (
+    <>
+      <Link to="/super-admin">👑 Super Admin</Link>
+      <RoleManagementButton />
+    </>
+  );
+}
 ```
 
 ### **2. Tenant Admin** 🏢
+
 ```tsx
 // Administration du tenant
 const { isTenantAdmin } = useUserRoles();
 
-{isTenantAdmin() && <TenantManagementPanel />}
+{
+  isTenantAdmin() && <TenantManagementPanel />;
+}
 ```
 
 ### **3. Manager HR** 👥
+
 ```tsx
 // Gestion des ressources humaines
 const { isHRManager } = useUserRoles();
 
-{isHRManager() && <HRDashboard />}
+{
+  isHRManager() && <HRDashboard />;
+}
 ```
 
 ### **4. Project Manager** 📊
+
 ```tsx
 // Gestion des projets
 const { isProjectManager } = useUserRoles();
 
-{isProjectManager() && <ProjectDashboard />}
+{
+  isProjectManager() && <ProjectDashboard />;
+}
 ```
 
 ## 🔍 **Débogage**
@@ -158,16 +170,19 @@ console.log('🔐 Permissions utilisateur:', userPermissions);
 ## ⚠️ **Règles Importantes**
 
 ### **1. Sécurité**
+
 - ✅ Toujours vérifier `is_active = true`
 - ✅ Filtrer par `tenant_id` (sauf super_admin)
 - ✅ Utiliser les enums pour éviter les erreurs de frappe
 
 ### **2. Performance**
+
 - ✅ Les hooks cachent les résultats pendant la session
 - ✅ Une seule requête pour récupérer rôles + permissions
 - ✅ Jointures optimisées avec `!inner`
 
 ### **3. Évolutivité**
+
 - ✅ Ajouter nouveaux rôles dans `RoleNames`
 - ✅ Ajouter nouvelles permissions dans `PermissionNames`
 - ✅ Mettre à jour la documentation dans `permissionsSystem.ts`
@@ -181,35 +196,34 @@ console.log('🔐 Permissions utilisateur:', userPermissions);
 const { isSuperAdmin } = useSuperAdmin();
 
 // Navigation
-{isSuperAdmin && (
-  <Link to="/super-admin" className="text-yellow-600">
-    👑 Super Admin
-  </Link>
-)}
+{
+  isSuperAdmin && (
+    <Link to="/super-admin" className="text-yellow-600">
+      👑 Super Admin
+    </Link>
+  );
+}
 
 // Header
-{isSuperAdmin && <RoleManagementButton />}
+{
+  isSuperAdmin && <RoleManagementButton />;
+}
 ```
 
 ### **Composant avec Permissions Multiples**
 
 ```tsx
 const Dashboard = () => {
-  const { 
-    hasRole, 
-    hasPermission, 
-    isSuperAdmin, 
-    userRoles 
-  } = useUserRoles();
-  
+  const { hasRole, hasPermission, isSuperAdmin, userRoles } = useUserRoles();
+
   const canManage = hasPermission(PermissionNames.MANAGE_USERS);
   const canView = hasPermission(PermissionNames.VIEW_REPORTS);
   const isAdmin = isSuperAdmin();
-  
+
   return (
     <div className="dashboard">
       <h1>Tableau de Bord</h1>
-      
+
       {/* Section Admin */}
       {isAdmin && (
         <AdminSection>
@@ -217,7 +231,7 @@ const Dashboard = () => {
           <SystemSettings />
         </AdminSection>
       )}
-      
+
       {/* Section Gestion */}
       {canManage && (
         <ManagementSection>
@@ -225,7 +239,7 @@ const Dashboard = () => {
           <RoleAssignment />
         </ManagementSection>
       )}
-      
+
       {/* Section Rapports */}
       {canView && (
         <ReportsSection>
@@ -233,7 +247,7 @@ const Dashboard = () => {
           <Charts />
         </ReportsSection>
       )}
-      
+
       {/* Debug Info (dev uniquement) */}
       {process.env.NODE_ENV === 'development' && (
         <DebugPanel>

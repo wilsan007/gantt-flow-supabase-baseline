@@ -67,7 +67,7 @@ Si votre app a déjà une navigation, chercher "Settings" ou "Paramètres" dans 
 2. Cliquer **"+"** ou **"Add account"**
 3. Choisir **"Scan QR Code"**
 4. Scanner le QR Code affiché sur votre écran
-5. ✅ "Wadashaqeen" ou votre email apparaît dans l'app
+5. ✅ "Wadashaqayn" ou votre email apparaît dans l'app
 6. ✅ Code à 6 chiffres généré automatiquement
 
 ### **Étape 4 : Vérifier le Code**

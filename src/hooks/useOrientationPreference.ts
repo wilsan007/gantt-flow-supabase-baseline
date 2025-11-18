@@ -17,8 +17,8 @@ interface UseOrientationPreferenceReturn {
   resetDismissed: () => void;
 }
 
-const PREFERENCE_KEY = 'wadashaqeen_orientation_preference';
-const DISMISSED_KEY = 'wadashaqeen_dismissed_orientation_views';
+const PREFERENCE_KEY = 'wadashaqayn_orientation_preference';
+const DISMISSED_KEY = 'wadashaqayn_dismissed_orientation_views';
 
 export const useOrientationPreference = (): UseOrientationPreferenceReturn => {
   const [preference, setPreferenceState] = useState<OrientationPreference>('auto');

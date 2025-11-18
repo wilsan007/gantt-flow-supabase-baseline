@@ -9,12 +9,20 @@
 
 ```tsx
 // ✅ AVANT (désactivé)
-{/* OAuth temporairement désactivé */}
-{/* {!showMFAInput && !isSignUp && <SocialAuth />} */}
+{
+  /* OAuth temporairement désactivé */
+}
+{
+  /* {!showMFAInput && !isSignUp && <SocialAuth />} */
+}
 
 // ✅ APRÈS (activé)
-{/* OAuth Google activé ✅ */}
-{!showMFAInput && !isSignUp && <SocialAuth />}
+{
+  /* OAuth Google activé ✅ */
+}
+{
+  !showMFAInput && !isSignUp && <SocialAuth />;
+}
 ```
 
 **Résultat** : Les boutons OAuth sont maintenant **visibles** sur la page de connexion !
@@ -28,7 +36,7 @@
 ```bash
 # L'application doit tourner
 # Si pas démarrée :
-cd /home/awaleh/Bureau/Wadashaqeen-SaaS/gantt-flow-next
+cd /home/awaleh/Bureau/Wadashaqayn-SaaS/gantt-flow-next
 npm run dev
 ```
 
@@ -105,6 +113,7 @@ Si c'est votre première connexion Google :
 ## 📊 Score Mis à Jour
 
 ### **Avant OAuth**
+
 ```
 Score Total : 83/100
 - MFA : 9/10 ✅
@@ -113,6 +122,7 @@ Score Total : 83/100
 ```
 
 ### **Après OAuth Google**
+
 ```
 Score Total : 87/100 (+4 points)
 - MFA : 9/10 ✅
@@ -182,7 +192,7 @@ Si vous voulez aussi activer Microsoft :
 
 ```
 1. Azure Portal → App registrations
-2. Créer app "Wadashaqeen"
+2. Créer app "Wadashaqayn"
 3. Redirect URI : https://qliinxtanjdnwxlvnxji.supabase.co/auth/v1/callback
 4. Client secret créé
 5. Supabase Dashboard → Auth → Azure
@@ -201,6 +211,7 @@ Si vous voulez aussi activer Microsoft :
 ### **Problème : Boutons OAuth invisibles**
 
 **Solutions** :
+
 ```bash
 # 1. Vérifier que le changement est pris en compte
 # Rafraîchir la page : Ctrl+R
@@ -216,6 +227,7 @@ npm run dev
 ### **Problème : Erreur 400 "provider not enabled"**
 
 **Solutions** :
+
 ```
 1. Vérifier Supabase Dashboard → Auth → Providers → Google
 2. Toggle doit être activé (vert)
@@ -228,10 +240,11 @@ npm run dev
 ### **Problème : Redirection échoue**
 
 **Solutions** :
+
 ```
 1. Vérifier Redirect URI dans Google Cloud Console :
    https://qliinxtanjdnwxlvnxji.supabase.co/auth/v1/callback
-   
+
 2. Pas de trailing slash (/)
 3. HTTPS obligatoire (http://localhost OK en dev)
 4. Vérifier console navigateur (F12) pour erreurs
@@ -240,6 +253,7 @@ npm run dev
 ### **Problème : "redirect_uri_mismatch"**
 
 **Solutions** :
+
 ```
 1. Google Cloud Console → Credentials
 2. Éditer OAuth 2.0 Client
@@ -317,6 +331,7 @@ Vous avez activé OAuth Google avec succès !
 **Score actuel** : **87/100** ⭐⭐⭐⭐⭐  
 **Niveau** : **Excellent** (Notion/Linear)  
 **Fonctionnalités** :
+
 - ✅ MFA/2FA activé
 - ✅ OAuth Google activé
 - ✅ CSP Headers configurés
@@ -342,10 +357,10 @@ http://localhost:8080/
 ```
 1. Activer Microsoft OAuth (15 min)
    → Voir OAUTH_CONFIGURATION_GUIDE.md
-   
+
 2. Tester MFA + OAuth ensemble
    → Double sécurité
-   
+
 3. Déployer en production
    → Mettre à jour redirect URLs
 ```

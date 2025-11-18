@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../integrations/supabase/client';
+import { BrandedLoadingScreen } from '@/components/layout/BrandedLoadingScreen';
 
 /**
  * AuthCallback - Point d'entrée après authentification Magic Link
@@ -492,29 +493,5 @@ export default function AuthCallback() {
     handleAuthCallback();
   }, [navigate]);
 
-  return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
-      <div className="max-w-md rounded-lg bg-white p-8 text-center shadow-lg">
-        <div className="mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-b-2 border-blue-600"></div>
-        <h2 className="mb-2 text-xl font-semibold text-gray-800">Confirmation en cours</h2>
-        <p className="mb-4 text-gray-600">{status}</p>
-
-        {invitationType && (
-          <div className="mt-4 rounded-lg border border-blue-200 bg-blue-50 p-3">
-            <p className="text-xs font-medium text-blue-800">
-              {invitationType === 'collaborator' && '👥 Invitation Collaborateur'}
-              {invitationType === 'tenant_owner' && '👑 Invitation Propriétaire'}
-              {invitationType === 'true' && '✉️ Invitation Standard'}
-            </p>
-          </div>
-        )}
-
-        <div className="mt-4 text-sm text-gray-500">
-          <p>• Validation de votre email</p>
-          <p>• Configuration de votre compte</p>
-          <p>• Préparation de votre espace</p>
-        </div>
-      </div>
-    </div>
-  );
+  return <BrandedLoadingScreen appName="Wadashaqayn" logoSrc="/logo-w.svg" />;
 }

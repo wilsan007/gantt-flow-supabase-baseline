@@ -34,7 +34,7 @@
 | **Stripe** | 2-3 | 1 | Minimal |
 | **Linear** | 2-3 | 1 | Minimal |
 | **Notion** | 3-4 | 1 | Minimal |
-| **Wadashaqeen** | **4** | **1** | **Minimal** ✅ |
+| **Wadashaqayn** | **4** | **1** | **Minimal** ✅ |
 
 **🏆 Nous sommes au niveau des leaders !**
 
@@ -347,7 +347,7 @@ task_actions!task_id(*)  // ✅ Explicite
 
 ## 🚀 Prêt pour Production
 
-**L'application Wadashaqeen atteint maintenant le niveau des leaders SaaS (Stripe, Linear, Notion) en termes de :**
+**L'application Wadashaqayn atteint maintenant le niveau des leaders SaaS (Stripe, Linear, Notion) en termes de :**
 - Performance rendering
 - Optimisation cache
 - Qualité code

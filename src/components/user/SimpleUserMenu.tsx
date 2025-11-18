@@ -22,6 +22,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
@@ -92,7 +93,7 @@ export const SimpleUserMenu: React.FC<SimpleUserMenuProps> = ({
         <DropdownMenuTrigger asChild>
           <Button
             variant="ghost"
-            className="relative h-10 w-10 rounded-full ring-2 ring-primary/20 transition-all duration-300 hover:ring-primary/40"
+            className="ring-primary/20 hover:ring-primary/40 relative h-10 w-10 rounded-full ring-2 transition-all duration-300"
           >
             <Avatar className="h-10 w-10">
               <AvatarImage
@@ -101,7 +102,7 @@ export const SimpleUserMenu: React.FC<SimpleUserMenuProps> = ({
                 referrerPolicy="no-referrer"
                 loading="lazy"
               />
-              <AvatarFallback className="bg-gradient-to-br from-primary to-accent font-semibold text-primary-foreground">
+              <AvatarFallback className="from-primary to-accent text-primary-foreground bg-gradient-to-br font-semibold">
                 {initials}
               </AvatarFallback>
             </Avatar>
@@ -109,70 +110,72 @@ export const SimpleUserMenu: React.FC<SimpleUserMenuProps> = ({
         </DropdownMenuTrigger>
 
         <DropdownMenuContent className="w-64" align="end">
-          {/* En-tête utilisateur */}
-          <DropdownMenuLabel className="font-normal">
-            <div className="flex items-center gap-3 py-2">
-              <Avatar className="h-12 w-12">
-                <AvatarImage
-                  src={avatarUrl}
-                  alt={fullName}
-                  referrerPolicy="no-referrer"
-                  loading="lazy"
-                />
-                <AvatarFallback className="bg-gradient-to-br from-primary to-accent text-primary-foreground">
-                  {initials}
-                </AvatarFallback>
-              </Avatar>
-              <div className="flex flex-col space-y-1">
-                <p className="text-sm font-semibold leading-none">{fullName}</p>
-                <p className="text-xs text-muted-foreground">{email}</p>
-                {isTenantAdmin && tenantName && (
-                  <Badge variant="secondary" className="w-fit text-xs">
-                    Admin · {tenantName}
-                  </Badge>
-                )}
+          <ScrollArea className="max-h-[80vh]">
+            {/* En-tête utilisateur */}
+            <DropdownMenuLabel className="font-normal">
+              <div className="flex items-center gap-3 py-2">
+                <Avatar className="h-12 w-12">
+                  <AvatarImage
+                    src={avatarUrl}
+                    alt={fullName}
+                    referrerPolicy="no-referrer"
+                    loading="lazy"
+                  />
+                  <AvatarFallback className="from-primary to-accent text-primary-foreground bg-gradient-to-br">
+                    {initials}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="flex flex-col space-y-1">
+                  <p className="text-sm leading-none font-semibold">{fullName}</p>
+                  <p className="text-muted-foreground text-xs">{email}</p>
+                  {isTenantAdmin && tenantName && (
+                    <Badge variant="secondary" className="w-fit text-xs">
+                      Admin · {tenantName}
+                    </Badge>
+                  )}
+                </div>
               </div>
-            </div>
-          </DropdownMenuLabel>
+            </DropdownMenuLabel>
 
-          <DropdownMenuSeparator />
+            <DropdownMenuSeparator />
 
-          {/* 🔑 Modifier le mot de passe - TOUS LES UTILISATEURS */}
-          <DropdownMenuItem onClick={handleChangePassword}>
-            <KeyRound className="mr-2 h-4 w-4" />
-            <span>Modifier le mot de passe</span>
-          </DropdownMenuItem>
+            {/* 🔑 Modifier le mot de passe - TOUS LES UTILISATEURS */}
+            <DropdownMenuItem onClick={handleChangePassword}>
+              <KeyRound className="mr-2 h-4 w-4" />
+              <span>Modifier le mot de passe</span>
+            </DropdownMenuItem>
 
-          {/* 🏢 Options Tenant Admin */}
-          {isTenantAdmin && (
-            <>
-              <DropdownMenuSeparator />
-              <DropdownMenuLabel className="text-xs text-muted-foreground">
-                Gestion Entreprise
-              </DropdownMenuLabel>
+            {/* 🏢 Options Tenant Admin */}
+            {isTenantAdmin && (
+              <>
+                <DropdownMenuSeparator />
+                <DropdownMenuLabel className="text-muted-foreground text-xs">
+                  Gestion Entreprise
+                </DropdownMenuLabel>
 
-              <DropdownMenuItem onClick={handleChangeCompanyName}>
-                <Building2 className="mr-2 h-4 w-4" />
-                <span>Modifier nom de l'entreprise</span>
-              </DropdownMenuItem>
+                <DropdownMenuItem onClick={handleChangeCompanyName}>
+                  <Building2 className="mr-2 h-4 w-4" />
+                  <span>Modifier nom de l'entreprise</span>
+                </DropdownMenuItem>
 
-              <DropdownMenuItem onClick={handleChangeLogo}>
-                <Upload className="mr-2 h-4 w-4" />
-                <span>Modifier le logo</span>
-              </DropdownMenuItem>
-            </>
-          )}
+                <DropdownMenuItem onClick={handleChangeLogo}>
+                  <Upload className="mr-2 h-4 w-4" />
+                  <span>Modifier le logo</span>
+                </DropdownMenuItem>
+              </>
+            )}
 
-          <DropdownMenuSeparator />
+            <DropdownMenuSeparator />
 
-          {/* 🚪 Déconnexion */}
-          <DropdownMenuItem
-            onClick={handleSignOut}
-            className="text-destructive focus:text-destructive"
-          >
-            <LogOut className="mr-2 h-4 w-4" />
-            <span>Se déconnecter</span>
-          </DropdownMenuItem>
+            {/* 🚪 Déconnexion */}
+            <DropdownMenuItem
+              onClick={handleSignOut}
+              className="text-destructive focus:text-destructive"
+            >
+              <LogOut className="mr-2 h-4 w-4" />
+              <span>Se déconnecter</span>
+            </DropdownMenuItem>
+          </ScrollArea>
         </DropdownMenuContent>
       </DropdownMenu>
 

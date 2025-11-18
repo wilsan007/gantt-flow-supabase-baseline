@@ -3,7 +3,7 @@
 ## 🚀 Lancer l'Application
 
 ```bash
-cd /home/awaleh/Bureau/Wadashaqeen-SaaS/gantt-flow-next
+cd /home/awaleh/Bureau/Wadashaqayn-SaaS/gantt-flow-next
 npm run dev
 ```
 
@@ -57,6 +57,7 @@ npm run dev
 ## 🎨 Ce que vous devriez voir
 
 ### Avant (Connexion classique)
+
 ```
 ┌─────────────────────────────────┐
 │ [G] Continuer avec Google       │
@@ -72,6 +73,7 @@ npm run dev
 ```
 
 ### Après (Avec compte mémorisé) ✨
+
 ```
 ┌────────────────────────────────────┐
 │ [👤]  Continuer en tant que        │
@@ -92,12 +94,14 @@ npm run dev
 ## ⏱️ Gain de Temps
 
 ### Avant
+
 ```
 Utilisateur → "Google" → Popup → Chercher email → Cliquer → Autoriser → Connecté
 ⏱️ 5-10 secondes | 4 clics
 ```
 
 ### Après
+
 ```
 Utilisateur → "Continuer en tant que Awaleh" → Popup → Autoriser → Connecté
 ⏱️ 1.5-3 secondes | 2 clics
@@ -125,6 +129,7 @@ Utilisateur → "Continuer en tant que Awaleh" → Popup → Autoriser → Conne
 ### Le bouton ne s'affiche pas ?
 
 **C'est normal si:**
+
 - Première fois que vous vous connectez
 - Vous avez utilisé email/password (pas OAuth)
 - Vous avez vidé le localStorage
@@ -134,6 +139,7 @@ Utilisateur → "Continuer en tant que Awaleh" → Popup → Autoriser → Conne
 ### Popup bloquée ?
 
 **Autoriser les popups pour localhost:**
+
 1. Chrome: Cliquer l'icône 🔒 dans la barre d'adresse
 2. Autoriser les popups
 3. Recharger la page
@@ -143,16 +149,19 @@ Utilisateur → "Continuer en tant que Awaleh" → Popup → Autoriser → Conne
 ## 📂 Fichiers Importants
 
 ### Pour Comprendre
+
 - `FEATURE_CONTINUER_AVEC_GOOGLE.md` - Documentation complète
 - `TEST_CONTINUER_AVEC_GOOGLE.md` - Guide de test détaillé
 - `RESUME_SESSION.md` - Vue d'ensemble
 
 ### Code Source
+
 - `src/hooks/useLastGoogleAccount.ts` - Hook de mémorisation
 - `src/components/auth/ContinueWithAccount.tsx` - Bouton personnalisé
 - `src/components/Auth.tsx` - Page de connexion
 
 ### Optimisations Build
+
 - `OPTIMISATION_BUILD_TEMPS.md` - Analyse complète
 - `vite.config.optimized.ts` - Configuration optimisée
 - `benchmark-build.sh` - Script de test
@@ -162,6 +171,7 @@ Utilisateur → "Continuer en tant que Awaleh" → Popup → Autoriser → Conne
 ## 🎉 Enjoy !
 
 Vous avez maintenant:
+
 - ⚡ Une reconnexion OAuth ultra-rapide
 - 🔐 Avec sécurité maintenue (confirmation obligatoire)
 - 🎨 Un design moderne inspiré des leaders (Notion, Slack, Linear)

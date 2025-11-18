@@ -336,4 +336,4 @@ Body:   [Col1] [Col2] [Col3] [Col4]  ← Parfaitement aligné ✅
 
 **Dernière mise à jour :** 2025-01-12  
 **Version :** 1.0.0  
-**Auteur :** Équipe Wadashaqeen
+**Auteur :** Équipe Wadashaqayn

@@ -1,8 +1,8 @@
-# Guide de Gestion d'Erreurs - Wadashaqeen SaaS
+# Guide de Gestion d'Erreurs - Wadashaqayn SaaS
 
 ## 🎯 Vue d'ensemble
 
-Ce guide présente le système de gestion d'erreurs moderne implémenté dans l'application Wadashaqeen, inspiré des meilleures pratiques des leaders SaaS comme Notion, Linear, et Asana.
+Ce guide présente le système de gestion d'erreurs moderne implémenté dans l'application Wadashaqayn, inspiré des meilleures pratiques des leaders SaaS comme Notion, Linear, et Asana.
 
 ## 🏗️ Architecture du Système
 
@@ -12,12 +12,12 @@ Le système utilise une typologie d'erreurs standardisée :
 
 ```typescript
 enum ErrorType {
-  VALIDATION_ERROR,           // Erreurs de validation de formulaire
-  DATE_RANGE_ERROR,          // Conflits de dates
-  TASK_DATE_CONFLICT,        // Dates de tâches incompatibles
+  VALIDATION_ERROR, // Erreurs de validation de formulaire
+  DATE_RANGE_ERROR, // Conflits de dates
+  TASK_DATE_CONFLICT, // Dates de tâches incompatibles
   PARENT_TASK_DATE_CONFLICT, // Conflit avec tâche parente
-  NETWORK_ERROR,             // Erreurs réseau
-  PERMISSION_ERROR,          // Permissions insuffisantes
+  NETWORK_ERROR, // Erreurs réseau
+  PERMISSION_ERROR, // Permissions insuffisantes
   // ... autres types
 }
 ```
@@ -52,6 +52,7 @@ const dateError = handleTaskDateValidation(
 ```
 
 **Messages d'erreur contextuels :**
+
 - "La période sélectionnée (01/10/2024 - 15/10/2024) dépasse le créneau de réalisation de la tâche principale 'Développement Frontend'."
 - "Période autorisée : 01/09/2024 - 30/11/2024"
 
@@ -71,6 +72,7 @@ const closeDialog = () => {
 ### 🎨 Interface Utilisateur Moderne
 
 **Indicateurs visuels :**
+
 - Bordures rouges sur les champs en erreur
 - Icônes contextuelles (⚠️, ❌, ℹ️)
 - Messages d'aide et suggestions
@@ -159,18 +161,20 @@ try {
 ## 📋 Exemples de Messages d'Erreur
 
 ### Conflits de Dates
+
 ```
 🚨 Conflit de dates détecté
-La période sélectionnée (15/10/2024 - 30/10/2024) dépasse le créneau 
+La période sélectionnée (15/10/2024 - 30/10/2024) dépasse le créneau
 de réalisation de la tâche principale "Migration Base de Données".
 
 📅 Période autorisée : 01/10/2024 - 25/10/2024
 
-💡 Solution suggérée : Veuillez ajuster les dates pour qu'elles soient 
+💡 Solution suggérée : Veuillez ajuster les dates pour qu'elles soient
 comprises dans la période de la tâche principale.
 ```
 
 ### Validation de Champs
+
 ```
 ⚠️ Erreur de validation
 Le champ "titre" doit contenir au moins 3 caractères.
@@ -179,6 +183,7 @@ Le champ "titre" doit contenir au moins 3 caractères.
 ```
 
 ### Erreurs Réseau
+
 ```
 🌐 Erreur de connexion
 Impossible de mettre à jour la tâche. Vérifiez votre connexion internet.
@@ -198,6 +203,7 @@ Impossible de mettre à jour la tâche. Vérifiez votre connexion internet.
 ## 🎉 Résultat
 
 Le système de gestion d'erreurs transforme l'expérience utilisateur en :
+
 - **Guidant** l'utilisateur vers la résolution
 - **Préservant** le contexte de travail
 - **Expliquant** clairement les problèmes

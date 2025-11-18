@@ -104,99 +104,38 @@ export const AppLayoutWithSidebar: React.FC<AppLayoutWithSidebarProps> = ({
 
       {/* Main Content Area */}
       <div className="flex flex-1 flex-col overflow-y-auto">
-        {/* Header Mobile/Tablet */}
-        <header className="sticky top-0 z-30 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 lg:hidden">
-          <div className="flex items-center justify-between p-3">
-            {/* Menu Hamburger + Logo + Nom */}
-            <div className="flex items-center gap-2">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                aria-label={isMobileMenuOpen ? 'Fermer le menu' : 'Ouvrir le menu'}
-              >
-                {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-              </Button>
+        {/* Header Mobile/Tablet - VERSION MINIMALE */}
+        <header className="bg-background sticky top-0 z-[60] lg:hidden">
+          <div className="flex items-center justify-between px-2 py-1.5">
+            {/* Menu Hamburger uniquement */}
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-9 w-9 shrink-0"
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              aria-label={isMobileMenuOpen ? 'Fermer le menu' : 'Ouvrir le menu'}
+            >
+              {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            </Button>
 
-              {/* Logo entreprise (mobile) */}
-              {currentTenant?.logo_url ? (
-                <div className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-md border border-primary/20 bg-background">
-                  <img
-                    src={currentTenant.logo_url}
-                    alt={`Logo ${tenantName}`}
-                    className="h-full w-full object-contain"
-                    referrerPolicy="no-referrer"
-                  />
-                </div>
-              ) : (
-                <div className="flex h-8 w-8 items-center justify-center rounded-md border border-dashed border-primary/30 bg-primary/5">
-                  <Building2 className="h-4 w-4 text-primary/60" />
-                </div>
-              )}
-
-              <div className="flex flex-col">
-                <span className="text-xs font-semibold leading-tight">Wadashaqeen SaaS</span>
-                <span className="text-[10px] leading-tight text-muted-foreground">
-                  {tenantName || 'Mon Entreprise'}
-                </span>
-              </div>
-            </div>
-
-            {/* Actions droite */}
-            <div className="flex items-center gap-1">
-              {/* Warning Timer Mobile */}
-              {showWarning && (
-                <div className="hidden items-center gap-1 rounded bg-orange-100 px-2 py-1 text-xs font-medium text-orange-800 dark:bg-orange-900 dark:text-orange-200 sm:flex">
-                  ⏰ {timeLeftFormatted}
-                </div>
-              )}
-
-              <ThemeToggle />
-              <div className="hidden sm:block">
-                <NotificationButton />
-              </div>
-              <div className="hidden sm:block">
-                <RoleIndicator />
-              </div>
-              {/* Menu Utilisateur - Conditionnel selon rôle */}
-              {user &&
-                (isSuperAdmin ? (
-                  <UserMenu
-                    user={user}
-                    isSuperAdmin={isSuperAdmin}
-                    isTenantAdmin={isTenantAdmin}
-                    tenantName={tenantName}
-                    onSignOut={signOut}
-                  />
-                ) : (
-                  <SimpleUserMenu
-                    user={user}
-                    isTenantAdmin={isTenantAdmin}
-                    tenantName={tenantName}
-                    onSignOut={signOut}
-                  />
-                ))}
-            </div>
+            {/* Avatar utilisateur uniquement */}
+            <SimpleUserMenu
+              user={user}
+              isTenantAdmin={isTenantAdmin}
+              tenantName={tenantName}
+              onSignOut={signOut}
+            />
           </div>
-
-          {/* Warning Banner Mobile (si pas assez d'espace dans header) */}
-          {showWarning && (
-            <div className="px-3 pb-2 sm:hidden">
-              <div className="flex items-center justify-center gap-2 rounded bg-orange-100 px-3 py-1.5 text-xs font-medium text-orange-800 dark:bg-orange-900 dark:text-orange-200">
-                ⏰ Déconnexion dans {timeLeftFormatted}
-              </div>
-            </div>
-          )}
         </header>
 
         {/* Header Desktop (optionnel - pour actions supplémentaires) */}
-        <header className="sticky top-0 z-30 hidden border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 lg:block">
+        <header className="bg-background/95 supports-[backdrop-filter]:bg-background/60 sticky top-0 z-30 hidden border-b backdrop-blur lg:block">
           <div className="flex items-center justify-between px-6 py-2.5">
             {/* Nom et Logo Entreprise Tenant */}
             <div className="flex items-center gap-3">
               {/* Logo de l'entreprise */}
               {currentTenant?.logo_url ? (
-                <div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-lg border-2 border-primary/20 bg-background shadow-sm">
+                <div className="border-primary/20 bg-background flex h-10 w-10 items-center justify-center overflow-hidden rounded-lg border-2 shadow-sm">
                   <img
                     src={currentTenant.logo_url}
                     alt={`Logo ${tenantName}`}
@@ -205,13 +144,13 @@ export const AppLayoutWithSidebar: React.FC<AppLayoutWithSidebarProps> = ({
                   />
                 </div>
               ) : (
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg border-2 border-dashed border-primary/30 bg-gradient-to-br from-primary/5 to-accent/5">
-                  <Building2 className="h-5 w-5 text-primary/60" />
+                <div className="border-primary/30 from-primary/5 to-accent/5 flex h-10 w-10 items-center justify-center rounded-lg border-2 border-dashed bg-gradient-to-br">
+                  <Building2 className="text-primary/60 h-5 w-5" />
                 </div>
               )}
 
               {/* Nom de l'entreprise */}
-              <h1 className="bg-gradient-to-r from-primary via-accent to-tech-purple bg-clip-text text-lg font-bold text-transparent">
+              <h1 className="from-primary via-accent to-tech-purple bg-gradient-to-r bg-clip-text text-lg font-bold text-transparent">
                 {tenantName || 'Mon Entreprise'}
               </h1>
             </div>
@@ -251,7 +190,7 @@ export const AppLayoutWithSidebar: React.FC<AppLayoutWithSidebarProps> = ({
         </header>
 
         {/* Page Content with Scroll */}
-        <main className="flex-1 overflow-y-auto bg-muted/30 p-4 sm:p-6">{children}</main>
+        <main className="bg-muted/30 flex-1 overflow-y-auto p-4 sm:p-6">{children}</main>
       </div>
     </div>
   );

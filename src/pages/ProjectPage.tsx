@@ -18,18 +18,24 @@ export default function ProjectPage() {
 
   return (
     <div className="h-full">
-      <div className="container mx-auto space-y-4 sm:space-y-6">
+      <div className="container mx-auto space-y-4 px-4 sm:space-y-6">
         {/* Navigation rapide - Responsive */}
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
           <div className="min-w-0 flex-1">
-            <h1 className="truncate text-2xl font-bold sm:text-3xl">Gestion de Projet</h1>
-            <p className="text-sm text-muted-foreground sm:text-base">
+            <h1 className="truncate text-xl font-bold sm:text-2xl md:text-3xl">
+              Gestion de Projet
+            </h1>
+            <p className="text-muted-foreground truncate text-xs sm:text-sm md:text-base">
               Dashboard et outils de gestion de projet
             </p>
           </div>
           {/* Boutons stack sur mobile, côte à côte sur desktop */}
           <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
-            <Button onClick={() => navigate('/tasks')} className="w-full justify-center sm:w-auto">
+            <Button
+              onClick={() => navigate('/tasks')}
+              className="w-full justify-center sm:w-auto"
+              size="sm"
+            >
               <CheckSquare className="mr-2 h-4 w-4" />
               <span className="hidden md:inline">Gestion des </span>Tâches
             </Button>
@@ -37,6 +43,7 @@ export default function ProjectPage() {
               variant="outline"
               onClick={() => navigate('/hr')}
               className="w-full justify-center sm:w-auto"
+              size="sm"
             >
               <Users className="mr-2 h-4 w-4" />
               <span className="hidden md:inline">Ressources </span>
@@ -47,21 +54,21 @@ export default function ProjectPage() {
         </div>
 
         {/* Raccourcis de navigation */}
-        <div className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-3">
+        <div className="mb-4 grid grid-cols-1 gap-3 sm:gap-4 md:grid-cols-3">
           <Card
             className="cursor-pointer transition-shadow hover:shadow-lg"
             onClick={() => navigate('/tasks')}
           >
             <CardHeader className="pb-3">
               <CardTitle className="flex items-center gap-2 text-lg">
-                <CheckSquare className="h-5 w-5 text-primary" />
+                <CheckSquare className="text-primary h-5 w-5" />
                 Gestion des Tâches
               </CardTitle>
               <CardDescription>Créer, modifier et assigner des tâches</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">Accès complet aux tâches</span>
+                <span className="text-muted-foreground text-sm">Accès complet aux tâches</span>
                 <ArrowRight className="h-4 w-4" />
               </div>
             </CardContent>
@@ -77,7 +84,7 @@ export default function ProjectPage() {
             </CardHeader>
             <CardContent>
               <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">Calendrier et échéances</span>
+                <span className="text-muted-foreground text-sm">Calendrier et échéances</span>
                 <ArrowRight className="h-4 w-4" />
               </div>
             </CardContent>
@@ -93,7 +100,7 @@ export default function ProjectPage() {
             </CardHeader>
             <CardContent>
               <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">Métriques détaillées</span>
+                <span className="text-muted-foreground text-sm">Métriques détaillées</span>
                 <ArrowRight className="h-4 w-4" />
               </div>
             </CardContent>

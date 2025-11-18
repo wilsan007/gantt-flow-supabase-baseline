@@ -334,4 +334,4 @@ if (cachedUserId && cachedUserId !== session.user.id) {
 
 _Documentation créée le : 14 novembre 2025_  
 _Version : 1.0_  
-_Auteur : Système de Sécurité Wadashaqeen_
+_Auteur : Système de Sécurité Wadashaqayn_

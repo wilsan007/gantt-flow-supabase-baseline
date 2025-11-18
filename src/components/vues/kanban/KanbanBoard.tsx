@@ -70,9 +70,9 @@ function KanbanCard({ task }: KanbanCardProps) {
       {...listeners}
       className={`cursor-grab active:cursor-grabbing ${isDragging ? 'opacity-50' : ''}`}
     >
-      <Card className="transition-smooth glass hover-glow mb-3 cursor-grab border-primary/30 bg-card/40 backdrop-blur-sm hover:shadow-md active:cursor-grabbing">
+      <Card className="transition-smooth glass hover-glow border-primary/30 bg-card/40 mb-3 cursor-grab backdrop-blur-sm hover:shadow-md active:cursor-grabbing">
         <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-medium text-foreground">
+          <CardTitle className="text-foreground text-sm font-medium">
             {task.title || task.name}
           </CardTitle>
 
@@ -92,7 +92,7 @@ function KanbanCard({ task }: KanbanCardProps) {
 
           {/* Assigné avec nom complet */}
           <div className="flex items-center gap-2 pt-1">
-            <Avatar className="h-6 w-6 ring-2 ring-primary/40">
+            <Avatar className="ring-primary/40 h-6 w-6 ring-2">
               {(() => {
                 // Normaliser assignee qui peut être string ou objet
                 const assigneeStr =
@@ -102,14 +102,14 @@ function KanbanCard({ task }: KanbanCardProps) {
                 return (
                   <>
                     <AvatarImage src="" alt={assigneeStr} />
-                    <AvatarFallback className="bg-primary/40 text-xs font-semibold text-primary-foreground">
+                    <AvatarFallback className="bg-primary/40 text-primary-foreground text-xs font-semibold">
                       {assigneeStr.slice(0, 2).toUpperCase()}
                     </AvatarFallback>
                   </>
                 );
               })()}
             </Avatar>
-            <span className="flex-1 truncate text-xs text-muted-foreground">
+            <span className="text-muted-foreground flex-1 truncate text-xs">
               {(() => {
                 const assigneeStr =
                   typeof task.assignee === 'string'
@@ -122,16 +122,16 @@ function KanbanCard({ task }: KanbanCardProps) {
         </CardHeader>
         <CardContent className="pt-0">
           <div className="space-y-2">
-            <Progress value={task.progress || 0} className="h-2 bg-muted/50" />
-            <div className="flex items-center justify-between text-xs text-muted-foreground">
+            <Progress value={task.progress || 0} className="bg-muted/50 h-2" />
+            <div className="text-muted-foreground flex items-center justify-between text-xs">
               <span>{task.progress || 0}% terminé</span>
-              <span className="rounded bg-accent/30 px-2 py-1 font-medium text-accent-foreground">
+              <span className="bg-accent/30 text-accent-foreground rounded px-2 py-1 font-medium">
                 {task.status}
               </span>
             </div>
             {/* Affichage spécifique aux projets */}
             {task.task_count !== undefined && (
-              <div className="text-xs text-muted-foreground">
+              <div className="text-muted-foreground text-xs">
                 📝 {task.task_count} tâche{task.task_count > 1 ? 's' : ''}
               </div>
             )}
@@ -150,21 +150,21 @@ interface KanbanColumnProps {
 function KanbanColumn({ column, tasks }: KanbanColumnProps) {
   return (
     <div className="min-w-0 flex-1">
-      <Card className="glass glow-accent transition-smooth h-full border-primary/30">
-        <CardHeader className="border-b border-primary/30 bg-gradient-to-r from-primary/15 to-accent/15 pb-3 backdrop-blur-sm">
-          <CardTitle className="flex items-center justify-between text-lg text-foreground">
-            <span className="bg-gradient-to-r from-tech-purple to-tech-cyan bg-clip-text font-bold text-transparent">
+      <Card className="glass glow-accent transition-smooth border-primary/30 h-full">
+        <CardHeader className="border-primary/30 from-primary/15 to-accent/15 border-b bg-gradient-to-r pb-3 backdrop-blur-sm">
+          <CardTitle className="text-foreground flex items-center justify-between text-lg">
+            <span className="from-tech-purple to-tech-cyan bg-gradient-to-r bg-clip-text font-bold text-transparent">
               {column.title}
             </span>
             <Badge
               variant="secondary"
-              className="ml-2 border-primary/50 bg-primary/40 font-semibold text-primary-foreground shadow-lg"
+              className="border-primary/50 bg-primary/40 text-primary-foreground ml-2 font-semibold shadow-lg"
             >
               {tasks.length}
             </Badge>
           </CardTitle>
         </CardHeader>
-        <CardContent className="max-h-[calc(100vh-300px)] overflow-y-auto bg-card/30 backdrop-blur-sm">
+        <CardContent className="bg-card/30 max-h-[calc(100vh-300px)] overflow-y-auto backdrop-blur-sm">
           <SortableContext items={tasks.map(t => t.id)} strategy={verticalListSortingStrategy}>
             {tasks.map(task => (
               <KanbanCard key={task.id} task={task} />
@@ -244,8 +244,8 @@ export default function KanbanBoard() {
   if (loading || (displayMode === 'projects' && projectsLoading)) {
     return (
       <div className="glass modern-card flex h-64 items-center justify-center">
-        <div className="glow-primary h-8 w-8 animate-spin rounded-full border-b-2 border-primary"></div>
-        <span className="ml-3 font-medium text-foreground">Chargement...</span>
+        <div className="glow-primary border-primary h-8 w-8 animate-spin rounded-full border-b-2"></div>
+        <span className="text-foreground ml-3 font-medium">Chargement...</span>
       </div>
     );
   }
@@ -293,12 +293,12 @@ export default function KanbanBoard() {
           )}
         </div>
         {displayMode === 'projects' && (
-          <p className="text-sm text-muted-foreground">Vue Kanban des projets par statut</p>
+          <p className="text-muted-foreground text-sm">Vue Kanban des projets par statut</p>
         )}
       </div>
 
-      {/* Filtres avancés - uniquement en mode Tâches */}
-      {displayMode === 'tasks' && (
+      {/* Filtres avancés - uniquement en mode Tâches et Desktop */}
+      {!isMobile && displayMode === 'tasks' && (
         <AdvancedFilters
           onFiltersChange={setFilters}
           projects={projects}

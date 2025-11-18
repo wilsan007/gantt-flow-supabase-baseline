@@ -34,6 +34,7 @@ rm -rf src/components/vues/hooks/
 ```
 
 **Contenu supprimé** :
+
 - use-mobile.tsx (doublon)
 - useEmployees.ts (doublon)
 - useGanttDrag.ts (doublon)
@@ -76,7 +77,7 @@ rm src/components/vues/STRUCTURE.txt
 
 ```bash
 # Navigation vers le projet
-cd /home/awaleh/Bureau/Wadashaqeen-SaaS/gantt-flow-next
+cd /home/awaleh/Bureau/Wadashaqayn-SaaS/gantt-flow-next
 
 # Suppression en une seule commande
 rm src/components/gantt/GanttChartEnterprise.tsx \
@@ -99,14 +100,16 @@ npm run build
 ## ❌ NE PAS TOUCHER (CRITIQUE)
 
 ### Hooks Enterprise - ESSENTIELS
+
 ```bash
 ✅ GARDER : src/hooks/useTasksEnterprise.ts
-✅ GARDER : src/hooks/useProjectsEnterprise.ts  
+✅ GARDER : src/hooks/useProjectsEnterprise.ts
 ✅ GARDER : src/hooks/useHRMinimal.ts
 ✅ GARDER : src/hooks/optimized/index.ts        ← WRAPPER VITAL
 ```
 
 **Utilisés par** :
+
 - 50+ composants (HR, Operations, Dialogs, etc.)
 - Le wrapper qui alimente les anciennes vues
 - Toute la logique Enterprise (cache, métriques)
@@ -116,6 +119,7 @@ npm run build
 ---
 
 ### Composants Enterprise Utilisés
+
 ```bash
 ✅ GARDER : src/components/projects/ProjectDashboardEnterprise.tsx
 ```
@@ -125,6 +129,7 @@ npm run build
 ---
 
 ### Toutes les Vues Actuelles
+
 ```bash
 ✅ GARDER : src/components/vues/table/          (DynamicTable)
 ✅ GARDER : src/components/vues/kanban/         (KanbanBoard)
@@ -143,6 +148,7 @@ npm run build
 ## 📊 IMPACT ESTIMÉ
 
 ### Avant Suppression
+
 ```
 Fichiers totaux : ~400
 Code dupliqué : 82 KB
@@ -151,6 +157,7 @@ Composants inutilisés : 3 fichiers
 ```
 
 ### Après Suppression
+
 ```
 Fichiers totaux : ~382 (-4.5%)
 Code dupliqué : 0 KB (-100%)
@@ -159,6 +166,7 @@ Composants inutilisés : 0 (-100%)
 ```
 
 ### Gains
+
 - ✅ Bundle JS : -2 à -3%
 - ✅ Build time : -5%
 - ✅ Clarté code : +10%
@@ -171,6 +179,7 @@ Composants inutilisés : 0 (-100%)
 ### Phase 2 - Restructuration Dossiers
 
 #### Fusionner layout/ et layouts/
+
 ```bash
 # Déplacer ResponsiveLayout
 mv src/components/layouts/ResponsiveLayout.tsx src/components/layout/
@@ -186,6 +195,7 @@ rmdir src/components/layouts/
 ### Phase 3 - Analyse Pages HR
 
 Actuellement :
+
 - `HRPage.tsx` (12.8 KB)
 - `HRPageWithCollaboratorInvitation.tsx` (4.9 KB)
 
@@ -196,18 +206,21 @@ Actuellement :
 ## ✅ CHECKLIST AVANT SUPPRESSION
 
 ### Pré-suppression
+
 - [ ] Commit Git (backup)
 - [ ] Build actuel fonctionne : `npm run build`
 - [ ] Tests passent (si existants)
 - [ ] Screenshot des 3 vues (backup visuel)
 
 ### Suppression
+
 - [ ] Exécuter commande de suppression
 - [ ] Vérifier aucune erreur TypeScript
 - [ ] Build sans erreurs
 - [ ] Tester les 3 vues (Table, Kanban, Gantt)
 
 ### Post-suppression
+
 - [ ] Index.tsx fonctionne
 - [ ] HRPage fonctionne
 - [ ] ProjectPage fonctionne
@@ -219,6 +232,7 @@ Actuellement :
 ## 🎯 RECOMMANDATION FINALE
 
 ### Exécuter MAINTENANT
+
 ```bash
 # 1. Backup
 git add .
@@ -288,6 +302,6 @@ Après suppression, vous aurez :
 ✅ **Code nettoyé** (18 fichiers supprimés)  
 ✅ **Pas de doublons** (hooks unifiés)  
 ✅ **Performance maintenue** (cache, métriques)  
-✅ **Build optimisé** (-3% taille)  
+✅ **Build optimisé** (-3% taille)
 
 **Le meilleur des deux mondes !** 🚀

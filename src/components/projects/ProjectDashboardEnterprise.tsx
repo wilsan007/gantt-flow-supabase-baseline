@@ -282,7 +282,7 @@ export const ProjectDashboardEnterprise: React.FC<ProjectDashboardEnterpriseProp
                   )}
                 </CardTitle>
                 {!compactMode && (
-                  <p className="mt-1 text-xs text-muted-foreground sm:text-sm">
+                  <p className="text-muted-foreground mt-1 text-xs sm:text-sm">
                     <span className="font-medium">{totalCount} projets</span>
                     {/* Métriques techniques masquées sur mobile */}
                     <span className="hidden md:inline">
@@ -356,7 +356,7 @@ export const ProjectDashboardEnterprise: React.FC<ProjectDashboardEnterpriseProp
             {/* Recherche - Pleine largeur sur mobile */}
             <div className="w-full">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transform text-muted-foreground" />
+                <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform" />
                 <Input
                   placeholder="Rechercher des projets..."
                   value={searchTerm}
@@ -397,7 +397,7 @@ export const ProjectDashboardEnterprise: React.FC<ProjectDashboardEnterpriseProp
           {/* Grille des projets */}
           {loading && projects.length === 0 ? (
             <div className="py-8 text-center">
-              <RefreshCw className="mx-auto mb-4 h-8 w-8 animate-spin text-muted-foreground" />
+              <RefreshCw className="text-muted-foreground mx-auto mb-4 h-8 w-8 animate-spin" />
               <p className="text-muted-foreground">Chargement des projets...</p>
             </div>
           ) : error ? (
@@ -410,7 +410,7 @@ export const ProjectDashboardEnterprise: React.FC<ProjectDashboardEnterpriseProp
             </div>
           ) : projects.length === 0 ? (
             <div className="py-8 text-center">
-              <BarChart3 className="mx-auto mb-4 h-8 w-8 text-muted-foreground" />
+              <BarChart3 className="text-muted-foreground mx-auto mb-4 h-8 w-8" />
               <p className="text-muted-foreground">Aucun projet trouvé</p>
               <Button
                 className="mt-4"
@@ -434,7 +434,7 @@ export const ProjectDashboardEnterprise: React.FC<ProjectDashboardEnterpriseProp
             />
           ) : (
             <>
-              <div className="grid grid-cols-1 gap-4 sm:gap-6 md:grid-cols-2 lg:grid-cols-3">
+              <div className="grid grid-cols-1 gap-3 sm:gap-4 md:grid-cols-2 md:gap-6 lg:grid-cols-3">
                 {projects.map(project => {
                   const isOverdue =
                     project.end_date &&
@@ -448,7 +448,7 @@ export const ProjectDashboardEnterprise: React.FC<ProjectDashboardEnterpriseProp
                         setSelectedProject(project);
                         setIsDetailsDialogOpen(true);
                       }}
-                      className={`group cursor-pointer transition-all duration-200 hover:shadow-lg active:scale-[0.98] ${
+                      className={`group cursor-pointer overflow-hidden transition-all duration-200 hover:shadow-lg active:scale-[0.98] ${
                         isOverdue
                           ? 'border-red-300 bg-red-50/30 dark:border-red-800 dark:bg-red-950/20'
                           : ''
@@ -457,11 +457,11 @@ export const ProjectDashboardEnterprise: React.FC<ProjectDashboardEnterpriseProp
                       <CardHeader className="p-4 pb-3 sm:p-6 sm:pb-3">
                         <div className="flex items-start justify-between gap-2">
                           <div className="min-w-0 flex-1">
-                            <h3 className="mb-1.5 text-base font-semibold leading-tight sm:mb-2 sm:text-lg">
+                            <h3 className="mb-1.5 text-base leading-tight font-semibold sm:mb-2 sm:text-lg">
                               {project.name}
                             </h3>
                             {project.description && (
-                              <p className="line-clamp-2 text-xs text-muted-foreground sm:text-sm">
+                              <p className="text-muted-foreground line-clamp-2 text-xs sm:text-sm">
                                 {project.description}
                               </p>
                             )}
@@ -502,7 +502,7 @@ export const ProjectDashboardEnterprise: React.FC<ProjectDashboardEnterpriseProp
                         <div className="grid grid-cols-2 gap-3 text-xs sm:gap-4 sm:text-sm">
                           {/* Dates - Labels condensés mobile */}
                           <div className="space-y-0.5 sm:space-y-1">
-                            <div className="flex items-center gap-1 text-muted-foreground">
+                            <div className="text-muted-foreground flex items-center gap-1">
                               <Calendar className="h-3 w-3 shrink-0" />
                               <span className="truncate">Début</span>
                             </div>
@@ -512,7 +512,7 @@ export const ProjectDashboardEnterprise: React.FC<ProjectDashboardEnterpriseProp
                           </div>
 
                           <div className="space-y-0.5 sm:space-y-1">
-                            <div className="flex items-center gap-1 text-muted-foreground">
+                            <div className="text-muted-foreground flex items-center gap-1">
                               <Calendar className="h-3 w-3 shrink-0" />
                               <span className="truncate">Fin</span>
                             </div>
@@ -526,7 +526,7 @@ export const ProjectDashboardEnterprise: React.FC<ProjectDashboardEnterpriseProp
                           {/* Budget */}
                           {project.budget && (
                             <div className="space-y-0.5 sm:space-y-1">
-                              <div className="flex items-center gap-1 text-muted-foreground">
+                              <div className="text-muted-foreground flex items-center gap-1">
                                 <DollarSign className="h-3 w-3 shrink-0" />
                                 <span className="truncate">Budget</span>
                               </div>
@@ -539,7 +539,7 @@ export const ProjectDashboardEnterprise: React.FC<ProjectDashboardEnterpriseProp
                           {/* Équipe */}
                           {project.team_size && (
                             <div className="space-y-0.5 sm:space-y-1">
-                              <div className="flex items-center gap-1 text-muted-foreground">
+                              <div className="text-muted-foreground flex items-center gap-1">
                                 <Users className="h-3 w-3 shrink-0" />
                                 <span className="truncate">Équipe</span>
                               </div>
@@ -559,7 +559,7 @@ export const ProjectDashboardEnterprise: React.FC<ProjectDashboardEnterpriseProp
                                 {project.profiles.full_name?.charAt(0)}
                               </AvatarFallback>
                             </Avatar>
-                            <span className="truncate text-xs text-muted-foreground sm:text-sm">
+                            <span className="text-muted-foreground truncate text-xs sm:text-sm">
                               Créé par {project.profiles.full_name}
                             </span>
                           </div>
@@ -567,7 +567,7 @@ export const ProjectDashboardEnterprise: React.FC<ProjectDashboardEnterpriseProp
 
                         {/* Tenant (Super Admin) */}
                         {isSuperAdmin && project.tenants && (
-                          <div className="rounded bg-muted/50 p-2 text-xs text-muted-foreground">
+                          <div className="bg-muted/50 text-muted-foreground rounded p-2 text-xs">
                             🏢 {project.tenants.name}
                           </div>
                         )}
@@ -581,7 +581,7 @@ export const ProjectDashboardEnterprise: React.FC<ProjectDashboardEnterpriseProp
               {pagination.totalPages > 1 && (
                 <div className="mt-6 space-y-3 sm:mt-8 sm:space-y-0">
                   {/* Info pagination - Centré mobile */}
-                  <div className="text-center text-xs text-muted-foreground sm:text-left sm:text-sm">
+                  <div className="text-muted-foreground text-center text-xs sm:text-left sm:text-sm">
                     Page {pagination.page} sur {pagination.totalPages}
                     <span className="hidden sm:inline"> • {totalCount} projets au total</span>
                   </div>

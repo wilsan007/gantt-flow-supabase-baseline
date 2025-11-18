@@ -13,7 +13,7 @@ const CACHE_CONFIG = {
   TTL_ACCESS_RIGHTS: 5 * 60 * 1000, // 5 minutes pour les droits d'accès calculés
 
   // Clés de stockage
-  STORAGE_PREFIX: 'wadashaqeen_auth_',
+  STORAGE_PREFIX: 'wadashaqayn_auth_',
 
   // Événements d'invalidation
   INVALIDATION_EVENTS: [

@@ -44,7 +44,7 @@ export const JWT_EXPIRY_SECONDS = 7200; // 2 heures
  * Identifiant unique de session système
  * Génère un ID unique au démarrage de la session de l'ordinateur
  */
-const SESSION_MARKER_KEY = 'wadashaqeen_session_marker';
+const SESSION_MARKER_KEY = 'wadashaqayn_session_marker';
 
 /**
  * Génère un marqueur unique pour cette session système

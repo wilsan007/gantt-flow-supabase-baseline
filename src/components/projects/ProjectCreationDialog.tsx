@@ -114,15 +114,15 @@ const ProjectCreationDialogBase: React.FC<ProjectCreationDialogProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl">
+      <DialogContent className="max-h-[90vh] w-[95vw] max-w-2xl overflow-y-auto p-4 sm:p-6">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <Plus className="h-5 w-5" />
-            Créer un Nouveau Projet
+          <DialogTitle className="flex items-center gap-2 text-base sm:text-lg">
+            <Plus className="h-4 w-4 sm:h-5 sm:w-5" />
+            <span className="truncate">Créer un Nouveau Projet</span>
           </DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-4">
+        <div className="space-y-3 sm:space-y-4">
           <div className="space-y-2">
             <Label>Nom du projet *</Label>
             <Input

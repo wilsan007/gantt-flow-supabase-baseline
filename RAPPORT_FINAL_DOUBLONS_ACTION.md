@@ -10,11 +10,11 @@
 
 ### Résultats de l'Analyse
 
-| Catégorie | Fichiers Analysés | Code Mort | Doublons | À Conserver |
-|-----------|-------------------|-----------|----------|-------------|
-| **Module RH** | 5 | 1 | 1 | 3 |
-| **Module Tâches** | 35+ | 8 | 4 | 23 |
-| **TOTAL** | 40+ | **9 fichiers** | **5 fichiers** | **26 fichiers** |
+| Catégorie         | Fichiers Analysés | Code Mort      | Doublons       | À Conserver     |
+| ----------------- | ----------------- | -------------- | -------------- | --------------- |
+| **Module RH**     | 5                 | 1              | 1              | 3               |
+| **Module Tâches** | 35+               | 8              | 4              | 23              |
+| **TOTAL**         | 40+               | **9 fichiers** | **5 fichiers** | **26 fichiers** |
 
 ### Impact
 
@@ -36,12 +36,13 @@
 src/components/gantt/GanttTaskBar.tsx              # 3.0 KB - SUPPRIMER
 src/components/vues/gantt/GanttTaskBar.tsx         # 3.2 KB - SUPPRIMER (aussi)
 
-# ❌ DOUBLON #2 : GanttTaskList existe en 2 endroits  
+# ❌ DOUBLON #2 : GanttTaskList existe en 2 endroits
 src/components/gantt/GanttTaskList.tsx             # 3.0 KB - SUPPRIMER
 src/components/vues/gantt/GanttTaskList.tsx        # 3.0 KB - SUPPRIMER (aussi)
 ```
 
 **Justification** :
+
 - ✅ **Aucune importation trouvée** dans tout le codebase
 - ✅ GanttChart.tsx utilise GanttTimeline, pas GanttTaskBar
 - ✅ **CODE MORT à 100%**
@@ -54,6 +55,7 @@ src/components/vues/Index.tsx                      # 5.5 KB - SUPPRIMER
 ```
 
 **Justification** :
+
 - ✅ L'application utilise `src/pages/Index.tsx` à la place
 - ✅ Importe depuis `/dynamictable/` (ancien chemin)
 - ✅ **Ancienne version jamais utilisée**
@@ -66,6 +68,7 @@ src/components/hr/HRDashboard.tsx                  # 2.5 KB - SUPPRIMER
 ```
 
 **Code actuel** :
+
 ```typescript
 import { HRDashboardMinimal } from './HRDashboardMinimal';
 export const HRDashboard = () => {
@@ -73,15 +76,17 @@ export const HRDashboard = () => {
 };
 ```
 
-**Action** : 
+**Action** :
+
 1. Supprimer HRDashboard.tsx
 2. Dans HRPage.tsx, remplacer :
+
    ```typescript
    // AVANT
-   import { HRDashboard } from "@/components/hr/HRDashboard";
-   
+   import { HRDashboard } from '@/components/hr/HRDashboard';
+
    // APRÈS
-   import { HRDashboardMinimal as HRDashboard } from "@/components/hr/HRDashboardMinimal";
+   import { HRDashboardMinimal as HRDashboard } from '@/components/hr/HRDashboardMinimal';
    ```
 
 #### 4. Contexte Déplacé (1 fichier - 4.1 KB)
@@ -92,6 +97,7 @@ src/components/vues/contexts/TenantContext.tsx     # 4.1 KB - SUPPRIMER
 ```
 
 **Justification** :
+
 - ✅ Version officielle : `src/contexts/TenantContext.tsx`
 - ✅ Celle dans `/vues/` est **ancienne copie**
 
@@ -103,6 +109,7 @@ src/components/vues/lib/ganttHelpers.ts            # 2.4 KB - SUPPRIMER
 ```
 
 **Justification** :
+
 - ✅ Version officielle : `src/lib/ganttHelpers.ts`
 - ✅ GanttChart importe depuis `/lib/`, pas `/vues/lib/`
 
@@ -131,6 +138,7 @@ rm -rf src/components/gantt/
 ```
 
 **Modifications nécessaires** :
+
 ```typescript
 // src/pages/HRPage.tsx (ligne 10)
 - import { HRDashboard } from "@/components/hr/HRDashboard";
@@ -149,12 +157,14 @@ src/pages/HRPageWithCollaboratorInvitation.tsx     # 12 KB - À ANALYSER
 ```
 
 **Différence détectée** :
+
 - HRPage : Interface RH complète avec 13 onglets
 - HRPageWithCollaboratorInvitation : Extension avec invitation de collaborateurs
 
 **Question** : Est-ce une **alternative** (à garder) ou un **doublon amélioré** (remplacer HRPage) ?
 
 **Action recommandée** :
+
 1. Tester HRPageWithCollaboratorInvitation
 2. Si fonctionnel et meilleur → Remplacer HRPage
 3. Sinon → Supprimer HRPageWithCollaboratorInvitation
@@ -162,11 +172,13 @@ src/pages/HRPageWithCollaboratorInvitation.tsx     # 12 KB - À ANALYSER
 ### B. Composants Table Secondaires (5 fichiers - ~22 KB)
 
 **Fichiers utilisés par DynamicTable** :
+
 - ✅ TaskTableHeader.tsx (utilisé)
 - ✅ TaskFixedColumns.tsx (utilisé)
 - ✅ TaskActionColumns.tsx (utilisé)
 
 **Fichiers NON trouvés dans imports directs** :
+
 ```bash
 # ⚠️ À vérifier si utilisés indirectement
 src/components/vues/table/TaskTableBody.tsx        # 2.3 KB
@@ -177,6 +189,7 @@ src/components/vues/table/TaskDialogManager.tsx     # 2.4 KB
 ```
 
 **Action recommandée** :
+
 ```bash
 # Vérifier imports dans les 3 fichiers principaux
 grep -r "TaskTableBody\|TaskRow\|SubTaskRow\|TaskRowActions\|TaskDialogManager" \
@@ -188,10 +201,12 @@ grep -r "TaskTableBody\|TaskRow\|SubTaskRow\|TaskRowActions\|TaskDialogManager" 
 ### C. Dialogs Tâches (3 fichiers - ~38 KB)
 
 **Utilisés par DynamicTable** :
+
 - ✅ TaskEditDialog.tsx (ligne 16)
 - ✅ TaskCreationDialog.tsx (ligne 17)
 
 **Non trouvé dans imports** :
+
 ```bash
 # ⚠️ À vérifier
 src/components/vues/dialogs/TaskDetailsDialog.tsx  # 12 KB
@@ -224,7 +239,7 @@ src/components/vues/table/DocumentsColumn.tsx       # 6.2 KB
 ✅ **TaskEditDialog.tsx** (11 KB) - Importé ligne 16  
 ✅ **TaskCreationDialog.tsx** (15 KB) - Importé ligne 17  
 ✅ **ProjectTableView.tsx** (12 KB) - Importé ligne 19  
-✅ **MobileDynamicTable.tsx** (? KB) - Importé ligne 10  
+✅ **MobileDynamicTable.tsx** (? KB) - Importé ligne 10
 
 **Total utilisés confirmés** : **8 fichiers (~70 KB)**
 
@@ -234,14 +249,14 @@ src/components/vues/table/DocumentsColumn.tsx       # 6.2 KB
 ✅ **GanttHeader.tsx** (? KB) - Importé ligne 7  
 ✅ **GanttTimeline.tsx** (? KB) - Importé ligne 8  
 ✅ **GanttStates.tsx** (? KB) - Importé ligne 9 (GanttLoadingState, GanttErrorState)  
-✅ **MobileGanttChart.tsx** (? KB) - Importé ligne 10  
+✅ **MobileGanttChart.tsx** (? KB) - Importé ligne 10
 
 **Total utilisés confirmés** : **5 fichiers (~25 KB)**
 
 ### Module Kanban (utilisés directement)
 
 ✅ **KanbanBoard.tsx** (? KB) - Point d'entrée principal  
-✅ **MobileKanbanBoard.tsx** (? KB) - Importé  
+✅ **MobileKanbanBoard.tsx** (? KB) - Importé
 
 **Total utilisés confirmés** : **2 fichiers (~15 KB)**
 
@@ -249,7 +264,7 @@ src/components/vues/table/DocumentsColumn.tsx       # 6.2 KB
 
 ✅ **HRDashboardMinimal.tsx** (18 KB) - Composant principal  
 ✅ **useHRMinimal.ts** (8 KB) - Hook principal  
-✅ **HRPage.tsx** (6 KB) - Page route  
+✅ **HRPage.tsx** (6 KB) - Page route
 
 **Total utilisés confirmés** : **3 fichiers (~32 KB)**
 
@@ -260,7 +275,7 @@ src/components/vues/table/DocumentsColumn.tsx       # 6.2 KB
 ### ✅ ÉTAPE 1 : Backup (2 min)
 
 ```bash
-cd /home/awaleh/Bureau/Wadashaqeen-SaaS/gantt-flow-next
+cd /home/awaleh/Bureau/Wadashaqayn-SaaS/gantt-flow-next
 git add -A
 git commit -m "backup: avant nettoyage doublons et code mort"
 git checkout -b cleanup-doublons-phase1
@@ -288,9 +303,9 @@ rm -rf src/components/gantt/
 ```typescript
 // Éditer src/pages/HRPage.tsx
 // Ligne 10 : Remplacer
-import { HRDashboard } from "@/components/hr/HRDashboard";
+import { HRDashboard } from '@/components/hr/HRDashboard';
 // Par
-import { HRDashboardMinimal as HRDashboard } from "@/components/hr/HRDashboardMinimal";
+import { HRDashboardMinimal as HRDashboard } from '@/components/hr/HRDashboardMinimal';
 ```
 
 ### ✅ ÉTAPE 4 : Build & Test (3 min)
@@ -419,7 +434,7 @@ git merge cleanup-doublons-phase1
 
 ```bash
 # Copy-paste ce script
-cd /home/awaleh/Bureau/Wadashaqeen-SaaS/gantt-flow-next
+cd /home/awaleh/Bureau/Wadashaqayn-SaaS/gantt-flow-next
 git add -A
 git commit -m "backup: avant nettoyage doublons"
 git checkout -b cleanup-doublons-phase1
@@ -452,6 +467,7 @@ git merge cleanup-doublons-phase1
 ---
 
 **📝 Fichiers Créés** :
+
 - ✅ `ANALYSE_DOUBLONS_RH_TACHES_COMPLETE.md` (analyse détaillée)
 - ✅ `RAPPORT_FINAL_DOUBLONS_ACTION.md` (ce fichier - plan d'action)
 

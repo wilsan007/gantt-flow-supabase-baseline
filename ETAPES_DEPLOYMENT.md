@@ -31,7 +31,7 @@
 
 ```bash
 # Déployer les 3 fonctions
-cd /home/awaleh/Bureau/Wadashaqeen-SaaS/gantt-flow-next
+cd /home/awaleh/Bureau/Wadashaqayn-SaaS/gantt-flow-next
 
 supabase functions deploy handle-email-confirmation
 supabase functions deploy send-invitation

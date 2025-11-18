@@ -56,7 +56,7 @@ export interface PermissionEvaluation {
 
 /**
  * ========================================
- * CONFIGURATION DES PERMISSIONS - WADASHAQEEN
+ * CONFIGURATION DES PERMISSIONS - WADASHAQAYN
  * ========================================
  *
  * IMPORTANT: Les permissions ci-dessous sont des EXEMPLES DE BASE uniquement.

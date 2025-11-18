@@ -75,32 +75,34 @@ const ProjectDetailsDialogBase: React.FC<ProjectDetailsDialogProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[90vh] max-w-4xl overflow-y-auto">
+      <DialogContent className="max-h-[90vh] w-[95vw] max-w-4xl overflow-y-auto p-4 sm:p-6">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <Target className="h-5 w-5" />
-            Détails du Projet: {project.name}
+          <DialogTitle className="flex items-center gap-2 text-base sm:text-lg">
+            <Target className="h-4 w-4 sm:h-5 sm:w-5" />
+            <span className="truncate">Détails du Projet: {project.name}</span>
           </DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-6">
+        <div className="space-y-4 sm:space-y-6">
           {/* Informations générales */}
           <Card>
             <CardHeader>
               <CardTitle className="text-lg">Informations Générales</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="flex items-center gap-3">
+              <div className="flex flex-wrap items-center gap-2">
                 <Badge className={statusBadge.color}>{statusBadge.label}</Badge>
                 <Badge className={priorityBadge.color}>{priorityBadge.label}</Badge>
               </div>
 
-              <p className="text-muted-foreground">{project.description}</p>
+              {project.description && (
+                <p className="text-muted-foreground text-sm sm:text-base">{project.description}</p>
+              )}
 
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <div className="grid grid-cols-1 gap-3 sm:gap-4 md:grid-cols-2">
                 {project.start_date && project.end_date && (
                   <div className="flex items-center gap-2">
-                    <Calendar className="h-4 w-4 text-muted-foreground" />
+                    <Calendar className="text-muted-foreground h-4 w-4" />
                     <span className="text-sm">
                       {new Date(project.start_date).toLocaleDateString()} -{' '}
                       {new Date(project.end_date).toLocaleDateString()}
@@ -110,7 +112,7 @@ const ProjectDetailsDialogBase: React.FC<ProjectDetailsDialogProps> = ({
 
                 {(project.manager || project.owner_name) && (
                   <div className="flex items-center gap-2">
-                    <Users className="h-4 w-4 text-muted-foreground" />
+                    <Users className="text-muted-foreground h-4 w-4" />
                     <span className="text-sm">
                       Manager: {project.manager || project.owner_name}
                     </span>
@@ -119,13 +121,13 @@ const ProjectDetailsDialogBase: React.FC<ProjectDetailsDialogProps> = ({
 
                 {project.budget && (
                   <div className="flex items-center gap-2">
-                    <DollarSign className="h-4 w-4 text-muted-foreground" />
+                    <DollarSign className="text-muted-foreground h-4 w-4" />
                     <span className="text-sm">Budget: {project.budget.toLocaleString()} €</span>
                   </div>
                 )}
 
                 <div className="flex items-center gap-2">
-                  <Activity className="h-4 w-4 text-muted-foreground" />
+                  <Activity className="text-muted-foreground h-4 w-4" />
                   <span className="text-sm">Progression: {project.progress ?? 0}%</span>
                 </div>
               </div>
@@ -185,14 +187,14 @@ const ProjectDetailsDialogBase: React.FC<ProjectDetailsDialogProps> = ({
                 {mockHistory.map((entry, index) => (
                   <div
                     key={index}
-                    className="flex items-start gap-3 border-b border-border/50 pb-3 last:border-b-0"
+                    className="border-border/50 flex items-start gap-3 border-b pb-3 last:border-b-0"
                   >
                     <Badge variant="outline" className="text-xs">
                       {entry.user}
                     </Badge>
                     <div className="flex-1">
                       <p className="text-sm">{entry.action}</p>
-                      <p className="text-xs text-muted-foreground">
+                      <p className="text-muted-foreground text-xs">
                         {new Date(entry.date).toLocaleDateString()}
                       </p>
                     </div>

@@ -2,23 +2,26 @@
 
 ## 📊 Résumé Global
 
-**Système de design moderne** inspiré de **Linear, Monday.com, Notion, Asana** appliqué sur **TOUTE la plateforme** Wadashaqeen SaaS.
+**Système de design moderne** inspiré de **Linear, Monday.com, Notion, Asana** appliqué sur **TOUTE la plateforme** Wadashaqayn SaaS.
 
 ---
 
 ## 🎨 Fichiers Créés
 
 ### **1. Système de Couleurs**
+
 - ✅ **`src/index.css`** - Variables CSS (HSL) pour Light + Dark mode
   - Couleurs de statut : `status-todo`, `status-doing`, `status-blocked`, `status-done`, `status-review`, `status-backlog`
   - Couleurs de badges : 8 couleurs Notion-style (`badge-blue`, `badge-purple`, etc.)
   - Couleurs de priorité : `priority-high`, `priority-medium`, `priority-low`, `priority-critical`
 
 ### **2. Configuration Tailwind**
+
 - ✅ **`tailwind.config.ts`** - Extension avec nouvelles couleurs
   - Toutes les couleurs disponibles via classes : `bg-status-doing`, `text-badge-blue`, etc.
 
 ### **3. Composants Réutilisables**
+
 - ✅ **`src/components/ui/badges.tsx`** - 6 composants prêts à l'emploi :
   - `<PriorityBadge />` - Badges de priorité (Critical, High, Medium, Low)
   - `<StatusBadge />` - Badges de statut (Todo, Doing, Blocked, Done, Review, Backlog)
@@ -28,6 +31,7 @@
   - `<ProgressBar />` - Barre de progression colorée
 
 ### **4. Documentation**
+
 - ✅ **`DESIGN_SYSTEM_GUIDE.md`** - Guide complet d'utilisation avec exemples
 - ✅ **`DESIGN_SYSTEM_COMPLETE.md`** - Résumé et instructions
 
@@ -36,21 +40,26 @@
 ## 🔧 Composants Modifiés
 
 ### ✅ **1. KanbanBoardEnterprise.tsx**
+
 **Changements appliqués :**
+
 ```tsx
 // Avant
-color: 'bg-blue-100 border-blue-300'
+color: 'bg-blue-100 border-blue-300';
 
-// Après  
-color: 'bg-status-doing/10 border-status-doing'
+// Après
+color: 'bg-status-doing/10 border-status-doing';
 ```
+
 - Colonnes Kanban avec nouvelles couleurs
 - Cartes de métriques avec `<MetricCard />`
 - Badges de priorité avec `<PriorityBadge />`
 - Barres de progression colorées
 
 ### ✅ **2. TaskTableEnterprise.tsx**
+
 **Changements appliqués :**
+
 ```tsx
 // Avant
 <Badge variant="destructive">{task.priority}</Badge>
@@ -60,12 +69,15 @@ color: 'bg-status-doing/10 border-status-doing'
 <StatusBadge status={task.status} />
 <ProgressBar value={task.progress} color="blue" />
 ```
+
 - Stats avec `<MetricCard />` pour Total, Actives, Terminées, En retard
 - Badges de statut et priorité standardisés
 - Barres de progression modernes
 
 ### ✅ **3. ProjectDashboardEnterprise.tsx**
+
 **Changements appliqués :**
+
 ```tsx
 // Avant
 <Card>
@@ -89,11 +101,14 @@ color: 'bg-status-doing/10 border-status-doing'
   color="blue"
 />
 ```
+
 - Métriques dashboard uniformisées
 - Couleurs cohérentes sur tous les indicateurs
 
 ### ✅ **4. HRDashboardMinimal.tsx**
+
 **Changements appliqués :**
+
 ```tsx
 // Avant - 4 cartes avec code dupliqué
 <Card className="hover:shadow-md transition-shadow">
@@ -107,6 +122,7 @@ color: 'bg-status-doing/10 border-status-doing'
 <MetricCard label="Approuvées" value={stats.approvedRequests} icon={<CheckCircle />} color="green" />
 <MetricCard label="Présences" value={stats.todayAttendances} icon={<Clock />} color="blue" />
 ```
+
 - Dashboard RH modernisé
 - Cartes de stats cohérentes avec le reste de l'app
 
@@ -115,34 +131,37 @@ color: 'bg-status-doing/10 border-status-doing'
 ## 🎯 Palette de Couleurs Appliquée
 
 ### **Couleurs de Statut (Monday.com/Linear)**
-| Statut | Couleur Light | Couleur Dark | Utilisation |
-|--------|---------------|--------------|-------------|
-| `status-todo` | Gris 65% | Gris 70% | À faire |
-| `status-doing` | Bleu 50% | Bleu 80% | En cours ⚡ |
-| `status-blocked` | Rouge 55% | Rouge 75% | Bloqué 🚫 |
-| `status-done` | Vert 36% | Vert 65% | Terminé ✅ |
-| `status-review` | Jaune 56% | Jaune 75% | En révision 👀 |
-| `status-backlog` | Gris 75% | Gris 60% | Backlog 📦 |
+
+| Statut           | Couleur Light | Couleur Dark | Utilisation    |
+| ---------------- | ------------- | ------------ | -------------- |
+| `status-todo`    | Gris 65%      | Gris 70%     | À faire        |
+| `status-doing`   | Bleu 50%      | Bleu 80%     | En cours ⚡    |
+| `status-blocked` | Rouge 55%     | Rouge 75%    | Bloqué 🚫      |
+| `status-done`    | Vert 36%      | Vert 65%     | Terminé ✅     |
+| `status-review`  | Jaune 56%     | Jaune 75%    | En révision 👀 |
+| `status-backlog` | Gris 75%      | Gris 60%     | Backlog 📦     |
 
 ### **Couleurs de Badges (Notion)**
-| Badge | Couleur Light | Couleur Dark | Usage |
-|-------|---------------|--------------|-------|
-| `badge-blue` | Bleu 50% | Bleu 80% | Frontend, Technique |
-| `badge-purple` | Violet 58% | Violet 80% | Design, UI/UX |
-| `badge-pink` | Rose 52% | Rose 75% | Important, Urgent |
-| `badge-green` | Vert 36% | Vert 65% | Validé, OK |
-| `badge-yellow` | Jaune 56% | Jaune 75% | En cours, Attention |
-| `badge-orange` | Orange 50% | Orange 75% | Temporaire, Warning |
-| `badge-red` | Rouge 55% | Rouge 75% | Erreur, Bloquant |
-| `badge-gray` | Gris 65% | Gris 70% | Neutre, Info |
+
+| Badge          | Couleur Light | Couleur Dark | Usage               |
+| -------------- | ------------- | ------------ | ------------------- |
+| `badge-blue`   | Bleu 50%      | Bleu 80%     | Frontend, Technique |
+| `badge-purple` | Violet 58%    | Violet 80%   | Design, UI/UX       |
+| `badge-pink`   | Rose 52%      | Rose 75%     | Important, Urgent   |
+| `badge-green`  | Vert 36%      | Vert 65%     | Validé, OK          |
+| `badge-yellow` | Jaune 56%     | Jaune 75%    | En cours, Attention |
+| `badge-orange` | Orange 50%    | Orange 75%   | Temporaire, Warning |
+| `badge-red`    | Rouge 55%     | Rouge 75%    | Erreur, Bloquant    |
+| `badge-gray`   | Gris 65%      | Gris 70%     | Neutre, Info        |
 
 ### **Couleurs de Priorité**
-| Priorité | Couleur | Usage |
-|----------|---------|-------|
+
+| Priorité            | Couleur    | Usage       |
+| ------------------- | ---------- | ----------- |
 | `priority-critical` | Rose foncé | 🔥 Critique |
-| `priority-high` | Rouge | ⚠️ Haute |
-| `priority-medium` | Orange | ➡️ Moyenne |
-| `priority-low` | Vert | ⬇️ Basse |
+| `priority-high`     | Rouge      | ⚠️ Haute    |
+| `priority-medium`   | Orange     | ➡️ Moyenne  |
+| `priority-low`      | Vert       | ⬇️ Basse    |
 
 ---
 
@@ -151,18 +170,22 @@ color: 'bg-status-doing/10 border-status-doing'
 ### **Avant → Après**
 
 #### **1. Contraste**
+
 - **Avant** : Couleurs pâles difficiles à distinguer
 - **Après** : Couleurs vives avec contraste optimal (WCAG AA+)
 
 #### **2. Cohérence**
+
 - **Avant** : Chaque composant utilisait des couleurs différentes
 - **Après** : Palette unifiée sur toute l'application
 
 #### **3. Accessibilité**
+
 - **Avant** : Ratio de contraste < 3:1 sur certains éléments
 - **Après** : Ratio ≥ 4.5:1 partout + icônes pour daltoniens
 
 #### **4. Dark Mode**
+
 - **Avant** : Couleurs fixes, peu lisibles en dark mode
 - **Après** : Couleurs adaptatives automatiques
 
@@ -171,6 +194,7 @@ color: 'bg-status-doing/10 border-status-doing'
 ## 🚀 Comment Utiliser
 
 ### **Option 1 : Classes Tailwind Directes**
+
 ```tsx
 // Badges de statut
 <span className="px-3 py-1 rounded-md bg-status-doing text-white font-medium">
@@ -189,14 +213,15 @@ color: 'bg-status-doing/10 border-status-doing'
 ```
 
 ### **Option 2 : Composants Prêts à l'Emploi**
+
 ```tsx
-import { 
-  PriorityBadge, 
-  StatusBadge, 
-  Label, 
-  MetricCard, 
+import {
+  PriorityBadge,
+  StatusBadge,
+  Label,
+  MetricCard,
   ProgressBar,
-  EmployeeBadge 
+  EmployeeBadge
 } from '@/components/ui/badges';
 
 // Badges
@@ -205,7 +230,7 @@ import {
 <Label color="blue">Frontend</Label>
 
 // Dashboard
-<MetricCard 
+<MetricCard
   label="Total Tâches"
   value={42}
   subtitle="Toutes les tâches"
@@ -226,16 +251,19 @@ import {
 ## 📊 Métriques de Performance
 
 ### **Code Optimisé**
+
 - **Avant** : ~450 lignes de code dupliqué pour les cartes de stats
 - **Après** : ~50 lignes grâce aux composants réutilisables
 - **Gain** : **89% de réduction de code**
 
 ### **Maintenabilité**
+
 - **Avant** : Modifier une couleur = 50+ fichiers à toucher
 - **Après** : Modifier une couleur = 1 seule variable CSS
 - **Gain** : **98% de temps économisé** sur les changements de style
 
 ### **Bundle Size**
+
 - **Avant** : Styles inline dupliqués
 - **Après** : Styles centralisés + tree-shaking Tailwind
 - **Gain** : **~15KB** de CSS en moins
@@ -247,6 +275,7 @@ import {
 Si vous voulez aller plus loin, ces composants peuvent aussi être mis à jour :
 
 ### **Dashboards**
+
 - `HRDashboard.tsx`
 - `HRDashboardAnalytics.tsx`
 - `HRDashboardOptimized.tsx`
@@ -254,10 +283,13 @@ Si vous voulez aller plus loin, ces composants peuvent aussi être mis à jour :
 - `ProjectDashboardAnalytics.tsx`
 
 ### **Charts**
+
 - `GanttChartEnterprise.tsx` - Barres de tâches avec couleurs de statut
 
 ### **Application**
+
 Il suffit de remplacer :
+
 ```tsx
 // Avant
 <div className="text-blue-600">En cours</div>
@@ -271,6 +303,7 @@ Il suffit de remplacer :
 ## ✅ Checklist de Vérification
 
 ### **Fonctionnalités**
+
 - [x] Couleurs CSS créées (Light + Dark)
 - [x] Config Tailwind étendue
 - [x] Composants UI créés
@@ -283,6 +316,7 @@ Il suffit de remplacer :
 - [ ] Autres dashboards RH (optionnel)
 
 ### **Tests**
+
 - [x] Light mode fonctionnel
 - [x] Dark mode fonctionnel
 - [x] Responsive design
@@ -293,12 +327,12 @@ Il suffit de remplacer :
 
 ## 🏆 Résultat Final
 
-**L'application Wadashaqeen suit maintenant les standards des leaders SaaS :**
+**L'application Wadashaqayn suit maintenant les standards des leaders SaaS :**
 
 ✅ **Linear** - Couleurs vives et design minimaliste  
 ✅ **Monday.com** - Badges de statut colorés et visuels  
 ✅ **Notion** - Tags multicolores et système de labels  
-✅ **Asana** - Cartes de métriques et indicateurs clairs  
+✅ **Asana** - Cartes de métriques et indicateurs clairs
 
 **Le design system est complet, documenté et prêt pour production !** 🎉
 

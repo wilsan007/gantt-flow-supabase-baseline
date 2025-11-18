@@ -9,6 +9,7 @@ import { Loader2, UserPlus, Building, Mail, User, Lock, Eye, EyeOff } from 'luci
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useMultiplePlaceholderHandler } from '@/hooks/usePlaceholderHandler';
+import { BrandedLoadingScreen } from '@/components/layout/BrandedLoadingScreen';
 
 interface SignupForm {
   email: string;
@@ -487,14 +488,7 @@ export const TenantOwnerSignup: React.FC = () => {
   };
 
   if (validatingToken) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <div className="text-center">
-          <Loader2 className="mx-auto mb-4 h-8 w-8 animate-spin" />
-          <p>Validation de l'invitation...</p>
-        </div>
-      </div>
-    );
+    return <BrandedLoadingScreen appName="Wadashaqayn" logoSrc="/logo-w.svg" />;
   }
 
   if (!token || !invitationData) {
@@ -516,14 +510,14 @@ export const TenantOwnerSignup: React.FC = () => {
             <span>Créer votre entreprise</span>
           </CardTitle>
           <CardDescription className="text-sm sm:text-base">
-            Finalisez votre inscription sur Wadashaqeen
+            Finalisez votre inscription sur Wadashaqayn
           </CardDescription>
         </CardHeader>
 
         <CardContent className="space-y-4 p-5 sm:space-y-5 sm:p-6">
           <Alert className="border-blue-200 bg-blue-50/50">
             <UserPlus className="h-4 w-4 shrink-0" />
-            <AlertDescription className="break-words text-xs sm:text-sm">
+            <AlertDescription className="text-xs break-words sm:text-sm">
               <strong>Invitation pour :</strong> {invitationData.full_name}
               <br />
               <strong>Email :</strong> {invitationData.email}
@@ -535,14 +529,14 @@ export const TenantOwnerSignup: React.FC = () => {
               Email *
             </Label>
             <div className="relative">
-              <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <Mail className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
               <Input
                 id="email"
                 type="email"
                 value={form.email}
                 onChange={e => handleInputChange('email', e.target.value)}
                 disabled={true}
-                className="h-11 bg-muted pl-10 text-base sm:h-10 sm:text-sm"
+                className="bg-muted h-11 pl-10 text-base sm:h-10 sm:text-sm"
               />
             </div>
           </div>
@@ -552,7 +546,7 @@ export const TenantOwnerSignup: React.FC = () => {
               Nom complet *
             </Label>
             <div className="relative">
-              <User className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <User className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
               <Input
                 id="fullName"
                 type="text"
@@ -569,7 +563,7 @@ export const TenantOwnerSignup: React.FC = () => {
               Nom de l'entreprise *
             </Label>
             <div className="relative">
-              <Building className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <Building className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
               <Input
                 id="companyName"
                 type="text"
@@ -588,7 +582,7 @@ export const TenantOwnerSignup: React.FC = () => {
               Mot de passe *
             </Label>
             <div className="relative">
-              <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <Lock className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
               <Input
                 id="password"
                 type={showPassword ? 'text' : 'password'}
@@ -597,13 +591,13 @@ export const TenantOwnerSignup: React.FC = () => {
                 onChange={e => handleInputChange('password', e.target.value)}
                 onFocus={() => handleFocus('password')}
                 disabled={isLoading}
-                className="h-11 pl-10 pr-12 text-base sm:h-10 sm:pr-10 sm:text-sm"
+                className="h-11 pr-12 pl-10 text-base sm:h-10 sm:pr-10 sm:text-sm"
               />
               <Button
                 type="button"
                 variant="ghost"
                 size="sm"
-                className="absolute right-0 top-1/2 h-10 w-10 -translate-y-1/2 p-0 hover:bg-transparent sm:h-9 sm:w-9"
+                className="absolute top-1/2 right-0 h-10 w-10 -translate-y-1/2 p-0 hover:bg-transparent sm:h-9 sm:w-9"
                 onClick={() => setShowPassword(!showPassword)}
               >
                 {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -619,7 +613,7 @@ export const TenantOwnerSignup: React.FC = () => {
               Confirmer le mot de passe *
             </Label>
             <div className="relative">
-              <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <Lock className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
               <Input
                 id="confirmPassword"
                 type={showConfirmPassword ? 'text' : 'password'}
@@ -628,13 +622,13 @@ export const TenantOwnerSignup: React.FC = () => {
                 onChange={e => handleInputChange('confirmPassword', e.target.value)}
                 onFocus={() => handleFocus('confirmPassword')}
                 disabled={isLoading}
-                className="h-11 pl-10 pr-12 text-base sm:h-10 sm:pr-10 sm:text-sm"
+                className="h-11 pr-12 pl-10 text-base sm:h-10 sm:pr-10 sm:text-sm"
               />
               <Button
                 type="button"
                 variant="ghost"
                 size="sm"
-                className="absolute right-0 top-1/2 h-10 w-10 -translate-y-1/2 p-0 hover:bg-transparent sm:h-9 sm:w-9"
+                className="absolute top-1/2 right-0 h-10 w-10 -translate-y-1/2 p-0 hover:bg-transparent sm:h-9 sm:w-9"
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
               >
                 {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -663,7 +657,7 @@ export const TenantOwnerSignup: React.FC = () => {
             )}
           </Button>
 
-          <div className="pt-3 text-center text-xs text-muted-foreground sm:pt-2 sm:text-sm">
+          <div className="text-muted-foreground pt-3 text-center text-xs sm:pt-2 sm:text-sm">
             <p>En créant votre compte, vous acceptez nos conditions d'utilisation</p>
           </div>
         </CardContent>

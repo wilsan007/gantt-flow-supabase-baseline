@@ -36,8 +36,8 @@ $$;
 
 -- Solution 2: get_current_tenant_id() utilise profiles.tenant_id
 CREATE FUNCTION get_current_tenant_id() AS $$
-  SELECT tenant_id 
-  FROM profiles 
+  SELECT tenant_id
+  FROM profiles
   WHERE user_id = auth.uid();  -- ✅ Source de vérité
 $$;
 ```
@@ -47,9 +47,11 @@ $$;
 ## 📦 **3 Migrations Créées**
 
 ### **Migration 225 : Fonctions de Diagnostic**
+
 **Fichier** : `20250111000225_fix_user_access_logic.sql`
 
 **Contenu** :
+
 - ✅ `get_user_tenant_from_profile()` - Récupère tenant depuis profiles
 - ✅ `get_user_roles_complete()` - Rôles via user_roles.role_id → roles
 - ✅ `get_user_permissions_complete()` - Permissions via flux complet
@@ -58,6 +60,7 @@ $$;
 - ✅ `diagnose_user_access_v2()` - Diagnostic complet v2
 
 **Usage** :
+
 ```sql
 -- Diagnostic complet d'un utilisateur
 SELECT * FROM diagnose_user_access_v2('user-id-here');
@@ -66,15 +69,18 @@ SELECT * FROM diagnose_user_access_v2('user-id-here');
 ---
 
 ### **Migration 226 : Correction Fonctions Core + Policies Principales**
+
 **Fichier** : `20250111000226_update_all_policies_with_correct_logic.sql`
 
 **Fonctions Corrigées** :
+
 1. ✅ `get_current_tenant_id()` → Utilise `profiles.tenant_id`
 2. ✅ `user_has_role()` → Utilise `user_roles.role_id → roles.name`
 3. ✅ `is_super_admin()` → Utilise user_has_role corrigé
 4. ✅ `has_global_access()` → Alias pour is_super_admin
 
 **Policies Recréées (22+)** :
+
 - ✅ **Employees** (3 policies)
 - ✅ **Absences** (3 policies)
 - ✅ **Documents** (2 policies)
@@ -88,31 +94,38 @@ SELECT * FROM diagnose_user_access_v2('user-id-here');
 ---
 
 ### **Migration 227 : Correction Policies Restantes**
+
 **Fichier** : `20250111000227_update_remaining_policies.sql`
 
 **Modules Couverts (50+ policies)** :
 
 #### **Recrutement**
+
 - ✅ `job_postings` (2 policies)
 - ✅ `applications` (2 policies)
 - ✅ `interviews` (2 policies)
 
 #### **Formations**
+
 - ✅ `training_programs` (2 policies)
 - ✅ `training_enrollments` (2 policies)
 
 #### **Évaluations**
+
 - ✅ `performance_reviews` (2 policies)
 
 #### **Finances**
+
 - ✅ `expenses` (3 policies)
 - ✅ `budgets` (2 policies)
 - ✅ `invoices` (2 policies)
 
 #### **Présence**
+
 - ✅ `attendance` (3 policies)
 
 #### **Invitations**
+
 - ✅ `invitations` (2 policies)
 
 ---
@@ -137,11 +150,11 @@ user_roles.user_id → user_roles.role_id → roles.id → roles.name
 
 ```sql
 -- Flux complet (4 tables)
-user_roles.role_id 
-  → roles.id 
-  → role_permissions.role_id 
-  → role_permissions.permission_id 
-  → permissions.id 
+user_roles.role_id
+  → roles.id
+  → role_permissions.role_id
+  → role_permissions.permission_id
+  → permissions.id
   → permissions.name
 ```
 
@@ -150,12 +163,14 @@ user_roles.role_id
 ## 📊 **Impact des Corrections**
 
 ### **Avant (Problèmes)**
+
 - ❌ **0% des policies fonctionnelles** (logique incorrecte)
 - ❌ **Tous les utilisateurs bloqués** (HTTP 406)
 - ❌ **user_has_role() retourne toujours FALSE**
 - ❌ **get_current_tenant_id() retourne NULL**
 
 ### **Après (Solutions)**
+
 - ✅ **100% des policies fonctionnelles** (logique correcte)
 - ✅ **Accès utilisateurs restauré** (selon leurs rôles)
 - ✅ **user_has_role() fonctionne correctement**
@@ -207,8 +222,9 @@ supabase db push  # Déploie 20250111000227_update_remaining_policies.sql
 ```
 
 **Ou déployer tout en une fois** :
+
 ```bash
-cd /home/awaleh/Bureau/Wadashaqeen-SaaS/gantt-flow-next
+cd /home/awaleh/Bureau/Wadashaqayn-SaaS/gantt-flow-next
 supabase db push
 ```
 
@@ -240,6 +256,7 @@ SELECT * FROM diagnose_user_access_v2('5c5731ce-75d0-4455-8184-bc42c626cb17');
 ```
 
 **Résultat Attendu (Utilisateur Complet)** :
+
 ```
 check_name     | status | details
 ---------------+--------+--------------------------------------------------
@@ -271,12 +288,14 @@ SELECT COUNT(*) FROM projects;
 ## 📋 **Checklist de Vérification**
 
 ### **Avant Déploiement**
+
 - [x] Migration 225 créée (fonctions diagnostic)
 - [x] Migration 226 créée (fonctions core + policies principales)
 - [x] Migration 227 créée (policies restantes)
 - [x] Documentation complète créée
 
 ### **Après Déploiement**
+
 - [ ] Migration 225 déployée avec succès
 - [ ] Migration 226 déployée avec succès
 - [ ] Migration 227 déployée avec succès
@@ -290,12 +309,14 @@ SELECT COUNT(*) FROM projects;
 ## 🎯 **Résultat Final Attendu**
 
 ### **Fonctions Core (4)**
+
 - ✅ `get_current_tenant_id()` → Utilise profiles.tenant_id
 - ✅ `user_has_role()` → Utilise user_roles.role_id → roles.name
 - ✅ `is_super_admin()` → Wrapper autour de user_has_role
 - ✅ `has_global_access()` → Alias pour is_super_admin
 
 ### **Fonctions Diagnostic (6)**
+
 - ✅ `get_user_tenant_from_profile()`
 - ✅ `get_user_roles_complete()`
 - ✅ `get_user_permissions_complete()`
@@ -304,6 +325,7 @@ SELECT COUNT(*) FROM projects;
 - ✅ `diagnose_user_access_v2()`
 
 ### **Policies RLS (70+)**
+
 - ✅ **Module RH** : employees, absences, documents, payrolls, attendance
 - ✅ **Module Projets** : projects, tasks
 - ✅ **Module Recrutement** : job_postings, applications, interviews
@@ -330,12 +352,12 @@ SELECT COUNT(*) FROM projects;
 
 ```sql
 -- 1. Vérifier que les migrations sont déployées
-SELECT * FROM supabase_migrations 
-WHERE version >= '20250111000225' 
+SELECT * FROM supabase_migrations
+WHERE version >= '20250111000225'
 ORDER BY version;
 
 -- 2. Vérifier les fonctions
-SELECT proname FROM pg_proc 
+SELECT proname FROM pg_proc
 WHERE proname IN ('get_current_tenant_id', 'user_has_role', 'is_super_admin');
 
 -- 3. Diagnostic utilisateur
@@ -350,6 +372,7 @@ SELECT * FROM diagnose_user_access_v2('user-id-here');
 ## 🎊 **Conclusion**
 
 **Cette correction massive garantit que** :
+
 - ✅ Toutes les policies RLS utilisent la **vraie structure** de la base de données
 - ✅ Le flux de données est **cohérent** partout (profiles → user_roles → roles → permissions)
 - ✅ Les utilisateurs ont **accès aux données** selon leurs rôles réels

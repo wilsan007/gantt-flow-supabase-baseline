@@ -102,7 +102,7 @@ export const AccessDenied: React.FC<AccessDeniedProps> = ({
   requiredRole,
   requiredPermission,
   currentRole,
-  contactEmail = 'admin@wadashaqeen.com',
+  contactEmail = 'admin@wadashaqayn.com',
   onGoBack,
   showContactButton = true,
 }) => {
@@ -142,9 +142,9 @@ export const AccessDenied: React.FC<AccessDeniedProps> = ({
 
           {/* Informations sur le rôle actuel */}
           {currentRole && (
-            <div className="rounded-lg bg-muted p-4">
+            <div className="bg-muted rounded-lg p-4">
               <p className="mb-2 text-sm font-medium">Informations sur votre compte :</p>
-              <div className="space-y-1 text-sm text-muted-foreground">
+              <div className="text-muted-foreground space-y-1 text-sm">
                 <p>
                   • <strong>Rôle actuel :</strong> {currentRole}
                 </p>
@@ -178,7 +178,7 @@ export const AccessDenied: React.FC<AccessDeniedProps> = ({
           </div>
 
           {/* Note de sécurité */}
-          <p className="text-center text-xs text-muted-foreground">
+          <p className="text-muted-foreground text-center text-xs">
             Ces restrictions sont en place pour protéger les données sensibles de votre
             organisation.
           </p>

@@ -109,7 +109,7 @@ npm run dev
 1. Aller sur [Azure Portal](https://portal.azure.com/)
 2. **Azure Active Directory** → **App registrations**
 3. **New registration**
-   - Name : Wadashaqeen
+   - Name : Wadashaqayn
    - Redirect URI : `https://qliinxtanjdnwxlvnxji.supabase.co/auth/v1/callback`
 4. **Certificates & secrets** → **New client secret**
 5. **Copier** :
@@ -185,15 +185,15 @@ npm run dev
 Pour la production, ajouter dans votre configuration Nginx :
 
 ```nginx
-# /etc/nginx/sites-available/wadashaqeen.com
+# /etc/nginx/sites-available/wadashaqayn.com
 
 server {
     listen 443 ssl http2;
-    server_name wadashaqeen.com;
+    server_name wadashaqayn.com;
 
     # Headers sécurité
     add_header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https: blob:; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' https://qliinxtanjdnwxlvnxji.supabase.co wss://qliinxtanjdnwxlvnxji.supabase.co; frame-ancestors 'none'; base-uri 'self'; form-action 'self';" always;
-    
+
     add_header X-Frame-Options "DENY" always;
     add_header X-Content-Type-Options "nosniff" always;
     add_header X-XSS-Protection "1; mode=block" always;
@@ -219,6 +219,7 @@ server {
 ## ✅ Checklist d'Implémentation
 
 ### **Phase 1 : Installation (30 min)**
+
 ```
 [ ] npm install qrcode.react
 [ ] Vérifier dépendances
@@ -226,6 +227,7 @@ server {
 ```
 
 ### **Phase 2 : MFA/2FA (2 jours)**
+
 ```
 [ ] Vérifier MFA activé dans Supabase
 [ ] Tester composant MFASetup
@@ -236,6 +238,7 @@ server {
 ```
 
 ### **Phase 3 : OAuth (2 jours)**
+
 ```
 Google OAuth:
 [ ] Créer projet Google Cloud
@@ -253,6 +256,7 @@ Microsoft OAuth:
 ```
 
 ### **Phase 4 : CSP Headers (1 heure)**
+
 ```
 [ ] Vérifier vite.config.ts modifié
 [ ] Tester en dev (pas d'erreurs console)
@@ -262,6 +266,7 @@ Microsoft OAuth:
 ```
 
 ### **Phase 5 : Tests Globaux (1 jour)**
+
 ```
 [ ] Tous les flux testés en dev
 [ ] Tests manuels complets
@@ -279,6 +284,7 @@ Microsoft OAuth:
 ### **Problème 1 : MFA ne s'active pas**
 
 **Diagnostic** :
+
 ```typescript
 // Dans console navigateur
 const { data } = await supabase.auth.mfa.listFactors();
@@ -286,6 +292,7 @@ console.log(data);
 ```
 
 **Solutions** :
+
 - Vérifier que Supabase est à jour
 - Nettoyer cache navigateur
 - Vérifier que l'email est confirmé
@@ -295,10 +302,12 @@ console.log(data);
 ### **Problème 2 : OAuth ne redirige pas**
 
 **Diagnostic** :
+
 - Vérifier redirect URI exact dans Google/Azure
 - Format : `https://[PROJECT-REF].supabase.co/auth/v1/callback`
 
 **Solutions** :
+
 - Vérifier URL exacte dans Supabase Dashboard → Settings
 - Pas de trailing slash
 - HTTPS obligatoire (http://localhost OK en dev)
@@ -308,11 +317,13 @@ console.log(data);
 ### **Problème 3 : Erreurs CSP dans console**
 
 **Diagnostic** :
+
 ```
 Refused to load script from '...' because it violates CSP directive
 ```
 
 **Solutions** :
+
 - Ajouter le domaine manquant dans CSP
 - Exemple : Si erreur avec `cdn.example.com`, ajouter dans `script-src`
 
@@ -323,6 +334,7 @@ Refused to load script from '...' because it violates CSP directive
 ### **Critères de Succès**
 
 ✅ **MFA** :
+
 - [ ] Setup MFA fonctionne
 - [ ] QR Code s'affiche
 - [ ] Vérification code fonctionne
@@ -330,6 +342,7 @@ Refused to load script from '...' because it violates CSP directive
 - [ ] Désactivation MFA fonctionne
 
 ✅ **OAuth** :
+
 - [ ] Boutons Google/Microsoft affichés
 - [ ] Login Google fonctionne
 - [ ] Login Microsoft fonctionne
@@ -337,6 +350,7 @@ Refused to load script from '...' because it violates CSP directive
 - [ ] Profil créé automatiquement
 
 ✅ **CSP** :
+
 - [ ] Aucune erreur console
 - [ ] securityheaders.com = A/A+
 - [ ] App fonctionne normalement
@@ -371,11 +385,13 @@ Après avoir validé ces 3 éléments critiques, voir :
 ## 📞 Support
 
 **Questions ?**
+
 - Documentation : `SECURITY_ANALYSIS_PART1.md`
 - Détails techniques : `SECURITY_ACTION_PLAN.md`
 - Comparaisons : `SECURITY_VISUAL_COMPARISON.md`
 
 **Problèmes ?**
+
 - Vérifier console navigateur (F12)
 - Vérifier Supabase Dashboard logs
 - Consulter section "Résolution de Problèmes" ci-dessus

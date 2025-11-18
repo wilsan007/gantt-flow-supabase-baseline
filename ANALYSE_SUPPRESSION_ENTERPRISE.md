@@ -237,4 +237,4 @@ src/components/vues/STRUCTURE.txt
 
 <function_calls>
 <invoke name="grep_search">
-<parameter name="SearchPath">/home/awaleh/Bureau/Wadashaqeen-SaaS/gantt-flow-next/src
+<parameter name="SearchPath">/home/awaleh/Bureau/Wadashaqayn-SaaS/gantt-flow-next/src

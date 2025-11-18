@@ -5,15 +5,18 @@
 ### **Problème Résolu : Colonne `category` n'existe pas**
 
 **Erreur** :
+
 ```
 ERROR: 42703: column p.category does not exist
 ```
 
 **Cause** :
+
 - La table `permissions` n'a **pas de colonne `category`**
 - Elle a : `resource` et `action` à la place
 
 **Solution** :
+
 - ✅ Migration 225 corrigée : `p.category` → `p.resource` et `p.action`
 - ✅ Documentation mise à jour : FLUX_COMPLET_ROLES_PERMISSIONS.md
 - ✅ Documentation mise à jour : LOGIQUE-PERMISSIONS-DYNAMIQUE.md
@@ -40,9 +43,11 @@ CREATE TABLE permissions (
 ## 🎯 **3 Migrations Prêtes au Déploiement**
 
 ### **Migration 225 : Fonctions de Diagnostic** ✅
+
 **Fichier** : `20250111000225_fix_user_access_logic.sql`
 
 **Fonctions Créées** :
+
 1. `get_user_tenant_from_profile()` - Récupère tenant depuis profiles
 2. `get_user_roles_complete()` - Rôles via user_roles.role_id → roles
 3. `get_user_permissions_complete()` - Permissions (avec resource/action)
@@ -55,9 +60,11 @@ CREATE TABLE permissions (
 ---
 
 ### **Migration 226 : Fonctions Core + Policies Principales** ✅
+
 **Fichier** : `20250111000226_update_all_policies_with_correct_logic.sql`
 
 **Fonctions Corrigées** :
+
 1. `get_current_tenant_id()` → Utilise `profiles.tenant_id`
 2. `user_has_role()` → Utilise `user_roles.role_id → roles.name`
 3. `is_super_admin()` → Wrapper autour de user_has_role
@@ -70,6 +77,7 @@ CREATE TABLE permissions (
 ---
 
 ### **Migration 227 : Policies Restantes** ✅
+
 **Fichier** : `20250111000227_update_remaining_policies.sql`
 
 **Modules Couverts** : 50+ policies (recrutement, formations, évaluations, finances, présence, invitations)
@@ -81,11 +89,12 @@ CREATE TABLE permissions (
 ## 🚀 **Commande de Déploiement**
 
 ```bash
-cd /home/awaleh/Bureau/Wadashaqeen-SaaS/gantt-flow-next
+cd /home/awaleh/Bureau/Wadashaqayn-SaaS/gantt-flow-next
 supabase db push
 ```
 
 **Ordre d'exécution automatique** :
+
 1. Migration 225 (fonctions diagnostic)
 2. Migration 226 (fonctions core + policies principales)
 3. Migration 227 (policies restantes)
@@ -118,6 +127,7 @@ SELECT * FROM diagnose_user_access_v2('5c5731ce-75d0-4455-8184-bc42c626cb17');
 ```
 
 **Résultat Attendu** :
+
 ```
 check_name     | status | details
 ---------------+--------+--------------------------------------------------
@@ -138,6 +148,7 @@ SELECT * FROM get_user_permissions_complete('5c5731ce-75d0-4455-8184-bc42c626cb1
 ```
 
 **Colonnes Retournées** :
+
 - `permission_id` (UUID)
 - `permission_name` (TEXT)
 - `permission_description` (TEXT)
@@ -165,6 +176,7 @@ SELECT COUNT(*) FROM projects;
 ## 📋 **Checklist Finale**
 
 ### **Avant Déploiement**
+
 - [x] Migration 225 corrigée (p.category → p.resource + p.action)
 - [x] Migration 226 vérifiée (pas de p.category)
 - [x] Migration 227 vérifiée (pas de p.category)
@@ -172,6 +184,7 @@ SELECT COUNT(*) FROM projects;
 - [x] Documentation mise à jour (LOGIQUE-PERMISSIONS-DYNAMIQUE.md)
 
 ### **Après Déploiement**
+
 - [ ] Migration 225 déployée avec succès
 - [ ] Migration 226 déployée avec succès
 - [ ] Migration 227 déployée avec succès
@@ -186,12 +199,14 @@ SELECT COUNT(*) FROM projects;
 ## 🎯 **Résultat Final Attendu**
 
 ### **Fonctions Core (4)**
+
 - ✅ `get_current_tenant_id()` → profiles.tenant_id
 - ✅ `user_has_role()` → user_roles.role_id → roles.name
 - ✅ `is_super_admin()` → Wrapper user_has_role
 - ✅ `has_global_access()` → Alias is_super_admin
 
 ### **Fonctions Diagnostic (6)**
+
 - ✅ `get_user_tenant_from_profile()`
 - ✅ `get_user_roles_complete()`
 - ✅ `get_user_permissions_complete()` ← **Corrigée (resource/action)**
@@ -200,6 +215,7 @@ SELECT COUNT(*) FROM projects;
 - ✅ `diagnose_user_access_v2()` ← **Corrigée (resource/action)**
 
 ### **Policies RLS (70+)**
+
 - ✅ Toutes les policies utilisent la logique correcte
 - ✅ Aucune référence à `p.category` (n'existe pas)
 - ✅ 100% des modules couverts
@@ -220,13 +236,14 @@ SELECT COUNT(*) FROM projects;
 
 ```bash
 # Commande unique pour tout déployer
-cd /home/awaleh/Bureau/Wadashaqeen-SaaS/gantt-flow-next
+cd /home/awaleh/Bureau/Wadashaqayn-SaaS/gantt-flow-next
 supabase db push
 ```
 
 **Durée estimée** : 30-60 secondes
 
 **Après déploiement** :
+
 1. Tester les fonctions SQL
 2. Exécuter le diagnostic utilisateur
 3. Vérifier l'accès aux données

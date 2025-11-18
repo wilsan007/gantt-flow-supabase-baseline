@@ -24,6 +24,7 @@ auth.jwt() ->> 'user_role' = 'super_admin'
 ```
 
 **Exemple concret** :
+
 - Table avec **10,000 lignes**
 - Requête Super Admin : `SELECT * FROM absence_types`
 - **Avant** : `auth.jwt()` appelé **10,000 fois** → ~500ms
@@ -47,6 +48,7 @@ $$;
 ```
 
 **Avantages** :
+
 - ✅ Évaluation unique par requête (STABLE)
 - ✅ Code réutilisable et maintenable
 - ✅ Performance optimale garantie
@@ -54,6 +56,7 @@ $$;
 ### **2. Policies Optimisées (40+)**
 
 **Tables concernées (11)** :
+
 1. `absence_types` (4 policies)
 2. `alert_types` (4 policies)
 3. `alert_type_solutions` (4 policies)
@@ -71,13 +74,13 @@ $$;
 
 ```sql
 -- AVANT (lent)
-CREATE POLICY "Only_super_admin_delete_absence_types" 
-ON public.absence_types FOR DELETE TO authenticated 
+CREATE POLICY "Only_super_admin_delete_absence_types"
+ON public.absence_types FOR DELETE TO authenticated
 USING ((auth.jwt() ->> 'user_role') = 'super_admin');
 
 -- APRÈS (rapide)
-CREATE POLICY "Only_super_admin_delete_absence_types" 
-ON public.absence_types FOR DELETE TO authenticated 
+CREATE POLICY "Only_super_admin_delete_absence_types"
+ON public.absence_types FOR DELETE TO authenticated
 USING (is_super_admin_optimized());
 ```
 
@@ -87,21 +90,21 @@ USING (is_super_admin_optimized());
 
 ### **Performance**
 
-| Métrique | Avant | Après | Amélioration |
-|----------|-------|-------|--------------|
-| **Appels auth.jwt()** | N (par ligne) | 1 (par requête) | -99.99% |
-| **Temps requête (10K lignes)** | ~500ms | ~5ms | 100x |
-| **Temps requête (100K lignes)** | ~5s | ~5ms | 1000x |
-| **Charge CPU** | Élevée | Minimale | -90%+ |
+| Métrique                        | Avant         | Après           | Amélioration |
+| ------------------------------- | ------------- | --------------- | ------------ |
+| **Appels auth.jwt()**           | N (par ligne) | 1 (par requête) | -99.99%      |
+| **Temps requête (10K lignes)**  | ~500ms        | ~5ms            | 100x         |
+| **Temps requête (100K lignes)** | ~5s           | ~5ms            | 1000x        |
+| **Charge CPU**                  | Élevée        | Minimale        | -90%+        |
 
 ### **Scalabilité**
 
-| Taille Table | Avant | Après | Gain |
-|--------------|-------|-------|------|
-| 1,000 lignes | 50ms | 5ms | 10x |
-| 10,000 lignes | 500ms | 5ms | 100x |
-| 100,000 lignes | 5s | 5ms | 1000x |
-| 1,000,000 lignes | 50s | 5ms | 10000x |
+| Taille Table     | Avant | Après | Gain   |
+| ---------------- | ----- | ----- | ------ |
+| 1,000 lignes     | 50ms  | 5ms   | 10x    |
+| 10,000 lignes    | 500ms | 5ms   | 100x   |
+| 100,000 lignes   | 5s    | 5ms   | 1000x  |
+| 1,000,000 lignes | 50s   | 5ms   | 10000x |
 
 ---
 
@@ -110,7 +113,7 @@ USING (is_super_admin_optimized());
 ### **Commande**
 
 ```bash
-cd /home/awaleh/Bureau/Wadashaqeen-SaaS/gantt-flow-next
+cd /home/awaleh/Bureau/Wadashaqayn-SaaS/gantt-flow-next
 supabase db push
 ```
 
@@ -174,16 +177,19 @@ DELETE FROM absence_types WHERE id = 1;  -- Doit échouer (Super Admin uniquemen
 ## 📈 **Bénéfices**
 
 ### **Performance**
+
 - ✅ **10-100x plus rapide** sur requêtes Super Admin
 - ✅ **Charge CPU réduite de 90%+**
 - ✅ **Scalabilité optimale** pour millions de lignes
 
 ### **Maintenabilité**
+
 - ✅ **Code réutilisable** : Fonction helper centralisée
 - ✅ **Lisibilité améliorée** : `is_super_admin_optimized()` vs longue condition
 - ✅ **Évolutivité** : Facile d'ajouter d'autres vérifications
 
 ### **Conformité**
+
 - ✅ **0 avertissement linter** sur auth_rls_initplan
 - ✅ **Best practices Supabase** respectées
 - ✅ **Pattern reconnu** (Stripe, Salesforce, Linear)
@@ -214,11 +220,13 @@ STABLE  -- ← Important !
 ```
 
 **STABLE** signifie :
+
 - La fonction **ne modifie pas** la base de données
 - Le résultat est **constant** pendant la durée de la requête
 - PostgreSQL peut **l'évaluer une seule fois** et réutiliser le résultat
 
 **Alternatives** :
+
 - `VOLATILE` : Évalué à chaque appel (lent) ❌
 - `IMMUTABLE` : Résultat constant pour toujours (impossible ici) ❌
 - `STABLE` : Résultat constant pendant la requête (parfait) ✅
@@ -249,6 +257,7 @@ Seq Scan on absence_types
 Cette migration est **critique pour la performance** des requêtes Super Admin. Elle suit les **best practices Supabase** et garantit une **scalabilité optimale**.
 
 **Impact global** :
+
 - ✅ 40+ policies optimisées
 - ✅ 11 tables concernées
 - ✅ Performance 10-100x améliorée
@@ -258,7 +267,7 @@ Cette migration est **critique pour la performance** des requêtes Super Admin. 
 
 ---
 
-*Date de création : 2025-01-11*  
-*Priorité : HAUTE*  
-*Impact : Performance critique*  
-*Statut : ⏳ À déployer*
+_Date de création : 2025-01-11_  
+_Priorité : HAUTE_  
+_Impact : Performance critique_  
+_Statut : ⏳ À déployer_

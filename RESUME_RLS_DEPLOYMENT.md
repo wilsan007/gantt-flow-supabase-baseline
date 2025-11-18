@@ -112,7 +112,7 @@
 ### **Option 1 : Déploiement Automatique (Recommandé)**
 
 ```bash
-cd /home/awaleh/Bureau/Wadashaqeen-SaaS/gantt-flow-next
+cd /home/awaleh/Bureau/Wadashaqayn-SaaS/gantt-flow-next
 supabase db push
 ```
 
@@ -230,7 +230,7 @@ CREATE POLICY "employees_read_self" ON employees
 
 ### **1. Déployer les Corrections (Requis)**
 ```bash
-cd /home/awaleh/Bureau/Wadashaqeen-SaaS/gantt-flow-next
+cd /home/awaleh/Bureau/Wadashaqayn-SaaS/gantt-flow-next
 supabase db push
 ```
 

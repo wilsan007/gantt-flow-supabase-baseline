@@ -417,4 +417,4 @@ Si vous voulez ajuster :
 
 ---
 
-**Bon développement avec Wadashaqeen ! 🚀**
+**Bon développement avec Wadashaqayn ! 🚀**

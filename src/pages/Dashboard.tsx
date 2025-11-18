@@ -1,7 +1,7 @@
 import React from 'react';
 import { useTenantOwnerSetup } from '@/hooks/useTenantOwnerSetup';
 import TenantOwnerWelcome from '@/components/auth/TenantOwnerWelcome';
-import { Loader2 } from 'lucide-react';
+import { BrandedLoadingScreen } from '@/components/layout/BrandedLoadingScreen';
 
 const Dashboard: React.FC = () => {
   const { isLoading, isPendingTenantOwner, hasCompletedSetup, userEmail, error } =
@@ -9,14 +9,7 @@ const Dashboard: React.FC = () => {
 
   // Affichage de chargement
   if (isLoading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <div className="text-center">
-          <Loader2 className="mx-auto mb-4 h-8 w-8 animate-spin" />
-          <p>Chargement de votre espace de travail...</p>
-        </div>
-      </div>
-    );
+    return <BrandedLoadingScreen appName="Wadashaqayn" logoSrc="/logo-w.svg" />;
   }
 
   // Si c'est un tenant owner en attente, afficher l'écran de bienvenue

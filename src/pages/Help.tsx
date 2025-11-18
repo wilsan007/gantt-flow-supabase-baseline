@@ -74,7 +74,7 @@ export default function Help() {
     {
       question: 'Comment contacter le support ?',
       answer:
-        'Vous pouvez nous contacter par email à support@wadashaqeen.com ou utiliser le chat en direct disponible 24/7.',
+        'Vous pouvez nous contacter par email à support@wadashaqayn.com ou utiliser le chat en direct disponible 24/7.',
     },
   ];
 
@@ -102,7 +102,7 @@ export default function Help() {
         <Card className="mb-6">
           <CardContent className="pt-6">
             <div className="relative">
-              <Search className="absolute left-3 top-3 h-5 w-5 text-muted-foreground" />
+              <Search className="text-muted-foreground absolute top-3 left-3 h-5 w-5" />
               <Input
                 placeholder="Rechercher dans l'aide..."
                 value={search}
@@ -128,10 +128,10 @@ export default function Help() {
                   {category.articles.map((article, i) => (
                     <button
                       key={i}
-                      className="w-full rounded-lg p-3 text-left transition-colors hover:bg-accent"
+                      className="hover:bg-accent w-full rounded-lg p-3 text-left transition-colors"
                     >
                       <p className="mb-1 text-sm font-medium">{article.title}</p>
-                      <p className="text-xs text-muted-foreground">{article.views} vues</p>
+                      <p className="text-muted-foreground text-xs">{article.views} vues</p>
                     </button>
                   ))}
                 </div>
@@ -172,14 +172,14 @@ export default function Help() {
                 <Mail className="mr-3 h-5 w-5" />
                 <div className="text-left">
                   <p className="font-medium">Email</p>
-                  <p className="text-xs text-muted-foreground">Réponse sous 24h</p>
+                  <p className="text-muted-foreground text-xs">Réponse sous 24h</p>
                 </div>
               </Button>
               <Button variant="outline" className="h-auto justify-start py-4">
                 <MessageCircle className="mr-3 h-5 w-5" />
                 <div className="text-left">
                   <p className="font-medium">Chat en direct</p>
-                  <p className="text-xs text-muted-foreground">Disponible 24/7</p>
+                  <p className="text-muted-foreground text-xs">Disponible 24/7</p>
                 </div>
               </Button>
             </div>

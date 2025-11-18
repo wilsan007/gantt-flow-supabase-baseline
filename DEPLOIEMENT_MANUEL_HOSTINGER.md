@@ -21,7 +21,7 @@ wadashaqayn-deployment.tar.gz (876 KB)
 Le fichier se trouve ici :
 
 ```
-/home/awaleh/Bureau/Wadashaqeen-SaaS/gantt-flow-next/wadashaqayn-deployment.tar.gz
+/home/awaleh/Bureau/Wadashaqayn-SaaS/gantt-flow-next/wadashaqayn-deployment.tar.gz
 ```
 
 #### 2️⃣ Se Connecter à Hostinger
@@ -73,7 +73,7 @@ Le fichier se trouve ici :
 ### Dossier à Uploader :
 
 ```
-/home/awaleh/Bureau/Wadashaqeen-SaaS/gantt-flow-next/dist/
+/home/awaleh/Bureau/Wadashaqayn-SaaS/gantt-flow-next/dist/
 ```
 
 ### Étapes :
@@ -224,7 +224,7 @@ public_html/
 ### Rebuild si Nécessaire
 
 ```bash
-cd /home/awaleh/Bureau/Wadashaqeen-SaaS/gantt-flow-next
+cd /home/awaleh/Bureau/Wadashaqayn-SaaS/gantt-flow-next
 npm run build
 ```
 

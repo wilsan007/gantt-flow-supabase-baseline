@@ -57,7 +57,7 @@ describe('Index Page', () => {
     const TestComponent = () => (
       <div>
         <h1>Tableau de bord</h1>
-        <p>Bienvenue sur Wadashaqeen</p>
+        <p>Bienvenue sur Wadashaqayn</p>
       </div>
     );
 

@@ -4,14 +4,14 @@
 
 ### **Gestion des Sessions Actives**
 
-| Fonctionnalité | Wadashaqeen | Google | GitHub | Notion | Slack | Score |
-|----------------|-------------|--------|--------|--------|-------|-------|
-| **Liste sessions actives** | ⚠️ API Supabase | ✅ UI | ✅ UI | ✅ UI | ✅ UI | 5/10 |
-| **Révocation device** | ⚠️ API only | ✅ UI | ✅ UI | ✅ UI | ✅ UI | 4/10 |
-| **Device fingerprinting** | ❌ Non | ✅ Oui | ✅ Oui | ⚠️ Limité | ✅ Oui | 2/10 |
-| **Geolocation tracking** | ❌ Non | ✅ Oui | ✅ Oui | ⚠️ Limité | ✅ Oui | 2/10 |
-| **Suspicious login alerts** | ❌ Non | ✅ Email | ✅ Email | ⚠️ Limité | ✅ Email | 2/10 |
-| **Concurrent sessions limit** | ⚠️ Illimité | ✅ Configurable | ✅ Configurable | ⚠️ Illimité | ✅ Configurable | 5/10 |
+| Fonctionnalité                | Wadashaqayn     | Google          | GitHub          | Notion      | Slack           | Score |
+| ----------------------------- | --------------- | --------------- | --------------- | ----------- | --------------- | ----- |
+| **Liste sessions actives**    | ⚠️ API Supabase | ✅ UI           | ✅ UI           | ✅ UI       | ✅ UI           | 5/10  |
+| **Révocation device**         | ⚠️ API only     | ✅ UI           | ✅ UI           | ✅ UI       | ✅ UI           | 4/10  |
+| **Device fingerprinting**     | ❌ Non          | ✅ Oui          | ✅ Oui          | ⚠️ Limité   | ✅ Oui          | 2/10  |
+| **Geolocation tracking**      | ❌ Non          | ✅ Oui          | ✅ Oui          | ⚠️ Limité   | ✅ Oui          | 2/10  |
+| **Suspicious login alerts**   | ❌ Non          | ✅ Email        | ✅ Email        | ⚠️ Limité   | ✅ Email        | 2/10  |
+| **Concurrent sessions limit** | ⚠️ Illimité     | ✅ Configurable | ✅ Configurable | ⚠️ Illimité | ✅ Configurable | 5/10  |
 
 ### **Exemple Google (Best-in-Class)**
 
@@ -63,9 +63,10 @@ Active OAuth applications : (accès API)
   └─ Vercel (repo:read)
 ```
 
-### **Implémentation Wadashaqeen**
+### **Implémentation Wadashaqayn**
 
 **Données disponibles (Supabase)** :
+
 ```typescript
 // Supabase fournit ces données via API
 const { data } = await supabase.auth.admin.listUserSessions(userId);
@@ -84,6 +85,7 @@ const { data } = await supabase.auth.admin.listUserSessions(userId);
 ```
 
 **Composant UI à créer** :
+
 ```tsx
 // components/security/ActiveSessions.tsx
 export const ActiveSessions = () => {
@@ -92,15 +94,15 @@ export const ActiveSessions = () => {
   const parseUserAgent = (ua: string) => {
     // Extraire: Browser, OS, Device
     return {
-      browser: "Chrome 119",
-      os: "Windows 11",
-      device: "Desktop"
+      browser: 'Chrome 119',
+      os: 'Windows 11',
+      device: 'Desktop',
     };
   };
 
   const getLocation = async (ip: string) => {
     // API Geolocation (ipapi.co, ipinfo.io)
-    return { city: "Paris", country: "France" };
+    return { city: 'Paris', country: 'France' };
   };
 
   return (
@@ -131,45 +133,47 @@ export const ActiveSessions = () => {
 
 ### **A. HTTPS & Transport Security**
 
-| Aspect | Wadashaqeen | Best Practice | Leaders | Score |
-|--------|-------------|---------------|---------|-------|
-| **HTTPS obligatoire** | ✅ Oui | ✅ Oui | ✅ 100% | 10/10 |
-| **TLS 1.3** | ✅ Oui | ✅ Oui | ✅ 100% | 10/10 |
-| **TLS 1.2 fallback** | ✅ Oui | ✅ Oui | ✅ 100% | 10/10 |
-| **HSTS Header** | ✅ Oui | ✅ Oui | ✅ 100% | 10/10 |
-| **Certificate Transparency** | ✅ Auto (Let's Encrypt) | ✅ Oui | ✅ 100% | 10/10 |
-| **Perfect Forward Secrecy** | ✅ Oui | ✅ Oui | ✅ 100% | 10/10 |
+| Aspect                       | Wadashaqayn             | Best Practice | Leaders | Score |
+| ---------------------------- | ----------------------- | ------------- | ------- | ----- |
+| **HTTPS obligatoire**        | ✅ Oui                  | ✅ Oui        | ✅ 100% | 10/10 |
+| **TLS 1.3**                  | ✅ Oui                  | ✅ Oui        | ✅ 100% | 10/10 |
+| **TLS 1.2 fallback**         | ✅ Oui                  | ✅ Oui        | ✅ 100% | 10/10 |
+| **HSTS Header**              | ✅ Oui                  | ✅ Oui        | ✅ 100% | 10/10 |
+| **Certificate Transparency** | ✅ Auto (Let's Encrypt) | ✅ Oui        | ✅ 100% | 10/10 |
+| **Perfect Forward Secrecy**  | ✅ Oui                  | ✅ Oui        | ✅ 100% | 10/10 |
 
 **Verdict** : **🏆 EXCELLENT - 100% conforme**
 
 **Configuration HSTS actuelle** :
+
 ```
 Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
 ```
 
 **Test SSL Labs** : [ssllabs.com/ssltest](https://www.ssllabs.com/ssltest/)
+
 - **Note attendue** : A+ (excellent)
 
 ---
 
 ### **B. Content Security Policy (CSP)**
 
-| Header | Wadashaqeen | Leaders | Importance | Score |
-|--------|-------------|---------|------------|-------|
-| **Content-Security-Policy** | ⚠️ À vérifier | ✅ Strict | 🔴 Critique | ?/10 |
-| **X-Frame-Options** | ⚠️ À vérifier | ✅ DENY | 🟠 Important | ?/10 |
-| **X-Content-Type-Options** | ⚠️ À vérifier | ✅ nosniff | 🟠 Important | ?/10 |
-| **X-XSS-Protection** | ⚠️ À vérifier | ✅ 1; mode=block | 🟡 Utile | ?/10 |
-| **Referrer-Policy** | ⚠️ À vérifier | ✅ strict-origin | 🟡 Utile | ?/10 |
-| **Permissions-Policy** | ⚠️ À vérifier | ✅ Restrictif | 🟡 Utile | ?/10 |
+| Header                      | Wadashaqayn   | Leaders          | Importance   | Score |
+| --------------------------- | ------------- | ---------------- | ------------ | ----- |
+| **Content-Security-Policy** | ⚠️ À vérifier | ✅ Strict        | 🔴 Critique  | ?/10  |
+| **X-Frame-Options**         | ⚠️ À vérifier | ✅ DENY          | 🟠 Important | ?/10  |
+| **X-Content-Type-Options**  | ⚠️ À vérifier | ✅ nosniff       | 🟠 Important | ?/10  |
+| **X-XSS-Protection**        | ⚠️ À vérifier | ✅ 1; mode=block | 🟡 Utile     | ?/10  |
+| **Referrer-Policy**         | ⚠️ À vérifier | ✅ strict-origin | 🟡 Utile     | ?/10  |
+| **Permissions-Policy**      | ⚠️ À vérifier | ✅ Restrictif    | 🟡 Utile     | ?/10  |
 
-### **CSP Recommandé pour Wadashaqeen**
+### **CSP Recommandé pour Wadashaqayn**
 
 ```nginx
 # À ajouter dans nginx.conf ou Cloudflare
 
 # Content Security Policy (Protection XSS)
-Content-Security-Policy: 
+Content-Security-Policy:
   default-src 'self';
   script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net;
   style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
@@ -205,14 +209,14 @@ Permissions-Policy: geolocation=(), microphone=(), camera=()
 
 ### **C. Rate Limiting & DDoS Protection**
 
-| Protection | Wadashaqeen | Leaders | Score |
-|------------|-------------|---------|-------|
-| **API Rate Limiting** | ✅ Supabase (60/min) | ✅ Custom | 8/10 |
-| **Auth Rate Limiting** | ✅ Supabase (30/min) | ✅ Strict (5-10/min) | 7/10 |
-| **DDoS Protection** | ✅ Cloudflare | ✅ Multi-layer | 9/10 |
-| **WAF (Web App Firewall)** | ⚠️ Cloudflare Basic | ✅ Custom Rules | 7/10 |
-| **CAPTCHA (brute force)** | ❌ Non | ✅ reCAPTCHA v3 | 3/10 |
-| **IP Blocking** | ⚠️ Manuel | ✅ Auto | 5/10 |
+| Protection                 | Wadashaqayn          | Leaders              | Score |
+| -------------------------- | -------------------- | -------------------- | ----- |
+| **API Rate Limiting**      | ✅ Supabase (60/min) | ✅ Custom            | 8/10  |
+| **Auth Rate Limiting**     | ✅ Supabase (30/min) | ✅ Strict (5-10/min) | 7/10  |
+| **DDoS Protection**        | ✅ Cloudflare        | ✅ Multi-layer       | 9/10  |
+| **WAF (Web App Firewall)** | ⚠️ Cloudflare Basic  | ✅ Custom Rules      | 7/10  |
+| **CAPTCHA (brute force)**  | ❌ Non               | ✅ reCAPTCHA v3      | 3/10  |
+| **IP Blocking**            | ⚠️ Manuel            | ✅ Auto              | 5/10  |
 
 ### **Rate Limits par Endpoint (Supabase par défaut)**
 
@@ -235,6 +239,7 @@ Storage :
 **Comparaison Leaders** :
 
 **GitHub** :
+
 ```
 API Rate Limits :
   ├─ Authenticated : 5000 req/hour
@@ -244,6 +249,7 @@ API Rate Limits :
 ```
 
 **Stripe** :
+
 ```
 API Rate Limits :
   ├─ Default : 100 req/sec
@@ -255,7 +261,7 @@ API Rate Limits :
 
 ```tsx
 // Ajouter reCAPTCHA après échecs répétés
-import ReCAPTCHA from "react-google-recaptcha";
+import ReCAPTCHA from 'react-google-recaptcha';
 
 const LoginForm = () => {
   const [failedAttempts, setFailedAttempts] = useState(0);
@@ -264,15 +270,15 @@ const LoginForm = () => {
   const handleLogin = async () => {
     // Si > 3 échecs, exiger CAPTCHA
     if (failedAttempts >= 3 && !captchaToken) {
-      return showError("Veuillez compléter le CAPTCHA");
+      return showError('Veuillez compléter le CAPTCHA');
     }
 
     const { error } = await supabase.auth.signInWithPassword({
       email,
       password,
       options: {
-        captchaToken // Vérifié côté Supabase
-      }
+        captchaToken, // Vérifié côté Supabase
+      },
     });
 
     if (error) {
@@ -284,14 +290,9 @@ const LoginForm = () => {
     <>
       <input type="email" />
       <input type="password" />
-      
-      {failedAttempts >= 3 && (
-        <ReCAPTCHA
-          sitekey="YOUR_SITE_KEY"
-          onChange={setCaptchaToken}
-        />
-      )}
-      
+
+      {failedAttempts >= 3 && <ReCAPTCHA sitekey="YOUR_SITE_KEY" onChange={setCaptchaToken} />}
+
       <button onClick={handleLogin}>Connexion</button>
     </>
   );
@@ -307,15 +308,16 @@ const LoginForm = () => {
 
 ### **A. Encryption**
 
-| Type | Wadashaqeen | Standard | Leaders | Score |
-|------|-------------|----------|---------|-------|
-| **At Rest** | ✅ AES-256 | ✅ AES-256 | ✅ AES-256 | 10/10 |
-| **In Transit** | ✅ TLS 1.3 | ✅ TLS 1.3 | ✅ TLS 1.3 | 10/10 |
-| **Backups** | ✅ Encrypted | ✅ Encrypted | ✅ Encrypted | 10/10 |
-| **Database** | ✅ Encrypted | ✅ Encrypted | ✅ Encrypted | 10/10 |
-| **End-to-End (E2E)** | ❌ Non | ⚠️ Optionnel | ⚠️ Rare | N/A |
+| Type                 | Wadashaqayn  | Standard     | Leaders      | Score |
+| -------------------- | ------------ | ------------ | ------------ | ----- |
+| **At Rest**          | ✅ AES-256   | ✅ AES-256   | ✅ AES-256   | 10/10 |
+| **In Transit**       | ✅ TLS 1.3   | ✅ TLS 1.3   | ✅ TLS 1.3   | 10/10 |
+| **Backups**          | ✅ Encrypted | ✅ Encrypted | ✅ Encrypted | 10/10 |
+| **Database**         | ✅ Encrypted | ✅ Encrypted | ✅ Encrypted | 10/10 |
+| **End-to-End (E2E)** | ❌ Non       | ⚠️ Optionnel | ⚠️ Rare      | N/A   |
 
 **Détails Supabase** :
+
 ```
 Data at Rest (stockage) :
   ├─ Database : AES-256 encryption
@@ -330,6 +332,7 @@ Data in Transit :
 ```
 
 **E2E Encryption** :
+
 ```
 Rarement nécessaire en B2B SaaS :
   ├─ ❌ Signal, WhatsApp : E2E (messaging)
@@ -351,16 +354,17 @@ E2E bloque :
 
 ### **B. Compliance & Certifications**
 
-| Certification | Wadashaqeen | Supabase | Google | Notion | Slack | Status |
-|---------------|-------------|----------|--------|--------|-------|--------|
-| **GDPR** | ⚠️ À documenter | ✅ Conforme | ✅ Oui | ✅ Oui | ✅ Oui | ⚠️ Action |
-| **SOC 2 Type II** | ✅ Hérité | ✅ Oui | ✅ Oui | ✅ Oui | ✅ Oui | ✅ OK |
-| **ISO 27001** | ✅ Hérité | ✅ Oui | ✅ Oui | ✅ Oui | ✅ Oui | ✅ OK |
-| **ISO 27018** | ✅ Hérité | ✅ Oui | ✅ Oui | ⚠️ Non | ✅ Oui | ✅ OK |
-| **HIPAA** | ❌ Non | ⚠️ Sur demande | ✅ Oui | ❌ Non | ✅ Pro | ⚠️ N/A |
-| **PCI DSS** | ❌ Non | ❌ Non | ✅ Oui | ❌ Non | ❌ Non | ✅ N/A |
+| Certification     | Wadashaqayn     | Supabase       | Google | Notion | Slack  | Status    |
+| ----------------- | --------------- | -------------- | ------ | ------ | ------ | --------- |
+| **GDPR**          | ⚠️ À documenter | ✅ Conforme    | ✅ Oui | ✅ Oui | ✅ Oui | ⚠️ Action |
+| **SOC 2 Type II** | ✅ Hérité       | ✅ Oui         | ✅ Oui | ✅ Oui | ✅ Oui | ✅ OK     |
+| **ISO 27001**     | ✅ Hérité       | ✅ Oui         | ✅ Oui | ✅ Oui | ✅ Oui | ✅ OK     |
+| **ISO 27018**     | ✅ Hérité       | ✅ Oui         | ✅ Oui | ⚠️ Non | ✅ Oui | ✅ OK     |
+| **HIPAA**         | ❌ Non          | ⚠️ Sur demande | ✅ Oui | ❌ Non | ✅ Pro | ⚠️ N/A    |
+| **PCI DSS**       | ❌ Non          | ❌ Non         | ✅ Oui | ❌ Non | ❌ Non | ✅ N/A    |
 
 **Certifications Supabase (héritées)** :
+
 ```
 ✅ SOC 2 Type II
 ✅ ISO 27001
@@ -370,9 +374,10 @@ E2E bloque :
 ⚠️ HIPAA (Business Associate Agreement sur demande)
 ```
 
-**Actions Requises pour Wadashaqeen** :
+**Actions Requises pour Wadashaqayn** :
 
 **1. Privacy Policy** :
+
 ```
 Doit inclure :
   ├─ Types de données collectées
@@ -386,6 +391,7 @@ Doit inclure :
 ```
 
 **2. Terms of Service** :
+
 ```
 Doit inclure :
   ├─ Définitions (Service, Utilisateur, Tenant)
@@ -397,6 +403,7 @@ Doit inclure :
 ```
 
 **3. GDPR Compliance** :
+
 ```
 Fonctionnalités à implémenter :
   ├─ Export données utilisateur (JSON, CSV)
@@ -407,6 +414,7 @@ Fonctionnalités à implémenter :
 ```
 
 **Exemple Export Données** :
+
 ```typescript
 // API endpoint pour export GDPR
 export const exportUserData = async (userId: string) => {
@@ -425,7 +433,7 @@ export const exportUserData = async (userId: string) => {
       projects: data[2].data,
       // ...
     },
-    generated_at: new Date().toISOString()
+    generated_at: new Date().toISOString(),
   };
 };
 ```
@@ -439,18 +447,18 @@ export const exportUserData = async (userId: string) => {
 
 ### **A. Audit Logs**
 
-| Événement | Wadashaqeen | Leaders | Score |
-|-----------|-------------|---------|-------|
-| **Auth events** | ✅ Oui | ✅ Oui | 10/10 |
-| **Failed login** | ✅ Oui | ✅ Oui | 10/10 |
-| **Data access (read)** | ⚠️ Limité | ✅ Complet | 5/10 |
-| **Data modification** | ⚠️ Limité | ✅ Complet | 6/10 |
-| **Permission changes** | ⚠️ Limité | ✅ Complet | 6/10 |
-| **User actions** | ⚠️ Limité | ✅ Complet | 6/10 |
-| **Admin actions** | ⚠️ Limité | ✅ Complet | 6/10 |
-| **API calls** | ⚠️ Logs Supabase | ✅ Structured | 7/10 |
-| **Retention** | ⚠️ Non défini | ✅ 1-7 ans | 4/10 |
-| **Export** | ⚠️ À implémenter | ✅ UI/API | 4/10 |
+| Événement              | Wadashaqayn      | Leaders       | Score |
+| ---------------------- | ---------------- | ------------- | ----- |
+| **Auth events**        | ✅ Oui           | ✅ Oui        | 10/10 |
+| **Failed login**       | ✅ Oui           | ✅ Oui        | 10/10 |
+| **Data access (read)** | ⚠️ Limité        | ✅ Complet    | 5/10  |
+| **Data modification**  | ⚠️ Limité        | ✅ Complet    | 6/10  |
+| **Permission changes** | ⚠️ Limité        | ✅ Complet    | 6/10  |
+| **User actions**       | ⚠️ Limité        | ✅ Complet    | 6/10  |
+| **Admin actions**      | ⚠️ Limité        | ✅ Complet    | 6/10  |
+| **API calls**          | ⚠️ Logs Supabase | ✅ Structured | 7/10  |
+| **Retention**          | ⚠️ Non défini    | ✅ 1-7 ans    | 4/10  |
+| **Export**             | ⚠️ À implémenter | ✅ UI/API     | 4/10  |
 
 ### **Audit Log Complet Recommandé**
 
@@ -460,30 +468,30 @@ CREATE TABLE audit_logs (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   tenant_id UUID NOT NULL,
   user_id UUID NOT NULL,
-  
+
   -- Type d'action
   action TEXT NOT NULL, -- 'login', 'logout', 'read', 'create', 'update', 'delete'
   category TEXT NOT NULL, -- 'auth', 'data', 'admin', 'api'
-  
+
   -- Ressource concernée
   resource_type TEXT, -- 'task', 'project', 'user', 'role'
   resource_id UUID,
-  
+
   -- Détails du changement
   old_value JSONB,
   new_value JSONB,
   diff JSONB, -- Différence calculée
-  
+
   -- Contexte
   ip_address INET,
   user_agent TEXT,
   geo_location JSONB, -- {city, country, lat, lon}
-  
+
   -- Métadonnées
   success BOOLEAN DEFAULT true,
   error_message TEXT,
   duration_ms INTEGER,
-  
+
   -- Timestamps
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -502,6 +510,7 @@ SELECT cron.schedule(
 ```
 
 **Exemple GitHub (Best Practice)** :
+
 ```
 Security log :
   ├─ Datetime | Action | Actor | Target
@@ -521,14 +530,14 @@ Filtres : Date, Actor, Action, Resource
 
 ### **B. Security Monitoring & Alerting**
 
-| Aspect | Wadashaqeen | Leaders | Score |
-|--------|-------------|---------|-------|
-| **Anomaly detection** | ❌ Non | ✅ ML-based | 1/10 |
-| **Breach detection** | ⚠️ Supabase | ✅ Custom | 6/10 |
-| **Real-time alerts** | ❌ Non | ✅ Oui | 2/10 |
-| **SIEM integration** | ❌ Non | ✅ Enterprise | 1/10 |
-| **Security dashboard** | ❌ Non | ✅ Oui | 2/10 |
-| **Threat intelligence** | ❌ Non | ✅ Oui | 1/10 |
+| Aspect                  | Wadashaqayn | Leaders       | Score |
+| ----------------------- | ----------- | ------------- | ----- |
+| **Anomaly detection**   | ❌ Non      | ✅ ML-based   | 1/10  |
+| **Breach detection**    | ⚠️ Supabase | ✅ Custom     | 6/10  |
+| **Real-time alerts**    | ❌ Non      | ✅ Oui        | 2/10  |
+| **SIEM integration**    | ❌ Non      | ✅ Enterprise | 1/10  |
+| **Security dashboard**  | ❌ Non      | ✅ Oui        | 2/10  |
+| **Threat intelligence** | ❌ Non      | ✅ Oui        | 1/10  |
 
 ### **Alertes Basiques Recommandées**
 
@@ -539,13 +548,13 @@ export const SecurityAlerting = {
   async checkSuspiciousLocation(userId: string, ip: string) {
     const location = await getGeoLocation(ip);
     const previousLocations = await getPreviousLocations(userId);
-    
+
     if (!previousLocations.includes(location.country)) {
       await sendAlert({
         type: 'new_location',
         userId,
         message: `Connexion depuis ${location.city}, ${location.country}`,
-        severity: 'medium'
+        severity: 'medium',
       });
     }
   },
@@ -553,15 +562,15 @@ export const SecurityAlerting = {
   // Alerte : Échecs répétés de connexion
   async checkBruteForce(email: string) {
     const failures = await getRecentFailures(email, '15 minutes');
-    
+
     if (failures >= 5) {
       await sendAlert({
         type: 'brute_force',
         email,
         message: `${failures} tentatives échouées en 15min`,
-        severity: 'high'
+        severity: 'high',
       });
-      
+
       // Bloquer temporairement (15 min)
       await blockLogin(email, '15 minutes');
     }
@@ -574,7 +583,7 @@ export const SecurityAlerting = {
         type: 'permission_change',
         userId,
         message: `Utilisateur promu admin`,
-        severity: 'high'
+        severity: 'high',
       });
     }
   },
@@ -585,17 +594,17 @@ export const SecurityAlerting = {
     await sendEmail({
       to: await getAdminEmails(alert.userId),
       subject: `[Sécurité] ${alert.message}`,
-      body: formatAlertEmail(alert)
+      body: formatAlertEmail(alert),
     });
-    
+
     // Slack webhook (optionnel)
     if (alert.severity === 'high') {
       await sendSlackAlert(alert);
     }
-    
+
     // Log dans DB
     await insertSecurityAlert(alert);
-  }
+  },
 };
 ```
 
@@ -606,22 +615,23 @@ export const SecurityAlerting = {
 
 ## 📊 Score Détaillé Partie 2
 
-| Catégorie | Score | Niveau | Priorité |
-|-----------|-------|--------|----------|
-| **Session Management** | 4/10 | 🟡 Basique | ⚠️ Moyenne |
-| **HTTPS/TLS** | 10/10 | ✅ Excellent | - |
-| **CSP Headers** | ?/10 | ⚠️ À vérifier | 🟠 Haute |
-| **Rate Limiting** | 7/10 | ✅ Bon | ⚠️ CAPTCHA |
-| **Encryption** | 10/10 | ✅ Excellent | - |
-| **Compliance** | 6/10 | ⚠️ Partiel | 🟠 Haute |
-| **Audit Logs** | 6/10 | ⚠️ Basique | ⚠️ Moyenne |
-| **Monitoring/Alerts** | 2/10 | 🔴 Minimal | ⚠️ Moyenne |
+| Catégorie              | Score | Niveau        | Priorité   |
+| ---------------------- | ----- | ------------- | ---------- |
+| **Session Management** | 4/10  | 🟡 Basique    | ⚠️ Moyenne |
+| **HTTPS/TLS**          | 10/10 | ✅ Excellent  | -          |
+| **CSP Headers**        | ?/10  | ⚠️ À vérifier | 🟠 Haute   |
+| **Rate Limiting**      | 7/10  | ✅ Bon        | ⚠️ CAPTCHA |
+| **Encryption**         | 10/10 | ✅ Excellent  | -          |
+| **Compliance**         | 6/10  | ⚠️ Partiel    | 🟠 Haute   |
+| **Audit Logs**         | 6/10  | ⚠️ Basique    | ⚠️ Moyenne |
+| **Monitoring/Alerts**  | 2/10  | 🔴 Minimal    | ⚠️ Moyenne |
 
 **Score Moyen Partie 2** : **6.9/10** (Bon mais améliorations nécessaires)
 
 ---
 
 **Suite** : Voir `SECURITY_ANALYSIS_PART3.md` pour :
+
 - Incident Response
 - Vulnerability Management
 - Security Testing

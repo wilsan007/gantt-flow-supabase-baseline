@@ -1,4 +1,4 @@
-# 🤖 Rapport de Nettoyage Automatique - Wadashaqeen SaaS
+# 🤖 Rapport de Nettoyage Automatique - Wadashaqayn SaaS
 
 **Date** : 30 octobre 2025  
 **Durée** : ~10 minutes  

@@ -2,7 +2,7 @@
 
 ## ✅ Installation Terminée !
 
-Le module **Activités Opérationnelles** est maintenant complètement intégré à votre application Wadashaqeen.
+Le module **Activités Opérationnelles** est maintenant complètement intégré à votre application Wadashaqayn.
 
 ---
 

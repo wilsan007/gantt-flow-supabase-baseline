@@ -23,13 +23,13 @@
 │                                                                  │
 │  Linear            ██████████████████████████████           85  │
 │                                                                  │
-│  Wadashaqeen       ████████████████████████                 74  │
+│  Wadashaqayn       ████████████████████████                 74  │
 │  (actuel)                                                        │
 │                                                                  │
-│  Wadashaqeen       ██████████████████████████████           87  │
+│  Wadashaqayn       ██████████████████████████████           87  │
 │  (Phase 1)                                                       │
 │                                                                  │
-│  Wadashaqeen       ██████████████████████████████████       92  │
+│  Wadashaqayn       ██████████████████████████████████       92  │
 │  (Phase 2)                                                       │
 │                                                                  │
 └─────────────────────────────────────────────────────────────────┘
@@ -44,7 +44,7 @@ Légende :
 
 ---
 
-## 📈 Évolution du Score Wadashaqeen
+## 📈 Évolution du Score Wadashaqayn
 
 ### **Progression par Phase**
 
@@ -70,7 +70,7 @@ Gain total : +21 points en 12 mois
 
 ## 🏆 Comparaison par Catégorie
 
-### **Wadashaqeen vs Leaders (Radar Chart)**
+### **Wadashaqayn vs Leaders (Radar Chart)**
 
 ```
                     MFA/2FA (10)
@@ -94,7 +94,7 @@ Gain total : +21 points en 12 mois
                   Encryption (10)
 
 
-█ Wadashaqeen Actuel
+█ Wadashaqayn Actuel
 ┃ Leaders (moyenne)
 ┃
 ┃       MFA: ░░░░░░░░░░ (0) vs ██████████ (10) ❌
@@ -152,7 +152,7 @@ Légende :
 
 ## 📊 Distribution des Scores par Catégorie
 
-### **Wadashaqeen Actuel**
+### **Wadashaqayn Actuel**
 
 ```
 ┌───────────────────────────────────────────────┐
@@ -304,7 +304,7 @@ Source : Microsoft Security Intelligence Report 2023
 ### **Exigence du Marché**
 
 ```
-Taille Entreprise   % Exigeant MFA   Status Wadashaqeen
+Taille Entreprise   % Exigeant MFA   Status Wadashaqayn
 ─────────────────────────────────────────────────────
 < 10 employés       ░░░░░░░░░░  0%   ✅ OK (optionnel)
 10-50 employés      ██░░░░░░░░ 10%   ⚠️ Recommandé
@@ -312,7 +312,7 @@ Taille Entreprise   % Exigeant MFA   Status Wadashaqeen
 200-1000 employés   ██████████ 70%   🚨 Critique
 1000+ employés      ██████████ 95%   🚨 Bloquant
 
-Wadashaqeen actuel : ❌ MFA absent
+Wadashaqayn actuel : ❌ MFA absent
 Impact : Perte 30-70% des deals > 50 employés
 ```
 
@@ -402,7 +402,7 @@ Légende :
 │  └─ Linear                           85         │
 │                                                  │
 │  🥉 Tier 3 - Mature (70-84/100)                 │
-│  ├─ Wadashaqeen (actuel)             74  ⬅️ ICI│
+│  ├─ Wadashaqayn (actuel)             74  ⬅️ ICI│
 │  ├─ Startup moyenne                  70         │
 │  └─ MVP sécurisé                     60         │
 │                                                  │

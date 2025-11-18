@@ -1,4 +1,4 @@
-# 🚀 Guide d'Optimisation Performance - Wadashaqeen SaaS
+# 🚀 Guide d'Optimisation Performance - Wadashaqayn SaaS
 
 ## Architecture Enterprise Inspirée des Leaders du Marché
 
@@ -7,12 +7,14 @@ Cette application utilise maintenant les mêmes patterns de performance que **St
 ## 📊 Monitoring des Performances
 
 ### Interface de Monitoring (Mode Développement)
+
 - **Raccourci** : `Ctrl + Shift + P`
 - **Métriques temps réel** : Cache hit rate, memory usage, render counts
 - **Actions** : Clear cache, cleanup, refresh stats
 - **Auto-refresh** : Toutes les 2 secondes
 
 ### Métriques Clés à Surveiller
+
 ```typescript
 // Cache Performance
 - Hit Rate: > 80% (Excellent), 60-80% (Bon), < 60% (À optimiser)
@@ -23,6 +25,7 @@ Cette application utilise maintenant les mêmes patterns de performance que **St
 ## 🎯 Utilisation des Hooks Optimisés
 
 ### Hook Universel `useOptimizedData`
+
 ```typescript
 import { useOptimizedData } from '@/hooks/useOptimizedData';
 
@@ -40,7 +43,7 @@ const MyComponent = () => {
 
   if (loading) return <div>Chargement...</div>;
   if (error) return <div>Erreur: {error}</div>;
-  
+
   return (
     <div>
       <h2>Utilisateurs ({data?.length})</h2>
@@ -53,6 +56,7 @@ const MyComponent = () => {
 ```
 
 ### Hooks Spécialisés
+
 ```typescript
 // Pour les données RH
 const { employees, leaveRequests, loading } = useOptimizedHR();
@@ -67,6 +71,7 @@ const { data: tasks, invalidate } = useOptimizedTasks(projectId);
 ## 🔍 Système de Debouncing Intelligent
 
 ### Recherche Optimisée
+
 ```typescript
 import { useSearchDebounce } from '@/hooks/useSmartDebounce';
 
@@ -84,7 +89,7 @@ const SearchComponent = () => {
 
   return (
     <div>
-      <input 
+      <input
         onChange={(e) => search(e.target.value)}
         placeholder="Rechercher..."
       />
@@ -96,12 +101,13 @@ const SearchComponent = () => {
 ```
 
 ### Auto-Save (Pattern Linear)
+
 ```typescript
 import { useAutoSave } from '@/hooks/useSmartDebounce';
 
 const DocumentEditor = () => {
   const [content, setContent] = useState('');
-  
+
   const { autoSave, isSaving, lastSaved, forceSave } = useAutoSave(
     async (data: string) => {
       await supabase.from('documents').update({ content: data });
@@ -117,7 +123,7 @@ const DocumentEditor = () => {
 
   return (
     <div>
-      <textarea 
+      <textarea
         value={content}
         onChange={(e) => setContent(e.target.value)}
       />
@@ -134,6 +140,7 @@ const DocumentEditor = () => {
 ## 🎨 Optimisation des Composants
 
 ### React.memo pour les Composants Lourds
+
 ```typescript
 import { memo, useCallback, useMemo } from 'react';
 
@@ -167,16 +174,17 @@ const ExpensiveComponent = memo(({ data, onUpdate }: {
 ```
 
 ### Performance Monitoring Intégré
+
 ```typescript
 import { useRenderTracker } from '@/hooks/usePerformanceMonitor';
 
 const MonitoredComponent = () => {
   const monitor = useRenderTracker('MonitoredComponent');
-  
+
   // Le composant sera automatiquement surveillé
   // Logs automatiques quand il se stabilise
   // Recommandations d'optimisation si nécessaire
-  
+
   return <div>Contenu du composant</div>;
 };
 ```
@@ -184,6 +192,7 @@ const MonitoredComponent = () => {
 ## 💾 Gestion du Cache Global
 
 ### Cache Manager Enterprise
+
 ```typescript
 import { cacheManager, createCacheKey } from '@/lib/cacheManager';
 
@@ -206,30 +215,35 @@ console.log(`Cache hit rate: ${stats.metrics.hitRate}%`);
 ```
 
 ### Types de Cache et TTL
+
 ```typescript
 const CACHE_TYPES = {
-  user_roles: 5 * 60 * 1000,      // 5 minutes
-  tenant_data: 10 * 60 * 1000,    // 10 minutes  
-  hr_data: 3 * 60 * 1000,         // 3 minutes
-  projects: 5 * 60 * 1000,        // 5 minutes
-  tasks: 2 * 60 * 1000,           // 2 minutes
-  permissions: 15 * 60 * 1000,    // 15 minutes
-  default: 5 * 60 * 1000          // 5 minutes
+  user_roles: 5 * 60 * 1000, // 5 minutes
+  tenant_data: 10 * 60 * 1000, // 10 minutes
+  hr_data: 3 * 60 * 1000, // 3 minutes
+  projects: 5 * 60 * 1000, // 5 minutes
+  tasks: 2 * 60 * 1000, // 2 minutes
+  permissions: 15 * 60 * 1000, // 15 minutes
+  default: 5 * 60 * 1000, // 5 minutes
 };
 ```
 
 ## 🔧 Bonnes Pratiques
 
 ### 1. Éviter les Re-renders Inutiles
+
 ```typescript
 // ❌ Mauvais - Crée un nouvel objet à chaque render
 const config = { option1: true, option2: false };
 
 // ✅ Bon - Memoization
-const config = useMemo(() => ({ 
-  option1: true, 
-  option2: false 
-}), []);
+const config = useMemo(
+  () => ({
+    option1: true,
+    option2: false,
+  }),
+  []
+);
 
 // ❌ Mauvais - Fonction recréée à chaque render
 const handleClick = () => doSomething();
@@ -239,6 +253,7 @@ const handleClick = useCallback(() => doSomething(), []);
 ```
 
 ### 2. Gestion des Dépendances useEffect
+
 ```typescript
 // ❌ Mauvais - Dépendances manquantes ou excessives
 useEffect(() => {
@@ -256,6 +271,7 @@ useEffect(() => {
 ```
 
 ### 3. Optimisation des Listes
+
 ```typescript
 // ✅ Virtualisation pour les grandes listes
 import { FixedSizeList as List } from 'react-window';
@@ -279,6 +295,7 @@ const VirtualizedList = ({ items }) => (
 ## 📈 Métriques de Performance Cibles
 
 ### Objectifs de Performance
+
 - **First Contentful Paint** : < 1.5s
 - **Largest Contentful Paint** : < 2.5s
 - **Cumulative Layout Shift** : < 0.1
@@ -287,6 +304,7 @@ const VirtualizedList = ({ items }) => (
 - **Re-render Count** : < 10 par composant
 
 ### Alertes Automatiques
+
 - **Warning** : > 10 renders en 2 secondes
 - **Critical** : > 50 renders total
 - **Memory Alert** : > 100MB heap size
@@ -295,6 +313,7 @@ const VirtualizedList = ({ items }) => (
 ## 🛠️ Debugging et Troubleshooting
 
 ### Console Commands (Mode Dev)
+
 ```javascript
 // Statistiques du cache global
 console.log(window.cacheManager?.getStats());
@@ -307,6 +326,7 @@ window.cacheManager?.cleanup();
 ```
 
 ### Performance DevTools
+
 1. **React DevTools Profiler** : Analyser les re-renders
 2. **Chrome DevTools Performance** : Mesurer les métriques
 3. **Memory Tab** : Surveiller les fuites mémoire
@@ -315,6 +335,7 @@ window.cacheManager?.cleanup();
 ## 🚀 Déploiement et Production
 
 ### Variables d'Environnement
+
 ```env
 # Performance
 REACT_APP_CACHE_TTL=300000
@@ -326,8 +347,9 @@ REACT_APP_PERFORMANCE_ENDPOINT=https://api.monitoring.com
 ```
 
 ### Monitoring Production
+
 - **Sentry** : Erreurs et performance
-- **DataDog** : Métriques applicatives  
+- **DataDog** : Métriques applicatives
 - **LogRocket** : Sessions utilisateur
 - **Web Vitals** : Métriques Core Web Vitals
 
@@ -340,4 +362,4 @@ REACT_APP_PERFORMANCE_ENDPOINT=https://api.monitoring.com
 - [Cache Strategies](https://web.dev/cache-api-quick-guide/)
 - [Memory Management](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Memory_Management)
 
-**L'application Wadashaqeen est maintenant optimisée selon les standards enterprise des leaders SaaS ! 🎉**
+**L'application Wadashaqayn est maintenant optimisée selon les standards enterprise des leaders SaaS ! 🎉**

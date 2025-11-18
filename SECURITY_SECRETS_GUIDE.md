@@ -1,6 +1,7 @@
 # 🔐 Guide de Sécurité des Secrets - Meilleures Pratiques
 
 ## 📋 Table des Matières
+
 1. [Principes Fondamentaux](#principes-fondamentaux)
 2. [Secrets Frontend vs Backend](#secrets-frontend-vs-backend)
 3. [Configuration par Environnement](#configuration-par-environnement)
@@ -12,9 +13,11 @@
 ## 🎯 Principes Fondamentaux
 
 ### **Règle d'Or**
+
 > **JAMAIS de secrets sensibles dans Git, même dans .env**
 
 ### **Ce qui NE doit JAMAIS être committé:**
+
 ❌ Fichiers `.env` avec vraies valeurs  
 ❌ API Keys privées  
 ❌ Mots de passe de base de données  
@@ -22,14 +25,15 @@
 ❌ Tokens d'authentification  
 ❌ Clés de chiffrement  
 ❌ Certificats SSL privés (.key, .pem)  
-❌ Credentials JSON (Google, AWS, etc.)  
+❌ Credentials JSON (Google, AWS, etc.)
 
 ### **Ce qui PEUT être committé:**
+
 ✅ Fichier `.env.example` (template sans valeurs)  
 ✅ Supabase Anon Key (publique par design)  
 ✅ URLs publiques d'API  
 ✅ Configuration non sensible  
-✅ Features flags publics  
+✅ Features flags publics
 
 ---
 
@@ -38,6 +42,7 @@
 ### **Frontend (Vite/React)**
 
 #### **Variables Accessibles:**
+
 ```typescript
 // ✅ OK - Variables publiques avec VITE_ prefix
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
@@ -45,11 +50,13 @@ const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 ```
 
 #### **⚠️ ATTENTION:**
+
 - Toutes les variables `VITE_*` sont **incluses dans le bundle**
 - Elles sont **visibles dans le code source du navigateur**
 - N'utilisez que des **clés publiques** côté frontend
 
 #### **Secrets Frontend Légitimes:**
+
 ```env
 # ✅ OK - Clé publique Supabase (anon key)
 VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
@@ -63,6 +70,7 @@ VITE_GA_TRACKING_ID=UA-XXXXXXXXX-X
 ```
 
 #### **Secrets INTERDITS Frontend:**
+
 ```env
 # ❌ INTERDIT - Service Role Key (accès admin total)
 VITE_SUPABASE_SERVICE_ROLE_KEY=xxx  # ← NE JAMAIS FAIRE!
@@ -78,6 +86,7 @@ VITE_API_SECRET_KEY=xxx
 ### **Backend (Edge Functions)**
 
 #### **Configuration Supabase:**
+
 ```bash
 # Via Supabase CLI
 supabase secrets set RESEND_API_KEY="re_xxxxx"
@@ -88,6 +97,7 @@ supabase secrets set SERVICE_ROLE_KEY="eyJhbGc..."
 ```
 
 #### **Accès dans les Edge Functions:**
+
 ```typescript
 // ✅ OK - Secrets backend via Deno.env
 const serviceRoleKey = Deno.env.get('SERVICE_ROLE_KEY');
@@ -95,6 +105,7 @@ const resendApiKey = Deno.env.get('RESEND_API_KEY');
 ```
 
 #### **Secrets Backend Typiques:**
+
 ```
 SERVICE_ROLE_KEY       # Supabase admin key
 RESEND_API_KEY         # Email service
@@ -111,6 +122,7 @@ ENCRYPTION_KEY         # Chiffrement données
 ### **1. Développement Local**
 
 #### **Fichier `.env` (non committé):**
+
 ```env
 VITE_SUPABASE_URL=https://xxxxx.supabase.co
 VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
@@ -120,6 +132,7 @@ VITE_ENABLE_DEBUG=true
 ```
 
 #### **Chargement:**
+
 ```typescript
 // Vite charge automatiquement .env
 const url = import.meta.env.VITE_SUPABASE_URL;
@@ -130,6 +143,7 @@ const url = import.meta.env.VITE_SUPABASE_URL;
 ### **2. GitHub Actions (CI/CD)**
 
 #### **Secrets GitHub:**
+
 ```
 Repository → Settings → Secrets and variables → Actions
 ```
@@ -142,6 +156,7 @@ Repository → Settings → Secrets and variables → Actions
 | `HOSTINGER_FTP_PASSWORD` | Mot de passe FTP | `P@ssw0rd123` |
 
 #### **Utilisation dans Workflows:**
+
 ```yaml
 env:
   VITE_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
@@ -153,11 +168,13 @@ env:
 ### **3. Hostinger (Production)**
 
 #### **Option A: Variables d'Environnement (si supporté)**
+
 ```
 hPanel → Advanced → Environment Variables
 ```
 
 #### **Option B: Fichier .env sur serveur**
+
 ```bash
 # Via FTP/SSH, créer /public_html/.env
 # ⚠️ S'assurer qu'il n'est PAS accessible publiquement
@@ -170,6 +187,7 @@ hPanel → Advanced → Environment Variables
 ```
 
 #### **Option C: Hardcoder dans le build (NON RECOMMANDÉ)**
+
 ```bash
 # Seulement pour Anon Key et URLs publiques
 VITE_SUPABASE_URL=https://xxx.supabase.co npm run build
@@ -180,11 +198,13 @@ VITE_SUPABASE_URL=https://xxx.supabase.co npm run build
 ### **4. Vercel/Netlify (Alternative)**
 
 #### **Dashboard:**
+
 ```
 Project Settings → Environment Variables
 ```
 
 **Variables par environnement:**
+
 - Production
 - Preview (branches)
 - Development
@@ -196,7 +216,7 @@ Project Settings → Environment Variables
 ### **Configuration `.gitleaks.toml`**
 
 ```toml
-title = "Gitleaks Configuration for Wadashaqeen"
+title = "Gitleaks Configuration for Wadashaqayn"
 
 [extend]
 useDefault = true
@@ -260,6 +280,7 @@ gitleaks detect --source . --report-format json --report-path gitleaks-report.js
 ### **GitHub Actions (Automatique):**
 
 Le workflow `security.yml` exécute Gitleaks automatiquement:
+
 ```yaml
 - name: 🔍 Run Gitleaks
   uses: gitleaks/gitleaks-action@v2
@@ -270,12 +291,14 @@ Le workflow `security.yml` exécute Gitleaks automatiquement:
 ## ✅ Checklist de Sécurité
 
 ### **Avant Chaque Commit:**
+
 - [ ] ✅ Vérifier qu'aucun fichier `.env` n'est ajouté
 - [ ] ✅ Rechercher `password`, `secret`, `key` dans les diffs
 - [ ] ✅ Pas de tokens hardcodés dans le code
 - [ ] ✅ URLs sensibles remplacées par variables d'env
 
 ### **Configuration Repository:**
+
 - [ ] ✅ `.env` dans `.gitignore`
 - [ ] ✅ `.env.example` créé avec placeholders
 - [ ] ✅ Gitleaks configuré (`.gitleaks.toml`)
@@ -283,12 +306,14 @@ Le workflow `security.yml` exécute Gitleaks automatiquement:
 - [ ] ✅ GitHub Actions scan secrets
 
 ### **Documentation Équipe:**
+
 - [ ] ✅ Guide de configuration `.env` partagé (interne)
 - [ ] ✅ Liste des secrets requis documentée
 - [ ] ✅ Procédure de rotation des secrets définie
 - [ ] ✅ Responsables secrets identifiés
 
 ### **Environnements:**
+
 - [ ] ✅ Secrets dev différents de prod
 - [ ] ✅ Service Role Key JAMAIS côté frontend
 - [ ] ✅ Anon Key Supabase avec RLS activé
@@ -302,6 +327,7 @@ Le workflow `security.yml` exécute Gitleaks automatiquement:
 ### **1. Secret Committé par Erreur**
 
 #### **Option A: Commit récent (pas encore pushé)**
+
 ```bash
 # Modifier le dernier commit
 git reset HEAD~1
@@ -312,6 +338,7 @@ git commit --amend
 ```
 
 #### **Option B: Déjà pushé (repository public)**
+
 ```bash
 # 1. RÉVOQUER IMMÉDIATEMENT le secret exposé
 #    - Supabase: Dashboard → Settings → API → Reset Key
@@ -347,6 +374,7 @@ cat gitleaks-report.json | jq '.[0]'
 ### **3. Secret Exposé Publiquement**
 
 #### **Procédure d'Urgence:**
+
 1. **Révoquer immédiatement** (dans les 5 minutes)
 2. **Générer nouveau secret**
 3. **Mettre à jour tous les environnements**
@@ -359,18 +387,23 @@ cat gitleaks-report.json | jq '.[0]'
 ## 📊 Outils de Monitoring
 
 ### **1. GitHub Secret Scanning**
+
 ```
 Repository → Settings → Security → Secret scanning
 ```
+
 **Activé automatiquement** pour les repos publics
 
 ### **2. GitGuardian (Optionnel)**
+
 ```
 https://www.gitguardian.com/
 ```
+
 Monitoring 24/7 des secrets exposés
 
 ### **3. Rotation Automatique**
+
 ```bash
 # Script cron pour rotation mensuelle
 # cron: 0 0 1 * * /usr/local/bin/rotate-secrets.sh
@@ -387,24 +420,27 @@ echo "🔄 Rotating secrets..."
 ## 📚 Ressources
 
 ### **Documentation Officielle:**
+
 - [Supabase Security](https://supabase.com/docs/guides/platform/going-into-prod#security)
 - [GitHub Secrets](https://docs.github.com/en/actions/security-guides/encrypted-secrets)
 - [Gitleaks](https://github.com/gitleaks/gitleaks)
 - [OWASP Secrets Management](https://cheatsheetseries.owasp.org/cheatsheets/Secrets_Management_Cheat_Sheet.html)
 
 ### **Outils:**
+
 - [Gitleaks](https://github.com/gitleaks/gitleaks) - Détection secrets
 - [git-secrets](https://github.com/awslabs/git-secrets) - AWS secrets
 - [trufflehog](https://github.com/trufflesecurity/trufflehog) - Scanner historique
 - [BFG Repo-Cleaner](https://rtyley.github.io/bfg-repo-cleaner/) - Nettoyer historique
 
 ### **Standards:**
+
 - [12 Factor App - Config](https://12factor.net/config)
 - [NIST Secrets Management](https://csrc.nist.gov/publications/detail/sp/800-57-part-1/rev-5/final)
 
 ---
 
 **📅 Dernière Mise à Jour:** 7 novembre 2025  
-**👤 Auteur:** Security Team Wadashaqeen  
+**👤 Auteur:** Security Team Wadashaqayn  
 **🔖 Version:** 1.0  
 **✅ Status:** Production Ready

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { supabase } from '../integrations/supabase/client';
 import { Auth } from '@/components/Auth';
+import { BrandedLoadingScreen } from '@/components/layout/BrandedLoadingScreen';
 
 /**
  * InvitePage - Gestion des invitations
@@ -104,50 +105,11 @@ export default function InvitePage() {
   }, [code, navigate]);
 
   if (status === 'auth' || status === 'calling') {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <div className="text-center">
-          <div className="mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-b-2 border-primary"></div>
-          <p className="text-lg font-medium">Validation de l'invitation…</p>
-          {invitationType === 'tenant_owner' && (
-            <p className="mt-2 text-sm text-muted-foreground">Création de votre organisation</p>
-          )}
-        </div>
-      </div>
-    );
+    return <BrandedLoadingScreen appName="Wadashaqayn" logoSrc="/logo-w.svg" />;
   }
 
   if (status === 'waiting') {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <div className="max-w-md text-center">
-          <div className="mb-4 animate-pulse">
-            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-primary/20">
-              <svg
-                className="h-8 w-8 text-primary"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M5 13l4 4L19 7"
-                />
-              </svg>
-            </div>
-          </div>
-          <h2 className="mb-2 text-xl font-semibold">Bienvenue !</h2>
-          <p className="text-muted-foreground">
-            Votre compte collaborateur est en cours de création...
-          </p>
-          <p className="mt-2 text-sm text-muted-foreground">
-            Redirection automatique dans quelques instants
-          </p>
-        </div>
-      </div>
-    );
+    return <BrandedLoadingScreen appName="Wadashaqayn" logoSrc="/logo-w.svg" />;
   }
 
   if (status === 'error') {
@@ -155,9 +117,9 @@ export default function InvitePage() {
       <div className="flex min-h-screen items-center justify-center">
         <div className="mx-auto max-w-md space-y-4 p-6">
           <div className="text-center">
-            <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-destructive/20">
+            <div className="bg-destructive/20 mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full">
               <svg
-                className="h-6 w-6 text-destructive"
+                className="text-destructive h-6 w-6"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"

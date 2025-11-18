@@ -1,0 +1,68 @@
+# Wadashaqayn.org - Configuration Apache
+# À renommer en ".htaccess" après upload sur Hostinger
+
+# ============================================================================
+# 1. FORCER HTTPS (SSL)
+# ============================================================================
+RewriteEngine On
+RewriteCond %{HTTPS} off
+RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# ============================================================================
+# 2. GESTION DES ROUTES SPA (Single Page Application)
+# ============================================================================
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+  RewriteRule ^index\.html$ - [L]
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteCond %{REQUEST_FILENAME} !-l
+  RewriteRule . /index.html [L]
+</IfModule>
+
+# ============================================================================
+# 3. CACHE CONTROL
+# ============================================================================
+<IfModule mod_expires.c>
+  ExpiresActive On
+  
+  # Images
+  ExpiresByType image/jpeg "access plus 1 year"
+  ExpiresByType image/gif "access plus 1 year"
+  ExpiresByType image/png "access plus 1 year"
+  ExpiresByType image/webp "access plus 1 year"
+  ExpiresByType image/svg+xml "access plus 1 year"
+  ExpiresByType image/x-icon "access plus 1 year"
+  
+  # CSS et JavaScript
+  ExpiresByType text/css "access plus 1 month"
+  ExpiresByType text/javascript "access plus 1 month"
+  ExpiresByType application/javascript "access plus 1 month"
+  
+  # HTML
+  ExpiresByType text/html "access plus 0 seconds"
+</IfModule>
+
+# ============================================================================
+# 4. COMPRESSION GZIP
+# ============================================================================
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css
+  AddOutputFilterByType DEFLATE application/javascript application/json
+  AddOutputFilterByType DEFLATE image/svg+xml
+</IfModule>
+
+# ============================================================================
+# 5. SÉCURITÉ
+# ============================================================================
+Options -Indexes
+Header always set X-Frame-Options "SAMEORIGIN"
+Header always set X-XSS-Protection "1; mode=block"
+Header always set X-Content-Type-Options "nosniff"
+
+# ============================================================================
+# 6. PAGES D'ERREUR
+# ============================================================================
+ErrorDocument 404 /index.html
+ErrorDocument 403 /index.html

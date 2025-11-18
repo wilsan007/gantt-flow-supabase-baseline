@@ -387,7 +387,7 @@ Voir `SECURITY_ACTION_PLAN.md` Phase 2 :
 
 ## 🎉 Félicitations !
 
-Votre application Wadashaqeen est maintenant **au niveau des leaders SaaS** (Notion, Linear) en termes de sécurité d'authentification.
+Votre application Wadashaqayn est maintenant **au niveau des leaders SaaS** (Notion, Linear) en termes de sécurité d'authentification.
 
 **Score actuel** : 87/100 ⭐⭐⭐⭐⭐  
 **Niveau** : Enterprise-Ready  

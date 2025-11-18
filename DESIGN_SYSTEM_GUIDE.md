@@ -1,4 +1,4 @@
-# 🎨 Guide du Système de Design - Wadashaqeen SaaS
+# 🎨 Guide du Système de Design - Wadashaqayn SaaS
 
 ## Vue d'ensemble
 
@@ -12,21 +12,22 @@ Système de design moderne inspiré des meilleurs SaaS B2B du marché : **Linear
 
 ```tsx
 // High Priority - Rouge vif
-className="bg-priority-high text-white"
-className="text-priority-high"
-className="border-priority-high"
+className = 'bg-priority-high text-white';
+className = 'text-priority-high';
+className = 'border-priority-high';
 
 // Medium Priority - Orange/Jaune
-className="bg-priority-medium text-white"
+className = 'bg-priority-medium text-white';
 
 // Low Priority - Vert
-className="bg-priority-low text-white"
+className = 'bg-priority-low text-white';
 
 // Critical Priority - Rose/Rouge foncé
-className="bg-priority-critical text-white"
+className = 'bg-priority-critical text-white';
 ```
 
 **Exemples d'utilisation :**
+
 ```tsx
 // Badge de priorité
 <span className="px-2 py-1 rounded-full bg-priority-high text-white text-xs font-medium">
@@ -43,25 +44,26 @@ className="bg-priority-critical text-white"
 
 ```tsx
 // À faire (To Do) - Gris
-className="bg-status-todo"
+className = 'bg-status-todo';
 
 // En cours (Doing) - Bleu
-className="bg-status-doing text-white"
+className = 'bg-status-doing text-white';
 
 // Bloqué (Blocked) - Rouge
-className="bg-status-blocked text-white"
+className = 'bg-status-blocked text-white';
 
 // Terminé (Done) - Vert
-className="bg-status-done text-white"
+className = 'bg-status-done text-white';
 
 // En révision (Review) - Jaune
-className="bg-status-review text-white"
+className = 'bg-status-review text-white';
 
 // Backlog - Gris clair
-className="bg-status-backlog"
+className = 'bg-status-backlog';
 ```
 
 **Exemples d'utilisation :**
+
 ```tsx
 // Badge de statut (style Monday.com)
 <span className="px-3 py-1 rounded-md bg-status-doing text-white font-medium">
@@ -80,31 +82,32 @@ className="bg-status-backlog"
 
 ```tsx
 // Bleu
-className="bg-badge-blue/10 text-badge-blue border-badge-blue/20"
+className = 'bg-badge-blue/10 text-badge-blue border-badge-blue/20';
 
 // Violet
-className="bg-badge-purple/10 text-badge-purple"
+className = 'bg-badge-purple/10 text-badge-purple';
 
 // Rose
-className="bg-badge-pink/10 text-badge-pink"
+className = 'bg-badge-pink/10 text-badge-pink';
 
 // Vert
-className="bg-badge-green/10 text-badge-green"
+className = 'bg-badge-green/10 text-badge-green';
 
 // Jaune
-className="bg-badge-yellow/10 text-badge-yellow"
+className = 'bg-badge-yellow/10 text-badge-yellow';
 
 // Orange
-className="bg-badge-orange/10 text-badge-orange"
+className = 'bg-badge-orange/10 text-badge-orange';
 
 // Rouge
-className="bg-badge-red/10 text-badge-red"
+className = 'bg-badge-red/10 text-badge-red';
 
 // Gris
-className="bg-badge-gray/10 text-badge-gray"
+className = 'bg-badge-gray/10 text-badge-gray';
 ```
 
 **Exemples d'utilisation :**
+
 ```tsx
 // Badge style Notion (background léger + texte coloré)
 <span className="px-2 py-1 rounded bg-badge-blue/10 text-badge-blue text-sm">
@@ -123,16 +126,16 @@ className="bg-badge-gray/10 text-badge-gray"
 
 ```tsx
 // Succès - Vert
-className="bg-success text-white"
+className = 'bg-success text-white';
 
 // Avertissement - Jaune
-className="bg-warning text-white"
+className = 'bg-warning text-white';
 
 // Danger/Erreur - Rouge
-className="bg-danger text-white"
+className = 'bg-danger text-white';
 
 // Information - Bleu
-className="bg-info text-white"
+className = 'bg-info text-white';
 ```
 
 ---
@@ -162,7 +165,7 @@ export const PriorityBadge = ({ priority }: PriorityBadgeProps) => {
   };
 
   return (
-    <span className={`px-2 py-1 rounded-full text-xs font-medium ${styles[priority]}`}>
+    <span className={`rounded-full px-2 py-1 text-xs font-medium ${styles[priority]}`}>
       {labels[priority]}
     </span>
   );
@@ -196,7 +199,7 @@ export const StatusBadge = ({ status }: StatusBadgeProps) => {
   };
 
   return (
-    <span className={`px-3 py-1 rounded-md font-medium text-sm ${styles[status]}`}>
+    <span className={`rounded-md px-3 py-1 text-sm font-medium ${styles[status]}`}>
       {labels[status]}
     </span>
   );
@@ -224,7 +227,7 @@ export const Label = ({ color, children }: LabelProps) => {
   };
 
   return (
-    <span className={`px-2 py-1 rounded border text-xs font-medium ${styles[color]}`}>
+    <span className={`rounded border px-2 py-1 text-xs font-medium ${styles[color]}`}>
       {children}
     </span>
   );
@@ -243,30 +246,30 @@ interface TaskCardProps {
 
 export const TaskCard = ({ title, priority, assignee, progress }: TaskCardProps) => {
   return (
-    <div className="modern-card p-4 rounded-lg hover:shadow-lg transition-smooth cursor-pointer">
+    <div className="modern-card transition-smooth cursor-pointer rounded-lg p-4 hover:shadow-lg">
       {/* Header avec priorité */}
-      <div className="flex items-center justify-between mb-2">
+      <div className="mb-2 flex items-center justify-between">
         <PriorityBadge priority={priority} />
         {assignee && (
-          <div className="w-6 h-6 rounded-full bg-blue-500 text-white text-xs flex items-center justify-center">
+          <div className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-500 text-xs text-white">
             {assignee[0]}
           </div>
         )}
       </div>
-      
+
       {/* Titre */}
-      <h4 className="font-medium text-sm mb-2">{title}</h4>
-      
+      <h4 className="mb-2 text-sm font-medium">{title}</h4>
+
       {/* Barre de progression */}
       {progress !== undefined && (
         <div className="mt-2">
-          <div className="flex justify-between text-xs text-muted-foreground mb-1">
+          <div className="mb-1 flex justify-between text-xs text-muted-foreground">
             <span>Progression</span>
             <span>{progress}%</span>
           </div>
-          <div className="h-1.5 bg-muted rounded-full overflow-hidden">
-            <div 
-              className="h-full bg-status-doing rounded-full transition-all"
+          <div className="h-1.5 overflow-hidden rounded-full bg-muted">
+            <div
+              className="h-full rounded-full bg-status-doing transition-all"
               style={{ width: `${progress}%` }}
             />
           </div>
@@ -282,47 +285,48 @@ export const TaskCard = ({ title, priority, assignee, progress }: TaskCardProps)
 ## 🎨 Exemples Visuels d'Application
 
 ### **Tableau de Bord RH**
+
 ```tsx
 <div className="grid grid-cols-4 gap-4">
   {/* Carte avec badge coloré */}
-  <div className="modern-card p-4 rounded-lg">
-    <div className="flex items-center justify-between mb-2">
+  <div className="modern-card rounded-lg p-4">
+    <div className="mb-2 flex items-center justify-between">
       <span className="text-2xl font-bold">8</span>
-      <div className="p-2 rounded-lg bg-badge-blue/10">
-        <UsersIcon className="w-5 h-5 text-badge-blue" />
+      <div className="rounded-lg bg-badge-blue/10 p-2">
+        <UsersIcon className="h-5 w-5 text-badge-blue" />
       </div>
     </div>
     <p className="text-sm text-muted-foreground">Total Employés</p>
   </div>
-  
+
   {/* Carte avec badge vert */}
-  <div className="modern-card p-4 rounded-lg">
-    <div className="flex items-center justify-between mb-2">
+  <div className="modern-card rounded-lg p-4">
+    <div className="mb-2 flex items-center justify-between">
       <span className="text-2xl font-bold">8</span>
-      <div className="p-2 rounded-lg bg-badge-green/10">
-        <CheckCircleIcon className="w-5 h-5 text-badge-green" />
+      <div className="rounded-lg bg-badge-green/10 p-2">
+        <CheckCircleIcon className="h-5 w-5 text-badge-green" />
       </div>
     </div>
     <p className="text-sm text-muted-foreground">CDI</p>
   </div>
-  
+
   {/* Carte avec badge orange */}
-  <div className="modern-card p-4 rounded-lg">
-    <div className="flex items-center justify-between mb-2">
+  <div className="modern-card rounded-lg p-4">
+    <div className="mb-2 flex items-center justify-between">
       <span className="text-2xl font-bold">0</span>
-      <div className="p-2 rounded-lg bg-badge-orange/10">
-        <ClockIcon className="w-5 h-5 text-badge-orange" />
+      <div className="rounded-lg bg-badge-orange/10 p-2">
+        <ClockIcon className="h-5 w-5 text-badge-orange" />
       </div>
     </div>
     <p className="text-sm text-muted-foreground">Temporaires</p>
   </div>
-  
+
   {/* Carte avec badge bleu clair */}
-  <div className="modern-card p-4 rounded-lg">
-    <div className="flex items-center justify-between mb-2">
+  <div className="modern-card rounded-lg p-4">
+    <div className="mb-2 flex items-center justify-between">
       <span className="text-2xl font-bold">0</span>
-      <div className="p-2 rounded-lg bg-badge-blue/10">
-        <UserPlusIcon className="w-5 h-5 text-badge-blue" />
+      <div className="rounded-lg bg-badge-blue/10 p-2">
+        <UserPlusIcon className="h-5 w-5 text-badge-blue" />
       </div>
     </div>
     <p className="text-sm text-muted-foreground">Nouveaux (3m)</p>
@@ -331,15 +335,16 @@ export const TaskCard = ({ title, priority, assignee, progress }: TaskCardProps)
 ```
 
 ### **Vue Kanban**
+
 ```tsx
 <div className="flex gap-4">
   {/* Colonne À faire */}
-  <div className="flex-1 bg-card rounded-lg p-4">
-    <div className="flex items-center justify-between mb-4">
+  <div className="flex-1 rounded-lg bg-card p-4">
+    <div className="mb-4 flex items-center justify-between">
       <div className="flex items-center gap-2">
-        <div className="w-3 h-3 rounded-full bg-status-todo"></div>
+        <div className="h-3 w-3 rounded-full bg-status-todo"></div>
         <h3 className="font-semibold">À faire</h3>
-        <span className="px-2 py-0.5 rounded-full bg-status-todo/20 text-xs">4</span>
+        <span className="rounded-full bg-status-todo/20 px-2 py-0.5 text-xs">4</span>
       </div>
     </div>
     <div className="space-y-2">
@@ -347,14 +352,14 @@ export const TaskCard = ({ title, priority, assignee, progress }: TaskCardProps)
       <TaskCard title="Sous-tâche de Documentation" priority="low" />
     </div>
   </div>
-  
+
   {/* Colonne En cours */}
-  <div className="flex-1 bg-card rounded-lg p-4">
-    <div className="flex items-center justify-between mb-4">
+  <div className="flex-1 rounded-lg bg-card p-4">
+    <div className="mb-4 flex items-center justify-between">
       <div className="flex items-center gap-2">
-        <div className="w-3 h-3 rounded-full bg-status-doing"></div>
+        <div className="h-3 w-3 rounded-full bg-status-doing"></div>
         <h3 className="font-semibold">En cours</h3>
-        <span className="px-2 py-0.5 rounded-full bg-status-doing/20 text-xs">11</span>
+        <span className="rounded-full bg-status-doing/20 px-2 py-0.5 text-xs">11</span>
       </div>
     </div>
     <div className="space-y-2">
@@ -363,14 +368,14 @@ export const TaskCard = ({ title, priority, assignee, progress }: TaskCardProps)
       <TaskCard title="Backend API" priority="high" progress={57} />
     </div>
   </div>
-  
+
   {/* Colonne Terminé */}
-  <div className="flex-1 bg-card rounded-lg p-4">
-    <div className="flex items-center justify-between mb-4">
+  <div className="flex-1 rounded-lg bg-card p-4">
+    <div className="mb-4 flex items-center justify-between">
       <div className="flex items-center gap-2">
-        <div className="w-3 h-3 rounded-full bg-status-done"></div>
+        <div className="h-3 w-3 rounded-full bg-status-done"></div>
         <h3 className="font-semibold">Terminé</h3>
-        <span className="px-2 py-0.5 rounded-full bg-status-done/20 text-xs">1</span>
+        <span className="rounded-full bg-status-done/20 px-2 py-0.5 text-xs">1</span>
       </div>
     </div>
     <div className="space-y-2">
@@ -381,14 +386,15 @@ export const TaskCard = ({ title, priority, assignee, progress }: TaskCardProps)
 ```
 
 ### **Dashboard Analytics**
+
 ```tsx
 <div className="space-y-6">
   {/* Métriques avec icônes colorées */}
   <div className="grid grid-cols-4 gap-4">
-    <div className="modern-card p-4 rounded-lg">
+    <div className="modern-card rounded-lg p-4">
       <div className="flex items-center gap-3">
-        <div className="p-3 rounded-lg bg-badge-blue/10">
-          <TrendingUpIcon className="w-6 h-6 text-badge-blue" />
+        <div className="rounded-lg bg-badge-blue/10 p-3">
+          <TrendingUpIcon className="h-6 w-6 text-badge-blue" />
         </div>
         <div>
           <p className="text-xs text-muted-foreground">Créées</p>
@@ -397,11 +403,11 @@ export const TaskCard = ({ title, priority, assignee, progress }: TaskCardProps)
         </div>
       </div>
     </div>
-    
-    <div className="modern-card p-4 rounded-lg">
+
+    <div className="modern-card rounded-lg p-4">
       <div className="flex items-center gap-3">
-        <div className="p-3 rounded-lg bg-badge-green/10">
-          <CheckCircleIcon className="w-6 h-6 text-badge-green" />
+        <div className="rounded-lg bg-badge-green/10 p-3">
+          <CheckCircleIcon className="h-6 w-6 text-badge-green" />
         </div>
         <div>
           <p className="text-xs text-muted-foreground">Terminées</p>
@@ -410,11 +416,11 @@ export const TaskCard = ({ title, priority, assignee, progress }: TaskCardProps)
         </div>
       </div>
     </div>
-    
-    <div className="modern-card p-4 rounded-lg">
+
+    <div className="modern-card rounded-lg p-4">
       <div className="flex items-center gap-3">
-        <div className="p-3 rounded-lg bg-badge-red/10">
-          <AlertCircleIcon className="w-6 h-6 text-badge-red" />
+        <div className="rounded-lg bg-badge-red/10 p-3">
+          <AlertCircleIcon className="h-6 w-6 text-badge-red" />
         </div>
         <div>
           <p className="text-xs text-muted-foreground">En retard</p>
@@ -423,11 +429,11 @@ export const TaskCard = ({ title, priority, assignee, progress }: TaskCardProps)
         </div>
       </div>
     </div>
-    
-    <div className="modern-card p-4 rounded-lg">
+
+    <div className="modern-card rounded-lg p-4">
       <div className="flex items-center gap-3">
-        <div className="p-3 rounded-lg bg-badge-orange/10">
-          <PercentIcon className="w-6 h-6 text-badge-orange" />
+        <div className="rounded-lg bg-badge-orange/10 p-3">
+          <PercentIcon className="h-6 w-6 text-badge-orange" />
         </div>
         <div>
           <p className="text-xs text-muted-foreground">Taux</p>
@@ -437,50 +443,50 @@ export const TaskCard = ({ title, priority, assignee, progress }: TaskCardProps)
       </div>
     </div>
   </div>
-  
+
   {/* Performance par priorité */}
-  <div className="modern-card p-6 rounded-lg">
-    <h3 className="font-semibold mb-4 flex items-center gap-2">
-      <BarChartIcon className="w-5 h-5" />
+  <div className="modern-card rounded-lg p-6">
+    <h3 className="mb-4 flex items-center gap-2 font-semibold">
+      <BarChartIcon className="h-5 w-5" />
       Performance par Priorité
     </h3>
     <div className="space-y-3">
       <div>
-        <div className="flex justify-between mb-1 text-sm">
+        <div className="mb-1 flex justify-between text-sm">
           <span className="flex items-center gap-2">
-            <div className="w-2 h-2 rounded-full bg-priority-high"></div>
+            <div className="h-2 w-2 rounded-full bg-priority-high"></div>
             Haute
           </span>
           <span>0% (0/6)</span>
         </div>
-        <div className="h-2 bg-muted rounded-full overflow-hidden">
-          <div className="h-full bg-priority-high rounded-full" style={{ width: '0%' }}></div>
+        <div className="h-2 overflow-hidden rounded-full bg-muted">
+          <div className="h-full rounded-full bg-priority-high" style={{ width: '0%' }}></div>
         </div>
       </div>
-      
+
       <div>
-        <div className="flex justify-between mb-1 text-sm">
+        <div className="mb-1 flex justify-between text-sm">
           <span className="flex items-center gap-2">
-            <div className="w-2 h-2 rounded-full bg-priority-medium"></div>
+            <div className="h-2 w-2 rounded-full bg-priority-medium"></div>
             Moyenne
           </span>
           <span>13% (1/8)</span>
         </div>
-        <div className="h-2 bg-muted rounded-full overflow-hidden">
-          <div className="h-full bg-priority-medium rounded-full" style={{ width: '13%' }}></div>
+        <div className="h-2 overflow-hidden rounded-full bg-muted">
+          <div className="h-full rounded-full bg-priority-medium" style={{ width: '13%' }}></div>
         </div>
       </div>
-      
+
       <div>
-        <div className="flex justify-between mb-1 text-sm">
+        <div className="mb-1 flex justify-between text-sm">
           <span className="flex items-center gap-2">
-            <div className="w-2 h-2 rounded-full bg-priority-low"></div>
+            <div className="h-2 w-2 rounded-full bg-priority-low"></div>
             Basse
           </span>
           <span>0% (0/2)</span>
         </div>
-        <div className="h-2 bg-muted rounded-full overflow-hidden">
-          <div className="h-full bg-priority-low rounded-full" style={{ width: '0%' }}></div>
+        <div className="h-2 overflow-hidden rounded-full bg-muted">
+          <div className="h-full rounded-full bg-priority-low" style={{ width: '0%' }}></div>
         </div>
       </div>
     </div>
@@ -493,19 +499,23 @@ export const TaskCard = ({ title, priority, assignee, progress }: TaskCardProps)
 ## ✅ Bonnes Pratiques
 
 ### **1. Contraste**
+
 - Toujours utiliser `text-white` sur les backgrounds colorés foncés
 - Utiliser l'opacity (`/10`, `/20`) pour les backgrounds légers avec texte coloré
 
 ### **2. Cohérence**
+
 - Priorité = Couleurs vives (rouge, orange, vert)
 - Statut = Couleurs variées selon l'état
 - Labels/Tags = Backgrounds légers + texte coloré
 
 ### **3. Accessibilité**
+
 - Ratio de contraste minimum : 4.5:1
 - Toujours ajouter des icônes avec les couleurs pour les daltoniens
 
 ### **4. Dark Mode**
+
 - Toutes les couleurs s'adaptent automatiquement
 - Les couleurs sont plus lumineuses en mode sombre
 
@@ -514,6 +524,7 @@ export const TaskCard = ({ title, priority, assignee, progress }: TaskCardProps)
 ## 🚀 Application sur Toute l'App
 
 Les couleurs sont maintenant disponibles globalement via :
+
 - **Tailwind** : `className="bg-status-doing"`
 - **CSS Variables** : `var(--status-doing)`
 - **HSL** : Toutes les couleurs en HSL pour facilité de customisation

@@ -10,7 +10,7 @@ Votre projet SaaS Wadashaqayn est **100% prêt** à être déployé sur Hostinge
 
 ### 1️⃣ Dossier : `wadashaqayn_deploy_ready/`
 
-- **Emplacement** : `/home/awaleh/Bureau/Wadashaqeen-SaaS/gantt-flow-next/wadashaqayn_deploy_ready/`
+- **Emplacement** : `/home/awaleh/Bureau/Wadashaqayn-SaaS/gantt-flow-next/wadashaqayn_deploy_ready/`
 - **Contenu** :
   ```
   wadashaqayn_deploy_ready/
@@ -26,7 +26,7 @@ Votre projet SaaS Wadashaqayn est **100% prêt** à être déployé sur Hostinge
 
 ### 2️⃣ Archive ZIP : `wadashaqayn_build_ready.zip`
 
-- **Emplacement** : `/home/awaleh/Bureau/Wadashaqeen-SaaS/gantt-flow-next/wadashaqayn_build_ready.zip`
+- **Emplacement** : `/home/awaleh/Bureau/Wadashaqayn-SaaS/gantt-flow-next/wadashaqayn_build_ready.zip`
 - **Taille** : 409 KB (compressé)
 - **Contenu** : Tous les fichiers du dossier ci-dessus
 

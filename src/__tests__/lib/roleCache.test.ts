@@ -5,7 +5,7 @@ const CACHE_CONFIG = {
   TTL_ROLES: 15 * 60 * 1000,
   TTL_PERMISSIONS: 10 * 60 * 1000,
   TTL_ACCESS_RIGHTS: 5 * 60 * 1000,
-  STORAGE_PREFIX: 'wadashaqeen_auth_',
+  STORAGE_PREFIX: 'wadashaqayn_auth_',
   INVALIDATION_EVENTS: [
     'role_updated',
     'permission_changed',
@@ -30,7 +30,7 @@ describe('Role Cache System', () => {
     });
 
     it('should have storage prefix defined', () => {
-      expect(CACHE_CONFIG.STORAGE_PREFIX).toBe('wadashaqeen_auth_');
+      expect(CACHE_CONFIG.STORAGE_PREFIX).toBe('wadashaqayn_auth_');
     });
 
     it('should have invalidation events defined', () => {
@@ -50,9 +50,9 @@ describe('Role Cache System', () => {
       const key2 = generateKey('user1', 'tenant1');
       const key3 = generateKey('user2');
 
-      expect(key1).toBe('wadashaqeen_auth_user1');
-      expect(key2).toBe('wadashaqeen_auth_user1_tenant1');
-      expect(key3).toBe('wadashaqeen_auth_user2');
+      expect(key1).toBe('wadashaqayn_auth_user1');
+      expect(key2).toBe('wadashaqayn_auth_user1_tenant1');
+      expect(key3).toBe('wadashaqayn_auth_user2');
       expect(key1).not.toBe(key2);
     });
 
@@ -63,7 +63,7 @@ describe('Role Cache System', () => {
 
       const key = generateKey('user1', undefined);
       expect(key).not.toContain('undefined');
-      expect(key).toBe('wadashaqeen_auth_user1');
+      expect(key).toBe('wadashaqayn_auth_user1');
     });
   });
 
@@ -188,8 +188,8 @@ describe('Role Cache System', () => {
       const roleKey = getStorageKey('roles', 'user123');
       const permKey = getStorageKey('permissions', 'user123');
 
-      expect(roleKey).toBe('wadashaqeen_auth_roles_user123');
-      expect(permKey).toBe('wadashaqeen_auth_permissions_user123');
+      expect(roleKey).toBe('wadashaqayn_auth_roles_user123');
+      expect(permKey).toBe('wadashaqayn_auth_permissions_user123');
       expect(roleKey).not.toBe(permKey);
     });
 
@@ -197,7 +197,7 @@ describe('Role Cache System', () => {
       const prefix = CACHE_CONFIG.STORAGE_PREFIX;
 
       expect(prefix.endsWith('_')).toBe(true);
-      expect(prefix.startsWith('wadashaqeen')).toBe(true);
+      expect(prefix.startsWith('wadashaqayn')).toBe(true);
     });
   });
 

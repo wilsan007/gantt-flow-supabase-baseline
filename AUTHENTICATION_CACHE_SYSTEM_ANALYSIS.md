@@ -21,17 +21,18 @@
 ```typescript
 export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
   auth: {
-    storage: localStorage,              // ✅ Persistance permanente
-    persistSession: true,               // ✅ Sauvegarde la session
-    autoRefreshToken: true,             // ✅ Renouvellement automatique
-    detectSessionInUrl: true,           // ✅ Détection magic links
-    storageKey: 'supabase.auth.token',  // Clé dans localStorage
-    flowType: 'pkce',                   // Sécurité PKCE
-  }
+    storage: localStorage, // ✅ Persistance permanente
+    persistSession: true, // ✅ Sauvegarde la session
+    autoRefreshToken: true, // ✅ Renouvellement automatique
+    detectSessionInUrl: true, // ✅ Détection magic links
+    storageKey: 'supabase.auth.token', // Clé dans localStorage
+    flowType: 'pkce', // Sécurité PKCE
+  },
 });
 ```
 
 **Caractéristiques** :
+
 - ✅ **Connexion automatique** : Même après fermeture du navigateur
 - ✅ **Durée longue** : Token JWT refresh automatiquement avant expiration
 - ✅ **Expérience utilisateur fluide** : Pas de déconnexion intempestive
@@ -46,16 +47,17 @@ export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABL
 ```typescript
 export const supabaseStrict = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
-    autoRefreshToken: false,            // ❌ PAS de renouvellement
-    storage: window.sessionStorage,     // ❌ Effacé à la fermeture
+    autoRefreshToken: false, // ❌ PAS de renouvellement
+    storage: window.sessionStorage, // ❌ Effacé à la fermeture
     detectSessionInUrl: true,
-    persistSession: false,              // ❌ Pas de sauvegarde
+    persistSession: false, // ❌ Pas de sauvegarde
     flowType: 'pkce',
-  }
+  },
 });
 ```
 
 **Caractéristiques** :
+
 - ❌ **Déconnexion à la fermeture** du navigateur
 - ❌ **Expiration stricte** : 2 heures maximum
 - ❌ **Pas de reconnexion automatique**
@@ -88,6 +90,7 @@ SAUVEGARDE dans localStorage:
 ```
 
 **Fichier localStorage** : Persiste même après :
+
 - ✅ Fermeture du navigateur
 - ✅ Redémarrage de l'ordinateur
 - ✅ Plusieurs jours/semaines d'inactivité
@@ -144,7 +147,7 @@ supabase.auth.onAuthStateChange((event, session) => {
     console.log('✅ Token rafraîchi avec succès');
     // Le nouveau token est automatiquement sauvegardé dans localStorage
   }
-  
+
   if (event === 'SIGNED_OUT') {
     console.log('🔒 Utilisateur déconnecté - Nettoyage du localStorage');
     localStorage.removeItem('lastActivity');
@@ -154,6 +157,7 @@ supabase.auth.onAuthStateChange((event, session) => {
 ```
 
 **Événements surveillés** :
+
 - `SIGNED_IN` : Connexion réussie
 - `TOKEN_REFRESHED` : Token renouvelé automatiquement ✅
 - `SIGNED_OUT` : Déconnexion
@@ -193,7 +197,7 @@ export const TenantProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     // ❌ CACHE INVALIDE : Fetcher depuis DB
     const fetchUserTenant = async () => {
       setLoading(true);
-      
+
       // 1. Récupérer l'utilisateur authentifié
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
@@ -209,10 +213,10 @@ export const TenantProvider: React.FC<{ children: ReactNode }> = ({ children }) 
         .single();
 
       if (profile && profile.tenant_id) {
-        const defaultTenant = { 
-          id: profile.tenant_id, 
-          name: 'Wadashaqeen SaaS', 
-          slug: 'wadashaqeen',
+        const defaultTenant = {
+          id: profile.tenant_id,
+          name: 'Wadashaqayn SaaS',
+          slug: 'wadashaqayn',
           status: 'active'
         };
 
@@ -238,7 +242,7 @@ export const TenantProvider: React.FC<{ children: ReactNode }> = ({ children }) 
         setCurrentTenant(defaultTenant as Tenant);
         setUserMembership(membership);
       }
-      
+
       setLoading(false);
     };
 
@@ -258,6 +262,7 @@ export const TenantProvider: React.FC<{ children: ReactNode }> = ({ children }) 
 ### **Avantages du Cache Global**
 
 #### **1. Performance Optimale**
+
 ```
 Premier chargement (cache vide) :
   ├─ supabase.auth.getUser() : ~50-100ms
@@ -270,11 +275,13 @@ Chargements suivants (cache plein) :
 ```
 
 #### **2. Évite les Re-fetches Inutiles**
+
 - ✅ **1 seule requête DB** par session de navigation
 - ✅ **Tous les composants** partagent les mêmes données
 - ✅ **Pas de race conditions** entre composants
 
 #### **3. Survit aux Navigations**
+
 - ✅ Changement de page → Cache conservé
 - ✅ Retour arrière → Cache conservé
 - ❌ Rafraîchissement F5 → Cache vidé (normal)
@@ -336,18 +343,18 @@ JOUR 4 - 09h00 : Réouverture du navigateur (72h plus tard)
 
 ## 📊 Comparaison des Deux Systèmes
 
-| Aspect | SYSTÈME 1 (Défaut) ✅ | SYSTÈME 2 (Strict) ⚠️ |
-|--------|----------------------|----------------------|
-| **Client** | `supabase` | `supabaseStrict` |
-| **Fichier** | `/src/integrations/supabase/client.ts` | `/src/lib/auth-config.ts` |
-| **Storage** | `localStorage` | `sessionStorage` |
-| **Persistance** | ✅ Survit fermeture | ❌ Effacé à la fermeture |
-| **autoRefreshToken** | ✅ Activé | ❌ Désactivé |
-| **Durée session** | 7+ jours (configurable) | 2 heures max |
-| **Reconnexion auto** | ✅ Oui | ❌ Non |
-| **Usage** | 95% de l'app | `useStrictAuth` uniquement |
-| **Hook principal** | Aucun (client direct) | `useStrictAuth()` |
-| **Cas d'usage** | Application normale | Sécurité maximale |
+| Aspect               | SYSTÈME 1 (Défaut) ✅                  | SYSTÈME 2 (Strict) ⚠️      |
+| -------------------- | -------------------------------------- | -------------------------- |
+| **Client**           | `supabase`                             | `supabaseStrict`           |
+| **Fichier**          | `/src/integrations/supabase/client.ts` | `/src/lib/auth-config.ts`  |
+| **Storage**          | `localStorage`                         | `sessionStorage`           |
+| **Persistance**      | ✅ Survit fermeture                    | ❌ Effacé à la fermeture   |
+| **autoRefreshToken** | ✅ Activé                              | ❌ Désactivé               |
+| **Durée session**    | 7+ jours (configurable)                | 2 heures max               |
+| **Reconnexion auto** | ✅ Oui                                 | ❌ Non                     |
+| **Usage**            | 95% de l'app                           | `useStrictAuth` uniquement |
+| **Hook principal**   | Aucun (client direct)                  | `useStrictAuth()`          |
+| **Cas d'usage**      | Application normale                    | Sécurité maximale          |
 
 ---
 
@@ -360,12 +367,12 @@ JOUR 4 - 09h00 : Réouverture du navigateur (72h plus tard)
 ```typescript
 export function useStrictAuth() {
   // Utilise supabaseStrict (sessionStorage, pas de refresh)
-  
+
   useEffect(() => {
     const initializeAuth = async () => {
       // Marqueur de session unique
       const marker = initializeSessionMarker();
-      
+
       // Vérifier session stricte
       const session = await getStrictSession();
       // ...
@@ -374,26 +381,32 @@ export function useStrictAuth() {
 
   // Surveillance stricte
   useEffect(() => {
-    const { data: { subscription } } = supabaseStrict.auth.onAuthStateChange(
-      async (event, session) => {
-        if (event === 'TOKEN_REFRESHED') {
-          // ⚠️ BLOQUER le refresh - déconnecter
-          await invalidateSession();
-          await handleSessionInvalid();
-        }
+    const {
+      data: { subscription },
+    } = supabaseStrict.auth.onAuthStateChange(async (event, session) => {
+      if (event === 'TOKEN_REFRESHED') {
+        // ⚠️ BLOQUER le refresh - déconnecter
+        await invalidateSession();
+        await handleSessionInvalid();
       }
-    );
+    });
   }, []);
 
   return {
-    user, session, loading, isAuthenticated,
-    signIn, signOut,
-    getTimeUntilExpiry, isExpiringSoon
+    user,
+    session,
+    loading,
+    isAuthenticated,
+    signIn,
+    signOut,
+    getTimeUntilExpiry,
+    isExpiringSoon,
   };
 }
 ```
 
 **Caractéristiques strictes** :
+
 - ❌ Bloque le refresh token automatique
 - ❌ Déconnexion si changement de focus/visibilité
 - ❌ Vérification toutes les 30 secondes
@@ -414,23 +427,23 @@ const MyComponent = () => {
   useEffect(() => {
     const fetchData = async () => {
       // ✅ Utilise le client par défaut (avec autoRefresh)
-      const { data: { user } } = await supabase.auth.getUser();
-      
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
       if (user) {
         // ✅ Utilisateur authentifié automatiquement
-        const { data } = await supabase
-          .from('tasks')
-          .select('*')
-          .eq('tenant_id', user.tenant_id);
+        const { data } = await supabase.from('tasks').select('*').eq('tenant_id', user.tenant_id);
       }
     };
-    
+
     fetchData();
   }, []);
 };
 ```
 
 **Aucun hook spécial nécessaire** car :
+
 - ✅ `supabase.auth.getUser()` retourne l'utilisateur si session valide
 - ✅ Session valide = refresh token automatique a fonctionné
 - ✅ Transparent pour le développeur
@@ -493,8 +506,8 @@ console.log(`Soit ${Math.floor(remainingSeconds / 60)} minutes`);
 supabase.auth.onAuthStateChange((event, session) => {
   console.log('🔐 Event:', event);
   console.log('📊 Session:', session);
-  
-  switch(event) {
+
+  switch (event) {
     case 'SIGNED_IN':
       console.log('✅ Connexion réussie');
       break;
@@ -515,6 +528,7 @@ supabase.auth.onAuthStateChange((event, session) => {
 ### **✅ Conserver le Système Actuel (SYSTÈME 1)**
 
 **Raisons** :
+
 1. ✅ **Expérience utilisateur optimale** : Pas de déconnexions intempestives
 2. ✅ **Standard industrie** : Tous les SaaS modernes (Notion, Slack, etc.)
 3. ✅ **Productivité** : Utilisateurs restent connectés entre sessions
@@ -523,12 +537,14 @@ supabase.auth.onAuthStateChange((event, session) => {
 ### **⚠️ Quand Utiliser le Système Strict (SYSTÈME 2)**
 
 **Cas d'usage limités** :
+
 - 🏥 Applications médicales (HIPAA)
 - 🏦 Banking/Finance (PCI DSS)
 - 🔒 Données ultra-sensibles
 - 👥 Postes partagés/publics
 
 **Dans ces cas** :
+
 ```typescript
 // Remplacer dans les composants sensibles
 import { useStrictAuth } from '@/hooks/useStrictAuth';
@@ -556,7 +572,7 @@ Avec cache (singleton) :
   ├─ Premier fetch : 100ms
   ├─ Components suivants : 0ms
   └─ Total : 100ms ⚡
-  
+
 Gain : 200ms + 66% moins de requêtes DB
 ```
 
@@ -581,18 +597,21 @@ Avec autoRefresh :
 ### **Votre Application Actuelle**
 
 ✅ **Connexion automatique ACTIVÉE** grâce à :
+
 1. `autoRefreshToken: true` dans le client Supabase
 2. `localStorage` pour persistance permanente
 3. Refresh token valide 7+ jours
 4. Cache intelligent au niveau TenantContext
 
 ✅ **Comportement** :
+
 - Utilisateur se connecte une fois
 - Peut fermer le navigateur
 - Revenir des heures/jours plus tard
 - **Reconnexion automatique** sans rien faire
 
 ✅ **Sécurité maintenue** :
+
 - PKCE flow activé
 - Tokens sécurisés (HttpOnly possible côté Supabase)
 - Isolation par tenant
@@ -602,12 +621,12 @@ Avec autoRefresh :
 
 ## 📚 Fichiers Clés
 
-| Fichier | Rôle | Importance |
-|---------|------|-----------|
+| Fichier                                | Rôle                           | Importance |
+| -------------------------------------- | ------------------------------ | ---------- |
 | `/src/integrations/supabase/client.ts` | Client principal (autoRefresh) | ⭐⭐⭐⭐⭐ |
-| `/src/contexts/TenantContext.tsx` | Cache global tenant | ⭐⭐⭐⭐⭐ |
-| `/src/lib/auth-config.ts` | Client strict (optionnel) | ⭐⭐ |
-| `/src/hooks/useStrictAuth.ts` | Hook strict (non utilisé) | ⭐ |
+| `/src/contexts/TenantContext.tsx`      | Cache global tenant            | ⭐⭐⭐⭐⭐ |
+| `/src/lib/auth-config.ts`              | Client strict (optionnel)      | ⭐⭐       |
+| `/src/hooks/useStrictAuth.ts`          | Hook strict (non utilisé)      | ⭐         |
 
 ---
 
@@ -615,6 +634,6 @@ Avec autoRefresh :
 **Système actif** : SYSTÈME 1 (Client par défaut avec autoRefresh) ✅  
 **Reconnexion automatique** : ✅ ACTIVÉE et FONCTIONNELLE  
 **Cache** : ✅ Cache singleton global dans TenantContext  
-**Durée session** : 7+ jours (configurable Supabase Dashboard)  
+**Durée session** : 7+ jours (configurable Supabase Dashboard)
 
 🎉 **Votre système fonctionne comme prévu !**

@@ -1,7 +1,6 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react-swc';
 import path from 'path';
-import { componentTagger } from 'lovable-tagger';
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
@@ -35,7 +34,7 @@ export default defineConfig(({ mode }) => ({
       'Permissions-Policy': 'geolocation=(), microphone=(), camera=()',
     },
   },
-  plugins: [react(), mode === 'development' && componentTagger()].filter(Boolean),
+  plugins: [react()],
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
@@ -81,7 +80,7 @@ export default defineConfig(({ mode }) => ({
           'vendor-utils': ['date-fns', 'clsx', 'tailwind-merge'],
 
           // 🔥 OPTIMISATIONS BUNDLE - Libs lourdes en chunks séparés
-          'vendor-excel': ['xlsx'], // 420KB - Lazy load
+          'vendor-excel': ['exceljs'], // ExcelJS - Lazy load
           'vendor-pdf': ['jspdf', 'jspdf-autotable'], // 405KB - Lazy load
           'vendor-canvas': ['html2canvas'], // 198KB - Lazy load
           // vendor-icons SUPPRIMÉ - Tree-shaking via @/lib/icons
@@ -90,15 +89,9 @@ export default defineConfig(({ mode }) => ({
     },
     // Optimisations supplémentaires
     chunkSizeWarningLimit: 1000,
-    sourcemap: mode === 'development',
-    // Minification agressive
-    minify: 'terser',
-    terserOptions: {
-      compress: {
-        drop_console: mode === 'production', // Supprimer console.log en prod
-        drop_debugger: true,
-        pure_funcs: ['console.log', 'console.info', 'console.debug'],
-      },
-    },
+    sourcemap: false, // Désactiver sourcemap pour build plus rapide
+    // Minification rapide avec esbuild (10x plus rapide que terser)
+    minify: 'esbuild',
+    target: 'esnext',
   },
 }));

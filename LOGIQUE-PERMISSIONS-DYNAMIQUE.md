@@ -1,12 +1,13 @@
-# 🔄 Logique de Permissions Dynamique - Wadashaqeen
+# 🔄 Logique de Permissions Dynamique - Wadashaqayn
 
 ## 🎯 **Vue d'Ensemble**
 
-Le système de permissions de Wadashaqeen utilise une **approche dynamique** qui récupère les permissions directement depuis la base de données, supportant ainsi les **16+ rôles** configurés dans votre système sans nécessiter de modifications du code.
+Le système de permissions de Wadashaqayn utilise une **approche dynamique** qui récupère les permissions directement depuis la base de données, supportant ainsi les **16+ rôles** configurés dans votre système sans nécessiter de modifications du code.
 
 ## 🏗️ **Architecture de la Base de Données**
 
 ### **Tables du Système de Permissions**
+
 ```sql
 -- 1. Table USERS (Supabase Auth)
 auth.users {
@@ -59,9 +60,10 @@ public.role_permissions {
 ## 🔄 **Flux de Récupération Optimisé**
 
 ### **Étape 1 : Récupération des Rôles Utilisateur**
+
 ```sql
 -- Requête optimisée avec cache intelligent
-SELECT 
+SELECT
   ur.id,
   ur.user_id,
   ur.role_id,
@@ -72,13 +74,14 @@ SELECT
   r.description as role_description
 FROM user_roles ur
 INNER JOIN roles r ON ur.role_id = r.id
-WHERE ur.user_id = $1 
+WHERE ur.user_id = $1
   AND ur.is_active = true
   AND (ur.expires_at IS NULL OR ur.expires_at > NOW())
 ORDER BY ur.assigned_at DESC;
 ```
 
 ### **Étape 2 : Récupération des Permissions**
+
 ```sql
 -- Requête optimisée pour toutes les permissions de l'utilisateur
 SELECT DISTINCT
@@ -91,7 +94,7 @@ FROM user_roles ur
 INNER JOIN roles r ON ur.role_id = r.id
 INNER JOIN role_permissions rp ON r.id = rp.role_id
 INNER JOIN permissions p ON rp.permission_id = p.id
-WHERE ur.user_id = $1 
+WHERE ur.user_id = $1
   AND ur.is_active = true
   AND (ur.expires_at IS NULL OR ur.expires_at > NOW())
 ORDER BY p.resource, p.action, p.name;
@@ -100,26 +103,30 @@ ORDER BY p.resource, p.action, p.name;
 ## ⚡ **Optimisations de Performance**
 
 ### **Cache Multi-Niveaux**
+
 ```typescript
 // Niveau 1: Cache des rôles (15 minutes)
-roleCacheManager.getRoles(userId, tenantId) 
+roleCacheManager.getRoles(userId, tenantId);
 // → Évite 95% des requêtes DB pour les rôles
 
 // Niveau 2: Cache des permissions (10 minutes)
-roleCacheManager.getPermissions(userId, tenantId, roleIds)
+roleCacheManager.getPermissions(userId, tenantId, roleIds);
 // → Évite 90% des requêtes DB pour les permissions
 
 // Niveau 3: Cache d'évaluation (2 minutes)
-permissionManager.evaluatePermission(userId, permission, context)
+permissionManager.evaluatePermission(userId, permission, context);
 // → Évite les re-calculs répétitifs
 ```
 
 ### **Stratégies d'Invalidation Intelligente**
+
 ```typescript
 // Invalidation ciblée par événement
-window.dispatchEvent(new CustomEvent('role_updated', { 
-  detail: { userId, tenantId } 
-}));
+window.dispatchEvent(
+  new CustomEvent('role_updated', {
+    detail: { userId, tenantId },
+  })
+);
 
 // Invalidation automatique par TTL
 // Rôles: 15min, Permissions: 10min, Évaluations: 2min
@@ -131,6 +138,7 @@ window.addEventListener('storage', handleCacheSync);
 ## 🔍 **Logique d'Évaluation des Permissions**
 
 ### **Hiérarchie d'Évaluation (Ordre de Priorité)**
+
 ```typescript
 async evaluatePermission(userId, permission, context) {
   // 1. SUPER ADMIN → Accès complet (priorité absolue)
@@ -172,22 +180,23 @@ async evaluatePermission(userId, permission, context) {
 ```
 
 ### **Vérification des Permissions par Rôle (Dynamique)**
+
 ```typescript
 private checkRolePermissions(
-  userRoles: UserRole[], 
-  userPermissions: UserPermission[], 
+  userRoles: UserRole[],
+  userPermissions: UserPermission[],
   permission: string
 ) {
   // Vérifier si l'utilisateur a la permission (récupérée depuis la DB)
-  const hasDirectPermission = userPermissions.some(perm => 
+  const hasDirectPermission = userPermissions.some(perm =>
     perm.permission_name === permission
   );
-  
+
   if (hasDirectPermission) {
-    const grantingRole = userPermissions.find(perm => 
+    const grantingRole = userPermissions.find(perm =>
       perm.permission_name === permission
     )?.role_name;
-    
+
     return {
       granted: true,
       reason: `Permission '${permission}' accordée par le rôle '${grantingRole}'`,
@@ -196,10 +205,10 @@ private checkRolePermissions(
   }
 
   // Vérification spéciale pour les super admins
-  const isSuperAdmin = userRoles.some(role => 
+  const isSuperAdmin = userRoles.some(role =>
     role.roles.name === 'super_admin'
   );
-  
+
   if (isSuperAdmin) {
     return {
       granted: true,
@@ -219,29 +228,31 @@ private checkRolePermissions(
 ## 🎯 **Évaluation Contextuelle Avancée**
 
 ### **Types de Contextes Supportés**
+
 ```typescript
 interface PermissionContext {
-  tenantId?: string;    // Isolation par tenant
-  projectId?: string;   // Contexte projet spécifique
-  resourceId?: string;  // Ressource spécifique (user, task, etc.)
-  action: string;       // Action demandée (create, read, update, delete)
-  resource: string;     // Type de ressource (user, project, task, etc.)
+  tenantId?: string; // Isolation par tenant
+  projectId?: string; // Contexte projet spécifique
+  resourceId?: string; // Ressource spécifique (user, task, etc.)
+  action: string; // Action demandée (create, read, update, delete)
+  resource: string; // Type de ressource (user, project, task, etc.)
 }
 ```
 
 ### **Exemples d'Évaluation Contextuelle**
+
 ```typescript
 // 1. Gestion des employés dans un tenant
 await canUser('manage', 'employee', {
   resourceId: 'emp-123',
-  tenantId: 'tenant-456'
+  tenantId: 'tenant-456',
 });
 // → Vérifie: rôle HR + même tenant + employé existe
 
 // 2. Édition de projet
 await canUser('edit', 'project', {
   projectId: 'proj-789',
-  tenantId: 'tenant-456'
+  tenantId: 'tenant-456',
 });
 // → Vérifie: rôle PROJECT_MANAGER + projet dans tenant + assigné au projet
 
@@ -249,7 +260,7 @@ await canUser('edit', 'project', {
 await canUser('assign', 'task', {
   resourceId: 'task-101',
   projectId: 'proj-789',
-  tenantId: 'tenant-456'
+  tenantId: 'tenant-456',
 });
 // → Vérifie: permissions d'assignation + tâche dans projet + projet dans tenant
 ```
@@ -257,24 +268,28 @@ await canUser('assign', 'task', {
 ## 🚀 **Avantages de l'Approche Dynamique**
 
 ### **1. Évolutivité Totale**
+
 - ✅ **16+ rôles** supportés automatiquement
 - ✅ **Permissions configurables** sans redéploiement
 - ✅ **Nouveaux rôles** ajoutables en base uniquement
 - ✅ **Permissions granulaires** par rôle
 
 ### **2. Performance Optimale**
+
 - ✅ **Cache intelligent** → 95% des requêtes évitées
 - ✅ **Requêtes optimisées** → JOINs efficaces
 - ✅ **Invalidation ciblée** → Mise à jour précise
 - ✅ **Évaluation rapide** → < 5ms pour permissions cachées
 
 ### **3. Sécurité Renforcée**
+
 - ✅ **Source de vérité unique** → Base de données
 - ✅ **Isolation par tenant** → Sécurité multi-tenant
 - ✅ **Audit complet** → Traçabilité des décisions
 - ✅ **Deny by default** → Sécurité par défaut
 
 ### **4. Maintenabilité**
+
 - ✅ **Configuration en base** → Pas de code à modifier
 - ✅ **Logique centralisée** → Un seul endroit à maintenir
 - ✅ **Tests automatisés** → Validation continue
@@ -283,6 +298,7 @@ await canUser('assign', 'task', {
 ## 📊 **Exemple Concret d'Utilisation**
 
 ### **Scénario : Utilisateur avec Rôle "HR_Manager"**
+
 ```typescript
 // 1. Connexion utilisateur
 const user = { id: 'user-123', email: 'hr@company.com' };
@@ -301,12 +317,12 @@ const userPermissions = await roleCacheManager.getPermissions('user-123', 'tenan
 
 // 4. Évaluation d'une permission
 const canManageEmployees = await permissionManager.evaluatePermission(
-  'user-123', 
-  'manage_employees', 
+  'user-123',
+  'manage_employees',
   { tenantId: 'tenant-456' }
 );
-// Résultat: { 
-//   granted: true, 
+// Résultat: {
+//   granted: true,
 //   reason: "Permission 'manage_employees' accordée par le rôle 'hr_manager'",
 //   appliedRules: ['ROLE_HR_MANAGER_MANAGE_EMPLOYEES']
 // }
@@ -315,21 +331,25 @@ const canManageEmployees = await permissionManager.evaluatePermission(
 ## 🎯 **Points Clés à Retenir**
 
 ### **1. Système 100% Dynamique**
+
 - Les permissions ne sont **jamais codées en dur**
 - Tout est récupéré depuis la **base de données**
 - Support automatique des **16+ rôles** configurés
 
 ### **2. Performance Garantie**
+
 - **Cache intelligent** avec TTL différencié
 - **Invalidation ciblée** par événements
 - **Requêtes optimisées** avec JOINs efficaces
 
 ### **3. Sécurité Maximale**
+
 - **Isolation par tenant** garantie
 - **Audit trail** complet des décisions
 - **Deny by default** pour la sécurité
 
 ### **4. Évolutivité Infinie**
+
 - **Nouveaux rôles** → Ajout en base uniquement
 - **Nouvelles permissions** → Configuration en base
 - **Nouvelles règles** → Système de règles personnalisées

@@ -22,7 +22,7 @@
 
 1. **Aller sur** : https://console.cloud.google.com/
 2. **Créer un projet** (si pas encore fait) :
-   - Nom : `Wadashaqeen` (ou votre choix)
+   - Nom : `Wadashaqayn` (ou votre choix)
    - Cliquer **Créer**
 3. **Activer Google+ API** :
    - Menu → APIs & Services → Library
@@ -34,13 +34,13 @@
    - Sélectionner **OAuth client ID**
 5. **Configurer l'écran de consentement** (si demandé) :
    - User Type : **External**
-   - App name : `Wadashaqeen`
+   - App name : `Wadashaqayn`
    - User support email : votre email
    - Developer contact : votre email
    - Cliquer **Save and Continue** (3 fois)
 6. **Créer le Client OAuth** :
    - Application type : **Web application**
-   - Name : `Wadashaqeen Web Client`
+   - Name : `Wadashaqayn Web Client`
    - **Authorized JavaScript origins** :
      ```
      http://localhost:8080
@@ -75,7 +75,7 @@ Si vous avez déjà créé un OAuth Client :
 **IMPORTANT** : Cette étape est **OBLIGATOIRE** pour que OAuth fonctionne !
 
 1. **Aller sur** : https://app.supabase.com/
-2. **Sélectionner** votre projet : `Wadashaqeen` ou `gantt-flow-next`
+2. **Sélectionner** votre projet : `Wadashaqayn` ou `gantt-flow-next`
 3. **Menu gauche** → **Authentication** → **Providers**
 4. **Chercher** "Google" dans la liste
 5. **Activer** le toggle (doit être **VERT**)
@@ -85,7 +85,7 @@ Si vous avez déjà créé un OAuth Client :
    Client ID (for OAuth) :
    [Coller le Client ID de Google]
    Exemple : 1234567890-abcdefghijk.apps.googleusercontent.com
-   
+
    Client Secret (for OAuth) :
    [Coller le Client Secret de Google]
    Exemple : GOCSPX-xxxxxxxxxxxxxxxxxxxxxxxx
@@ -201,6 +201,7 @@ APIs & Services → Credentials → OAuth 2.0 Client :
 ### **1. Google Cloud Console - OAuth Client**
 
 Vérifier que vous voyez :
+
 ```
 Application type : Web application
 Client ID : 1234567890-xxx.apps.googleusercontent.com
@@ -213,13 +214,14 @@ https://qliinxtanjdnwxlvnxji.supabase.co/auth/v1/callback
 ### **2. Supabase Dashboard - Google Provider**
 
 Vérifier que vous voyez :
+
 ```
 Enable Sign in with Google : [Toggle VERT]
 
 Client ID (for OAuth) : [REMPLI]
 Client Secret (for OAuth) : [REMPLI - masqué par des points]
 
-Redirect URL : 
+Redirect URL :
 https://qliinxtanjdnwxlvnxji.supabase.co/auth/v1/callback
 ```
 
@@ -276,6 +278,7 @@ Score Total : 87/100 ⭐⭐⭐⭐⭐
 **Ce qui manquait** : Client Secret dans Supabase
 
 **Solution en 3 étapes** :
+
 1. Copier Client ID + Secret depuis Google Cloud Console
 2. Coller dans Supabase Dashboard → Auth → Providers → Google
 3. Cliquer Save et attendre 10-20 secondes

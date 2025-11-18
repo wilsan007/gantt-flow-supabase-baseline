@@ -196,7 +196,7 @@ export class ErrorFactory {
       actions: [
         {
           text: "Contacter l'admin",
-          action: () => window.open('mailto:admin@wadashaqeen.com'),
+          action: () => window.open('mailto:admin@wadashaqayn.com'),
           variant: 'outline',
         },
       ],
@@ -364,7 +364,7 @@ export class ErrorFactory {
       actions: [
         {
           text: 'Contacter le support',
-          action: () => window.open('mailto:support@wadashaqeen.com'),
+          action: () => window.open('mailto:support@wadashaqayn.com'),
           variant: 'default',
         },
       ],

@@ -202,7 +202,7 @@ const GanttChart = () => {
           <div className="mt-2 space-y-2">
             {errorDetails && <p className="text-sm">📅 {errorDetails}</p>}
             {errorSuggestion && <p className="text-sm font-medium">💡 {errorSuggestion}</p>}
-            <p className="mt-2 text-xs text-muted-foreground">
+            <p className="text-muted-foreground mt-2 text-xs">
               La barre a été replacée à sa position valide.
             </p>
           </div>
@@ -251,12 +251,12 @@ const GanttChart = () => {
       units.push(
         <div
           key={i}
-          className="border-gantt-grid flex h-full items-center justify-center border-r text-xs text-foreground/70"
+          className="border-gantt-grid text-foreground/70 flex h-full items-center justify-center border-r text-xs"
           style={{ minWidth: viewConfig.unitWidth }}
         >
           <div className="text-center">
-            <div className="font-medium text-foreground">{viewConfig.getUnit(currentDate)}</div>
-            <div className="text-xs text-foreground/60 opacity-60">
+            <div className="text-foreground font-medium">{viewConfig.getUnit(currentDate)}</div>
+            <div className="text-foreground/60 text-xs opacity-60">
               {viewConfig.getSubUnit(currentDate)}
             </div>
           </div>
@@ -396,14 +396,14 @@ const GanttChart = () => {
               )}
             </div>
             {displayMode === 'projects' && (
-              <p className="text-sm text-muted-foreground">
+              <p className="text-muted-foreground text-sm">
                 Vue Gantt des projets - Chaque barre représente la durée complète d'un projet
               </p>
             )}
           </div>
 
-          {/* Filtres avancés - uniquement en mode Tâches */}
-          {displayMode === 'tasks' && (
+          {/* Filtres avancés - uniquement en mode Tâches et Desktop */}
+          {!isMobile && displayMode === 'tasks' && (
             <AdvancedFilters
               onFiltersChange={setFilters}
               projects={projects}
@@ -420,7 +420,7 @@ const GanttChart = () => {
             <div className="border-gantt-grid/50 z-20 flex flex-shrink-0 border-b">
               {/* Header liste tâches */}
               <div className="bg-gantt-header border-gantt-grid/50 flex h-20 w-64 items-center border-r px-4">
-                <span className="font-medium text-foreground">
+                <span className="text-foreground font-medium">
                   {displayMode === 'projects' ? 'Projets' : 'Tâches'}
                 </span>
               </div>
@@ -450,7 +450,7 @@ const GanttChart = () => {
               {/* Liste des tâches - scroll vertical */}
               <div
                 ref={taskListScrollRef}
-                className="scrollbar-thin border-gantt-grid/50 bg-gantt-task-bg/30 w-64 overflow-y-auto overflow-x-hidden border-r"
+                className="scrollbar-thin border-gantt-grid/50 bg-gantt-task-bg/30 w-64 overflow-x-hidden overflow-y-auto border-r"
                 onScroll={handleScroll('list')}
               >
                 {displayMode === 'projects'
@@ -461,8 +461,8 @@ const GanttChart = () => {
                         style={{ height: rowHeight }}
                       >
                         <div>
-                          <div className="text-lg font-bold text-foreground">📁 {task.name}</div>
-                          <div className="text-sm text-foreground/70">{task.assignee}</div>
+                          <div className="text-foreground text-lg font-bold">📁 {task.name}</div>
+                          <div className="text-foreground/70 text-sm">{task.assignee}</div>
                         </div>
                       </div>
                     ))
@@ -533,8 +533,8 @@ const GanttChart = () => {
                                 style={{ height: rowHeight }}
                               >
                                 <div>
-                                  <div className="font-medium text-foreground">{task.name}</div>
-                                  <div className="text-sm text-foreground/70">{task.assignee}</div>
+                                  <div className="text-foreground font-medium">{task.name}</div>
+                                  <div className="text-foreground/70 text-sm">{task.assignee}</div>
                                 </div>
                               </div>
                             ))}
@@ -579,18 +579,18 @@ const GanttChart = () => {
       {/* ✅ Modal d'erreur centré pour les problèmes de mise à jour de dates */}
       {dateUpdateError && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-          <div className="mx-4 w-full max-w-md rounded-lg border border-border bg-background p-6 shadow-lg">
+          <div className="border-border bg-background mx-4 w-full max-w-md rounded-lg border p-6 shadow-lg">
             <div className="flex items-start gap-3">
-              <AlertTriangle className="mt-0.5 h-5 w-5 flex-shrink-0 text-destructive" />
+              <AlertTriangle className="text-destructive mt-0.5 h-5 w-5 flex-shrink-0" />
               <div className="flex-1">
-                <h3 className="mb-2 font-semibold text-destructive">{dateUpdateError.message}</h3>
+                <h3 className="text-destructive mb-2 font-semibold">{dateUpdateError.message}</h3>
                 {dateUpdateError.details && (
-                  <p className="mb-2 text-sm text-muted-foreground">
+                  <p className="text-muted-foreground mb-2 text-sm">
                     <strong>Détails :</strong> {dateUpdateError.details}
                   </p>
                 )}
                 {dateUpdateError.suggestion && (
-                  <p className="mb-4 text-sm text-muted-foreground">
+                  <p className="text-muted-foreground mb-4 text-sm">
                     <strong>Solution :</strong> {dateUpdateError.suggestion}
                   </p>
                 )}

@@ -4,11 +4,11 @@
 
 Votre projet nécessite les secrets suivants pour le CI/CD :
 
-| Secret | Description | Utilisé dans | Obligatoire |
-|--------|-------------|--------------|-------------|
-| `FTP_SERVER` | Adresse du serveur FTP Hostinger | deploy.yml | ✅ Oui |
-| `FTP_USERNAME` | Nom d'utilisateur FTP | deploy.yml | ✅ Oui |
-| `FTP_PASSWORD` | Mot de passe FTP | deploy.yml | ✅ Oui |
+| Secret             | Description                      | Utilisé dans | Obligatoire  |
+| ------------------ | -------------------------------- | ------------ | ------------ |
+| `FTP_SERVER`       | Adresse du serveur FTP Hostinger | deploy.yml   | ✅ Oui       |
+| `FTP_USERNAME`     | Nom d'utilisateur FTP            | deploy.yml   | ✅ Oui       |
+| `FTP_PASSWORD`     | Mot de passe FTP                 | deploy.yml   | ✅ Oui       |
 | `GITLEAKS_LICENSE` | Licence Gitleaks Pro (optionnel) | security.yml | ⚠️ Optionnel |
 
 ---
@@ -18,6 +18,7 @@ Votre projet nécessite les secrets suivants pour le CI/CD :
 ### **Méthode 1: Via l'interface web**
 
 1. **Aller sur votre repository GitHub**
+
    ```
    https://github.com/VOTRE_USERNAME/gantt-flow-next
    ```
@@ -39,6 +40,7 @@ Votre projet nécessite les secrets suivants pour le CI/CD :
 ### **Accéder au cPanel Hostinger**
 
 1. **Se connecter à Hostinger**
+
    ```
    https://hpanel.hostinger.com/
    ```
@@ -47,11 +49,11 @@ Votre projet nécessite les secrets suivants pour le CI/CD :
    - Sélectionner votre domaine/site
 
 3. **Trouver les informations FTP**
-   
+
    **Option A - Via FTP Accounts:**
    - Aller dans "Files" → "FTP Accounts"
    - Créer un nouveau compte FTP ou utiliser l'existant
-   
+
    **Option B - Via File Manager:**
    - Aller dans "Files" → "File Manager"
    - Cliquer sur "FTP Credentials" (en haut à droite)
@@ -64,6 +66,7 @@ Votre projet nécessite les secrets suivants pour le CI/CD :
    ```
 
 > ⚠️ **Important:** Si vous n'avez pas encore de compte FTP, créez-en un avec :
+>
 > - **Répertoire:** `/public_html` (ou le dossier de votre choix)
 > - **Permissions:** Lecture/Écriture/Suppression
 
@@ -76,20 +79,23 @@ Votre projet nécessite les secrets suivants pour le CI/CD :
 1. **Cliquer sur "New repository secret"** (bouton vert)
 
 2. **Remplir le formulaire:**
-   
+
    **Secret 1: FTP_SERVER**
+
    ```
    Name: FTP_SERVER
    Secret: ftp.votredomaine.com
    ```
-   
+
    **Secret 2: FTP_USERNAME**
+
    ```
    Name: FTP_USERNAME
    Secret: votre_username@votredomaine.com
    ```
-   
+
    **Secret 3: FTP_PASSWORD**
+
    ```
    Name: FTP_PASSWORD
    Secret: votre_mot_de_passe_ftp_sécurisé
@@ -108,6 +114,7 @@ Votre projet nécessite les secrets suivants pour le CI/CD :
 1. **Retourner sur la page "Actions secrets"**
 
 2. **Vous devriez voir:**
+
    ```
    FTP_SERVER          Updated X minutes ago
    FTP_USERNAME        Updated X minutes ago
@@ -153,6 +160,7 @@ git push origin main
 ### **Vérifier que les fichiers sont bien uploadés:**
 
 1. **Aller dans File Manager (Hostinger)**
+
    ```
    Files → File Manager
    ```
@@ -160,6 +168,7 @@ git push origin main
 2. **Naviguer vers `/public_html`**
 
 3. **Vous devriez voir:**
+
    ```
    public_html/
    ├── index.html
@@ -182,6 +191,7 @@ git push origin main
 ### **Problème: "Error: FTP connection failed"**
 
 **Solutions:**
+
 1. Vérifier que `FTP_SERVER` est correct (sans `ftp://`, sans `/`)
    - ✅ Correct: `ftp.votredomaine.com`
    - ❌ Incorrect: `ftp://ftp.votredomaine.com/`
@@ -195,6 +205,7 @@ git push origin main
 ### **Problème: "Authentication failed"**
 
 **Solutions:**
+
 1. Vérifier `FTP_USERNAME` et `FTP_PASSWORD`
 2. Réinitialiser le mot de passe FTP sur Hostinger
 3. Créer un nouveau compte FTP dédié au déploiement
@@ -202,6 +213,7 @@ git push origin main
 ### **Problème: "Permission denied"**
 
 **Solutions:**
+
 1. Vérifier les permissions du compte FTP
 2. S'assurer que le répertoire `/public_html` existe
 3. Vérifier les droits d'écriture (chmod 755 ou 775)
@@ -211,20 +223,24 @@ git push origin main
 ## 🔒 **Bonnes Pratiques de Sécurité**
 
 ### **1. Créer un compte FTP dédié**
+
 - Ne pas utiliser le compte FTP principal
 - Limiter les permissions au strict nécessaire
 - Restreindre au répertoire `/public_html` uniquement
 
 ### **2. Rotation des credentials**
+
 - Changer le mot de passe FTP tous les 3-6 mois
 - Mettre à jour le secret GitHub après changement
 
 ### **3. Monitoring**
+
 - Activer les logs FTP sur Hostinger
 - Surveiller les déploiements dans GitHub Actions
 - Vérifier les modifications non autorisées
 
 ### **4. Backup**
+
 - Faire des backups réguliers avant déploiement
 - Utiliser le système de backup Hostinger
 - Garder des copies locales des builds
@@ -234,14 +250,17 @@ git push origin main
 ## 📚 **Ressources Supplémentaires**
 
 ### **Documentation Hostinger:**
+
 - [Guide FTP Hostinger](https://support.hostinger.com/en/articles/1583245-how-to-use-ftp)
 - [File Manager](https://support.hostinger.com/en/articles/1583307-how-to-use-file-manager)
 
 ### **Documentation GitHub:**
+
 - [Encrypted Secrets](https://docs.github.com/en/actions/security-guides/encrypted-secrets)
 - [GitHub Actions Variables](https://docs.github.com/en/actions/learn-github-actions/variables)
 
 ### **Support:**
+
 - Hostinger Support: https://www.hostinger.com/contact
 - GitHub Support: https://support.github.com/
 
@@ -266,6 +285,7 @@ Avant de déployer en production, vérifiez:
 Une fois les secrets configurés:
 
 1. **Tester le déploiement:**
+
    ```bash
    git push origin main
    ```
@@ -284,4 +304,4 @@ Une fois les secrets configurés:
 
 ---
 
-**Fait avec ❤️ pour Wadashaqeen SaaS**
+**Fait avec ❤️ pour Wadashaqayn SaaS**

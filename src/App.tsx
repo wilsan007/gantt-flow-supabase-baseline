@@ -11,6 +11,7 @@ import { useStableCallback } from '@/hooks/useStableCallback';
 import { Auth } from '@/components/Auth';
 import { ThemeProvider } from 'next-themes';
 import { AppLayoutWithSidebar } from '@/components/layout/AppLayoutWithSidebar';
+import { BrandedLoadingScreen } from '@/components/layout/BrandedLoadingScreen';
 import { SessionErrorBoundary } from '@/components/SessionErrorBoundary';
 import { TenantProvider } from './contexts/TenantContext';
 import { ViewModeProvider } from './contexts/ViewModeContext';
@@ -18,6 +19,7 @@ import { RolesProvider } from './contexts/RolesContext';
 import { AuthProvider } from './contexts/AuthContext';
 // Pages chargées immédiatement (critiques)
 import Index from './pages/Index';
+import LandingPage from './pages/LandingPage';
 
 // Lazy loading des pages (optimisation performance)
 const HRPage = lazy(() => import('./pages/HRPage'));
@@ -65,7 +67,7 @@ const queryClient = new QueryClient();
 // Loading component pour Suspense
 const PageLoader = () => (
   <div className="flex min-h-screen items-center justify-center">
-    <div className="h-12 w-12 animate-spin rounded-full border-b-2 border-primary"></div>
+    <div className="border-primary h-12 w-12 animate-spin rounded-full border-b-2"></div>
   </div>
 );
 
@@ -386,16 +388,7 @@ function App() {
   }
 
   if (loading || accessLoading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <div className="text-center">
-          <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-b-2 border-primary"></div>
-          <p className="text-muted-foreground">
-            {loading ? 'Chargement...' : 'Vérification des permissions...'}
-          </p>
-        </div>
-      </div>
-    );
+    return <BrandedLoadingScreen appName="Wadashaqayn" logoSrc="/logo-w.svg" />;
   }
 
   if (!session) {
@@ -406,6 +399,8 @@ function App() {
           <Sonner />
           <BrowserRouter>
             <Routes>
+              <Route path="/" element={<LandingPage />} />
+              <Route path="/login" element={<Auth onAuthStateChange={handleAuthStateChange} />} />
               <Route path="/signup/tenant-owner" element={<TenantOwnerSignup />} />
               <Route path="/auth/callback" element={<AuthCallback />} />
               <Route path="/setup-account" element={<SetupAccount />} />

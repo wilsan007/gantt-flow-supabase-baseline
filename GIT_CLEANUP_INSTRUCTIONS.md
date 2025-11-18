@@ -3,6 +3,7 @@
 ## ⚠️ IMPORTANT - À Faire APRÈS le Premier Push
 
 ### **Pourquoi Nettoyer?**
+
 Les fichiers sensibles ont été supprimés du dernier commit, MAIS ils restent dans l'historique Git. GitHub CodeQL continuera à les scanner et à générer des alertes.
 
 ---
@@ -10,19 +11,22 @@ Les fichiers sensibles ont été supprimés du dernier commit, MAIS ils restent 
 ## 🚀 Option 1: Script Automatisé (Recommandé)
 
 ### **Étape 1: Télécharger le script**
+
 ```bash
-cd /home/awaleh/Bureau/Wadashaqeen-SaaS/gantt-flow-next
+cd /home/awaleh/Bureau/Wadashaqayn-SaaS/gantt-flow-next
 
 # Le script est déjà présent: clean-git-history-v2.sh
 chmod +x clean-git-history-v2.sh
 ```
 
 ### **Étape 2: Exécuter le script**
+
 ```bash
 ./clean-git-history-v2.sh
 ```
 
 Le script va:
+
 1. Créer un backup automatique
 2. Télécharger BFG Repo-Cleaner
 3. Supprimer tous les fichiers sensibles de l'historique
@@ -30,6 +34,7 @@ Le script va:
 5. Préparer pour force push
 
 ### **Étape 3: Force Push**
+
 ```bash
 # ⚠️ ATTENTION: Informez l'équipe AVANT!
 git push --force origin main
@@ -40,6 +45,7 @@ git push --force origin main
 ## 🔧 Option 2: Manuel avec BFG
 
 ### **Étape 1: Installer BFG**
+
 ```bash
 # macOS
 brew install bfg
@@ -53,13 +59,15 @@ java -version
 ```
 
 ### **Étape 2: Clone Mirror**
+
 ```bash
-cd /home/awaleh/Bureau/Wadashaqeen-SaaS/
+cd /home/awaleh/Bureau/Wadashaqayn-SaaS/
 git clone --mirror https://github.com/wilsan007/gantt-flow-supabase-baseline.git
 cd gantt-flow-supabase-baseline.git
 ```
 
 ### **Étape 3: Nettoyage avec BFG**
+
 ```bash
 # Supprimer dossiers de build
 bfg --delete-folders wadashaqayn_deploy_ready --no-blob-protection
@@ -79,6 +87,7 @@ bfg --delete-files '*-minimal.ts' --no-blob-protection
 ```
 
 ### **Étape 4: Cleanup Git**
+
 ```bash
 # Nettoyer les références
 git reflog expire --expire=now --all
@@ -89,13 +98,15 @@ du -sh .
 ```
 
 ### **Étape 5: Force Push**
+
 ```bash
 git push --force
 ```
 
 ### **Étape 6: Cleanup Local**
+
 ```bash
-cd /home/awaleh/Bureau/Wadashaqeen-SaaS/gantt-flow-next
+cd /home/awaleh/Bureau/Wadashaqayn-SaaS/gantt-flow-next
 git fetch origin
 git reset --hard origin/main
 git gc --aggressive
@@ -106,6 +117,7 @@ git gc --aggressive
 ## 📋 Checklist Post-Nettoyage
 
 ### **Vérifications:**
+
 - [ ] ✅ Historique nettoyé (force push réussi)
 - [ ] ✅ Repository local synchronisé
 - [ ] ✅ Taille du repo réduite (git count-objects -vH)
@@ -113,12 +125,14 @@ git gc --aggressive
 - [ ] ✅ Tests passent (npm run test)
 
 ### **GitHub:**
+
 - [ ] ✅ CodeQL scan lancé automatiquement
 - [ ] ✅ Alertes CodeQL réduites (attendre 10-15 min)
 - [ ] ✅ Secret scanning actif
 - [ ] ✅ Workflows fonctionnent
 
 ### **Équipe:**
+
 - [ ] ✅ Tous les membres informés
 - [ ] ✅ Instructions de sync partagées:
   ```bash
@@ -131,17 +145,20 @@ git gc --aggressive
 ## 🚨 Si Problèmes
 
 ### **"fatal: refusing to merge unrelated histories"**
+
 ```bash
 git pull origin main --allow-unrelated-histories
 ```
 
 ### **"! [remote rejected] main -> main (protected branch hook declined)"**
+
 ```
 GitHub → Settings → Branches → Branch protection rules
 Temporairement désactiver "Require linear history"
 ```
 
 ### **"Pack exceeds maximum allowed size"**
+
 ```bash
 # Augmenter la limite
 git config http.postBuffer 524288000
@@ -152,6 +169,7 @@ git config http.postBuffer 524288000
 ## 📊 Résultat Attendu
 
 ### **Avant Nettoyage:**
+
 ```
 Repository size: ~150 MB
 CodeQL alerts: 615
@@ -159,6 +177,7 @@ Sensitive files in history: 170+
 ```
 
 ### **Après Nettoyage:**
+
 ```
 Repository size: ~15 MB (-90%)
 CodeQL alerts: 15-30 (-95%)

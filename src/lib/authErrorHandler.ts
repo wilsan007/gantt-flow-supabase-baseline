@@ -272,7 +272,7 @@ export class AuthErrorHandler {
       suggestion: 'Veuillez réessayer dans quelques instants ou contacter le support.',
       actionButton: {
         text: 'Contacter le support',
-        action: () => window.open('mailto:support@wadashaqeen.com'),
+        action: () => window.open('mailto:support@wadashaqayn.com'),
       },
       severity: 'error',
       code: 'AUTH_GENERIC_ERROR',

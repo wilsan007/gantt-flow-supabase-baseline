@@ -1,6 +1,6 @@
 /**
  * ========================================
- * SYSTÈME DE PERMISSIONS - WADASHAQEEN
+ * SYSTÈME DE PERMISSIONS - WADASHAQAYN
  * ========================================
  *
  * Documentation complète de la logique des rôles et permissions

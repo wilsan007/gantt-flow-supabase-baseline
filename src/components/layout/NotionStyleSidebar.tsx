@@ -168,7 +168,7 @@ export const NotionStyleSidebar: React.FC<NotionStyleSidebarProps> = ({
             <span className="text-sm font-bold text-white">W</span>
           </div>
           {!isCollapsed && (
-            <span className="whitespace-nowrap text-base font-semibold">Wadashaqeen</span>
+            <span className="text-base font-semibold whitespace-nowrap">Wadashaqayn</span>
           )}
         </Link>
 
@@ -241,7 +241,7 @@ export const NotionStyleSidebar: React.FC<NotionStyleSidebarProps> = ({
                       <>
                         <span className="flex-1 truncate">{item.label}</span>
                         {item.badge && (
-                          <span className="ml-auto rounded bg-primary px-1.5 py-0.5 text-[10px] font-medium text-primary-foreground">
+                          <span className="bg-primary text-primary-foreground ml-auto rounded px-1.5 py-0.5 text-[10px] font-medium">
                             {item.badge}
                           </span>
                         )}

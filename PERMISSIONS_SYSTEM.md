@@ -2,13 +2,14 @@
 
 ## 🏗️ Architecture du Système
 
-Le système de permissions dans Wadashaqeen suit une architecture **Role-Based Access Control (RBAC)** avec isolation par tenant.
+Le système de permissions dans Wadashaqayn suit une architecture **Role-Based Access Control (RBAC)** avec isolation par tenant.
 
 ---
 
 ## 📊 Structure des Tables
 
 ### **1. Tables Principales**
+
 ```
 profiles              ← Profil utilisateur
   ├─ user_id (FK → auth.users)
@@ -38,6 +39,7 @@ permissions           ← Définition des permissions
 ## 🔑 Fonctions SQL Principales
 
 ### **1. `public.is_super_admin()`**
+
 Vérifie si l'utilisateur est **Super Admin**.
 
 ```sql
@@ -48,7 +50,7 @@ STABLE
 SECURITY DEFINER
 AS $$
   SELECT EXISTS(
-    SELECT 1 
+    SELECT 1
     FROM public.user_roles ur
     JOIN public.roles r ON ur.role_id = r.id
     WHERE ur.user_id = COALESCE($1, auth.uid())
@@ -59,6 +61,7 @@ $$;
 ```
 
 **Flux de vérification :**
+
 1. ✅ Récupère l'utilisateur connecté (`auth.uid()`)
 2. ✅ Cherche dans `user_roles` les rôles actifs de l'utilisateur
 3. ✅ Vérifie si le nom du rôle est `'super_admin'`
@@ -67,6 +70,7 @@ $$;
 ---
 
 ### **2. `public.user_has_role()`**
+
 Vérifie si l'utilisateur a un (ou plusieurs) rôle(s) spécifique(s).
 
 ```sql
@@ -77,7 +81,7 @@ STABLE
 SECURITY DEFINER
 AS $$
   SELECT EXISTS(
-    SELECT 1 
+    SELECT 1
     FROM public.user_roles ur
     JOIN public.roles r ON ur.role_id = r.id
     WHERE ur.user_id = auth.uid()
@@ -88,6 +92,7 @@ $$;
 ```
 
 **Exemple d'utilisation :**
+
 ```sql
 -- Vérifier si l'utilisateur est HR Admin OU Tenant Admin
 SELECT public.user_has_role(ARRAY['hr_admin', 'tenant_admin']);
@@ -96,6 +101,7 @@ SELECT public.user_has_role(ARRAY['hr_admin', 'tenant_admin']);
 ---
 
 ### **3. `public.get_current_tenant_id()`**
+
 Récupère le tenant_id de l'utilisateur connecté.
 
 ```sql
@@ -105,9 +111,9 @@ LANGUAGE sql
 STABLE
 SECURITY DEFINER
 AS $$
-  SELECT tenant_id 
-  FROM public.profiles 
-  WHERE user_id = auth.uid() 
+  SELECT tenant_id
+  FROM public.profiles
+  WHERE user_id = auth.uid()
   LIMIT 1;
 $$;
 ```
@@ -115,6 +121,7 @@ $$;
 ---
 
 ### **4. `public.has_global_access()`**
+
 Vérifie si l'utilisateur a un accès global (cross-tenant).
 
 ```sql
@@ -133,6 +140,7 @@ $$;
 ## 🛡️ Patterns de Policies RLS
 
 ### **Pattern 1 : Isolation Tenant Stricte**
+
 Utilisateurs normaux voient uniquement les données de leur tenant.
 
 ```sql
@@ -145,6 +153,7 @@ CREATE POLICY "Tenant isolation for employees"
 ```
 
 **Flux :**
+
 1. Récupère le `tenant_id` de l'utilisateur
 2. Compare avec le `tenant_id` de la ligne
 3. Autorise seulement si égaux
@@ -152,6 +161,7 @@ CREATE POLICY "Tenant isolation for employees"
 ---
 
 ### **Pattern 2 : Isolation Tenant + Super Admin**
+
 Utilisateurs normaux = tenant uniquement, Super Admin = tout.
 
 ```sql
@@ -165,6 +175,7 @@ CREATE POLICY "Hybrid access for tasks"
 ```
 
 **Flux :**
+
 1. Vérifie si c'est le tenant de l'utilisateur → ✅ OK
 2. Sinon, vérifie si Super Admin → ✅ OK
 3. Sinon → ❌ Refusé
@@ -172,6 +183,7 @@ CREATE POLICY "Hybrid access for tasks"
 ---
 
 ### **Pattern 3 : Rôles Spécifiques + Super Admin**
+
 Seuls certains rôles peuvent effectuer l'action.
 
 ```sql
@@ -185,6 +197,7 @@ CREATE POLICY "HR can create employees"
 ```
 
 **Flux :**
+
 1. Vérifie que c'est le bon tenant
 2. Vérifie que l'utilisateur a le rôle `hr_admin` OU `tenant_admin`
 3. Autorise seulement si les deux conditions sont vraies
@@ -192,6 +205,7 @@ CREATE POLICY "HR can create employees"
 ---
 
 ### **Pattern 4 : Super Admin Uniquement**
+
 Accès réservé aux Super Admin.
 
 ```sql
@@ -204,6 +218,7 @@ CREATE POLICY "Super Admin only for tenants"
 ```
 
 **Flux :**
+
 1. Vérifie si l'utilisateur est Super Admin
 2. Autorise uniquement si oui
 
@@ -246,8 +261,8 @@ CREATE POLICY "Users can view task attachments in their tenant"
   FOR SELECT
   USING (
     tenant_id IN (
-      SELECT tenant_id 
-      FROM profiles 
+      SELECT tenant_id
+      FROM profiles
       WHERE user_id = auth.uid()
     )
   );
@@ -261,6 +276,7 @@ CREATE POLICY "Super Admin full access to task attachments"
 ```
 
 **Flux combiné :**
+
 1. **Utilisateur normal** : Voit uniquement les fichiers de son tenant
 2. **Super Admin** : Voit TOUS les fichiers (cross-tenant)
 
@@ -287,8 +303,9 @@ CREATE POLICY "Authorized roles can create employees"
 ## 🔍 Comment Débugger les Permissions
 
 ### **1. Vérifier le rôle de l'utilisateur**
+
 ```sql
-SELECT 
+SELECT
   ur.user_id,
   r.name as role_name,
   ur.is_active,
@@ -299,23 +316,27 @@ WHERE ur.user_id = auth.uid();
 ```
 
 ### **2. Vérifier si l'utilisateur est Super Admin**
+
 ```sql
 SELECT public.is_super_admin();
 ```
 
 ### **3. Vérifier les rôles actifs**
+
 ```sql
 SELECT public.user_has_role(ARRAY['hr_admin', 'tenant_admin']);
 ```
 
 ### **4. Vérifier le tenant de l'utilisateur**
+
 ```sql
 SELECT public.get_current_tenant_id();
 ```
 
 ### **5. Lister toutes les policies d'une table**
+
 ```sql
-SELECT 
+SELECT
   schemaname,
   tablename,
   policyname,
@@ -332,14 +353,17 @@ WHERE tablename = 'operational_action_attachments';
 ## 🚨 Erreurs Courantes
 
 ### **Erreur 1 : `column profiles.is_super_admin does not exist`**
+
 **Cause :** Utilisation d'une colonne qui n'existe pas.
 
 **❌ Mauvais :**
+
 ```sql
 WHERE profiles.is_super_admin = true
 ```
 
 **✅ Bon :**
+
 ```sql
 WHERE public.is_super_admin()
 ```
@@ -347,6 +371,7 @@ WHERE public.is_super_admin()
 ---
 
 ### **Erreur 2 : `infinite recursion detected in policy`**
+
 **Cause :** Policy qui appelle récursivement une autre policy.
 
 **Solution :** Utiliser `SECURITY DEFINER` dans les fonctions.
@@ -354,9 +379,11 @@ WHERE public.is_super_admin()
 ---
 
 ### **Erreur 3 : `permission denied for table`**
+
 **Cause :** RLS activé mais aucune policy ne correspond.
 
 **Solution :** Vérifier les policies avec :
+
 ```sql
 SELECT * FROM pg_policies WHERE tablename = 'nom_table';
 ```
@@ -366,6 +393,7 @@ SELECT * FROM pg_policies WHERE tablename = 'nom_table';
 ## 📝 Bonnes Pratiques
 
 ### ✅ **DO**
+
 1. Utiliser `public.is_super_admin()` pour vérifier les Super Admin
 2. Utiliser `public.user_has_role(ARRAY['role1', 'role2'])` pour vérifier les rôles
 3. Utiliser `public.get_current_tenant_id()` pour l'isolation tenant
@@ -373,6 +401,7 @@ SELECT * FROM pg_policies WHERE tablename = 'nom_table';
 5. Tester les policies avec différents utilisateurs
 
 ### ❌ **DON'T**
+
 1. ❌ Ne PAS chercher `profiles.is_super_admin` (colonne inexistante)
 2. ❌ Ne PAS faire de requêtes récursives dans les policies
 3. ❌ Ne PAS oublier `SECURITY DEFINER` dans les fonctions critiques
@@ -384,6 +413,7 @@ SELECT * FROM pg_policies WHERE tablename = 'nom_table';
 ## 🎓 Résumé
 
 ### **Architecture :**
+
 ```
 Utilisateur (auth.uid)
   ↓
@@ -397,12 +427,14 @@ Permissions (create, read, update, delete)
 ```
 
 ### **Fonctions Clés :**
+
 - `is_super_admin()` → Vérifie si Super Admin
 - `user_has_role(['role1', 'role2'])` → Vérifie si a un rôle
 - `get_current_tenant_id()` → Récupère le tenant
 - `has_global_access()` → Vérifie accès cross-tenant
 
 ### **Patterns de Policies :**
+
 1. **Tenant strict** : `tenant_id = get_current_tenant_id()`
 2. **Tenant + Super Admin** : `... OR is_super_admin()`
 3. **Rôles spécifiques** : `user_has_role(ARRAY[...])`

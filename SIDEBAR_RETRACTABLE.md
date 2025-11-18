@@ -14,11 +14,12 @@
 
 ```
 ┌─────────────────────────────┐
-│ [W] Wadashaqeen      [<<]  │  ← Bouton toggle ici
+│ [W] Wadashaqayn      [<<]  │  ← Bouton toggle ici
 └─────────────────────────────┘
 ```
 
 **Icons** :
+
 - `ChevronsLeft` (<<) : Réduire la sidebar
 - `ChevronsRight` (>>) : Développer la sidebar
 
@@ -27,9 +28,10 @@
 ## 🎨 MODES D'AFFICHAGE
 
 ### Mode Étendu (w-64 / 256px)
+
 ```
 ┌────────────────────────────────┐
-│ [W] Wadashaqeen         [<<]  │
+│ [W] Wadashaqayn         [<<]  │
 ├────────────────────────────────┤
 │ [+ Créer]                      │
 ├────────────────────────────────┤
@@ -54,6 +56,7 @@
 ```
 
 ### Mode Réduit (w-16 / 64px)
+
 ```
 ┌────┐
 │ W  │
@@ -83,17 +86,20 @@
 ## 📋 COMPORTEMENT
 
 ### Transitions
+
 - **Animation fluide** : `transition-all duration-300`
 - **Largeur** : 256px → 64px (et inversement)
 - **Icons** : Toujours visibles
 - **Textes** : Masqués en mode réduit
 
 ### Tooltips
+
 - **Mode réduit** : Tooltips au hover sur chaque item
 - **Attribut `title`** : Label complet affiché
 - **Exemple** : Hover sur 📁 → "Projets"
 
 ### Persistance
+
 - **localStorage** : `sidebar-collapsed` = 'true' | 'false'
 - **État sauvegardé** entre sessions
 - **Auto-restore** au chargement de la page
@@ -103,13 +109,14 @@
 ## 🎯 ÉLÉMENTS ADAPTÉS
 
 ### 1. Header Sidebar
+
 ```tsx
-<div className="p-4 border-b flex items-center justify-between">
+<div className="flex items-center justify-between border-b p-4">
   <Link to="/" className="flex items-center gap-2 overflow-hidden">
-    <div className="w-8 h-8 ... rounded-lg">W</div>
-    {!isCollapsed && <span>Wadashaqeen</span>}
+    <div className="h-8 w-8 rounded-lg ...">W</div>
+    {!isCollapsed && <span>Wadashaqayn</span>}
   </Link>
-  
+
   <Button onClick={() => setIsCollapsed(!isCollapsed)}>
     {isCollapsed ? <ChevronsRight /> : <ChevronsLeft />}
   </Button>
@@ -117,17 +124,16 @@
 ```
 
 ### 2. Bouton "Créer"
+
 ```tsx
-<Button className={cn(
-  "w-full gap-2",
-  isCollapsed ? "justify-center px-0" : "justify-start"
-)}>
+<Button className={cn('w-full gap-2', isCollapsed ? 'justify-center px-0' : 'justify-start')}>
   <Plus />
-  {!isCollapsed && "Créer"}
+  {!isCollapsed && 'Créer'}
 </Button>
 ```
 
 ### 3. Sections Collapsibles
+
 ```tsx
 // Titres de sections cachés en mode réduit
 {!isCollapsed && (
@@ -143,12 +149,13 @@
 ```
 
 ### 4. Links de Navigation
+
 ```tsx
 <Link
   title={isCollapsed ? item.label : undefined}
   className={cn(
-    "flex items-center gap-2",
-    isCollapsed ? "justify-center py-2 px-1" : "px-2 py-1.5"
+    'flex items-center gap-2',
+    isCollapsed ? 'justify-center px-1 py-2' : 'px-2 py-1.5'
   )}
 >
   <item.icon />
@@ -162,17 +169,12 @@
 ```
 
 ### 5. Footer
+
 ```tsx
-<div className={cn(
-  "border-t space-y-2",
-  isCollapsed ? "p-2" : "p-3"
-)}>
-  <Button className={cn(
-    "w-full gap-2",
-    isCollapsed ? "justify-center px-0" : "justify-start"
-  )}>
+<div className={cn('space-y-2 border-t', isCollapsed ? 'p-2' : 'p-3')}>
+  <Button className={cn('w-full gap-2', isCollapsed ? 'justify-center px-0' : 'justify-start')}>
     <UserPlus />
-    {!isCollapsed && "Inviter"}
+    {!isCollapsed && 'Inviter'}
   </Button>
 </div>
 ```
@@ -182,6 +184,7 @@
 ## 🔧 CODE TECHNIQUE
 
 ### State Management
+
 ```typescript
 // État avec persistance localStorage
 const [isCollapsed, setIsCollapsed] = useState(() => {
@@ -196,6 +199,7 @@ useEffect(() => {
 ```
 
 ### CSS Classes Dynamiques
+
 ```typescript
 <aside className={cn(
   "hidden lg:flex lg:flex-col border-r bg-background h-screen sticky top-0",
@@ -205,6 +209,7 @@ useEffect(() => {
 ```
 
 ### Conditionnement du Contenu
+
 ```typescript
 // Cacher texte
 {!isCollapsed && <span>Texte</span>}
@@ -224,37 +229,43 @@ title={isCollapsed ? item.label : undefined}
 ## ✨ BÉNÉFICES
 
 ### UX
+
 ✅ **Plus d'espace** pour le contenu principal  
 ✅ **Navigation rapide** avec icônes  
 ✅ **Préférences sauvegardées** entre sessions  
 ✅ **Tooltips clairs** en mode réduit  
-✅ **Transitions fluides** professionnelles  
+✅ **Transitions fluides** professionnelles
 
 ### Performance
+
 ✅ **Pas de re-render** inutile (state local)  
 ✅ **localStorage** léger et rapide  
-✅ **CSS transitions** hardware-accelerated  
+✅ **CSS transitions** hardware-accelerated
 
 ### Accessibilité
+
 ✅ **Titles (tooltips)** pour screen readers  
 ✅ **Bouton toggle** avec label explicite  
-✅ **Keyboard navigation** préservée  
+✅ **Keyboard navigation** préservée
 
 ---
 
 ## 📊 MÉTRIQUES
 
 ### Largeurs
+
 - **Étendu** : 256px (16rem / w-64)
 - **Réduit** : 64px (4rem / w-16)
 - **Ratio** : 4:1 (gain d'espace de 75%)
 
 ### Animations
+
 - **Durée** : 300ms
 - **Easing** : ease-in-out (défaut)
 - **Propriété** : width (transform pourrait être mieux)
 
 ### localStorage
+
 - **Clé** : `sidebar-collapsed`
 - **Valeur** : `'true'` | `'false'` (string)
 - **Taille** : ~25 bytes
@@ -264,25 +275,29 @@ title={isCollapsed ? item.label : undefined}
 ## 🎯 COMPARAISON AVEC MODÈLE
 
 ### Image 2 (Principal)
+
 ✅ **Bouton >> visible** en haut  
 ✅ **Mode rétracté** avec icônes uniquement  
 ✅ **Position identique** du bouton  
-✅ **Comportement similaire** à Notion  
+✅ **Comportement similaire** à Notion
 
 ### Image 1 (Accueil)
+
 ✅ **Sections hiérarchiques** identiques  
 ✅ **Favoris** avec étoiles  
-✅ **Badges** de notification  
+✅ **Badges** de notification
 
 ### Image 3 (Tableaux de bord)
+
 ✅ **Navigation** par sections  
-✅ **Icônes colorées** par espace  
+✅ **Icônes colorées** par espace
 
 ---
 
 ## 🚀 PROCHAINES AMÉLIORATIONS
 
 ### Phase 2 (Optionnel)
+
 1. **Shortcut clavier** : `Cmd/Ctrl + B` pour toggle
 2. **Hover expand** : Développer temporairement au hover (mode preview)
 3. **Animation icons** : Rotation des chevrons
@@ -290,6 +305,7 @@ title={isCollapsed ? item.label : undefined}
 5. **Position ajustable** : Sidebar à gauche ou à droite
 
 ### Phase 3 (Avancé)
+
 1. **Tailles personnalisables** : Small (48px), Medium (64px), Large (80px)
 2. **Transition entre pages** : Préserver l'état collapsed
 3. **Responsive breakpoint** : Auto-collapse sur certaines tailles d'écran
@@ -300,24 +316,27 @@ title={isCollapsed ? item.label : undefined}
 ## ✅ RÉSULTAT FINAL
 
 ### Avant
+
 ❌ Sidebar fixe non rétractable  
 ❌ Perte d'espace écran  
-❌ Pas de préférences utilisateur  
+❌ Pas de préférences utilisateur
 
 ### Après
+
 ✅ **Sidebar rétractable** avec bouton toggle  
 ✅ **Mode icônes uniquement** (64px)  
 ✅ **Tooltips** au hover  
 ✅ **Persistance** localStorage  
 ✅ **Transitions fluides** 300ms  
 ✅ **100% responsive** desktop  
-✅ **Pattern Notion/ClickUp** exact  
+✅ **Pattern Notion/ClickUp** exact
 
 ---
 
 ## 🎉 CONCLUSION
 
 La sidebar se **rétracte parfaitement** comme dans les images partagées :
+
 - ✅ Bouton toggle `>>` / `<<` en haut à droite
 - ✅ Mode réduit 64px avec icônes uniquement
 - ✅ Tooltips sur chaque item
@@ -332,11 +351,13 @@ La sidebar se **rétracte parfaitement** comme dans les images partagées :
 ## 📸 Comparaison Visuelle
 
 **Image originale (Notion)** :
+
 - Sidebar large avec textes ✅
 - Bouton >> pour réduire ✅
 - Mode réduit avec icônes seulement ✅
 
 **Votre implémentation** :
+
 - ✅ **Identique** au modèle
 - ✅ **Même comportement**
 - ✅ **Mêmes transitions**

@@ -25,10 +25,15 @@ J'ai **temporairement désactivé** les boutons OAuth dans le code pour que vous
 3. ⏳ **Configurer OAuth plus tard** quand vous voulez
 
 **Changement effectué** :
+
 ```tsx
 // Dans /src/components/Auth.tsx ligne 239-240
-{/* OAuth temporairement désactivé */}
-{/* {!showMFAInput && !isSignUp && <SocialAuth />} */}
+{
+  /* OAuth temporairement désactivé */
+}
+{
+  /* {!showMFAInput && !isSignUp && <SocialAuth />} */
+}
 ```
 
 **Résultat** : Plus d'erreur 400, vous pouvez tester MFA maintenant ! ✅
@@ -56,7 +61,7 @@ J'ai **temporairement désactivé** les boutons OAuth dans le code pour que vous
 
 1. Aller sur : https://console.cloud.google.com/
 2. En haut à gauche → **Sélectionner un projet** → **Nouveau projet**
-3. Nom du projet : `Wadashaqeen` (ou votre choix)
+3. Nom du projet : `Wadashaqayn` (ou votre choix)
 4. Cliquer **Créer**
 5. Attendre 10-20 secondes
 6. Sélectionner le nouveau projet
@@ -75,22 +80,24 @@ J'ai **temporairement désactivé** les boutons OAuth dans le code pour que vous
 2. Cliquer **+ CREATE CREDENTIALS** → **OAuth client ID**
 3. Si demandé, configurer l'écran de consentement :
    - Type : **External**
-   - App name : `Wadashaqeen`
+   - App name : `Wadashaqayn`
    - User support email : votre email
    - Developer contact : votre email
    - Cliquer **Save and Continue** (x3)
 
 4. Retour à **Credentials** → **+ CREATE CREDENTIALS** → **OAuth client ID**
 5. Application type : **Web application**
-6. Name : `Wadashaqeen Web Client`
+6. Name : `Wadashaqayn Web Client`
 
 7. **Authorized JavaScript origins** :
+
    ```
    http://localhost:8080
    https://votre-domaine.com
    ```
 
 8. **Authorized redirect URIs** :
+
    ```
    https://qliinxtanjdnwxlvnxji.supabase.co/auth/v1/callback
    ```
@@ -104,7 +111,7 @@ J'ai **temporairement désactivé** les boutons OAuth dans le code pour que vous
 ### **Étape 2 : Supabase Dashboard**
 
 1. Aller sur : https://app.supabase.com/
-2. Sélectionner votre projet : `Wadashaqeen`
+2. Sélectionner votre projet : `Wadashaqayn`
 3. Menu gauche → **Authentication** → **Providers**
 4. Chercher **Google** dans la liste
 5. Toggle **Enable Sign in with Google** → ON (vert)
@@ -118,7 +125,9 @@ J'ai **temporairement désactivé** les boutons OAuth dans le code pour que vous
 ```tsx
 // Dans /src/components/Auth.tsx ligne 239-240
 // Décommenter cette ligne :
-{!showMFAInput && !isSignUp && <SocialAuth />}
+{
+  !showMFAInput && !isSignUp && <SocialAuth />;
+}
 ```
 
 ### **Étape 4 : Tester**
@@ -149,8 +158,8 @@ J'ai **temporairement désactivé** les boutons OAuth dans le code pour que vous
 4. Cliquer **+ New registration**
 
 5. Configuration :
-   - **Name** : `Wadashaqeen`
-   - **Supported account types** : 
+   - **Name** : `Wadashaqayn`
+   - **Supported account types** :
      - ☑️ **Accounts in any organizational directory and personal Microsoft accounts**
    - **Redirect URI** :
      - Platform : **Web**
@@ -169,7 +178,7 @@ J'ai **temporairement désactivé** les boutons OAuth dans le code pour que vous
 1. Menu gauche → **Certificates & secrets**
 2. Onglet **Client secrets**
 3. Cliquer **+ New client secret**
-4. Description : `Wadashaqeen Secret`
+4. Description : `Wadashaqayn Secret`
 5. Expires : **24 months** (recommandé)
 6. Cliquer **Add**
 7. **IMPORTANT** : Copier immédiatement la **Value** :
@@ -225,4 +234,4 @@ Une fois les providers configurés dans Supabase :
 
 <function_calls>
 <invoke name="read_file">
-<parameter name="file_path">/home/awaleh/Bureau/Wadashaqeen-SaaS/gantt-flow-next/src/components/Auth.tsx
+<parameter name="file_path">/home/awaleh/Bureau/Wadashaqayn-SaaS/gantt-flow-next/src/components/Auth.tsx

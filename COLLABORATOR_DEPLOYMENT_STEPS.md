@@ -3,11 +3,13 @@
 ## ✅ Fichiers Créés (Aucune modification des fichiers existants)
 
 ### **1. Base de données**
+
 ```
 📄 02_collaborator_invitation_system.sql
 ```
 
 ### **2. Edge Functions**
+
 ```
 📁 supabase/functions/
   ├── send-collaborator-invitation/index.ts
@@ -15,11 +17,13 @@
 ```
 
 ### **3. Hook React**
+
 ```
 📄 src/hooks/useCollaboratorInvitation.ts
 ```
 
 ### **4. Composants UI**
+
 ```
 📄 src/components/hr/CollaboratorInvitation.tsx
 📄 src/pages/CollaboratorSetup.tsx
@@ -27,6 +31,7 @@
 ```
 
 ### **5. Documentation**
+
 ```
 📄 COLLABORATOR_INVITATION_GUIDE.md
 📄 COLLABORATOR_DEPLOYMENT_STEPS.md (ce fichier)
@@ -39,6 +44,7 @@
 ### **ÉTAPE 1 : Migration Base de Données** ⏱️ 5 min
 
 1. Ouvrir Supabase SQL Editor :
+
    ```
    https://supabase.com/dashboard/project/qliinxtanjdnwxlvnxji/sql
    ```
@@ -53,6 +59,7 @@
    ```
 
 **✅ Résultat attendu :**
+
 - `can_invite_collaborators`
 - `get_user_tenant_id`
 - `is_email_in_tenant`
@@ -63,16 +70,17 @@
 ### **ÉTAPE 2 : Déployer Edge Functions** ⏱️ 10 min
 
 ```bash
-cd /home/awaleh/Bureau/Wadashaqeen-SaaS/gantt-flow-next
+cd /home/awaleh/Bureau/Wadashaqayn-SaaS/gantt-flow-next
 
 # 1. Déployer send-collaborator-invitation
 supabase functions deploy send-collaborator-invitation
 
-# 2. Déployer handle-collaborator-confirmation  
+# 2. Déployer handle-collaborator-confirmation
 supabase functions deploy handle-collaborator-confirmation
 ```
 
 **✅ Vérification :**
+
 ```bash
 # Tester send-collaborator-invitation
 curl -X POST https://qliinxtanjdnwxlvnxji.supabase.co/functions/v1/send-collaborator-invitation \
@@ -112,19 +120,19 @@ BEGIN
       'record', row_to_json(NEW),
       'old_record', row_to_json(OLD)
     );
-    
+
     SELECT INTO http_request_id net.http_post(
       url := webhook_url,
       headers := jsonb_build_object(
-        'Content-Type', 'application/json', 
+        'Content-Type', 'application/json',
         'Authorization', 'Bearer ' || current_setting('app.settings.service_role_key', true)
       ),
       body := payload::text
     );
-    
+
     RAISE LOG 'Webhook collaborator appelé - Request ID: %', http_request_id;
   END IF;
-  
+
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
@@ -136,21 +144,23 @@ CREATE TRIGGER handle_collaborator_confirmation_trigger
   AFTER UPDATE ON auth.users
   FOR EACH ROW
   WHEN (
-    OLD.email_confirmed_at IS DISTINCT FROM NEW.email_confirmed_at 
+    OLD.email_confirmed_at IS DISTINCT FROM NEW.email_confirmed_at
     OR OLD.raw_user_meta_data IS DISTINCT FROM NEW.raw_user_meta_data
   )
   EXECUTE FUNCTION handle_collaborator_confirmation_webhook();
 ```
 
 3. Configurer la Service Role Key :
+
    ```sql
    -- Dans Supabase Dashboard > Project Settings > API
    -- Copier SUPABASE_SERVICE_ROLE_KEY
-   
+
    ALTER DATABASE postgres SET app.settings.service_role_key = 'YOUR_SERVICE_ROLE_KEY';
    ```
 
 **✅ Vérification :**
+
 ```sql
 SELECT * FROM pg_trigger WHERE tgname = 'handle_collaborator_confirmation_trigger';
 ```
@@ -169,13 +179,13 @@ import HRPageWithCollaboratorInvitation from './pages/HRPageWithCollaboratorInvi
 import CollaboratorSetup from './pages/CollaboratorSetup';
 
 // 2. Dans les routes protégées, remplacer HRPage
-<Route 
-  path="/hr" 
+<Route
+  path="/hr"
   element={
     <ProtectedRoute requiredAccess="canAccessHR">
       <HRPageWithCollaboratorInvitation />
     </ProtectedRoute>
-  } 
+  }
 />
 
 // 3. Ajouter la route publique pour CollaboratorSetup
@@ -184,14 +194,15 @@ import CollaboratorSetup from './pages/CollaboratorSetup';
 ```
 
 **Alternative : Route séparée**
+
 ```typescript
-<Route 
-  path="/team/invitations" 
+<Route
+  path="/team/invitations"
   element={
     <ProtectedRoute requiredAccess="canAccessHR">
       <CollaboratorInvitation />
     </ProtectedRoute>
-  } 
+  }
 />
 ```
 
@@ -212,14 +223,15 @@ import CollaboratorSetup from './pages/CollaboratorSetup';
 4. Cliquer "Envoyer l'invitation"
 
 **✅ Vérifications :**
+
 ```sql
 -- Invitation créée
-SELECT * FROM invitations 
-WHERE email = 'votre-email-test@example.com' 
+SELECT * FROM invitations
+WHERE email = 'votre-email-test@example.com'
 AND invitation_type = 'collaborator';
 
 -- Utilisateur créé dans Supabase Auth
-SELECT * FROM auth.users 
+SELECT * FROM auth.users
 WHERE email = 'votre-email-test@example.com';
 ```
 
@@ -234,13 +246,14 @@ WHERE email = 'votre-email-test@example.com';
 7. Attendre redirection automatique vers `/`
 
 **✅ Vérifications :**
+
 ```sql
 -- Profil créé
-SELECT * FROM profiles 
+SELECT * FROM profiles
 WHERE email = 'votre-email-test@example.com';
 
 -- Employé créé
-SELECT * FROM employees 
+SELECT * FROM employees
 WHERE email = 'votre-email-test@example.com';
 
 -- Rôle assigné
@@ -248,12 +261,12 @@ SELECT ur.*, r.name as role_name
 FROM user_roles ur
 JOIN roles r ON ur.role_id = r.id
 WHERE ur.user_id = (
-  SELECT id FROM auth.users 
+  SELECT id FROM auth.users
   WHERE email = 'votre-email-test@example.com'
 );
 
 -- Invitation acceptée
-SELECT * FROM invitations 
+SELECT * FROM invitations
 WHERE email = 'votre-email-test@example.com'
 AND status = 'accepted';
 ```
@@ -265,6 +278,7 @@ AND status = 'accepted';
 ### **Problème : Invitation non envoyée**
 
 **Diagnostic :**
+
 ```sql
 -- Vérifier permissions
 SELECT can_invite_collaborators(auth.uid());
@@ -277,6 +291,7 @@ SELECT is_email_in_tenant('email@test.com', 'TENANT_ID');
 ```
 
 **Solution :**
+
 - Vérifier que l'utilisateur a le rôle `tenant_admin`, `manager` ou `hr_manager`
 - Vérifier que l'email n'existe pas déjà dans le tenant
 
@@ -285,13 +300,14 @@ SELECT is_email_in_tenant('email@test.com', 'TENANT_ID');
 ### **Problème : Webhook ne se déclenche pas**
 
 **Diagnostic :**
+
 ```sql
 -- Vérifier trigger existe
-SELECT * FROM pg_trigger 
+SELECT * FROM pg_trigger
 WHERE tgname = 'handle_collaborator_confirmation_trigger';
 
 -- Vérifier fonction existe
-SELECT * FROM pg_proc 
+SELECT * FROM pg_proc
 WHERE proname = 'handle_collaborator_confirmation_webhook';
 
 -- Vérifier extension pg_net
@@ -299,6 +315,7 @@ SELECT * FROM pg_extension WHERE extname = 'pg_net';
 ```
 
 **Solution :**
+
 ```sql
 -- Réinstaller extension
 CREATE EXTENSION IF NOT EXISTS pg_net;
@@ -312,10 +329,12 @@ CREATE EXTENSION IF NOT EXISTS pg_net;
 ### **Problème : Email non reçu**
 
 **Diagnostic :**
+
 - Logs Edge Function `send-collaborator-invitation`
 - Vérifier RESEND_API_KEY dans Supabase Secrets
 
 **Solution :**
+
 1. Dashboard Supabase > Project Settings > Edge Functions
 2. Ajouter secret `RESEND_API_KEY`
 3. Redéployer la fonction
@@ -325,16 +344,18 @@ CREATE EXTENSION IF NOT EXISTS pg_net;
 ### **Problème : Profil non créé**
 
 **Diagnostic :**
+
 - Logs Edge Function `handle-collaborator-confirmation`
 - Vérifier métadonnées utilisateur
 
 ```sql
-SELECT raw_user_meta_data 
-FROM auth.users 
+SELECT raw_user_meta_data
+FROM auth.users
 WHERE email = 'email@test.com';
 ```
 
 **Solution :**
+
 - Vérifier que `invitation_type = 'collaborator'`
 - Vérifier que les 10 éléments de validation sont présents
 - Vérifier que le tenant existe
@@ -347,7 +368,7 @@ WHERE email = 'email@test.com';
 
 ```sql
 -- Statistiques invitations
-SELECT 
+SELECT
   status,
   COUNT(*) as count,
   AVG(EXTRACT(EPOCH FROM (accepted_at - created_at))/3600) as avg_hours_to_accept
@@ -356,15 +377,15 @@ WHERE invitation_type = 'collaborator'
 GROUP BY status;
 
 -- Taux de conversion
-SELECT 
-  COUNT(CASE WHEN status = 'accepted' THEN 1 END)::FLOAT / 
+SELECT
+  COUNT(CASE WHEN status = 'accepted' THEN 1 END)::FLOAT /
   NULLIF(COUNT(*), 0) * 100 as conversion_rate
 FROM invitations
 WHERE invitation_type = 'collaborator'
 AND created_at > NOW() - INTERVAL '30 days';
 
 -- Invitations par tenant
-SELECT 
+SELECT
   t.name as tenant_name,
   COUNT(*) as total_invitations,
   COUNT(CASE WHEN status = 'accepted' THEN 1 END) as accepted
@@ -396,6 +417,7 @@ ORDER BY total_invitations DESC;
 ## 📞 Support
 
 **En cas de blocage :**
+
 1. Consulter `COLLABORATOR_INVITATION_GUIDE.md`
 2. Vérifier les logs Supabase :
    - Functions > send-collaborator-invitation > Logs
@@ -410,6 +432,7 @@ ORDER BY total_invitations DESC;
 Votre système d'invitation de collaborateurs est maintenant opérationnel !
 
 **Pattern entreprise complet inspiré de :**
+
 - ✅ Stripe (validation + cache)
 - ✅ Notion (UX moderne)
 - ✅ Linear (messages d'erreur)

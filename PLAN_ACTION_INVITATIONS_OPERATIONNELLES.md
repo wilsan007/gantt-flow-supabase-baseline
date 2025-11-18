@@ -11,8 +11,9 @@
 ### 1.1 Vérifier qu'il n'y a Plus de Triggers
 
 **SQL à exécuter** :
+
 ```sql
-SELECT 
+SELECT
   trigger_name,
   event_manipulation,
   action_statement
@@ -24,6 +25,7 @@ WHERE event_object_schema = 'auth'
 **Résultat attendu** : `0 lignes` ✅
 
 **Si des triggers apparaissent encore** :
+
 ```sql
 DROP TRIGGER IF EXISTS "[nom_exact_du_trigger]" ON auth.users;
 ```
@@ -44,14 +46,16 @@ DROP TRIGGER IF EXISTS "[nom_exact_du_trigger]" ON auth.users;
 ### 2.1 Vérifier les Fonctions Existantes
 
 **Fonctions requises** :
+
 - ✅ `send-invitation` (tenant owner)
 - ✅ `send-collaborator-invitation` (collaborateur)
 - ✅ `onboard-tenant-owner` (création tenant)
 - ✅ `handle-collaborator-confirmation` (création profile collaborateur)
 
 **Commande pour lister** :
+
 ```bash
-cd /home/awaleh/Bureau/Wadashaqeen-SaaS/gantt-flow-next
+cd /home/awaleh/Bureau/Wadashaqayn-SaaS/gantt-flow-next
 supabase functions list
 ```
 
@@ -95,6 +99,7 @@ supabase functions deploy handle-collaborator-confirmation --no-verify-jwt
    - Cliquer "Envoyer invitation"
 
 3. **Vérifications** :
+
    ```
    ✅ Message "Invitation envoyée avec succès"
    ✅ AUCUNE erreur "Database error"
@@ -102,9 +107,10 @@ supabase functions deploy handle-collaborator-confirmation --no-verify-jwt
    ```
 
 4. **Vérifier en base de données** :
+
    ```sql
    -- Vérifier que l'invitation a été créée
-   SELECT 
+   SELECT
      email,
      invitation_type,
      status,
@@ -114,8 +120,9 @@ supabase functions deploy handle-collaborator-confirmation --no-verify-jwt
    ORDER BY created_at DESC
    LIMIT 1;
    ```
-   
+
    **Résultat attendu** :
+
    ```
    email: test-collaborateur@example.com
    invitation_type: collaborator
@@ -124,9 +131,10 @@ supabase functions deploy handle-collaborator-confirmation --no-verify-jwt
    ```
 
 5. **Vérifier que le user temporaire a été créé** :
+
    ```sql
    -- Vérifier user dans auth.users
-   SELECT 
+   SELECT
      id,
      email,
      email_confirmed_at,
@@ -134,8 +142,9 @@ supabase functions deploy handle-collaborator-confirmation --no-verify-jwt
    FROM auth.users
    WHERE email = 'test-collaborateur@example.com';
    ```
-   
+
    **Résultat attendu** :
+
    ```
    email: test-collaborateur@example.com
    email_confirmed_at: [une date] ✅
@@ -147,6 +156,7 @@ supabase functions deploy handle-collaborator-confirmation --no-verify-jwt
    - Ou si email reçu, cliquer le lien
 
 7. **Vérifications après clic** :
+
    ```
    ✅ Redirection vers /dashboard
    ✅ User connecté
@@ -154,20 +164,22 @@ supabase functions deploy handle-collaborator-confirmation --no-verify-jwt
    ```
 
 8. **Vérifier profile créé** :
+
    ```sql
-   SELECT 
+   SELECT
      user_id,
      full_name,
      tenant_id,
      role_name
    FROM profiles
    WHERE user_id IN (
-     SELECT id FROM auth.users 
+     SELECT id FROM auth.users
      WHERE email = 'test-collaborateur@example.com'
    );
    ```
-   
+
    **Résultat attendu** :
+
    ```
    user_id: [id du user]
    tenant_id: [id du tenant] ✅
@@ -190,6 +202,7 @@ supabase functions deploy handle-collaborator-confirmation --no-verify-jwt
    - Cliquer "Envoyer invitation"
 
 3. **Vérifications** :
+
    ```
    ✅ Message "Invitation envoyée avec succès"
    ✅ AUCUNE erreur "Database error"
@@ -197,8 +210,9 @@ supabase functions deploy handle-collaborator-confirmation --no-verify-jwt
    ```
 
 4. **Vérifier invitation créée** :
+
    ```sql
-   SELECT 
+   SELECT
      email,
      invitation_type,
      status,
@@ -208,8 +222,9 @@ supabase functions deploy handle-collaborator-confirmation --no-verify-jwt
    ORDER BY created_at DESC
    LIMIT 1;
    ```
-   
+
    **Résultat attendu** :
+
    ```
    email: test-owner@example.com
    invitation_type: tenant_owner
@@ -218,15 +233,17 @@ supabase functions deploy handle-collaborator-confirmation --no-verify-jwt
    ```
 
 5. **Vérifier user temporaire** :
+
    ```sql
-   SELECT 
+   SELECT
      email,
      raw_user_meta_data
    FROM auth.users
    WHERE email = 'test-owner@example.com';
    ```
-   
+
    **Résultat attendu** :
+
    ```
    raw_user_meta_data: {"temp_user": true, "invitation_type": "tenant_owner"}
    ```
@@ -235,6 +252,7 @@ supabase functions deploy handle-collaborator-confirmation --no-verify-jwt
    - URL : `http://localhost:8080/auth/callback?invitation=tenant_owner&email=test-owner@example.com`
 
 7. **Vérifications après clic** :
+
    ```
    ✅ Redirection vers /dashboard
    ✅ User connecté
@@ -243,9 +261,10 @@ supabase functions deploy handle-collaborator-confirmation --no-verify-jwt
    ```
 
 8. **Vérifier tenant créé** :
+
    ```sql
    -- Trouver le tenant
-   SELECT 
+   SELECT
      t.id,
      t.name,
      t.slug,
@@ -254,12 +273,13 @@ supabase functions deploy handle-collaborator-confirmation --no-verify-jwt
    FROM tenants t
    JOIN profiles p ON p.tenant_id = t.id
    WHERE p.user_id IN (
-     SELECT id FROM auth.users 
+     SELECT id FROM auth.users
      WHERE email = 'test-owner@example.com'
    );
    ```
-   
+
    **Résultat attendu** :
+
    ```
    name: Test Company ✅
    slug: test-company
@@ -273,6 +293,7 @@ supabase functions deploy handle-collaborator-confirmation --no-verify-jwt
 ### 4.1 Logs à Surveiller
 
 **Console navigateur (F12)** :
+
 ```
 ✅ Rechercher : "TYPE: COLLABORATEUR" ou "TYPE: TENANT OWNER"
 ✅ Rechercher : "PROFIL CRÉÉ" ou "TENANT CRÉÉ"
@@ -280,6 +301,7 @@ supabase functions deploy handle-collaborator-confirmation --no-verify-jwt
 ```
 
 **Supabase Logs** :
+
 1. Aller sur : https://supabase.com/dashboard/project/qliinxtanjdnwxlvnxji/logs/edge-functions
 2. Filtrer par fonction :
    - `send-collaborator-invitation`
@@ -298,6 +320,7 @@ supabase functions deploy handle-collaborator-confirmation --no-verify-jwt
 ### 4.2 Métriques de Succès
 
 **Invitation collaborateur** :
+
 - ✅ User temporaire créé
 - ✅ Email envoyé
 - ✅ Magic Link fonctionne
@@ -306,6 +329,7 @@ supabase functions deploy handle-collaborator-confirmation --no-verify-jwt
 - ✅ Pas d'erreur "Database error"
 
 **Invitation tenant owner** :
+
 - ✅ User temporaire créé
 - ✅ Email envoyé
 - ✅ Magic Link fonctionne
@@ -321,6 +345,7 @@ supabase functions deploy handle-collaborator-confirmation --no-verify-jwt
 ### 5.1 Améliorer les Messages d'Erreur
 
 **Frontend** - Afficher messages clairs :
+
 ```typescript
 // Dans useCollaboratorInvitation.ts ou similaire
 catch (error) {
@@ -339,6 +364,7 @@ catch (error) {
 ### 5.2 Ajouter Validation Email
 
 **Avant envoi invitation** :
+
 ```typescript
 const isValidEmail = (email: string) => {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -355,6 +381,7 @@ if (!isValidEmail(email)) {
 ### 5.3 Ajouter Feedback Visuel
 
 **Pendant traitement** :
+
 ```typescript
 const [sending, setSending] = useState(false);
 
@@ -440,6 +467,7 @@ const handleSendInvitation = async () => {
 ### Problème : "Database error" persiste
 
 **Solution** :
+
 1. Vérifier à nouveau les triggers (SQL ci-dessus)
 2. Vérifier webhooks Dashboard
 3. Consulter logs Edge Functions
@@ -449,6 +477,7 @@ const handleSendInvitation = async () => {
 ### Problème : Email non reçu
 
 **Solution** :
+
 1. Vérifier spam
 2. Vérifier configuration Resend (secrets Supabase)
 3. Consulter logs `send-invitation` ou `send-collaborator-invitation`
@@ -458,6 +487,7 @@ const handleSendInvitation = async () => {
 ### Problème : Magic Link ne fonctionne pas
 
 **Solution** :
+
 1. Vérifier URL contient `?invitation=type`
 2. Vérifier AuthCallback.tsx déployé
 3. Consulter logs console navigateur (F12)
@@ -467,6 +497,7 @@ const handleSendInvitation = async () => {
 ### Problème : Profile non créé
 
 **Solution** :
+
 1. Vérifier fonction `handle-collaborator-confirmation` déployée
 2. Vérifier fonction `onboard-tenant-owner` déployée
 3. Consulter logs Edge Functions

@@ -53,7 +53,7 @@ Les policies RLS ont été divisées en **3 fichiers séparés** pour faciliter 
 
 ```bash
 # Depuis le répertoire du projet
-cd /home/awaleh/Bureau/Wadashaqeen-SaaS/gantt-flow-next
+cd /home/awaleh/Bureau/Wadashaqayn-SaaS/gantt-flow-next
 
 # Déployer toutes les migrations
 supabase db push

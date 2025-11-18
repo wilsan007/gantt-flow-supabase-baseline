@@ -142,7 +142,7 @@ $$;
 ## 🚀 **Commande de Déploiement**
 
 ```bash
-cd /home/awaleh/Bureau/Wadashaqeen-SaaS/gantt-flow-next
+cd /home/awaleh/Bureau/Wadashaqayn-SaaS/gantt-flow-next
 supabase db push
 ```
 

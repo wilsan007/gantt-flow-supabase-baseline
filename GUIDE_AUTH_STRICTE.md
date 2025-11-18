@@ -291,10 +291,10 @@ const marker = `${Date.now()}-${Math.random().toString(36)}`;
 // Ex: "1702345678901-k7x9p2m"
 
 // Stocké dans sessionStorage (pas localStorage)
-sessionStorage.setItem('wadashaqeen_session_marker', marker);
+sessionStorage.setItem('wadashaqayn_session_marker', marker);
 
 // Vérifié à chaque focus/visibilité
-const isValid = sessionStorage.getItem('wadashaqeen_session_marker') === marker;
+const isValid = sessionStorage.getItem('wadashaqayn_session_marker') === marker;
 ```
 
 **Pourquoi ça marche ?**
@@ -401,11 +401,11 @@ document.addEventListener('visibilitychange', async () => {
 ```bash
 # Ouvrir DevTools (F12) → Console
 # Après connexion :
-sessionStorage.getItem('wadashaqeen_session_marker')
+sessionStorage.getItem('wadashaqayn_session_marker')
 # Devrait afficher un ID unique
 
 # Après fermeture navigateur :
-sessionStorage.getItem('wadashaqeen_session_marker')
+sessionStorage.getItem('wadashaqayn_session_marker')
 # Devrait afficher null
 ```
 

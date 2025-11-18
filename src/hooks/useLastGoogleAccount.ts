@@ -8,7 +8,7 @@ interface LastGoogleAccount {
   provider: 'google' | 'azure';
 }
 
-const STORAGE_KEY = 'wadashaqeen_last_oauth_account';
+const STORAGE_KEY = 'wadashaqayn_last_oauth_account';
 
 /**
  * Hook pour mémoriser et récupérer le dernier compte OAuth utilisé

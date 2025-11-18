@@ -338,4 +338,4 @@ Vérifiez que `SessionErrorBoundary` est bien intégré dans `App.tsx` :
 
 **Dernière mise à jour :** 2025-01-12  
 **Version :** 1.0.0  
-**Auteur :** Équipe Wadashaqeen
+**Auteur :** Équipe Wadashaqayn

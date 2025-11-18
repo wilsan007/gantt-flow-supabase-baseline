@@ -78,76 +78,103 @@ export const useTaskExport = () => {
           filters,
         } = options;
 
-        // Charger XLSX dynamiquement (code splitting)
+        // Charger ExcelJS dynamiquement (code splitting)
         toast({
           title: '⏳ Chargement...',
           description: "Préparation de l'export Excel",
         });
 
-        const XLSX = await import('xlsx');
+        const ExcelJS = await import('exceljs');
 
         // Préparer les données
         const exportData = prepareExportData(tasks);
 
         // Créer le workbook
-        const wb = XLSX.utils.book_new();
+        const workbook = new ExcelJS.Workbook();
+        workbook.creator = 'Wadashaqayn';
+        workbook.created = new Date();
 
         // Feuille principale avec les tâches
-        const ws = XLSX.utils.json_to_sheet(exportData);
+        const worksheet = workbook.addWorksheet('Tâches');
 
-        // Ajuster la largeur des colonnes
-        const colWidths = [
-          { wch: 35 }, // ID
-          { wch: 40 }, // Titre
-          { wch: 50 }, // Description
-          { wch: 12 }, // Statut
-          { wch: 12 }, // Priorité
-          { wch: 20 }, // Assigné à
-          { wch: 25 }, // Projet
-          { wch: 12 }, // Date début
-          { wch: 12 }, // Date fin
-          { wch: 12 }, // Progression
-          { wch: 15 }, // Effort estimé
-          { wch: 35 }, // Tâche parente
-          { wch: 12 }, // Créée le
+        // Ajouter les colonnes avec largeurs
+        worksheet.columns = [
+          { header: 'ID', key: 'ID', width: 35 },
+          { header: 'Titre', key: 'Titre', width: 40 },
+          { header: 'Description', key: 'Description', width: 50 },
+          { header: 'Statut', key: 'Statut', width: 12 },
+          { header: 'Priorité', key: 'Priorité', width: 12 },
+          { header: 'Assigné à', key: 'Assigné à', width: 20 },
+          { header: 'Projet', key: 'Projet', width: 25 },
+          { header: 'Date début', key: 'Date début', width: 12 },
+          { header: 'Date fin', key: 'Date fin', width: 12 },
+          { header: 'Progression (%)', key: 'Progression (%)', width: 12 },
+          { header: 'Effort estimé', key: 'Effort estimé', width: 15 },
+          { header: 'Tâche parente', key: 'Tâche parente', width: 35 },
+          { header: 'Créée le', key: 'Créée le', width: 12 },
         ];
-        ws['!cols'] = colWidths;
 
-        XLSX.utils.book_append_sheet(wb, ws, 'Tâches');
+        // Ajouter les données
+        exportData.forEach(row => {
+          worksheet.addRow(row);
+        });
+
+        // Styliser l'en-tête
+        worksheet.getRow(1).font = { bold: true };
+        worksheet.getRow(1).fill = {
+          type: 'pattern',
+          pattern: 'solid',
+          fgColor: { argb: 'FF4F46E5' },
+        };
+        worksheet.getRow(1).font = { bold: true, color: { argb: 'FFFFFFFF' } };
 
         // Ajouter feuille de métadonnées si demandé
         if (includeMetadata) {
-          const metadata = [
-            { Propriété: 'Date export', Valeur: new Date().toLocaleString('fr-FR') },
-            { Propriété: 'Nombre de tâches', Valeur: tasks.length },
-            { Propriété: 'Filtres appliqués', Valeur: filters ? 'Oui' : 'Non' },
+          const metadataSheet = workbook.addWorksheet('Métadonnées');
+          metadataSheet.columns = [
+            { header: 'Propriété', key: 'propriete', width: 20 },
+            { header: 'Valeur', key: 'valeur', width: 40 },
+          ];
+
+          const metadata: Array<{ propriete: string; valeur: string }> = [
+            { propriete: 'Date export', valeur: new Date().toLocaleString('fr-FR') },
+            { propriete: 'Nombre de tâches', valeur: tasks.length.toString() },
+            { propriete: 'Filtres appliqués', valeur: filters ? 'Oui' : 'Non' },
           ];
 
           if (filters) {
             if (filters.search) {
-              metadata.push({ Propriété: 'Recherche', Valeur: filters.search });
+              metadata.push({ propriete: 'Recherche', valeur: filters.search });
             }
             if (filters.status.length > 0) {
-              metadata.push({ Propriété: 'Statuts', Valeur: filters.status.join(', ') });
+              metadata.push({ propriete: 'Statuts', valeur: filters.status.join(', ') });
             }
             if (filters.priority.length > 0) {
-              metadata.push({ Propriété: 'Priorités', Valeur: filters.priority.join(', ') });
+              metadata.push({ propriete: 'Priorités', valeur: filters.priority.join(', ') });
             }
             if (filters.dateFrom || filters.dateTo) {
               metadata.push({
-                Propriété: 'Période',
-                Valeur: `${filters.dateFrom || '...'} → ${filters.dateTo || '...'}`,
+                propriete: 'Période',
+                valeur: `${filters.dateFrom || '...'} → ${filters.dateTo || '...'}`,
               });
             }
           }
 
-          const wsMetadata = XLSX.utils.json_to_sheet(metadata);
-          wsMetadata['!cols'] = [{ wch: 20 }, { wch: 40 }];
-          XLSX.utils.book_append_sheet(wb, wsMetadata, 'Métadonnées');
+          metadata.forEach(row => metadataSheet.addRow(row));
+          metadataSheet.getRow(1).font = { bold: true };
         }
 
         // Télécharger le fichier
-        XLSX.writeFile(wb, filename);
+        const buffer = await workbook.xlsx.writeBuffer();
+        const blob = new Blob([buffer], {
+          type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        });
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = filename;
+        link.click();
+        window.URL.revokeObjectURL(url);
 
         toast({
           title: '✅ Export Excel réussi',
@@ -344,19 +371,37 @@ export const useTaskExport = () => {
           description: "Préparation de l'export CSV",
         });
 
-        const XLSX = await import('xlsx');
         const exportData = prepareExportData(tasks);
 
-        // Créer le CSV
-        const ws = XLSX.utils.json_to_sheet(exportData);
-        const csv = XLSX.utils.sheet_to_csv(ws);
+        // Créer le CSV manuellement (pas besoin de librairie externe)
+        const headers = Object.keys(exportData[0] || {});
+        const csvRows = [
+          // En-têtes
+          headers.join(','),
+          // Données
+          ...exportData.map(row =>
+            headers
+              .map(header => {
+                const value = (row as any)[header];
+                // Échapper les virgules et guillemets
+                if (typeof value === 'string' && (value.includes(',') || value.includes('"'))) {
+                  return `"${value.replace(/"/g, '""')}"`;
+                }
+                return value;
+              })
+              .join(',')
+          ),
+        ];
+        const csv = csvRows.join('\n');
 
-        // Télécharger
-        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        // Télécharger avec BOM UTF-8 pour Excel
+        const bom = '\uFEFF';
+        const blob = new Blob([bom + csv], { type: 'text/csv;charset=utf-8;' });
         const link = document.createElement('a');
         link.href = URL.createObjectURL(blob);
         link.download = filename;
         link.click();
+        URL.revokeObjectURL(link.href);
 
         toast({
           title: '✅ Export CSV réussi',

@@ -54,11 +54,11 @@ function MobileTaskCard({
 }) {
   return (
     <Card
-      className={`glass transition-smooth mb-4 border-primary/30 bg-card/40 backdrop-blur-sm ${isSelected ? 'glow-primary ring-2 ring-primary/50' : ''}`}
+      className={`glass transition-smooth border-primary/30 bg-card/40 mb-4 backdrop-blur-sm ${isSelected ? 'glow-primary ring-primary/50 ring-2' : ''}`}
     >
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between">
-          <CardTitle className="mr-2 flex-1 text-base font-semibold leading-tight text-foreground">
+          <CardTitle className="text-foreground mr-2 flex-1 text-base leading-tight font-semibold">
             {task.title}
           </CardTitle>
           <Button
@@ -86,13 +86,13 @@ function MobileTaskCard({
                   : (task.assignee as any)?.full_name || task.assigned_name || 'NA';
               return (
                 <>
-                  <Avatar className="h-6 w-6 ring-2 ring-primary/40">
+                  <Avatar className="ring-primary/40 h-6 w-6 ring-2">
                     <AvatarImage src="" alt={assigneeStr} />
-                    <AvatarFallback className="bg-primary/40 text-xs font-semibold text-primary-foreground">
+                    <AvatarFallback className="bg-primary/40 text-primary-foreground text-xs font-semibold">
                       {assigneeStr.slice(0, 2).toUpperCase()}
                     </AvatarFallback>
                   </Avatar>
-                  <span className="text-xs text-foreground/80">
+                  <span className="text-foreground/80 text-xs">
                     {assigneeStr !== 'NA' ? assigneeStr : 'Non assigné'}
                   </span>
                 </>
@@ -106,13 +106,13 @@ function MobileTaskCard({
         {/* Dates and Progress */}
         <div className="grid grid-cols-2 gap-3 text-xs">
           <div>
-            <span className="block font-medium text-foreground/80">Début</span>
+            <span className="text-foreground/80 block font-medium">Début</span>
             <span className="text-foreground/70">
               {new Date(task.start_date).toLocaleDateString('fr-FR')}
             </span>
           </div>
           <div>
-            <span className="block font-medium text-foreground/80">Fin</span>
+            <span className="text-foreground/80 block font-medium">Fin</span>
             <span className="text-foreground/70">
               {new Date(task.due_date).toLocaleDateString('fr-FR')}
             </span>
@@ -121,16 +121,16 @@ function MobileTaskCard({
 
         <div className="space-y-2">
           <div className="flex justify-between text-xs">
-            <span className="font-medium text-foreground/80">Progrès</span>
-            <span className="font-semibold text-primary">{task.progress}%</span>
+            <span className="text-foreground/80 font-medium">Progrès</span>
+            <span className="text-primary font-semibold">{task.progress}%</span>
           </div>
           <Progress value={task.progress} className="h-2" />
         </div>
 
         {/* Effort estimate */}
         {task.effort_estimate_h > 0 && (
-          <div className="flex items-center gap-1 text-xs text-foreground/70">
-            <span className="h-1 w-1 rounded-full bg-accent"></span>
+          <div className="text-foreground/70 flex items-center gap-1 text-xs">
+            <span className="bg-accent h-1 w-1 rounded-full"></span>
             Estimé: {task.effort_estimate_h}h
           </div>
         )}
@@ -138,10 +138,10 @@ function MobileTaskCard({
         {/* Actions */}
         {task.task_actions && task.task_actions.length > 0 && (
           <div className="space-y-2">
-            <h4 className="text-sm font-medium text-foreground/80">Actions</h4>
+            <h4 className="text-foreground/80 text-sm font-medium">Actions</h4>
             <div className="space-y-2">
               {task.task_actions.map(action => (
-                <div key={action.id} className="flex items-center gap-2 rounded-md bg-muted/20 p-2">
+                <div key={action.id} className="bg-muted/20 flex items-center gap-2 rounded-md p-2">
                   <Checkbox
                     checked={action.is_done}
                     onCheckedChange={() => onToggleAction(task.id, action.id)}
@@ -154,7 +154,7 @@ function MobileTaskCard({
                       {action.title}
                     </span>
                     {action.weight_percentage > 0 && (
-                      <span className="ml-2 text-xs text-foreground/60">
+                      <span className="text-foreground/60 ml-2 text-xs">
                         ({action.weight_percentage}%)
                       </span>
                     )}
@@ -293,49 +293,23 @@ export function MobileDynamicTable({
 
   return (
     <Card className="modern-card glow-accent transition-smooth w-full">
-      <CardHeader className="border-b bg-gradient-to-r from-primary/10 via-accent/10 to-tech-purple/10 backdrop-blur-sm">
-        <CardTitle className="text-lg font-semibold text-foreground">
-          Tableau Dynamique Mobile
-        </CardTitle>
-
-        {/* Add Action Form */}
-        <div className="mt-4 flex gap-2">
-          <Input
-            placeholder="Nouvelle action..."
-            value={newActionTitle}
-            onChange={e => setNewActionTitle(e.target.value)}
-            className="flex-1 text-sm"
-          />
-          <Button
-            onClick={handleAddActionColumn}
-            disabled={!selectedTaskId || !newActionTitle.trim()}
-            size="sm"
-            className="shrink-0"
-          >
-            <Plus className="h-4 w-4" />
-          </Button>
-        </div>
-
-        {selectedTaskId && (
-          <p className="text-xs text-foreground/70">
-            Action sélectionnée pour: {optimisticTasks.find(t => t.id === selectedTaskId)?.title}
-          </p>
-        )}
+      <CardHeader className="from-primary/10 via-accent/10 to-tech-purple/10 border-b bg-gradient-to-r backdrop-blur-sm">
+        <CardTitle className="text-foreground text-lg font-semibold">Tableau Dynamique</CardTitle>
       </CardHeader>
 
       <CardContent className="p-0">
         <Tabs defaultValue="todo" className="w-full">
-          <TabsList className="grid w-full grid-cols-4 bg-gradient-to-r from-primary/5 via-accent/5 to-tech-purple/5">
+          <TabsList className="from-primary/5 via-accent/5 to-tech-purple/5 grid w-full grid-cols-4 bg-gradient-to-r">
             {Object.entries(statusLabels).map(([status, label]) => (
               <TabsTrigger
                 key={status}
                 value={status}
-                className="transition-smooth text-xs font-semibold data-[state=active]:bg-primary/20 data-[state=active]:text-primary"
+                className="transition-smooth data-[state=active]:bg-primary/20 data-[state=active]:text-primary text-xs font-semibold"
               >
                 {label}
                 <Badge
                   variant="secondary"
-                  className="ml-1 bg-primary/30 text-xs text-primary-foreground"
+                  className="bg-primary/30 text-primary-foreground ml-1 text-xs"
                 >
                   {tasksByStatus[status as keyof typeof tasksByStatus].length}
                 </Badge>

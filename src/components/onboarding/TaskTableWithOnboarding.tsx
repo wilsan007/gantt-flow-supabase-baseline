@@ -13,7 +13,8 @@ import { TaskTemplate } from '@/data/taskTemplates';
 import { useToast } from '@/hooks/use-toast';
 import { useTenant } from '@/hooks/useTenant';
 import { supabase } from '@/integrations/supabase/client';
-import type { Task } from '@/types/task';
+import { BrandedLoadingScreen } from '@/components/layout/BrandedLoadingScreen';
+import type { Task } from '@/types/tasks';
 
 const ONBOARDING_DISMISSED_KEY = 'wadashaqayn_onboarding_dismissed';
 
@@ -21,6 +22,10 @@ export function TaskTableWithOnboarding() {
   const { tasks, loading, createTask } = useTasks();
   const { toast } = useToast();
   const { tenantId } = useTenant();
+
+  // État de stabilisation pour éviter les flashes
+  const [isStabilizing, setIsStabilizing] = useState(true);
+  const [dataStable, setDataStable] = useState(false);
 
   // Vérifier si l'utilisateur a déjà masqué l'onboarding
   const [onboardingDismissed, setOnboardingDismissed] = useState(() => {
@@ -34,16 +39,33 @@ export function TaskTableWithOnboarding() {
     return demo === 'true';
   });
 
+  // Délai de stabilisation pour éviter les flashes visuels
+  useEffect(() => {
+    if (!loading) {
+      // Attendre 300ms après la fin du chargement pour stabiliser l'affichage
+      const timer = setTimeout(() => {
+        setIsStabilizing(false);
+        setDataStable(true);
+      }, 300);
+
+      return () => clearTimeout(timer);
+    } else {
+      setIsStabilizing(true);
+      setDataStable(false);
+    }
+  }, [loading]);
+
   // Afficher EmptyState si:
-  // 1. Pas de chargement en cours
+  // 1. Données stables (pas de chargement + délai écoulé)
   // 2. Aucune tâche
   // 3. Onboarding pas encore masqué
   // 4. Pas en mode démo
   const shouldShowOnboarding =
-    !loading && tasks.length === 0 && !onboardingDismissed && !showDemoData;
+    dataStable && tasks.length === 0 && !onboardingDismissed && !showDemoData;
 
   // Créer des tâches mockées pour le mode démo avec vrais UUIDs
-  const mockTasks = useMemo<Task[]>(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const mockTasks = useMemo<any[]>(
     () => [
       {
         id: '00000000-0000-0000-0000-000000000001',
@@ -60,7 +82,10 @@ export function TaskTableWithOnboarding() {
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
         assigned_to: null,
+        assigned_name: null,
         project_id: null,
+        project_name: null,
+        department_name: null,
         parent_task_id: null,
         position: 0,
         // Ajouter des actions mockées
@@ -106,7 +131,7 @@ export function TaskTableWithOnboarding() {
             tenant_id: tenantId || '',
           },
         ],
-      } as Task,
+      },
       {
         id: '00000000-0000-0000-0000-000000000002',
         title: 'Créer votre seconde tâche',
@@ -178,7 +203,7 @@ export function TaskTableWithOnboarding() {
             tenant_id: tenantId || '',
           },
         ],
-      } as Task,
+      },
       {
         id: '00000000-0000-0000-0000-000000000003',
         title: 'Créer votre troisième tâche',
@@ -230,7 +255,7 @@ export function TaskTableWithOnboarding() {
             tenant_id: tenantId || '',
           },
         ],
-      } as Task,
+      },
     ],
     [tenantId]
   );
@@ -320,6 +345,12 @@ export function TaskTableWithOnboarding() {
     });
   };
 
+  // ⏳ ÉTAPE 1 : Afficher l'écran de chargement pendant le chargement OU la stabilisation
+  // Cela évite les flashes visuels désagréables
+  if (loading || isStabilizing) {
+    return <BrandedLoadingScreen appName="Wadashaqayn" logoSrc="/logo-w.svg" />;
+  }
+
   // Si en mode démo et pas de vraies tâches, afficher les données mockées
   if (!loading && tasks.length === 0 && showDemoData) {
     return (
@@ -346,7 +377,7 @@ export function TaskTableWithOnboarding() {
                 setShowDemoData(false);
                 setOnboardingDismissed(false);
               }}
-              className="whitespace-nowrap text-xs text-blue-600 hover:text-blue-800 hover:underline"
+              className="text-xs whitespace-nowrap text-blue-600 hover:text-blue-800 hover:underline"
             >
               Retour au guide
             </button>
@@ -368,7 +399,7 @@ export function TaskTableWithOnboarding() {
           <h3 className="text-2xl font-bold">Aucune tâche pour le moment</h3>
           <p className="text-muted-foreground">
             Commencez par créer votre première tâche avec le bouton
-            <span className="font-semibold text-primary"> "+ Nouvelle tâche" </span>
+            <span className="text-primary font-semibold"> "+ Nouvelle tâche" </span>
             en haut à droite.
           </p>
           <button
@@ -376,7 +407,7 @@ export function TaskTableWithOnboarding() {
               localStorage.removeItem(`${ONBOARDING_DISMISSED_KEY}_${tenantId}`);
               setOnboardingDismissed(false);
             }}
-            className="text-sm text-primary hover:underline"
+            className="text-primary text-sm hover:underline"
           >
             Afficher à nouveau les templates d'aide
           </button>

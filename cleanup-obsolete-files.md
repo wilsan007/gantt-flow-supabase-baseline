@@ -3,6 +3,7 @@
 ## Fichiers à Supprimer (Remplacés par les versions Enterprise)
 
 ### Hooks Obsolètes :
+
 ```bash
 # Hooks tâches obsolètes
 rm src/hooks/useTaskDatabase.ts          # → useTasksEnterprise.ts
@@ -25,6 +26,7 @@ rm src/hooks/useHR.ts                    # → useHRMinimal.ts
 ```
 
 ### Composants Obsolètes :
+
 ```bash
 # Composants tâches obsolètes
 rm src/components/table/TaskTableWithErrorHandling.tsx     # → TaskTableEnterprise.tsx
@@ -47,11 +49,13 @@ rm src/components/hr/KPIDetailDialog.tsx                  # → Intégré dans H
 ## Nouveaux Fichiers Enterprise (À Conserver) :
 
 ### ✅ Hooks Enterprise Optimisés :
+
 - `src/hooks/useTasksEnterprise.ts` - Pattern Linear/Monday.com
-- `src/hooks/useProjectsEnterprise.ts` - Pattern Stripe/Salesforce  
+- `src/hooks/useProjectsEnterprise.ts` - Pattern Stripe/Salesforce
 - `src/hooks/useHRMinimal.ts` - Pattern Enterprise (optimisé)
 
 ### ✅ Composants Enterprise Optimisés :
+
 - `src/components/table/TaskTableEnterprise.tsx` - Table avec pagination
 - `src/components/kanban/KanbanBoardEnterprise.tsx` - Kanban avec drag&drop
 - `src/components/gantt/GanttChartEnterprise.tsx` - Gantt avec hiérarchie
@@ -61,23 +65,27 @@ rm src/components/hr/KPIDetailDialog.tsx                  # → Intégré dans H
 ## Bénéfices du Nettoyage :
 
 ### 📊 Réduction du Code :
+
 - **~15 fichiers supprimés** (hooks + composants obsolètes)
 - **~50KB de code en moins** (estimation)
 - **Architecture unifiée** avec patterns cohérents
 
 ### 🚀 Performance :
+
 - **Cache intelligent** sur tous les modules
 - **Query-level filtering** pour sécurité maximale
 - **Pagination native** avec lazy loading
 - **Métriques temps réel** intégrées
 
 ### 🔒 Sécurité :
+
 - **Isolation stricte par tenant** (non Super Admin)
 - **Accès cross-tenant** (Super Admin uniquement)
 - **Types TypeScript robustes**
 - **Gestion d'erreurs granulaire**
 
 ### 🛠️ Maintenabilité :
+
 - **Pattern uniforme** sur tous les modules
 - **API cohérente** entre hooks
 - **Documentation intégrée**
@@ -87,7 +95,7 @@ rm src/components/hr/KPIDetailDialog.tsx                  # → Intégré dans H
 
 ```bash
 # Exécuter depuis la racine du projet
-cd /home/awaleh/Documents/Wadashaqeen-SaaS/gantt-flow-next
+cd /home/awaleh/Documents/Wadashaqayn-SaaS/gantt-flow-next
 
 # Supprimer les hooks obsolètes
 rm src/hooks/useTaskDatabase.ts src/hooks/useTaskCRUD.ts src/hooks/useTaskActions.ts

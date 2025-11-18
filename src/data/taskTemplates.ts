@@ -35,7 +35,7 @@ export const ONBOARDING_TASK_TEMPLATES: TaskTemplate[] = [
     id: 'template-1',
     title: '🚀 Créer votre première tâche',
     description:
-      'Apprenez à créer et organiser vos tâches pour démarrer efficacement avec Wadashaqeen.',
+      'Apprenez à créer et organiser vos tâches pour démarrer efficacement avec Wadashaqayn.',
     status: 'todo',
     priority: 'high',
     category: 'onboarding',

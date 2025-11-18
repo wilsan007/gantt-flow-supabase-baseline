@@ -4,7 +4,7 @@
 
 - ✅ **Dépendance installée** : `qrcode.react` (avec --legacy-peer-deps)
 - ✅ **Compilation TypeScript** : Aucune erreur
-- ✅ **Fichiers créés** : 
+- ✅ **Fichiers créés** :
   - MFASetup.tsx
   - SecuritySettings.tsx
   - SocialAuth.tsx
@@ -16,11 +16,12 @@
 ## 🚀 Étape 1 : Démarrer l'Application (MAINTENANT)
 
 ```bash
-cd /home/awaleh/Bureau/Wadashaqeen-SaaS/gantt-flow-next
+cd /home/awaleh/Bureau/Wadashaqayn-SaaS/gantt-flow-next
 npm run dev
 ```
 
 **Résultat attendu** :
+
 ```
 VITE v5.x.x  ready in xxx ms
 
@@ -46,7 +47,7 @@ Modifier temporairement `App.tsx` pour afficher `Settings` :
 import { Settings } from '@/pages/Settings';
 
 // Dans le JSX, ajouter temporairement :
-<Settings />
+<Settings />;
 ```
 
 #### **Option 2 : Ajouter Route dans Navigation (Recommandé)**
@@ -94,7 +95,7 @@ Si votre app a un menu de navigation, ajoutez :
 
 ```
 1. Aller sur https://console.cloud.google.com/
-2. Créer un nouveau projet : "Wadashaqeen"
+2. Créer un nouveau projet : "Wadashaqayn"
 3. Activer "Google+ API"
 4. Credentials → Create Credentials → OAuth 2.0 Client ID
 5. Application type : Web application
@@ -141,7 +142,7 @@ npm run dev
 
 ```
 1. Azure Portal → App registrations
-2. New registration → "Wadashaqeen"
+2. New registration → "Wadashaqayn"
 3. Redirect URI : https://qliinxtanjdnwxlvnxji.supabase.co/auth/v1/callback
 4. Certificates & secrets → New client secret
 5. Copier Application ID et Secret
@@ -184,6 +185,7 @@ Après déploiement :
 ## 📋 Checklist de Validation
 
 ### **Installation & Build**
+
 ```
 ✅ npm install qrcode.react --legacy-peer-deps
 ✅ npx tsc --noEmit (pas d'erreurs)
@@ -191,6 +193,7 @@ Après déploiement :
 ```
 
 ### **MFA/2FA**
+
 ```
 [ ] Page Settings accessible
 [ ] Onglet "Sécurité" visible
@@ -204,6 +207,7 @@ Après déploiement :
 ```
 
 ### **OAuth Social**
+
 ```
 [ ] Boutons Google/Microsoft visibles sur login
 [ ] Configuration Google Cloud faite
@@ -215,6 +219,7 @@ Après déploiement :
 ```
 
 ### **CSP Headers**
+
 ```
 [ ] Headers visibles dans DevTools
 [ ] Aucune erreur CSP en console
@@ -229,17 +234,19 @@ Après déploiement :
 ### **Problème : QR Code ne s'affiche pas**
 
 **Solution** :
+
 ```tsx
 // Vérifier que qrcode.react est bien importé
 import { QRCodeSVG } from 'qrcode.react';
 
 // Vérifier les props
-<QRCodeSVG value={qrCode} size={256} level="H" />
+<QRCodeSVG value={qrCode} size={256} level="H" />;
 ```
 
 ### **Problème : OAuth ne redirige pas**
 
 **Vérifications** :
+
 ```
 1. URL exacte dans Google/Azure :
    https://qliinxtanjdnwxlvnxji.supabase.co/auth/v1/callback
@@ -255,6 +262,7 @@ import { QRCodeSVG } from 'qrcode.react';
 ### **Problème : Erreurs CSP en console**
 
 **Solution** :
+
 ```typescript
 // Ajouter le domaine manquant dans vite.config.ts
 // Exemple : Si erreur avec cdn.example.com
@@ -271,18 +279,21 @@ import { QRCodeSVG } from 'qrcode.react';
 ## 📊 Résultats Attendus
 
 ### **Avant**
+
 - Score : 74/100
 - MFA : 0/10 🔴
 - OAuth : 3/10 🔴
 - CSP : 5/10 🟡
 
 ### **Après**
+
 - Score : 87/100 ⭐⭐⭐⭐⭐
 - MFA : 9/10 ✅
 - OAuth : 8/10 ✅
 - CSP : 9/10 ✅
 
 ### **Niveau atteint**
+
 **Comparable à Notion (88), Linear (85)** 🏆
 
 ---
@@ -290,6 +301,7 @@ import { QRCodeSVG } from 'qrcode.react';
 ## 🎯 Actions Immédiates
 
 1. **Démarrer l'app** :
+
    ```bash
    npm run dev
    ```
@@ -336,7 +348,7 @@ Après avoir validé ces 3 éléments, voir `SECURITY_ACTION_PLAN.md` Phase 2 :
 
 ```bash
 # Tout en une commande
-cd /home/awaleh/Bureau/Wadashaqeen-SaaS/gantt-flow-next && npm run dev
+cd /home/awaleh/Bureau/Wadashaqayn-SaaS/gantt-flow-next && npm run dev
 ```
 
 **Puis** ouvrir http://localhost:8080 dans votre navigateur !

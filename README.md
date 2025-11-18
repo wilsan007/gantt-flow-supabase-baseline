@@ -1,4 +1,4 @@
-# 🚀 Wadashaqeen SaaS - Enterprise Project Management
+# 🚀 Wadashaqayn SaaS - Enterprise Project Management
 
 [![CI/CD Pipeline](https://github.com/YOUR_USERNAME/gantt-flow-next/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/YOUR_USERNAME/gantt-flow-next/actions/workflows/ci-cd.yml)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.5-blue.svg)](https://www.typescriptlang.org/)
@@ -11,12 +11,14 @@ Plateforme SaaS multi-tenant de gestion de projet et RH avec architecture Enterp
 ## ✨ **Fonctionnalités**
 
 ### 📊 **Gestion de Projet**
+
 - **3 Vues Synchronisées** : Table Dynamique, Gantt, Kanban
 - **Rotation Paysage Intelligente** : Optimisation mobile/tablette automatique
 - **Hiérarchie des Tâches** : Support des sous-tâches et dépendances
 - **Filtrage Temps Réel** : Recherche, statut, priorité, assignation
 
 ### 👥 **Ressources Humaines**
+
 - **Gestion des Congés** : Workflow d'approbation complet
 - **Timesheet Hebdomadaire** : Suivi du temps de travail
 - **Notes de Frais** : Gestion et approbation des dépenses
@@ -24,12 +26,14 @@ Plateforme SaaS multi-tenant de gestion de projet et RH avec architecture Enterp
 - **Télétravail** : Demandes et validation
 
 ### 🔒 **Sécurité**
+
 - **Multi-Tenant** : Isolation stricte des données par organisation
 - **RBAC** : Contrôle d'accès basé sur les rôles (8 rôles)
 - **Row-Level Security** : Filtrage au niveau base de données
 - **Super Admin** : Gestion cross-tenant sécurisée
 
 ### 📱 **Responsive**
+
 - **Score 95/100** : Optimisation complète mobile/tablette/desktop
 - **Progressive Enhancement** : Adaptation intelligente par appareil
 - **Préférences Utilisateur** : Configuration de l'orientation sauvegardée
@@ -37,6 +41,7 @@ Plateforme SaaS multi-tenant de gestion de projet et RH avec architecture Enterp
 ## 🛠️ **Stack Technique**
 
 ### **Frontend**
+
 - **React 18.3** avec TypeScript 5.5
 - **Vite 5.4** - Build ultra-rapide (<21s)
 - **TailwindCSS** - Design system moderne
@@ -45,6 +50,7 @@ Plateforme SaaS multi-tenant de gestion de projet et RH avec architecture Enterp
 - **Lucide React** - Icônes modernes
 
 ### **Backend**
+
 - **Supabase** - Backend-as-a-Service
 - **PostgreSQL** - Base de données relationnelle
 - **Row-Level Security** - Sécurité native
@@ -52,6 +58,7 @@ Plateforme SaaS multi-tenant de gestion de projet et RH avec architecture Enterp
 - **Realtime** - WebSocket subscriptions
 
 ### **État & Cache**
+
 - **React Query** - Server state management
 - **Cache Intelligent** - TTL adaptatif (3-5 min)
 - **Optimistic Updates** - UX instantanée
@@ -60,12 +67,14 @@ Plateforme SaaS multi-tenant de gestion de projet et RH avec architecture Enterp
 ## 🚀 **Démarrage Rapide**
 
 ### **Prérequis**
+
 ```bash
 Node.js >= 18.x
 npm >= 9.x
 ```
 
 ### **Installation**
+
 ```bash
 # Cloner le repo
 git clone https://github.com/YOUR_USERNAME/gantt-flow-next.git
@@ -80,6 +89,7 @@ cp .env.example .env.local
 ```
 
 ### **Développement**
+
 ```bash
 # Démarrer le serveur de développement
 npm run dev
@@ -88,6 +98,7 @@ npm run dev
 ```
 
 ### **Build Production**
+
 ```bash
 # Build optimisé
 npm run build
@@ -108,6 +119,7 @@ npm run lint         # Linter ESLint
 ## 🏗️ **Architecture**
 
 ### **Patterns Implémentés**
+
 - ✅ **Stripe** - Cache intelligent + Query filtering
 - ✅ **Salesforce** - Isolation tenant + Métriques
 - ✅ **Monday.com** - Types robustes + UX moderne
@@ -115,6 +127,7 @@ npm run lint         # Linter ESLint
 - ✅ **Notion** - Pagination + Filtres avancés
 
 ### **Structure du Projet**
+
 ```
 src/
 ├── components/       # Composants React
@@ -133,24 +146,26 @@ src/
 
 ## 🔐 **Rôles & Permissions**
 
-| Rôle | Description | Accès |
-|------|-------------|-------|
-| **Super Admin** | Administration globale | Cross-tenant |
-| **Tenant Admin** | Admin organisation | Full tenant |
-| **HR Manager** | Gestion RH | Module RH + Employés |
-| **Project Manager** | Gestion projets | Projets assignés |
-| **Team Lead** | Chef d'équipe | Équipe + Tâches |
-| **Employee** | Employé standard | Tâches assignées + RH self-service |
+| Rôle                | Description            | Accès                              |
+| ------------------- | ---------------------- | ---------------------------------- |
+| **Super Admin**     | Administration globale | Cross-tenant                       |
+| **Tenant Admin**    | Admin organisation     | Full tenant                        |
+| **HR Manager**      | Gestion RH             | Module RH + Employés               |
+| **Project Manager** | Gestion projets        | Projets assignés                   |
+| **Team Lead**       | Chef d'équipe          | Équipe + Tâches                    |
+| **Employee**        | Employé standard       | Tâches assignées + RH self-service |
 
 ## 📊 **Performance**
 
 ### **Métriques Build**
+
 - **Build Time**: ~21s
 - **Bundle Size**: 446 KB (123 KB gzipped)
 - **Modules**: 3223 transformés
 - **TypeScript**: 0 erreurs
 
 ### **Optimisations**
+
 - ✅ Code splitting automatique
 - ✅ Tree shaking activé
 - ✅ CSS minification
@@ -160,6 +175,7 @@ src/
 ## 🧪 **CI/CD**
 
 ### **GitHub Actions**
+
 - ✅ Tests TypeScript automatiques
 - ✅ Build multi-versions (Node 18, 20)
 - ✅ Security audit npm
@@ -167,6 +183,7 @@ src/
 - ✅ Artifacts upload
 
 ### **Workflow**
+
 ```yaml
 Push/PR → Type Check → Build → Security Audit → Deploy Preview
 ```
@@ -183,7 +200,7 @@ Les contributions sont les bienvenues ! Veuillez suivre ces étapes :
 
 ## 📝 **License**
 
-Ce projet est sous licence privée. © 2025 Wadashaqeen SaaS
+Ce projet est sous licence privée. © 2025 Wadashaqayn SaaS
 
 ## 👥 **Équipe**
 
@@ -194,7 +211,8 @@ Ce projet est sous licence privée. © 2025 Wadashaqeen SaaS
 ## 📞 **Support**
 
 Pour toute question ou support :
-- 📧 Email: support@wadashaqeen.com
+
+- 📧 Email: support@wadashaqayn.com
 - 💬 Discord: [Lien Discord]
 - 📚 Documentation: [Lien Documentation]
 

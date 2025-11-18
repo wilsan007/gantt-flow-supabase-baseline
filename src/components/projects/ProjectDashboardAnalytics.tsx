@@ -189,7 +189,7 @@ export const ProjectDashboardAnalytics: React.FC = () => {
           subtitle: `${totalCount} projets`,
           filename: `projets-${new Date().toISOString().split('T')[0]}.pdf`,
           orientation: 'landscape',
-          footer: 'Généré par Wadashaqeen SaaS',
+          footer: 'Généré par Wadashaqayn SaaS',
         }
       );
 
@@ -263,7 +263,7 @@ export const ProjectDashboardAnalytics: React.FC = () => {
           title: 'Rapport Complet - Projets',
           subtitle: `Analyse détaillée • ${totalCount} projets`,
           filename: `rapport-complet-projets-${new Date().toISOString().split('T')[0]}.pdf`,
-          footer: 'Généré par Wadashaqeen SaaS',
+          footer: 'Généré par Wadashaqayn SaaS',
         }
       );
 
@@ -286,7 +286,7 @@ export const ProjectDashboardAnalytics: React.FC = () => {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold">Analytics Projets</h1>
-          <p className="mt-1 text-muted-foreground">Vue d'ensemble et métriques clés</p>
+          <p className="text-muted-foreground mt-1">Vue d'ensemble et métriques clés</p>
         </div>
         <div className="flex items-center gap-2">
           <DropdownMenu>

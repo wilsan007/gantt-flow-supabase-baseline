@@ -16,6 +16,7 @@ import { useNavigate } from 'react-router-dom';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { ResponsiveLayout } from '@/components/responsive/ResponsiveLayout';
+import { BrandedLoadingScreen } from '@/components/layout/BrandedLoadingScreen';
 
 // 🚀 OPTIMISATION BUNDLE - Lazy loading des composants HR lourds
 const HRDashboard = lazy(() =>
@@ -65,12 +66,8 @@ const HealthSafety = lazy(() =>
   import('@/components/hr/HealthSafety').then(m => ({ default: m.HealthSafety }))
 );
 
-// Composant de chargement
-const LoadingFallback = () => (
-  <div className="flex items-center justify-center p-8">
-    <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-  </div>
-);
+// Composant de chargement professionnel
+const LoadingFallback = () => <BrandedLoadingScreen appName="Wadashaqayn" logoSrc="/logo-w.svg" />;
 
 // Helper pour envelopper les composants lazy avec Suspense
 const withSuspense = (Component: React.LazyExoticComponent<any>) => {
@@ -180,11 +177,11 @@ const HRPage = () => {
             <span className="sr-only sm:not-sr-only sm:ml-2">Retour</span>
           </Button>
           <div className="min-w-0 flex-1">
-            <h1 className="truncate bg-gradient-to-r from-primary via-accent to-tech-purple bg-clip-text text-xl font-bold text-transparent drop-shadow-sm sm:text-2xl md:text-4xl">
+            <h1 className="from-primary via-accent to-tech-purple truncate bg-gradient-to-r bg-clip-text text-xl font-bold text-transparent drop-shadow-sm sm:text-2xl md:text-4xl">
               <span className="hidden sm:inline">Gestion des Ressources Humaines</span>
               <span className="sm:hidden">RH</span>
             </h1>
-            <p className="mt-0.5 truncate text-xs font-medium text-muted-foreground sm:text-sm md:text-lg">
+            <p className="text-muted-foreground mt-0.5 truncate text-xs font-medium sm:text-sm md:text-lg">
               <span className="hidden sm:inline">Module complet de gestion RH</span>
               <span className="sm:hidden">Gestion RH</span>
             </p>
@@ -198,45 +195,45 @@ const HRPage = () => {
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         {/* Tabs principales - Scroll horizontal mobile */}
         <div className="-mx-4 sm:mx-0">
-          <TabsList className="modern-card glow-primary flex w-full gap-1 overflow-x-auto border-2 bg-gradient-to-r from-primary/10 via-accent/10 to-tech-purple/10 p-2 sm:grid sm:grid-cols-6 sm:gap-2 sm:p-3 md:mb-8">
+          <TabsList className="modern-card glow-primary from-primary/10 via-accent/10 to-tech-purple/10 flex w-full gap-1 overflow-x-auto border-2 bg-gradient-to-r p-2 sm:grid sm:grid-cols-6 sm:gap-2 sm:p-3 md:mb-8">
             <TabsTrigger
               value="dashboard"
-              className="flex shrink-0 items-center gap-2 whitespace-nowrap px-3 sm:px-4"
+              className="flex shrink-0 items-center gap-2 px-3 whitespace-nowrap sm:px-4"
             >
               <Building className="h-4 w-4" />
               <span className="hidden sm:inline">Dashboard</span>
             </TabsTrigger>
             <TabsTrigger
               value="personnel"
-              className="flex shrink-0 items-center gap-2 whitespace-nowrap px-3 sm:px-4"
+              className="flex shrink-0 items-center gap-2 px-3 whitespace-nowrap sm:px-4"
             >
               <Users className="h-4 w-4" />
               <span className="hidden sm:inline">Personnel</span>
             </TabsTrigger>
             <TabsTrigger
               value="performance"
-              className="flex shrink-0 items-center gap-2 whitespace-nowrap px-3 sm:px-4"
+              className="flex shrink-0 items-center gap-2 px-3 whitespace-nowrap sm:px-4"
             >
               <TrendingUp className="h-4 w-4" />
               <span className="hidden sm:inline">Performance</span>
             </TabsTrigger>
             <TabsTrigger
               value="operations"
-              className="flex shrink-0 items-center gap-2 whitespace-nowrap px-3 sm:px-4"
+              className="flex shrink-0 items-center gap-2 px-3 whitespace-nowrap sm:px-4"
             >
               <Clock className="h-4 w-4" />
               <span className="hidden sm:inline">Opérations</span>
             </TabsTrigger>
             <TabsTrigger
               value="development"
-              className="flex shrink-0 items-center gap-2 whitespace-nowrap px-3 sm:px-4"
+              className="flex shrink-0 items-center gap-2 px-3 whitespace-nowrap sm:px-4"
             >
               <BookOpen className="h-4 w-4" />
               <span className="hidden sm:inline">Développement</span>
             </TabsTrigger>
             <TabsTrigger
               value="safety"
-              className="flex shrink-0 items-center gap-2 whitespace-nowrap px-3 sm:px-4"
+              className="flex shrink-0 items-center gap-2 px-3 whitespace-nowrap sm:px-4"
             >
               <Shield className="h-4 w-4" />
               <span className="hidden sm:inline">Sécurité</span>

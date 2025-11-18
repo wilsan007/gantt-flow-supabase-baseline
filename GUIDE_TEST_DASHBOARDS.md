@@ -81,7 +81,7 @@ Vérifiez que vous voyez bien :
 - [ ] Tableau professionnel avec bordures
 - [ ] Colonnes bien alignées
 - [ ] Pagination automatique si >20 projets
-- [ ] Pied de page : "Généré par Wadashaqeen SaaS"
+- [ ] Pied de page : "Généré par Wadashaqayn SaaS"
 - [ ] Numérotation des pages
 
 **✅ Attendu:** PDF professionnel prêt à imprimer

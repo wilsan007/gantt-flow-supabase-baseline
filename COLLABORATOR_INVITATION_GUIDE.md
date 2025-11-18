@@ -6,18 +6,19 @@ Ce système permet aux **Tenant Admins, Managers et HR Managers** d'inviter des 
 
 ### **Différences avec le système Tenant-Owner**
 
-| Aspect | Tenant-Owner | Collaborateur |
-|--------|--------------|---------------|
-| **Inviteur** | Super Admin | Tenant Admin/Manager |
-| **Tenant** | ✅ Crée nouveau | ❌ Utilise existant |
-| **Rôle** | `tenant_admin` fixe | Variable (manager, employee, etc.) |
-| **Workflow** | Création entreprise | Ajout à l'équipe |
+| Aspect       | Tenant-Owner        | Collaborateur                      |
+| ------------ | ------------------- | ---------------------------------- |
+| **Inviteur** | Super Admin         | Tenant Admin/Manager               |
+| **Tenant**   | ✅ Crée nouveau     | ❌ Utilise existant                |
+| **Rôle**     | `tenant_admin` fixe | Variable (manager, employee, etc.) |
+| **Workflow** | Création entreprise | Ajout à l'équipe                   |
 
 ---
 
 ## 🏗️ Architecture
 
 ### **Pattern inspiré de :**
+
 - ✅ **Stripe** - Validation robuste + Cache intelligent
 - ✅ **Notion** - UX moderne + Feedback immédiat
 - ✅ **Linear** - Messages d'erreur contextuels
@@ -28,9 +29,11 @@ Ce système permet aux **Tenant Admins, Managers et HR Managers** d'inviter des 
 ## 📦 Fichiers Créés
 
 ### **1. Migration SQL**
+
 ```
 📄 02_collaborator_invitation_system.sql
 ```
+
 - Extension table `invitations` pour collaborateurs
 - Fonctions SQL (permissions, validation, statistiques)
 - Politiques RLS pour sécurité par tenant
@@ -45,12 +48,14 @@ Ce système permet aux **Tenant Admins, Managers et HR Managers** d'inviter des 
 ```
 
 **send-collaborator-invitation :**
+
 - Authentification Tenant Admin/Manager
 - Validation email unique dans le tenant
 - Génération Magic Link
 - Envoi email via Resend
 
 **handle-collaborator-confirmation :**
+
 - Webhook déclenché par Magic Link
 - Validation éléments d'invitation
 - ❌ **PAS de création tenant**
@@ -62,6 +67,7 @@ Ce système permet aux **Tenant Admins, Managers et HR Managers** d'inviter des 
 ```
 📄 src/hooks/useCollaboratorInvitation.ts
 ```
+
 - API unifiée pour invitations
 - Cache intelligent (Pattern Stripe)
 - Gestion états et erreurs
@@ -73,6 +79,7 @@ Ce système permet aux **Tenant Admins, Managers et HR Managers** d'inviter des 
 📁 src/components/hr/
   └── CollaboratorInvitation.tsx
 ```
+
 - Formulaire d'invitation
 - Liste invitations en attente
 - Statistiques visuelles
@@ -92,7 +99,7 @@ Ce système permet aux **Tenant Admins, Managers et HR Managers** d'inviter des 
 
 ```bash
 # Exécuter la migration dans Supabase SQL Editor
-cd /home/awaleh/Bureau/Wadashaqeen-SaaS/gantt-flow-next
+cd /home/awaleh/Bureau/Wadashaqayn-SaaS/gantt-flow-next
 cat 02_collaborator_invitation_system.sql
 ```
 
@@ -105,7 +112,7 @@ Copier le contenu et exécuter dans :
 # Déployer send-collaborator-invitation
 supabase functions deploy send-collaborator-invitation
 
-# Déployer handle-collaborator-confirmation  
+# Déployer handle-collaborator-confirmation
 supabase functions deploy handle-collaborator-confirmation
 ```
 
@@ -130,17 +137,17 @@ BEGIN
       'record', row_to_json(NEW),
       'old_record', row_to_json(OLD)
     );
-    
+
     PERFORM net.http_post(
       url := webhook_url,
       headers := jsonb_build_object(
-        'Content-Type', 'application/json', 
+        'Content-Type', 'application/json',
         'Authorization', 'Bearer ' || current_setting('app.settings.service_role_key', true)
       ),
       body := payload::text
     );
   END IF;
-  
+
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
@@ -150,7 +157,7 @@ CREATE TRIGGER handle_collaborator_confirmation_trigger
   AFTER UPDATE ON auth.users
   FOR EACH ROW
   WHEN (
-    OLD.email_confirmed_at IS DISTINCT FROM NEW.email_confirmed_at 
+    OLD.email_confirmed_at IS DISTINCT FROM NEW.email_confirmed_at
     OR OLD.raw_user_meta_data IS DISTINCT FROM NEW.raw_user_meta_data
   )
   EXECUTE FUNCTION handle_collaborator_confirmation_webhook();
@@ -170,14 +177,14 @@ import HRPage from './pages/HRPage';
 import HRPageWithCollaboratorInvitation from './pages/HRPageWithCollaboratorInvitation';
 
 // Dans les routes
-<Route 
-  path="/hr" 
+<Route
+  path="/hr"
   element={
     <ProtectedRoute requiredAccess="canAccessHR">
       <HRPageWithCollaboratorInvitation />
     </ProtectedRoute>
-  } 
-/>
+  }
+/>;
 ```
 
 #### **Option B : Nouvelle route dédiée**
@@ -185,13 +192,13 @@ import HRPageWithCollaboratorInvitation from './pages/HRPageWithCollaboratorInvi
 Ajouter une route séparée :
 
 ```tsx
-<Route 
-  path="/team/invitations" 
+<Route
+  path="/team/invitations"
   element={
     <ProtectedRoute requiredAccess="canAccessHR">
       <CollaboratorInvitation />
     </ProtectedRoute>
-  } 
+  }
 />
 ```
 
@@ -200,11 +207,13 @@ Ajouter une route séparée :
 Dans `src/App.tsx`, ajouter un lien dans `MemoizedHeader` :
 
 ```tsx
-{accessRights.canAccessHR && (
-  <Link to="/team/invitations" className="text-foreground hover:text-primary">
-    Inviter Équipe
-  </Link>
-)}
+{
+  accessRights.canAccessHR && (
+    <Link to="/team/invitations" className="text-foreground hover:text-primary">
+      Inviter Équipe
+    </Link>
+  );
+}
 ```
 
 ### **Étape 5 : Ajouter la route CollaboratorSetup**
@@ -215,7 +224,7 @@ Dans `src/App.tsx`, ajouter la route publique :
 import CollaboratorSetup from './pages/CollaboratorSetup';
 
 // Dans les routes publiques (section non authentifiée)
-<Route path="/collaborator-setup" element={<CollaboratorSetup />} />
+<Route path="/collaborator-setup" element={<CollaboratorSetup />} />;
 ```
 
 ---
@@ -290,8 +299,8 @@ Redirection automatique vers /dashboard
 
 ```sql
 -- Seuls les membres autorisés peuvent inviter
-CREATE POLICY "Authorized users can create collaborator invitations" 
-ON public.invitations FOR INSERT 
+CREATE POLICY "Authorized users can create collaborator invitations"
+ON public.invitations FOR INSERT
 WITH CHECK (
   invitation_type = 'collaborator'
   AND can_invite_collaborators(auth.uid())
@@ -299,14 +308,14 @@ WITH CHECK (
 );
 
 -- Les membres voient uniquement les invitations de leur tenant
-CREATE POLICY "Tenant members can view their tenant invitations" 
-ON public.invitations FOR SELECT 
+CREATE POLICY "Tenant members can view their tenant invitations"
+ON public.invitations FOR SELECT
 USING (
-  invitation_type = 'collaborator' 
+  invitation_type = 'collaborator'
   AND tenant_id IN (
-    SELECT ur.tenant_id 
-    FROM public.user_roles ur 
-    WHERE ur.user_id = auth.uid() 
+    SELECT ur.tenant_id
+    FROM public.user_roles ur
+    WHERE ur.user_id = auth.uid()
       AND ur.is_active = true
   )
 );
@@ -336,10 +345,10 @@ USING (
     expired: number,
     cancelled: number
   },
-  
+
   // Invitations actives
   pendingInvitations: Array,
-  
+
   // États
   isLoading: boolean,
   isSending: boolean,
@@ -367,7 +376,7 @@ const testInvitation = {
   fullName: 'Test User',
   roleToAssign: 'employee',
   department: 'IT',
-  position: 'Developer'
+  position: 'Developer',
 };
 
 // Appeler via UI ou directement
@@ -378,8 +387,8 @@ await sendInvitation(testInvitation);
 
 ```sql
 -- Vérifier l'invitation créée
-SELECT * FROM invitations 
-WHERE email = 'test@example.com' 
+SELECT * FROM invitations
+WHERE email = 'test@example.com'
 AND invitation_type = 'collaborator';
 
 -- Vérifier après acceptation
@@ -397,6 +406,7 @@ SELECT * FROM user_roles WHERE user_id = (
 ### **Problème: Invitation non envoyée**
 
 **Vérifier :**
+
 1. Permissions utilisateur : `SELECT can_invite_collaborators(auth.uid());`
 2. Tenant ID valide : `SELECT get_user_tenant_id(auth.uid());`
 3. Email unique : `SELECT is_email_in_tenant('email', 'tenant_id');`
@@ -405,6 +415,7 @@ SELECT * FROM user_roles WHERE user_id = (
 ### **Problème: Email non reçu**
 
 **Vérifier :**
+
 1. RESEND_API_KEY configurée dans Supabase Secrets
 2. Logs Edge Function pour erreurs Resend
 3. Email de test autorisé (osman.awaleh.adn@gmail.com)
@@ -412,6 +423,7 @@ SELECT * FROM user_roles WHERE user_id = (
 ### **Problème: Webhook ne se déclenche pas**
 
 **Vérifier :**
+
 1. Trigger SQL existe : `SELECT * FROM pg_trigger WHERE tgname = 'handle_collaborator_confirmation_trigger';`
 2. Extension pg_net activée : `CREATE EXTENSION IF NOT EXISTS pg_net;`
 3. Service Role Key configurée
@@ -419,6 +431,7 @@ SELECT * FROM user_roles WHERE user_id = (
 ### **Problème: Profil non créé**
 
 **Vérifier :**
+
 1. Logs `handle-collaborator-confirmation`
 2. Validation des 10 éléments d'invitation
 3. Tenant existe : `SELECT * FROM tenants WHERE id = 'tenant_id';`
@@ -461,6 +474,7 @@ SELECT * FROM user_roles WHERE user_id = (
 ## 📞 Support
 
 **En cas de problème :**
+
 1. Vérifier les logs Supabase Dashboard
 2. Consulter ce guide
 3. Vérifier les permissions RLS

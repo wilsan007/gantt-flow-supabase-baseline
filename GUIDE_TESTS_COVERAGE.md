@@ -1,7 +1,7 @@
 # 📚 GUIDE COMPLET - TESTS & COVERAGE
 
 **Date:** 7 Novembre 2025  
-**Pour:** Wadashaqeen SaaS
+**Pour:** Wadashaqayn SaaS
 
 ---
 

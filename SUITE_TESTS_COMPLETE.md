@@ -4,12 +4,12 @@
 
 ### **Frameworks Utilisés (Standards Industrie)**
 
-| Framework | Usage | Popularité |
-|-----------|-------|------------|
-| **Vitest** | Tests unitaires/intégration | ⭐⭐⭐⭐⭐ (Modern Jest alternative) |
-| **React Testing Library** | Tests composants React | ⭐⭐⭐⭐⭐ (Industry standard) |
-| **Playwright** | Tests E2E | ⭐⭐⭐⭐⭐ (Modern, cross-browser) |
-| **jsdom** | Environnement DOM simulé | ⭐⭐⭐⭐⭐ (Standard) |
+| Framework                 | Usage                       | Popularité                           |
+| ------------------------- | --------------------------- | ------------------------------------ |
+| **Vitest**                | Tests unitaires/intégration | ⭐⭐⭐⭐⭐ (Modern Jest alternative) |
+| **React Testing Library** | Tests composants React      | ⭐⭐⭐⭐⭐ (Industry standard)       |
+| **Playwright**            | Tests E2E                   | ⭐⭐⭐⭐⭐ (Modern, cross-browser)   |
+| **jsdom**                 | Environnement DOM simulé    | ⭐⭐⭐⭐⭐ (Standard)                |
 
 ---
 
@@ -91,6 +91,7 @@ gantt-flow-next/
 **Fichier :** `src/hooks/__tests__/useOperationalActivities.test.ts`
 
 **Ce qui est testé :**
+
 - ✅ Fetch des activités avec succès
 - ✅ Gestion des erreurs de fetch
 - ✅ Application des filtres
@@ -104,6 +105,7 @@ gantt-flow-next/
 **Pattern :** Arrange-Act-Assert (AAA)
 
 **Exemple :**
+
 ```typescript
 it('should fetch activities successfully', async () => {
   // Arrange
@@ -127,6 +129,7 @@ it('should fetch activities successfully', async () => {
 **Scénarios Testés :**
 
 #### **Activités Récurrentes**
+
 - ✅ Affichage de la page opérations
 - ✅ Création d'activité récurrente complète
 - ✅ Filtrage par type (récurrente/ponctuelle)
@@ -136,38 +139,43 @@ it('should fetch activities successfully', async () => {
 - ✅ Suppression d'activité
 
 #### **Activités Ponctuelles**
+
 - ✅ Création d'activité ponctuelle
 - ✅ Génération immédiate de tâche
 - ✅ Vérification dans `/tasks`
 
 #### **Actions Templates**
+
 - ✅ Ajout de plusieurs actions
 - ✅ Suppression d'actions
 - ✅ Réorganisation drag & drop
 
 #### **Performance**
+
 - ✅ Chargement < 3 secondes
 - ✅ Gestion de 50+ activités
 
 #### **Gestion d'Erreurs**
+
 - ✅ Validation champs requis
 - ✅ Erreurs réseau
 
 **Pattern :** User Journey Testing
 
 **Exemple :**
+
 ```typescript
 test('should create a recurring activity', async ({ page }) => {
   // Navigate
   await page.goto('/operations');
-  
+
   // Fill form
   await page.click('[data-testid="new-recurring-button"]');
   await page.fill('[data-testid="activity-name"]', 'Réunion');
-  
+
   // Submit
   await page.click('[data-testid="submit-button"]');
-  
+
   // Assert
   await expect(page.locator('[data-testid="success-toast"]')).toBeVisible();
 });
@@ -194,6 +202,7 @@ npm run test:coverage
 ```
 
 **Ouvrir le rapport de couverture :**
+
 ```bash
 open coverage/index.html
 ```
@@ -220,6 +229,7 @@ npm run test:e2e -- --debug
 ```
 
 **Ouvrir le rapport HTML :**
+
 ```bash
 npx playwright show-report
 ```
@@ -239,12 +249,12 @@ npm run test:all
 
 ### **Objectifs**
 
-| Métrique | Objectif | Recommandation |
-|----------|----------|----------------|
-| **Statements** | ≥ 80% | ⭐⭐⭐⭐ |
-| **Branches** | ≥ 75% | ⭐⭐⭐⭐ |
-| **Functions** | ≥ 85% | ⭐⭐⭐⭐⭐ |
-| **Lines** | ≥ 80% | ⭐⭐⭐⭐ |
+| Métrique       | Objectif | Recommandation |
+| -------------- | -------- | -------------- |
+| **Statements** | ≥ 80%    | ⭐⭐⭐⭐       |
+| **Branches**   | ≥ 75%    | ⭐⭐⭐⭐       |
+| **Functions**  | ≥ 85%    | ⭐⭐⭐⭐⭐     |
+| **Lines**      | ≥ 80%    | ⭐⭐⭐⭐       |
 
 ### **Générer le Rapport**
 
@@ -253,6 +263,7 @@ npm run test:coverage
 ```
 
 **Fichiers générés :**
+
 - `coverage/index.html` - Rapport HTML interactif
 - `coverage/coverage-summary.json` - Résumé JSON
 - `coverage/lcov.info` - Format LCOV (pour CI/CD)
@@ -263,23 +274,24 @@ npm run test:coverage
 
 ### **Ce qui est testé**
 
-| Feature | Unit | E2E | Status |
-|---------|------|-----|--------|
-| **Fetch activités** | ✅ | ✅ | ✅ Complet |
-| **Filtres** | ✅ | ✅ | ✅ Complet |
-| **Création récurrente** | ✅ | ✅ | ✅ Complet |
-| **Création ponctuelle** | ✅ | ✅ | ✅ Complet |
-| **Modification** | ✅ | ✅ | ✅ Complet |
-| **Suppression** | ✅ | ✅ | ✅ Complet |
-| **Toggle statut** | ✅ | ✅ | ✅ Complet |
-| **Actions templates** | ✅ | ✅ | ✅ Complet |
-| **Statistiques** | ✅ | ✅ | ✅ Complet |
-| **Génération tâches** | ⏳ | ✅ | ⚠️ Partiel |
-| **Cache intelligent** | ✅ | ❌ | ⚠️ Partiel |
-| **Métriques perf** | ✅ | ✅ | ✅ Complet |
-| **Gestion erreurs** | ✅ | ✅ | ✅ Complet |
+| Feature                 | Unit | E2E | Status     |
+| ----------------------- | ---- | --- | ---------- |
+| **Fetch activités**     | ✅   | ✅  | ✅ Complet |
+| **Filtres**             | ✅   | ✅  | ✅ Complet |
+| **Création récurrente** | ✅   | ✅  | ✅ Complet |
+| **Création ponctuelle** | ✅   | ✅  | ✅ Complet |
+| **Modification**        | ✅   | ✅  | ✅ Complet |
+| **Suppression**         | ✅   | ✅  | ✅ Complet |
+| **Toggle statut**       | ✅   | ✅  | ✅ Complet |
+| **Actions templates**   | ✅   | ✅  | ✅ Complet |
+| **Statistiques**        | ✅   | ✅  | ✅ Complet |
+| **Génération tâches**   | ⏳   | ✅  | ⚠️ Partiel |
+| **Cache intelligent**   | ✅   | ❌  | ⚠️ Partiel |
+| **Métriques perf**      | ✅   | ✅  | ✅ Complet |
+| **Gestion erreurs**     | ✅   | ✅  | ✅ Complet |
 
 **Légende :**
+
 - ✅ Complet
 - ⚠️ Partiel
 - ⏳ À faire
@@ -418,18 +430,22 @@ jobs:
 ## 🎓 Ressources & Documentation
 
 ### **Vitest**
+
 - https://vitest.dev
 - Modern, fast, Vite-powered
 
 ### **React Testing Library**
+
 - https://testing-library.com/react
 - User-centric testing
 
 ### **Playwright**
+
 - https://playwright.dev
 - Cross-browser E2E
 
 ### **Best Practices**
+
 - https://kentcdodds.com/blog/common-mistakes-with-react-testing-library
 - https://martinfowler.com/articles/practical-test-pyramid.html
 
@@ -474,17 +490,17 @@ jobs:
 ✅ **Vitest** - Alternative moderne à Jest  
 ✅ **React Testing Library** - Standard React  
 ✅ **Playwright** - Modern E2E testing  
-✅ **jsdom** - Environnement DOM  
+✅ **jsdom** - Environnement DOM
 
 ### **Patterns Appliqués**
 
 ✅ **AAA Pattern** - Arrange-Act-Assert  
 ✅ **FIRST Principles** - Fast, Independent, Repeatable, Self-validating, Timely  
 ✅ **User-Centric** - Tester comme un utilisateur  
-✅ **Test Pyramid** - 50% Unit, 30% Integration, 20% E2E  
+✅ **Test Pyramid** - 50% Unit, 30% Integration, 20% E2E
 
 ---
 
 **Date :** 2025-01-13  
 **Status :** ✅ Production Ready  
-**Mainteneur :** Équipe Wadashaqeen
+**Mainteneur :** Équipe Wadashaqayn

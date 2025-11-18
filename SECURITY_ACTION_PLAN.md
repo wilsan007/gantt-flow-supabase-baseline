@@ -58,7 +58,7 @@ export const MFASetup = () => {
         <>
           <h3>Scannez ce QR Code avec votre app authenticator</h3>
           <QRCodeSVG value={qrCode} size={256} />
-          
+
           <input
             type="text"
             value={verificationCode}
@@ -66,7 +66,7 @@ export const MFASetup = () => {
             placeholder="Code à 6 chiffres"
             maxLength={6}
           />
-          
+
           <button onClick={handleVerify} className="btn-primary">
             Vérifier et activer
           </button>
@@ -84,7 +84,7 @@ export const MFASetup = () => {
 const handleLogin = async () => {
   const { data, error } = await supabase.auth.signInWithPassword({
     email,
-    password
+    password,
   });
 
   if (error?.message === 'MFA verification required') {
@@ -98,9 +98,12 @@ const handleLogin = async () => {
 };
 
 const handleMFAVerification = async () => {
-  const { data: { session }, error } = await supabase.auth.verifyOtp({
+  const {
+    data: { session },
+    error,
+  } = await supabase.auth.verifyOtp({
     token: mfaCode,
-    type: 'totp'
+    type: 'totp',
   });
 
   if (session) {
@@ -133,7 +136,7 @@ export const SecuritySettings = () => {
   return (
     <div>
       <h2>Authentification à deux facteurs</h2>
-      
+
       {mfaFactors.length === 0 ? (
         <MFASetup />
       ) : (
@@ -155,11 +158,13 @@ export const SecuritySettings = () => {
 ```
 
 **Dépendances à installer** :
+
 ```bash
 npm install qrcode.react
 ```
 
 **Checklist** :
+
 - [ ] Créer composant `MFASetup.tsx`
 - [ ] Modifier `Login.tsx` pour gérer MFA
 - [ ] Ajouter page Settings avec `SecuritySettings.tsx`
@@ -178,6 +183,7 @@ npm install qrcode.react
 #### **Configuration Supabase Dashboard**
 
 1. **Google OAuth** :
+
 ```
 Supabase Dashboard → Authentication → Providers → Google
 
@@ -185,7 +191,7 @@ Supabase Dashboard → Authentication → Providers → Google
 2. Activer Google+ API
 3. Créer OAuth 2.0 credentials
    - Authorized JavaScript origins : https://votre-domaine.com
-   - Authorized redirect URIs : 
+   - Authorized redirect URIs :
      https://qliinxtanjdnwxlvnxji.supabase.co/auth/v1/callback
 
 4. Copier Client ID et Client Secret dans Supabase
@@ -194,6 +200,7 @@ Supabase Dashboard → Authentication → Providers → Google
 ```
 
 2. **Microsoft OAuth** :
+
 ```
 Supabase Dashboard → Authentication → Providers → Azure
 
@@ -293,6 +300,7 @@ export const AuthCallback = () => {
 ```
 
 **Checklist** :
+
 - [ ] Configurer Google OAuth dans Supabase
 - [ ] Configurer Microsoft OAuth dans Supabase
 - [ ] Créer composant `SocialAuth.tsx`
@@ -331,9 +339,9 @@ export default defineConfig({
         "connect-src 'self' https://qliinxtanjdnwxlvnxji.supabase.co wss://qliinxtanjdnwxlvnxji.supabase.co",
         "frame-ancestors 'none'",
         "base-uri 'self'",
-        "form-action 'self'"
+        "form-action 'self'",
       ].join('; '),
-      
+
       // Autres headers sécurité
       'X-Frame-Options': 'DENY',
       'X-Content-Type-Options': 'nosniff',
@@ -348,21 +356,21 @@ export default defineConfig({
 #### **Configuration Production (Nginx)**
 
 ```nginx
-# /etc/nginx/sites-available/wadashaqeen.com
+# /etc/nginx/sites-available/wadashaqayn.com
 
 server {
     listen 443 ssl http2;
-    server_name wadashaqeen.com;
+    server_name wadashaqayn.com;
 
     # Headers sécurité
     add_header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https: blob:; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' https://qliinxtanjdnwxlvnxji.supabase.co wss://qliinxtanjdnwxlvnxji.supabase.co; frame-ancestors 'none'; base-uri 'self'; form-action 'self';" always;
-    
+
     add_header X-Frame-Options "DENY" always;
     add_header X-Content-Type-Options "nosniff" always;
     add_header X-XSS-Protection "1; mode=block" always;
     add_header Referrer-Policy "strict-origin-when-cross-origin" always;
     add_header Permissions-Policy "geolocation=(), microphone=(), camera=()" always;
-    
+
     # HSTS (31536000 = 1 an)
     add_header Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" always;
 
@@ -376,7 +384,7 @@ server {
 Cloudflare Dashboard → votre-site → Security → Custom Rules
 
 1. Créer "Transform Rule" : Modify Response Header
-   
+
    Header Name : Content-Security-Policy
    Value : default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'...
 
@@ -384,6 +392,7 @@ Cloudflare Dashboard → votre-site → Security → Custom Rules
 ```
 
 **Checklist** :
+
 - [ ] Modifier `vite.config.ts`
 - [ ] Tester en dev (`npm run dev`)
 - [ ] Configurer Nginx en production
@@ -408,67 +417,81 @@ Cloudflare Dashboard → votre-site → Security → Custom Rules
 # Politique de Confidentialité
 
 ## 1. Responsable du traitement
-- Nom : Wadashaqeen SaaS
-- Email : privacy@wadashaqeen.com
+
+- Nom : Wadashaqayn SaaS
+- Email : privacy@wadashaqayn.com
 - Adresse : [Votre adresse]
 
 ## 2. Données collectées
+
 ### Données d'identification
+
 - Nom, prénom, email
 - Mot de passe (hashé avec bcrypt)
 - Date de création du compte
 
 ### Données d'utilisation
+
 - Logs de connexion (date, IP, user-agent)
 - Actions effectuées dans l'application
 - Données de navigation (analytics)
 
 ### Cookies
+
 - Session : Authentification
 - Analytics : Google Analytics (optionnel)
 
 ## 3. Finalités du traitement
+
 - Fourniture du service
 - Support technique
 - Amélioration du produit
 - Conformité légale
 
 ## 4. Durée de conservation
+
 - Données compte actif : Durée du contrat
 - Données compte supprimé : 30 jours (backup)
 - Logs : 1 an
 
 ## 5. Droits des utilisateurs (GDPR)
+
 - Droit d'accès (export données)
 - Droit de rectification
 - Droit à l'effacement
 - Droit à la portabilité
 - Droit d'opposition
 
-Contact : privacy@wadashaqeen.com
+Contact : privacy@wadashaqayn.com
 
 ## 6. Sous-traitants
+
 - Supabase (hébergement base de données)
   - Localisation : Europe (Ireland)
   - Certifications : SOC 2, ISO 27001
 
 ## 7. Sécurité
+
 - Encryption AES-256 at rest
 - TLS 1.3 in transit
 - Authentification à deux facteurs (optionnel)
 - Audit logs
 
 ## 8. Notification de breach
+
 En cas de violation de données, nous notifierons :
+
 - Les autorités (CNIL) sous 72h
 - Les utilisateurs affectés sous 72h
 
 ## 9. Modification de la politique
+
 Dernière mise à jour : [DATE]
 Notifications des changements par email
 
 ## 10. Contact DPO
-Email : dpo@wadashaqeen.com
+
+Email : dpo@wadashaqayn.com
 ```
 
 ```markdown
@@ -477,69 +500,83 @@ Email : dpo@wadashaqeen.com
 # Conditions Générales d'Utilisation
 
 ## 1. Objet
-Les présentes CGU régissent l'utilisation de Wadashaqeen SaaS.
+
+Les présentes CGU régissent l'utilisation de Wadashaqayn SaaS.
 
 ## 2. Acceptation
+
 L'utilisation du service implique l'acceptation des CGU.
 
 ## 3. Services fournis
+
 - Gestion de projets et tâches
 - Collaboration en équipe
 - Stockage de fichiers (limites selon plan)
 - Support technique
 
 ## 4. Inscription
+
 - Email valide requis
 - Informations exactes
 - Responsabilité du mot de passe
 
 ## 5. Utilisation acceptable
+
 Interdit :
+
 - Usage illégal
 - Spam, phishing
 - Tentatives de hack
 - Revente du service
 
 ## 6. Propriété intellectuelle
-- Le code reste propriété de Wadashaqeen
+
+- Le code reste propriété de Wadashaqayn
 - Les données client restent propriété du client
 - Licence d'utilisation non exclusive
 
 ## 7. Tarification
+
 - Plans : Free, Pro, Enterprise
 - Facturation mensuelle/annuelle
 - Modifications avec préavis 30 jours
 
 ## 8. Résiliation
+
 - Par le client : À tout moment
-- Par Wadashaqeen : Avec préavis 30 jours
+- Par Wadashaqayn : Avec préavis 30 jours
 - Export des données disponible
 
 ## 9. Garanties et responsabilités
+
 - Service fourni "tel quel"
 - Disponibilité : 99.5% (SLA Enterprise)
 - Backups quotidiens
 - Limitation de responsabilité
 
 ## 10. Modifications des CGU
+
 - Notifications par email
 - Refus = résiliation possible
 
 ## 11. Loi applicable
+
 - Droit français
 - Tribunaux de Paris
 
-Contact : legal@wadashaqeen.com
+Contact : legal@wadashaqayn.com
 Dernière mise à jour : [DATE]
 ```
 
 **Pages Web à Créer** :
+
 ```tsx
 // src/pages/PrivacyPolicy.tsx
 // src/pages/TermsOfService.tsx
 ```
 
 **Checklist** :
+
 - [ ] Rédiger Privacy Policy (adapter template)
 - [ ] Rédiger Terms of Service
 - [ ] Créer pages web
@@ -562,7 +599,7 @@ Dernière mise à jour : [DATE]
 
 export const exportUserData = async (userId: string) => {
   const { currentTenant } = useTenant();
-  
+
   // Récupérer toutes les données utilisateur
   const [profile, tasks, projects, comments, attachments] = await Promise.all([
     supabase.from('profiles').select('*').eq('user_id', userId).single(),
@@ -582,26 +619,26 @@ export const exportUserData = async (userId: string) => {
       comments: comments.data,
       attachments: attachments.data?.map(a => ({
         ...a,
-        file_url: `Télécharger séparément: ${a.storage_path}`
+        file_url: `Télécharger séparément: ${a.storage_path}`,
       })),
     },
     metadata: {
       format: 'JSON',
       version: '1.0',
-      compliance: 'GDPR Article 20 (Right to data portability)'
-    }
+      compliance: 'GDPR Article 20 (Right to data portability)',
+    },
   };
 
   // Générer fichier JSON
-  const blob = new Blob([JSON.stringify(exportData, null, 2)], { 
-    type: 'application/json' 
+  const blob = new Blob([JSON.stringify(exportData, null, 2)], {
+    type: 'application/json',
   });
-  
+
   // Télécharger
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = `wadashaqeen-export-${Date.now()}.json`;
+  a.download = `wadashaqayn-export-${Date.now()}.json`;
   a.click();
 };
 ```
@@ -615,26 +652,32 @@ export const deleteUserAccount = async (userId: string) => {
   // Confirmation obligatoire
   const confirmed = window.confirm(
     'Êtes-vous sûr de vouloir supprimer votre compte ? ' +
-    'Cette action est irréversible. ' +
-    'Toutes vos données seront supprimées dans 30 jours.'
+      'Cette action est irréversible. ' +
+      'Toutes vos données seront supprimées dans 30 jours.'
   );
 
   if (!confirmed) return;
 
   try {
     // 1. Marquer pour suppression (soft delete)
-    await supabase.from('profiles').update({
-      deleted_at: new Date().toISOString(),
-      deletion_scheduled: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
-    }).eq('user_id', userId);
+    await supabase
+      .from('profiles')
+      .update({
+        deleted_at: new Date().toISOString(),
+        deletion_scheduled: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+      })
+      .eq('user_id', userId);
 
     // 2. Anonymiser immédiatement les données sensibles
-    await supabase.from('profiles').update({
-      email: `deleted_${userId}@anonymous.local`,
-      first_name: 'Deleted',
-      last_name: 'User',
-      phone: null,
-    }).eq('user_id', userId);
+    await supabase
+      .from('profiles')
+      .update({
+        email: `deleted_${userId}@anonymous.local`,
+        first_name: 'Deleted',
+        last_name: 'User',
+        phone: null,
+      })
+      .eq('user_id', userId);
 
     // 3. Révoquer toutes les sessions
     await supabase.auth.admin.signOut(userId, 'global');
@@ -643,7 +686,7 @@ export const deleteUserAccount = async (userId: string) => {
     await sendEmail({
       to: profile.email, // email original
       subject: 'Confirmation de suppression de compte',
-      body: 'Votre compte sera définitivement supprimé dans 30 jours...'
+      body: 'Votre compte sera définitivement supprimé dans 30 jours...',
     });
 
     // 5. Déconnecter l'utilisateur
@@ -667,10 +710,10 @@ CREATE OR REPLACE FUNCTION gdpr_permanent_delete()
 RETURNS void AS $$
 BEGIN
   -- Supprimer les comptes marqués pour suppression > 30 jours
-  DELETE FROM profiles 
-  WHERE deleted_at IS NOT NULL 
+  DELETE FROM profiles
+  WHERE deleted_at IS NOT NULL
     AND deleted_at < NOW() - INTERVAL '30 days';
-  
+
   -- Log l'action
   INSERT INTO audit_logs (action, details)
   VALUES ('gdpr_permanent_delete', jsonb_build_object('deleted_at', NOW()));
@@ -725,11 +768,7 @@ export const AccountDeletion = () => {
       <div className="border-t pt-6">
         <h3 className="text-red-600">Zone de danger</h3>
         <p>Supprimer définitivement votre compte et toutes vos données</p>
-        <button 
-          onClick={handleDelete} 
-          disabled={deleteLoading}
-          className="bg-red-600 text-white"
-        >
+        <button onClick={handleDelete} disabled={deleteLoading} className="bg-red-600 text-white">
           {deleteLoading ? 'Suppression...' : 'Supprimer mon compte'}
         </button>
         <p className="text-sm text-gray-500">
@@ -742,6 +781,7 @@ export const AccountDeletion = () => {
 ```
 
 **Checklist** :
+
 - [ ] Créer API `gdpr-export.ts`
 - [ ] Créer API `gdpr-delete.ts`
 - [ ] Créer migration cron job

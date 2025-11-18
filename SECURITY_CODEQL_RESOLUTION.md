@@ -3,6 +3,7 @@
 ## 📊 **Analyse du Problème**
 
 ### **Cause Racine Identifiée**
+
 Les 615 alertes CodeQL proviennent de **fichiers de build/déploiement** qui ne devraient **JAMAIS** être dans Git:
 
 1. ❌ **`wadashaqayn_deploy_ready/`** - Build de production (8 fichiers)
@@ -65,7 +66,7 @@ supabase/functions/**/*-debug.ts
 Fichier: `.github/codeql/codeql-config.yml`
 
 ```yaml
-name: "CodeQL Configuration"
+name: 'CodeQL Configuration'
 
 paths-ignore:
   # Build outputs
@@ -73,16 +74,16 @@ paths-ignore:
   - '**/build/**'
   - '**/*_deploy_ready/**'
   - '**/*_deploy/**'
-  
+
   # Assets compilés
   - '**/assets/**/*.js'
   - '**/assets/**/*.css'
   - '**/*.bundle.js'
-  
+
   # Node modules & coverage
   - '**/node_modules/**'
   - '**/coverage/**'
-  
+
   # Archives et tests locaux
   - '**/.archive_*/**'
   - '**/test-*.js'
@@ -108,27 +109,28 @@ query-filters:
   with:
     languages: javascript-typescript
     queries: security-and-quality
-    config-file: ./.github/codeql/codeql-config.yml  # ✅ AJOUTÉ
+    config-file: ./.github/codeql/codeql-config.yml # ✅ AJOUTÉ
 ```
 
 ## 📉 **Impact Attendu**
 
 ### **Réduction des Alertes**
 
-| Type d'Erreur | Avant | Après | Réduction |
-|---------------|-------|-------|-----------|
-| **Useless conditional** | ~150 | 0 | **-100%** |
-| **Useless assignment** | ~80 | 0 | **-100%** |
-| **Property access on null** | ~60 | 5-10 | **-85%** |
-| **Syntax error** | ~50 | 0 | **-100%** |
-| **Semicolon insertion** | ~40 | 0 | **-100%** |
-| **Expression no effect** | ~30 | 0 | **-100%** |
-| **Autres** | ~205 | 10-20 | **-95%** |
-| **TOTAL** | **615** | **15-30** | **-95%+** |
+| Type d'Erreur               | Avant   | Après     | Réduction |
+| --------------------------- | ------- | --------- | --------- |
+| **Useless conditional**     | ~150    | 0         | **-100%** |
+| **Useless assignment**      | ~80     | 0         | **-100%** |
+| **Property access on null** | ~60     | 5-10      | **-85%**  |
+| **Syntax error**            | ~50     | 0         | **-100%** |
+| **Semicolon insertion**     | ~40     | 0         | **-100%** |
+| **Expression no effect**    | ~30     | 0         | **-100%** |
+| **Autres**                  | ~205    | 10-20     | **-95%**  |
+| **TOTAL**                   | **615** | **15-30** | **-95%+** |
 
 ## 🚨 **Action Critique Requise: Nettoyage de l'Historique Git**
 
 ### **Problème**
+
 Les fichiers sensibles sont **supprimés du dernier commit** MAIS restent dans **l'historique Git**.
 
 ### **Solution Recommandée: BFG Repo-Cleaner**
@@ -190,6 +192,7 @@ git filter-repo --path 'fix-*.sql' --invert-paths --use-base-name
 ## 🎯 **Résultat Final Attendu**
 
 ### **Après Nettoyage Complet**
+
 ```
 ✅ Alertes CodeQL: 615 → 15-30 (-95%+)
 ✅ Secrets exposés: 0
@@ -201,6 +204,7 @@ git filter-repo --path 'fix-*.sql' --invert-paths --use-base-name
 ## ⚠️ **Recommandations Futures**
 
 ### **1. Pre-commit Hooks Renforcés**
+
 ```bash
 # .husky/pre-commit
 # Bloquer fichiers de build
@@ -211,6 +215,7 @@ fi
 ```
 
 ### **2. CI/CD - Vérification Automatique**
+
 ```yaml
 - name: 🛡️ Vérifier fichiers interdits
   run: |
@@ -221,6 +226,7 @@ fi
 ```
 
 ### **3. Documentation Équipe**
+
 - ✅ Ne JAMAIS commiter `dist/`, `build/`, `*_deploy_ready/`
 - ✅ Ne JAMAIS commiter `test-*.js` (contiennent secrets)
 - ✅ Ne JAMAIS commiter `fix-*.sql` (données sensibles)
@@ -237,6 +243,6 @@ fi
 ---
 
 **📅 Date:** 7 novembre 2025  
-**👤 Auteur:** Équipe DevSecOps Wadashaqeen  
+**👤 Auteur:** Équipe DevSecOps Wadashaqayn  
 **🔖 Version:** 1.0  
 **✅ Status:** Prêt pour nettoyage historique Git

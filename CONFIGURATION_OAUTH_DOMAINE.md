@@ -1,12 +1,20 @@
-# 🔧 Configuration OAuth Google : Afficher wadashaqayn.org
+# 🔐 Configuration OAuth avec Domaine Personnalisé - Wadashaqayn.org
 
-**Problème** : Lors de la connexion Google, l'URL Supabase s'affiche au lieu du domaine personnalisé.
+## ❌ Problème
 
-**Solution** : Configurer Google OAuth et Supabase pour utiliser votre domaine.
+Lors de la connexion OAuth (Google/Microsoft), le nom du projet Supabase s'affiche au lieu du nom de domaine **wadashaqayn.org**.
 
----
+## ✅ Solution Complète
 
-## 🎯 Configuration en 3 Étapes
+### **1. Configuration Supabase Dashboard**
+
+#### **Étape 1 : Accéder aux Authentication Settings**
+
+1. Allez sur [Supabase Dashboard](https://supabase.com/dashboard)
+2. Sélectionnez votre projet
+3. Menu **Authentication** → **URL Configuration**
+
+#### **Étape 2 : Configurer le Site URL**
 
 ### Étape 1 : Supabase Dashboard
 

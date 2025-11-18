@@ -197,7 +197,7 @@ export function TimesheetWeekly({ weekStartDate, onSuccess }: TimesheetWeeklyPro
                   return (
                     <div key={dayStr} className="space-y-2">
                       <Label
-                        className={`block text-center text-xs ${isToday ? 'font-bold text-primary' : ''}`}
+                        className={`block text-center text-xs ${isToday ? 'text-primary font-bold' : ''}`}
                       >
                         {format(day, 'EEE', { locale: fr })}
                         <br />
@@ -261,18 +261,18 @@ export function TimesheetWeekly({ weekStartDate, onSuccess }: TimesheetWeeklyPro
         </div>
 
         {/* Totaux globaux */}
-        <div className="space-y-2 rounded-lg bg-muted/50 p-4">
+        <div className="bg-muted/50 space-y-2 rounded-lg p-4">
           <div className="flex items-center justify-between">
-            <span className="text-sm text-muted-foreground">Heures normales</span>
+            <span className="text-muted-foreground text-sm">Heures normales</span>
             <span className="font-semibold">{regularHours.toFixed(1)}h</span>
           </div>
           <div className="flex items-center justify-between">
-            <span className="text-sm text-muted-foreground">Heures supplémentaires</span>
+            <span className="text-muted-foreground text-sm">Heures supplémentaires</span>
             <span className="font-semibold text-orange-600">{overtimeHours.toFixed(1)}h</span>
           </div>
           <div className="flex items-center justify-between border-t pt-2">
             <span className="font-medium">Total semaine</span>
-            <span className="text-xl font-bold text-primary">{totalHours.toFixed(1)}h</span>
+            <span className="text-primary text-xl font-bold">{totalHours.toFixed(1)}h</span>
           </div>
         </div>
 

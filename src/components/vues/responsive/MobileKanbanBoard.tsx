@@ -55,18 +55,18 @@ function MobileKanbanCard({ task }: MobileKanbanCardProps) {
       {...listeners}
       className={`cursor-grab active:cursor-grabbing ${isDragging ? 'opacity-50' : ''}`}
     >
-      <Card className="transition-smooth glass hover-glow mb-3 cursor-grab border-primary/30 bg-card/40 backdrop-blur-sm hover:shadow-md active:cursor-grabbing">
+      <Card className="transition-smooth glass hover-glow border-primary/30 bg-card/40 mb-3 cursor-grab backdrop-blur-sm hover:shadow-md active:cursor-grabbing">
         <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-medium leading-tight text-foreground">
+          <CardTitle className="text-foreground text-sm leading-tight font-medium">
             {task.title}
           </CardTitle>
           <div className="flex items-center justify-between">
             <Badge className={`border text-xs font-medium ${PRIORITY_COLORS[task.priority]}`}>
               {task.priority}
             </Badge>
-            <Avatar className="h-6 w-6 ring-2 ring-primary/40">
+            <Avatar className="ring-primary/40 h-6 w-6 ring-2">
               <AvatarImage src="" alt={task.assignee || task.assigned_name || 'NA'} />
-              <AvatarFallback className="bg-primary/40 text-xs font-semibold text-primary-foreground">
+              <AvatarFallback className="bg-primary/40 text-primary-foreground text-xs font-semibold">
                 {(task.assignee || task.assigned_name || 'NA').slice(0, 2).toUpperCase()}
               </AvatarFallback>
             </Avatar>
@@ -74,20 +74,20 @@ function MobileKanbanCard({ task }: MobileKanbanCardProps) {
         </CardHeader>
         <CardContent className="pt-0">
           <div className="space-y-2">
-            <div className="grid grid-cols-1 gap-1 text-xs text-foreground/70">
+            <div className="text-foreground/70 grid grid-cols-1 gap-1 text-xs">
               <span>Début: {new Date(task.start_date).toLocaleDateString('fr-FR')}</span>
               <span>Fin: {new Date(task.due_date).toLocaleDateString('fr-FR')}</span>
             </div>
             <div className="space-y-1">
               <div className="flex justify-between text-xs">
                 <span className="text-foreground/80">Progrès</span>
-                <span className="font-medium text-primary">{task.progress}%</span>
+                <span className="text-primary font-medium">{task.progress}%</span>
               </div>
               <Progress value={task.progress} className="h-2" />
             </div>
             {task.effort_estimate_h > 0 && (
-              <div className="flex items-center gap-1 text-xs text-foreground/70">
-                <span className="h-1 w-1 rounded-full bg-accent"></span>
+              <div className="text-foreground/70 flex items-center gap-1 text-xs">
+                <span className="bg-accent h-1 w-1 rounded-full"></span>
                 Estimé: {task.effort_estimate_h}h
               </div>
             )}
@@ -106,13 +106,13 @@ interface MobileKanbanColumnProps {
 function MobileKanbanColumn({ column, tasks }: MobileKanbanColumnProps) {
   return (
     <div className="h-full">
-      <div className="sticky top-0 z-10 mb-4 flex items-center justify-between bg-background/80 py-2 backdrop-blur-sm">
-        <h2 className="bg-gradient-to-r from-tech-purple to-tech-cyan bg-clip-text text-lg font-semibold text-transparent">
+      <div className="bg-background/80 sticky top-0 z-10 mb-4 flex items-center justify-between py-2 backdrop-blur-sm">
+        <h2 className="from-tech-purple to-tech-cyan bg-gradient-to-r bg-clip-text text-lg font-semibold text-transparent">
           {column.title}
         </h2>
         <Badge
           variant="secondary"
-          className="border-primary/50 bg-primary/40 font-semibold text-primary-foreground"
+          className="border-primary/50 bg-primary/40 text-primary-foreground font-semibold"
         >
           {tasks.length}
         </Badge>
@@ -177,8 +177,8 @@ export function MobileKanbanBoard() {
   if (loading) {
     return (
       <div className="glass modern-card flex h-64 items-center justify-center">
-        <div className="glow-primary h-8 w-8 animate-spin rounded-full border-b-2 border-primary"></div>
-        <span className="ml-3 font-medium text-foreground">Chargement...</span>
+        <div className="glow-primary border-primary h-8 w-8 animate-spin rounded-full border-b-2"></div>
+        <span className="text-foreground ml-3 font-medium">Chargement...</span>
       </div>
     );
   }
@@ -194,17 +194,17 @@ export function MobileKanbanBoard() {
         <CardContent className="p-0">
           {/* Mobile: Tabs for different columns */}
           <Tabs defaultValue="todo" className="w-full">
-            <TabsList className="grid w-full grid-cols-4 rounded-t-xl border-b bg-gradient-to-r from-primary/10 via-accent/10 to-tech-purple/10">
+            <TabsList className="from-primary/10 via-accent/10 to-tech-purple/10 grid w-full grid-cols-4 rounded-t-xl border-b bg-gradient-to-r">
               {COLUMNS.map(column => (
                 <TabsTrigger
                   key={column.id}
                   value={column.id}
-                  className="transition-smooth text-xs font-semibold data-[state=active]:bg-primary/20 data-[state=active]:text-primary"
+                  className="transition-smooth data-[state=active]:bg-primary/20 data-[state=active]:text-primary text-xs font-semibold"
                 >
                   {column.title}
                   <Badge
                     variant="secondary"
-                    className="ml-1 bg-primary/30 text-xs text-primary-foreground"
+                    className="bg-primary/30 text-primary-foreground ml-1 text-xs"
                   >
                     {tasksByStatus.find(c => c.id === column.id)?.tasks.length || 0}
                   </Badge>

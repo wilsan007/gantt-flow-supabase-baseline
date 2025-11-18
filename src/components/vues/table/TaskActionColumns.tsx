@@ -147,12 +147,12 @@ export const TaskActionColumns = ({
     return (
       <div
         ref={scrollRef}
-        className="flex h-[600px] items-center justify-center overflow-auto bg-muted/20"
+        className="bg-muted/20 flex h-[600px] items-center justify-center overflow-auto"
         onScroll={onScroll}
       >
         <div className="p-8 text-center">
-          <p className="mb-2 font-medium text-muted-foreground">Aucune colonne d'action</p>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-muted-foreground mb-2 font-medium">Aucune colonne d'action</p>
+          <p className="text-muted-foreground text-sm">
             Sélectionnez une tâche et ajoutez une colonne d'action via le header
           </p>
         </div>
@@ -175,14 +175,14 @@ export const TaskActionColumns = ({
               return (
                 <TableHead
                   key={actionTitle}
-                  className={`h-16 min-w-[140px] max-w-[140px] text-center font-bold text-white transition-colors ${
+                  className={`h-16 max-w-[140px] min-w-[140px] text-center font-bold text-white transition-colors ${
                     isSelectedTaskAction ? 'ring-2 ring-yellow-400/50' : ''
                   }`}
                   title={actionTitle} // Tooltip avec le titre complet
                 >
                   <div className="flex flex-col items-center gap-0.5">
                     <div
-                      className="px-1 text-xs font-bold leading-tight"
+                      className="px-1 text-xs leading-tight font-bold"
                       style={{
                         wordBreak: 'normal',
                         overflowWrap: 'break-word',
@@ -264,9 +264,9 @@ export const TaskActionColumns = ({
                               } ${(attachmentCounts[`${task.id}-${action.id}`] || 0) === 0 && !action.is_done ? 'cursor-not-allowed opacity-50' : ''}`}
                             />
                             <span
-                              className={`font-medium text-muted-foreground ${
+                              className={`text-muted-foreground font-medium ${
                                 isSubtask ? 'text-xs' : 'text-xs'
-                              } ${isSelectedTaskAction ? 'font-bold text-primary' : ''}`}
+                              } ${isSelectedTaskAction ? 'text-primary font-bold' : ''}`}
                             >
                               {action.weight_percentage}%
                             </span>
@@ -288,7 +288,7 @@ export const TaskActionColumns = ({
                                   {attachmentCounts[`${task.id}-${action.id}`] > 0 && (
                                     <Badge
                                       variant="secondary"
-                                      className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center bg-green-600 p-0 text-[9px] text-white"
+                                      className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center bg-green-600 p-0 text-[9px] text-white"
                                     >
                                       {attachmentCounts[`${task.id}-${action.id}`]}
                                     </Badge>

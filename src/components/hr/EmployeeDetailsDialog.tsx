@@ -320,7 +320,7 @@ const EmployeeDetailsDialogBase = ({
             </Avatar>
             <div>
               <h2 className="text-2xl font-bold">{employee.full_name}</h2>
-              <p className="text-lg text-muted-foreground">
+              <p className="text-muted-foreground text-lg">
                 {employee.job_title || 'Poste non défini'}
               </p>
             </div>
@@ -349,17 +349,17 @@ const EmployeeDetailsDialogBase = ({
                 </CardHeader>
                 <CardContent className="space-y-3">
                   <div className="flex items-center gap-2">
-                    <Mail className="h-4 w-4 text-muted-foreground" />
+                    <Mail className="text-muted-foreground h-4 w-4" />
                     <span className="text-sm">Email:</span>
                     <span className="font-medium">{employee.email || 'Non renseigné'}</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Phone className="h-4 w-4 text-muted-foreground" />
+                    <Phone className="text-muted-foreground h-4 w-4" />
                     <span className="text-sm">Téléphone:</span>
                     <span className="font-medium">{employee.phone || 'Non renseigné'}</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Calendar className="h-4 w-4 text-muted-foreground" />
+                    <Calendar className="text-muted-foreground h-4 w-4" />
                     <span className="text-sm">ID Employé:</span>
                     <span className="font-medium">{employee.employee_id || 'Non assigné'}</span>
                   </div>
@@ -438,13 +438,13 @@ const EmployeeDetailsDialogBase = ({
                 <CardContent className="space-y-3">
                   <div>
                     <Label>Salaire annuel</Label>
-                    <p className="text-2xl font-bold text-primary">
+                    <p className="text-primary text-2xl font-bold">
                       {employee.salary ? formatCurrency(employee.salary) : 'Confidentiel'}
                     </p>
                   </div>
                   <div>
                     <Label>Salaire mensuel (estimation)</Label>
-                    <p className="font-medium text-muted-foreground">
+                    <p className="text-muted-foreground font-medium">
                       {employee.salary ? formatCurrency(employee.salary / 12) : 'Confidentiel'}
                     </p>
                   </div>
@@ -469,7 +469,7 @@ const EmployeeDetailsDialogBase = ({
                       <div key={skill.id} className="space-y-2">
                         <div className="flex items-center justify-between">
                           <h4 className="font-medium">{skill.skill_name}</h4>
-                          <div className="text-sm text-muted-foreground">
+                          <div className="text-muted-foreground text-sm">
                             {skill.current_level}/{skill.target_level} - Évalué par {skill.assessor}
                           </div>
                         </div>
@@ -477,7 +477,7 @@ const EmployeeDetailsDialogBase = ({
                           value={(skill.current_level / skill.target_level) * 100}
                           className="h-2"
                         />
-                        <p className="text-xs text-muted-foreground">
+                        <p className="text-muted-foreground text-xs">
                           Dernière évaluation:{' '}
                           {format(new Date(skill.last_assessed), 'dd/MM/yyyy', { locale: fr })}
                         </p>
@@ -512,12 +512,12 @@ const EmployeeDetailsDialogBase = ({
                             <h4 className="font-medium">
                               {evaluation.type} - {evaluation.period}
                             </h4>
-                            <p className="text-sm text-muted-foreground">
+                            <p className="text-muted-foreground text-sm">
                               Évaluateur: {evaluation.evaluator_name}
                             </p>
                           </div>
                           <div className="text-right">
-                            <div className="text-2xl font-bold text-primary">
+                            <div className="text-primary text-2xl font-bold">
                               {evaluation.overall_score}/100
                             </div>
                             <Badge variant={getStatusColor(evaluation.status)}>
@@ -525,7 +525,7 @@ const EmployeeDetailsDialogBase = ({
                             </Badge>
                           </div>
                         </div>
-                        <p className="text-xs text-muted-foreground">
+                        <p className="text-muted-foreground text-xs">
                           {format(new Date(evaluation.created_at), 'dd MMMM yyyy', { locale: fr })}
                         </p>
                       </div>
@@ -569,7 +569,7 @@ const EmployeeDetailsDialogBase = ({
                           <Progress value={task.progress} className="h-2" />
                         </div>
                         {task.due_date && (
-                          <p className="text-xs text-muted-foreground">
+                          <p className="text-muted-foreground text-xs">
                             Échéance:{' '}
                             {format(new Date(task.due_date), 'dd/MM/yyyy', { locale: fr })}
                           </p>
@@ -597,7 +597,7 @@ const EmployeeDetailsDialogBase = ({
                 <CardContent className="space-y-3">
                   <div className="flex justify-between">
                     <span>Taux de présence</span>
-                    <span className="font-bold text-primary">
+                    <span className="text-primary font-bold">
                       {attendanceStats.presentRate?.toFixed(1) || 0}%
                     </span>
                   </div>
@@ -637,7 +637,7 @@ const EmployeeDetailsDialogBase = ({
                           <div className="flex items-start justify-between">
                             <div>
                               <p className="text-sm font-medium">{absence.absence_type_name}</p>
-                              <p className="text-xs text-muted-foreground">
+                              <p className="text-muted-foreground text-xs">
                                 {format(new Date(absence.start_date), 'dd/MM', { locale: fr })} -
                                 {format(new Date(absence.end_date), 'dd/MM/yyyy', { locale: fr })}
                               </p>
@@ -646,19 +646,19 @@ const EmployeeDetailsDialogBase = ({
                               <Badge variant={getStatusColor(absence.status)} className="text-xs">
                                 {absence.status}
                               </Badge>
-                              <p className="text-xs text-muted-foreground">
+                              <p className="text-muted-foreground text-xs">
                                 {absence.total_days} jour(s)
                               </p>
                             </div>
                           </div>
                           {absence.reason && (
-                            <p className="text-xs italic text-muted-foreground">{absence.reason}</p>
+                            <p className="text-muted-foreground text-xs italic">{absence.reason}</p>
                           )}
                         </div>
                       ))}
                     </div>
                   ) : (
-                    <p className="text-sm text-muted-foreground">Aucune absence récente</p>
+                    <p className="text-muted-foreground text-sm">Aucune absence récente</p>
                   )}
                 </CardContent>
               </Card>

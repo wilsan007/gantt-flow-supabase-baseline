@@ -31,14 +31,14 @@ export const ActionSelectionDialog = ({
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>Choisir une action pour la sous-tâche</DialogTitle>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-muted-foreground text-sm">
             Sélectionnez l'action de "{taskTitle}" que cette sous-tâche va réaliser
           </p>
         </DialogHeader>
 
         <div className="max-h-64 space-y-2 overflow-y-auto">
           {actions.length === 0 ? (
-            <p className="py-4 text-center text-sm text-muted-foreground">
+            <p className="text-muted-foreground py-4 text-center text-sm">
               Cette tâche n'a pas encore d'actions. Ajoutez d'abord des actions à la tâche.
             </p>
           ) : (
@@ -59,7 +59,7 @@ export const ActionSelectionDialog = ({
                       {action.weight_percentage}%
                     </Badge>
                     {action.is_done && (
-                      <Badge variant="outline" className="bg-success/10 text-xs text-success">
+                      <Badge variant="outline" className="bg-success/10 text-success text-xs">
                         Terminé
                       </Badge>
                     )}

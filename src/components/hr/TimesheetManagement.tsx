@@ -192,7 +192,7 @@ export const TimesheetManagement = () => {
   return (
     <div className="space-y-6 p-6">
       <div className="flex items-center justify-between">
-        <h2 className="bg-gradient-to-r from-primary to-accent bg-clip-text text-3xl font-bold text-transparent">
+        <h2 className="from-primary to-accent bg-gradient-to-r bg-clip-text text-3xl font-bold text-transparent">
           Feuilles de Temps
         </h2>
 
@@ -292,10 +292,10 @@ export const TimesheetManagement = () => {
         <Card className="modern-card hover-glow">
           <CardContent className="p-4">
             <div className="text-center">
-              <div className="text-2xl font-bold text-primary">
+              <div className="text-primary text-2xl font-bold">
                 {filteredTimesheets.reduce((sum, ts) => sum + ts.hours, 0).toFixed(1)}h
               </div>
-              <div className="text-sm text-muted-foreground">Heures totales</div>
+              <div className="text-muted-foreground text-sm">Heures totales</div>
             </div>
           </CardContent>
         </Card>
@@ -303,14 +303,14 @@ export const TimesheetManagement = () => {
         <Card className="modern-card hover-glow">
           <CardContent className="p-4">
             <div className="text-center">
-              <div className="text-2xl font-bold text-success">
+              <div className="text-success text-2xl font-bold">
                 {filteredTimesheets
                   .filter(ts => ts.billable)
                   .reduce((sum, ts) => sum + ts.hours, 0)
                   .toFixed(1)}
                 h
               </div>
-              <div className="text-sm text-muted-foreground">Facturables</div>
+              <div className="text-muted-foreground text-sm">Facturables</div>
             </div>
           </CardContent>
         </Card>
@@ -318,10 +318,10 @@ export const TimesheetManagement = () => {
         <Card className="modern-card hover-glow">
           <CardContent className="p-4">
             <div className="text-center">
-              <div className="text-2xl font-bold text-warning">
+              <div className="text-warning text-2xl font-bold">
                 {filteredTimesheets.filter(ts => !ts.approved).length}
               </div>
-              <div className="text-sm text-muted-foreground">En attente</div>
+              <div className="text-muted-foreground text-sm">En attente</div>
             </div>
           </CardContent>
         </Card>
@@ -329,10 +329,10 @@ export const TimesheetManagement = () => {
         <Card className="modern-card hover-glow">
           <CardContent className="p-4">
             <div className="text-center">
-              <div className="text-2xl font-bold text-accent">
+              <div className="text-accent text-2xl font-bold">
                 {filteredTimesheets.filter(ts => ts.approved).length}
               </div>
-              <div className="text-sm text-muted-foreground">Approuvées</div>
+              <div className="text-muted-foreground text-sm">Approuvées</div>
             </div>
           </CardContent>
         </Card>
@@ -343,7 +343,7 @@ export const TimesheetManagement = () => {
         {filteredTimesheets.length === 0 ? (
           <Card className="modern-card">
             <CardContent className="p-8 text-center">
-              <Clock className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
+              <Clock className="text-muted-foreground mx-auto mb-4 h-12 w-12" />
               <p className="text-muted-foreground">Aucune feuille de temps pour cette semaine</p>
             </CardContent>
           </Card>
@@ -368,7 +368,7 @@ export const TimesheetManagement = () => {
                         {timesheet.billable && <Badge variant="outline">Facturable</Badge>}
                       </div>
 
-                      <div className="space-y-1 text-sm text-muted-foreground">
+                      <div className="text-muted-foreground space-y-1 text-sm">
                         <p>
                           <strong>Date:</strong> {new Date(timesheet.date).toLocaleDateString()}
                         </p>

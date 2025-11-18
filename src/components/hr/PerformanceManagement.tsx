@@ -59,7 +59,7 @@ export const PerformanceManagement = () => {
       <div className="flex items-center justify-center p-8">
         <div className="text-center">
           <p className="mb-2 text-red-500">Erreur lors du chargement des données</p>
-          <p className="text-sm text-muted-foreground">{error}</p>
+          <p className="text-muted-foreground text-sm">{error}</p>
         </div>
       </div>
     );
@@ -106,7 +106,7 @@ export const PerformanceManagement = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-foreground">Évaluations & Objectifs</h2>
+          <h2 className="text-foreground text-2xl font-bold">Évaluations & Objectifs</h2>
           <p className="text-muted-foreground">Gestion de la performance et des objectifs</p>
         </div>
         <div className="flex gap-2">
@@ -136,9 +136,9 @@ export const PerformanceManagement = () => {
             <Card>
               <CardContent className="flex items-center justify-center p-8">
                 <div className="text-center">
-                  <Target className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
+                  <Target className="text-muted-foreground mx-auto mb-4 h-12 w-12" />
                   <h3 className="mb-2 text-lg font-medium">Aucun objectif trouvé</h3>
-                  <p className="mb-4 text-muted-foreground">
+                  <p className="text-muted-foreground mb-4">
                     Commencez par créer votre premier objectif
                   </p>
                   <CreateObjectiveDialog onCreateObjective={createObjective} />
@@ -160,7 +160,7 @@ export const PerformanceManagement = () => {
                             {objective.type === 'okr' && <Award className="h-5 w-5" />}
                             {objective.title}
                           </CardTitle>
-                          <p className="text-sm text-muted-foreground">
+                          <p className="text-muted-foreground text-sm">
                             {objective.employee_name} • {objective.department}
                           </p>
                         </div>
@@ -177,11 +177,11 @@ export const PerformanceManagement = () => {
                     </CardHeader>
                     <CardContent className="space-y-4">
                       {objective.description && (
-                        <p className="text-sm text-muted-foreground">{objective.description}</p>
+                        <p className="text-muted-foreground text-sm">{objective.description}</p>
                       )}
 
                       <div className="flex items-center gap-4">
-                        <Calendar className="h-4 w-4 text-muted-foreground" />
+                        <Calendar className="text-muted-foreground h-4 w-4" />
                         <span className="text-sm">
                           Échéance:{' '}
                           {format(new Date(objective.due_date), 'dd MMMM yyyy', { locale: fr })}
@@ -191,7 +191,7 @@ export const PerformanceManagement = () => {
                       <div className="space-y-2">
                         <div className="flex items-center justify-between">
                           <span className="text-sm font-medium">Progression générale</span>
-                          <span className="text-sm text-muted-foreground">
+                          <span className="text-muted-foreground text-sm">
                             {objective.progress}%
                           </span>
                         </div>
@@ -202,10 +202,10 @@ export const PerformanceManagement = () => {
                         <div className="space-y-3">
                           <h4 className="font-medium">Résultats clés</h4>
                           {objectiveKeyResults.map(kr => (
-                            <div key={kr.id} className="space-y-2 rounded-lg bg-muted/50 p-3">
+                            <div key={kr.id} className="bg-muted/50 space-y-2 rounded-lg p-3">
                               <div className="flex items-center justify-between">
                                 <p className="text-sm font-medium">{kr.title}</p>
-                                <span className="text-xs text-muted-foreground">
+                                <span className="text-muted-foreground text-xs">
                                   {kr.current_value || '0'} / {kr.target}
                                 </span>
                               </div>
@@ -227,9 +227,9 @@ export const PerformanceManagement = () => {
             <Card>
               <CardContent className="flex items-center justify-center p-8">
                 <div className="text-center">
-                  <Star className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
+                  <Star className="text-muted-foreground mx-auto mb-4 h-12 w-12" />
                   <h3 className="mb-2 text-lg font-medium">Aucune évaluation trouvée</h3>
-                  <p className="mb-4 text-muted-foreground">
+                  <p className="text-muted-foreground mb-4">
                     Commencez par créer votre première évaluation
                   </p>
                   <CreateEvaluationDialog onCreateEvaluation={createEvaluation} />
@@ -246,7 +246,7 @@ export const PerformanceManagement = () => {
                       <div className="flex items-center justify-between">
                         <div>
                           <CardTitle className="text-lg">{evaluation.employee_name}</CardTitle>
-                          <p className="text-sm text-muted-foreground">
+                          <p className="text-muted-foreground text-sm">
                             Évaluateur: {evaluation.evaluator_name} • Période: {evaluation.period}
                           </p>
                         </div>
@@ -279,7 +279,7 @@ export const PerformanceManagement = () => {
                               >
                                 {evaluation.overall_score.toFixed(1)}
                               </span>
-                              <span className="text-sm text-muted-foreground">/ 5.0</span>
+                              <span className="text-muted-foreground text-sm">/ 5.0</span>
                             </div>
                           </div>
 
@@ -289,11 +289,11 @@ export const PerformanceManagement = () => {
                               {evaluationCategories.map(category => (
                                 <div
                                   key={category.id}
-                                  className="flex items-center justify-between rounded-lg bg-muted/50 p-3"
+                                  className="bg-muted/50 flex items-center justify-between rounded-lg p-3"
                                 >
                                   <div>
                                     <p className="text-sm font-medium">{category.name}</p>
-                                    <p className="text-xs text-muted-foreground">
+                                    <p className="text-muted-foreground text-xs">
                                       Poids: {category.weight}%
                                     </p>
                                   </div>
@@ -301,7 +301,7 @@ export const PerformanceManagement = () => {
                                     <span className={`font-bold ${getScoreColor(category.score)}`}>
                                       {category.score.toFixed(1)}
                                     </span>
-                                    <span className="text-xs text-muted-foreground">/ 5.0</span>
+                                    <span className="text-muted-foreground text-xs">/ 5.0</span>
                                   </div>
                                 </div>
                               ))}
@@ -311,7 +311,7 @@ export const PerformanceManagement = () => {
                       )}
 
                       {evaluation.status === 'scheduled' && (
-                        <div className="flex items-center justify-center p-8 text-muted-foreground">
+                        <div className="text-muted-foreground flex items-center justify-center p-8">
                           <div className="text-center">
                             <Calendar className="mx-auto mb-2 h-8 w-8" />
                             <p>Évaluation planifiée</p>
@@ -320,7 +320,7 @@ export const PerformanceManagement = () => {
                       )}
 
                       {evaluation.status === 'in_progress' && (
-                        <div className="flex items-center justify-center p-8 text-muted-foreground">
+                        <div className="text-muted-foreground flex items-center justify-center p-8">
                           <div className="text-center">
                             <Loader2 className="mx-auto mb-2 h-8 w-8 animate-spin" />
                             <p>Évaluation en cours...</p>
@@ -341,7 +341,7 @@ export const PerformanceManagement = () => {
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-muted-foreground">Objectifs Actifs</p>
+                    <p className="text-muted-foreground text-sm font-medium">Objectifs Actifs</p>
                     <p className="text-2xl font-bold">{stats.activeObjectives}</p>
                   </div>
                   <Target className="h-8 w-8 text-blue-600" />
@@ -353,7 +353,7 @@ export const PerformanceManagement = () => {
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-muted-foreground">Taux de Réalisation</p>
+                    <p className="text-muted-foreground text-sm font-medium">Taux de Réalisation</p>
                     <p className="text-2xl font-bold">{stats.completionRate}%</p>
                   </div>
                   <CheckCircle2 className="h-8 w-8 text-green-600" />
@@ -365,7 +365,7 @@ export const PerformanceManagement = () => {
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-muted-foreground">Score Moyen</p>
+                    <p className="text-muted-foreground text-sm font-medium">Score Moyen</p>
                     <p className="text-2xl font-bold">
                       {stats.averageScore > 0 ? stats.averageScore : '--'}
                     </p>
@@ -379,7 +379,7 @@ export const PerformanceManagement = () => {
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-muted-foreground">
+                    <p className="text-muted-foreground text-sm font-medium">
                       Évaluations Planifiées
                     </p>
                     <p className="text-2xl font-bold">{stats.scheduledEvaluations}</p>
@@ -422,7 +422,7 @@ export const PerformanceManagement = () => {
                         </span>
                         <div className="flex items-center gap-2">
                           <span className={`font-bold ${colorClass}`}>{count}</span>
-                          <span className="text-sm text-muted-foreground">({percentage}%)</span>
+                          <span className="text-muted-foreground text-sm">({percentage}%)</span>
                         </div>
                       </div>
                     );
@@ -452,7 +452,7 @@ export const PerformanceManagement = () => {
                         </span>
                         <div className="flex items-center gap-2">
                           <span className="font-bold">{count}</span>
-                          <span className="text-sm text-muted-foreground">({percentage}%)</span>
+                          <span className="text-muted-foreground text-sm">({percentage}%)</span>
                         </div>
                       </div>
                     );
@@ -488,9 +488,9 @@ export const PerformanceManagement = () => {
                         return (
                           <div key={score} className="flex items-center gap-4">
                             <span className="w-12">{score} ⭐</span>
-                            <div className="h-2 flex-1 rounded-full bg-muted">
+                            <div className="bg-muted h-2 flex-1 rounded-full">
                               <div
-                                className="h-2 rounded-full bg-primary transition-all duration-300"
+                                className="bg-primary h-2 rounded-full transition-all duration-300"
                                 style={{ width: `${percentage}%` }}
                               />
                             </div>
@@ -501,7 +501,7 @@ export const PerformanceManagement = () => {
                     </div>
                   </>
                 ) : (
-                  <div className="text-center text-muted-foreground">
+                  <div className="text-muted-foreground text-center">
                     <TrendingUp className="mx-auto mb-4 h-12 w-12" />
                     <p>Aucune évaluation disponible</p>
                   </div>

@@ -125,7 +125,7 @@ export const EditableProjectNameCell: React.FC<EditableProjectNameCellProps> = (
             onBlur={handleBlur}
             onKeyDown={handleKeyDown}
             className={cn(
-              'w-full rounded border-none bg-transparent px-2 py-1 font-semibold outline-none ring-2 ring-blue-500'
+              'w-full rounded border-none bg-transparent px-2 py-1 font-semibold ring-2 ring-blue-500 outline-none'
             )}
             placeholder="Nom du projet..."
           />

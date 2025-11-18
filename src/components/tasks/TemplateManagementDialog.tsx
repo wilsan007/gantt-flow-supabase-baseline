@@ -201,7 +201,7 @@ const TemplateManagementDialogBase = () => {
 
               {/* Recherche */}
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
                 <Input
                   placeholder="Rechercher..."
                   value={searchQuery}
@@ -213,9 +213,9 @@ const TemplateManagementDialogBase = () => {
               {/* Liste scrollable */}
               <ScrollArea className="h-[450px] pr-4">
                 {loading ? (
-                  <div className="py-8 text-center text-muted-foreground">Chargement...</div>
+                  <div className="text-muted-foreground py-8 text-center">Chargement...</div>
                 ) : filteredTemplates.length === 0 ? (
-                  <div className="py-8 text-center text-muted-foreground">
+                  <div className="text-muted-foreground py-8 text-center">
                     {searchQuery ? 'Aucun template trouvé' : 'Aucun template créé'}
                   </div>
                 ) : (
@@ -225,7 +225,7 @@ const TemplateManagementDialogBase = () => {
                       return (
                         <div
                           key={template.id}
-                          className="cursor-pointer rounded-lg border p-3 transition-colors hover:bg-accent/50"
+                          className="hover:bg-accent/50 cursor-pointer rounded-lg border p-3 transition-colors"
                           onClick={() => handleEdit(template)}
                         >
                           <div className="flex items-start justify-between gap-2">
@@ -241,7 +241,7 @@ const TemplateManagementDialogBase = () => {
                                 )}
                               </div>
                               {template.description && (
-                                <p className="line-clamp-1 text-xs text-muted-foreground">
+                                <p className="text-muted-foreground line-clamp-1 text-xs">
                                   {template.description}
                                 </p>
                               )}
@@ -250,7 +250,7 @@ const TemplateManagementDialogBase = () => {
                                   {categoryInfo.label}
                                 </Badge>
                                 {template.usage_count > 0 && (
-                                  <span className="flex items-center gap-1 text-xs text-muted-foreground">
+                                  <span className="text-muted-foreground flex items-center gap-1 text-xs">
                                     <TrendingUp className="h-3 w-3" />
                                     {template.usage_count}
                                   </span>
@@ -266,7 +266,7 @@ const TemplateManagementDialogBase = () => {
                                 setDeleteConfirmId(template.id);
                               }}
                             >
-                              <Trash2 className="h-4 w-4 text-destructive" />
+                              <Trash2 className="text-destructive h-4 w-4" />
                             </Button>
                           </div>
                         </div>
@@ -336,7 +336,7 @@ const TemplateManagementDialogBase = () => {
                     <div className="flex items-center justify-between">
                       <div className="space-y-0.5">
                         <Label>Template public</Label>
-                        <p className="text-xs text-muted-foreground">
+                        <p className="text-muted-foreground text-xs">
                           Visible par tous les membres du tenant
                         </p>
                       </div>

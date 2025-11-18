@@ -104,7 +104,7 @@ export const EditableTaskTitle = ({
   return (
     <div
       className={cn(
-        'group flex cursor-pointer items-center gap-2 font-medium hover:text-primary',
+        'group hover:text-primary flex cursor-pointer items-center gap-2 font-medium',
         className
       )}
       onClick={() => setIsEditing(true)}

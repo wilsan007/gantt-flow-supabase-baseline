@@ -31,7 +31,7 @@ export const DependencyHandle: React.FC<DependencyHandleProps> = ({
       className={cn(
         'dependency-handle absolute top-1/2 z-20 -translate-y-1/2',
         'cursor-grab transition-all duration-200 active:cursor-grabbing',
-        'opacity-60 hover:opacity-100 group-hover:opacity-100',
+        'opacity-60 group-hover:opacity-100 hover:opacity-100',
         position === 'start' ? '-left-5' : '-right-5',
         className
       )}

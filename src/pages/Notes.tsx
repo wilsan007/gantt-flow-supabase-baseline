@@ -142,7 +142,7 @@ export default function Notes() {
             <Card>
               <CardHeader>
                 <div className="flex items-center gap-2">
-                  <Search className="h-4 w-4 text-muted-foreground" />
+                  <Search className="text-muted-foreground h-4 w-4" />
                   <Input
                     placeholder="Rechercher..."
                     value={search}
@@ -154,7 +154,7 @@ export default function Notes() {
               <CardContent className="p-0">
                 {filteredNotes.length === 0 ? (
                   <div className="px-4 py-8 text-center">
-                    <FileText className="mx-auto mb-2 h-12 w-12 text-muted-foreground" />
+                    <FileText className="text-muted-foreground mx-auto mb-2 h-12 w-12" />
                     <p className="text-muted-foreground">Aucune note</p>
                   </div>
                 ) : (
@@ -162,7 +162,7 @@ export default function Notes() {
                     {filteredNotes.map(note => (
                       <div
                         key={note.id}
-                        className={`cursor-pointer p-4 transition-colors hover:bg-accent ${
+                        className={`hover:bg-accent cursor-pointer p-4 transition-colors ${
                           selectedNote?.id === note.id ? 'bg-accent' : ''
                         }`}
                         onClick={() => handleSelectNote(note)}
@@ -181,10 +181,10 @@ export default function Notes() {
                             <Trash2 className="h-3 w-3" />
                           </Button>
                         </div>
-                        <p className="mb-2 line-clamp-2 text-sm text-muted-foreground">
+                        <p className="text-muted-foreground mb-2 line-clamp-2 text-sm">
                           {note.content}
                         </p>
-                        <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                        <div className="text-muted-foreground flex items-center gap-1 text-xs">
                           <Calendar className="h-3 w-3" />
                           {format(new Date(note.updated_at), 'dd MMM yyyy', { locale: fr })}
                         </div>
@@ -238,7 +238,7 @@ export default function Notes() {
                     Annuler
                   </Button>
                 </div>
-                <p className="text-xs text-muted-foreground">
+                <p className="text-muted-foreground text-xs">
                   💡 Astuce : Utilisez Markdown pour formater vos notes (fonctionnalité à venir)
                 </p>
               </CardContent>

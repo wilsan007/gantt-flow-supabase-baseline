@@ -41,7 +41,7 @@ export const OnboardingOffboarding = () => {
   } = useOnboardingOffboarding();
 
   if (loading) return <div className="p-6 text-center">Chargement...</div>;
-  if (error) return <div className="p-6 text-center text-destructive">Erreur: {error}</div>;
+  if (error) return <div className="text-destructive p-6 text-center">Erreur: {error}</div>;
 
   // Group tasks by process
   const getProcessTasks = (processId: string, isOnboarding: boolean) => {
@@ -93,7 +93,7 @@ export const OnboardingOffboarding = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-foreground">Onboarding & Offboarding</h2>
+          <h2 className="text-foreground text-2xl font-bold">Onboarding & Offboarding</h2>
           <p className="text-muted-foreground">Processus d'intégration et de départ des employés</p>
         </div>
         <div className="flex gap-2">
@@ -128,7 +128,7 @@ export const OnboardingOffboarding = () => {
                     <div className="flex items-center justify-between">
                       <div>
                         <CardTitle className="text-lg">{process.employee_name}</CardTitle>
-                        <p className="text-sm text-muted-foreground">
+                        <p className="text-muted-foreground text-sm">
                           {process.position} • {process.department}
                         </p>
                       </div>
@@ -142,7 +142,7 @@ export const OnboardingOffboarding = () => {
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="flex items-center gap-4">
-                      <Calendar className="h-4 w-4 text-muted-foreground" />
+                      <Calendar className="text-muted-foreground h-4 w-4" />
                       <span className="text-sm">
                         Début: {new Date(process.start_date).toLocaleDateString()}
                       </span>
@@ -151,7 +151,7 @@ export const OnboardingOffboarding = () => {
                     <div className="space-y-2">
                       <div className="flex items-center justify-between">
                         <span className="text-sm font-medium">Progression</span>
-                        <span className="text-sm text-muted-foreground">{progress}%</span>
+                        <span className="text-muted-foreground text-sm">{progress}%</span>
                       </div>
                       <Progress value={progress} className="h-2" />
                     </div>
@@ -161,13 +161,13 @@ export const OnboardingOffboarding = () => {
                       {processTasks.map(task => (
                         <div
                           key={task.id}
-                          className="flex items-center justify-between rounded-lg bg-muted/50 p-3"
+                          className="bg-muted/50 flex items-center justify-between rounded-lg p-3"
                         >
                           <div className="flex items-center gap-3">
                             {getCategoryIcon(task.category)}
                             <div>
                               <p className="text-sm font-medium">{task.title}</p>
-                              <p className="text-xs text-muted-foreground">
+                              <p className="text-muted-foreground text-xs">
                                 Responsable: {task.responsible} • Échéance:{' '}
                                 {new Date(task.due_date).toLocaleDateString()}
                               </p>
@@ -208,7 +208,7 @@ export const OnboardingOffboarding = () => {
                     <div className="flex items-center justify-between">
                       <div>
                         <CardTitle className="text-lg">{process.employee_name}</CardTitle>
-                        <p className="text-sm text-muted-foreground">
+                        <p className="text-muted-foreground text-sm">
                           {process.position} • {process.department}
                         </p>
                       </div>
@@ -222,7 +222,7 @@ export const OnboardingOffboarding = () => {
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="flex items-center gap-4">
-                      <Calendar className="h-4 w-4 text-muted-foreground" />
+                      <Calendar className="text-muted-foreground h-4 w-4" />
                       <span className="text-sm">
                         Dernier jour: {new Date(process.last_work_day).toLocaleDateString()}
                       </span>
@@ -231,7 +231,7 @@ export const OnboardingOffboarding = () => {
                     <div className="space-y-2">
                       <div className="flex items-center justify-between">
                         <span className="text-sm font-medium">Progression</span>
-                        <span className="text-sm text-muted-foreground">{progress}%</span>
+                        <span className="text-muted-foreground text-sm">{progress}%</span>
                       </div>
                       <Progress value={progress} className="h-2" />
                     </div>
@@ -241,13 +241,13 @@ export const OnboardingOffboarding = () => {
                       {processTasks.map(task => (
                         <div
                           key={task.id}
-                          className="flex items-center justify-between rounded-lg bg-muted/50 p-3"
+                          className="bg-muted/50 flex items-center justify-between rounded-lg p-3"
                         >
                           <div className="flex items-center gap-3">
                             {getCategoryIcon(task.category)}
                             <div>
                               <p className="text-sm font-medium">{task.title}</p>
-                              <p className="text-xs text-muted-foreground">
+                              <p className="text-muted-foreground text-xs">
                                 Responsable: {task.responsible} • Échéance:{' '}
                                 {new Date(task.due_date).toLocaleDateString()}
                               </p>

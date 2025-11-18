@@ -23,14 +23,14 @@ export const RotateDeviceMessage: React.FC<RotateDeviceMessageProps> = ({
 }) => {
   return (
     <div
-      className={`fixed inset-0 z-50 flex items-center justify-center bg-background/95 backdrop-blur-lg ${className}`}
+      className={`bg-background/95 fixed inset-0 z-50 flex items-center justify-center backdrop-blur-lg ${className}`}
     >
       {/* Bouton "Ne plus afficher" en haut à droite */}
       {showDismissButton && onDismiss && (
         <Button
           variant="ghost"
           size="sm"
-          className="absolute right-4 top-4 text-muted-foreground hover:text-foreground"
+          className="text-muted-foreground hover:text-foreground absolute top-4 right-4"
           onClick={onDismiss}
         >
           <X className="mr-1 h-4 w-4" />
@@ -43,41 +43,41 @@ export const RotateDeviceMessage: React.FC<RotateDeviceMessageProps> = ({
         <div className="relative">
           <div className="animate-bounce-slow">
             <Smartphone
-              className="animate-rotate-device h-24 w-24 text-primary"
+              className="animate-rotate-device text-primary h-24 w-24"
               strokeWidth={1.5}
             />
           </div>
 
           {/* Cercle décoratif pulsant */}
-          <div className="animate-ping-slow absolute -inset-4 rounded-full border-2 border-primary/30"></div>
-          <div className="absolute -inset-8 animate-pulse rounded-full border border-primary/20"></div>
+          <div className="animate-ping-slow border-primary/30 absolute -inset-4 rounded-full border-2"></div>
+          <div className="border-primary/20 absolute -inset-8 animate-pulse rounded-full border"></div>
         </div>
 
         {/* Message principal */}
         <div className="max-w-md space-y-3">
-          <h2 className="animate-fade-in text-2xl font-bold text-foreground">
+          <h2 className="animate-fade-in text-foreground text-2xl font-bold">
             Mode Paysage Requis
           </h2>
-          <p className="animate-fade-in animation-delay-200 text-base text-muted-foreground">
+          <p className="animate-fade-in animation-delay-200 text-muted-foreground text-base">
             {message}
           </p>
         </div>
 
         {/* Indicateur visuel de rotation */}
         <div className="animate-fade-in animation-delay-400 flex items-center gap-4">
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <div className="flex h-12 w-8 items-center justify-center rounded-sm border-2 border-primary/50">
-              <div className="h-1 w-4 rounded bg-primary/50"></div>
+          <div className="text-muted-foreground flex items-center gap-2 text-sm">
+            <div className="border-primary/50 flex h-12 w-8 items-center justify-center rounded-sm border-2">
+              <div className="bg-primary/50 h-1 w-4 rounded"></div>
             </div>
             <span className="text-xl">→</span>
-            <div className="flex h-8 w-12 items-center justify-center rounded-sm border-2 border-primary">
-              <div className="h-4 w-1 rounded bg-primary"></div>
+            <div className="border-primary flex h-8 w-12 items-center justify-center rounded-sm border-2">
+              <div className="bg-primary h-4 w-1 rounded"></div>
             </div>
           </div>
         </div>
 
         {/* Petit texte d'aide */}
-        <p className="animate-fade-in animation-delay-600 text-xs text-muted-foreground/70">
+        <p className="animate-fade-in animation-delay-600 text-muted-foreground/70 text-xs">
           Cette vue nécessite plus d'espace horizontal
         </p>
       </div>

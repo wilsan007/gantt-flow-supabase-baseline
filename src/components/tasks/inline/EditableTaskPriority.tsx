@@ -39,7 +39,7 @@ export const EditableTaskPriority = ({
 
   return (
     <Select value={value?.toLowerCase() || 'medium'} onValueChange={newValue => onChange(newValue)}>
-      <SelectTrigger className="h-auto w-auto border-0 px-2 py-1 hover:bg-accent">
+      <SelectTrigger className="hover:bg-accent h-auto w-auto border-0 px-2 py-1">
         <Badge className={currentPriority.color}>{currentPriority.label}</Badge>
       </SelectTrigger>
       <SelectContent>

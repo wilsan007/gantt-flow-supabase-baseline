@@ -237,7 +237,7 @@ const RoleManagementDialogBase: React.FC<RoleManagementDialogProps> = ({ open, o
                 <div className="flex items-center justify-between">
                   <h3 className="font-medium">Rôles Assignés</h3>
                   <div className="relative">
-                    <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                    <Search className="text-muted-foreground absolute top-2.5 left-2 h-4 w-4" />
                     <Input
                       placeholder="Rechercher..."
                       value={searchTerm}
@@ -263,7 +263,7 @@ const RoleManagementDialogBase: React.FC<RoleManagementDialogProps> = ({ open, o
                                   <p className="font-medium">
                                     {employee?.full_name || 'Utilisateur inconnu'}
                                   </p>
-                                  <p className="text-sm text-muted-foreground">
+                                  <p className="text-muted-foreground text-sm">
                                     {employee?.job_title}
                                   </p>
                                 </div>
@@ -330,18 +330,18 @@ const RoleManagementDialogBase: React.FC<RoleManagementDialogProps> = ({ open, o
                       </CardHeader>
                       <CardContent>
                         <div className="space-y-3">
-                          <p className="text-sm text-muted-foreground">{role.description}</p>
+                          <p className="text-muted-foreground text-sm">{role.description}</p>
 
                           <div className="flex items-center justify-between">
                             <Badge variant={hierarchyBadge.variant} className="text-xs">
                               {hierarchyBadge.label}
                             </Badge>
-                            <span className="text-xs text-muted-foreground">
+                            <span className="text-muted-foreground text-xs">
                               Niveau {role.hierarchy_level}
                             </span>
                           </div>
 
-                          <div className="text-xs text-muted-foreground">
+                          <div className="text-muted-foreground text-xs">
                             {userRoles.filter(ur => ur.role_id === role.id).length} utilisateur(s)
                           </div>
 
@@ -377,7 +377,7 @@ const RoleManagementDialogBase: React.FC<RoleManagementDialogProps> = ({ open, o
                         {perms.map(permission => (
                           <div key={permission.id} className="rounded border p-3">
                             <div className="text-sm font-medium">{permission.display_name}</div>
-                            <div className="text-xs text-muted-foreground">
+                            <div className="text-muted-foreground text-xs">
                               {permission.description}
                             </div>
                             <div className="mt-2 flex gap-1">
@@ -436,7 +436,7 @@ const RoleManagementDialogBase: React.FC<RoleManagementDialogProps> = ({ open, o
                             />
                             <label htmlFor={permission.id} className="flex-1">
                               <div className="text-sm font-medium">{permission.display_name}</div>
-                              <div className="text-xs text-muted-foreground">
+                              <div className="text-muted-foreground text-xs">
                                 {permission.description}
                               </div>
                             </label>

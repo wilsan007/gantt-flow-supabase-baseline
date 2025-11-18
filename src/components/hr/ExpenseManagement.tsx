@@ -30,7 +30,7 @@ export const ExpenseManagement = () => {
   } = useExpenseManagement();
 
   if (loading) return <div className="p-6 text-center">Chargement...</div>;
-  if (error) return <div className="p-6 text-center text-destructive">Erreur: {error}</div>;
+  if (error) return <div className="text-destructive p-6 text-center">Erreur: {error}</div>;
 
   // Utiliser uniquement les vraies données de la base
   const categories = expenseCategories;
@@ -72,7 +72,7 @@ export const ExpenseManagement = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-foreground">Notes de frais</h2>
+          <h2 className="text-foreground text-2xl font-bold">Notes de frais</h2>
           <p className="text-muted-foreground">Gestion des frais et remboursements</p>
         </div>
         <div className="flex gap-2">
@@ -93,7 +93,7 @@ export const ExpenseManagement = () => {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-muted-foreground">En attente</p>
+                <p className="text-muted-foreground text-sm font-medium">En attente</p>
                 <p className="text-2xl font-bold">{getTotalByStatus('submitted').toFixed(2)} €</p>
               </div>
               <Clock className="h-8 w-8 text-yellow-600" />
@@ -105,7 +105,7 @@ export const ExpenseManagement = () => {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-muted-foreground">Approuvé</p>
+                <p className="text-muted-foreground text-sm font-medium">Approuvé</p>
                 <p className="text-2xl font-bold">{getTotalByStatus('approved').toFixed(2)} €</p>
               </div>
               <CheckCircle className="h-8 w-8 text-green-600" />
@@ -117,7 +117,7 @@ export const ExpenseManagement = () => {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-muted-foreground">Rejeté</p>
+                <p className="text-muted-foreground text-sm font-medium">Rejeté</p>
                 <p className="text-2xl font-bold">{getTotalByStatus('rejected').toFixed(2)} €</p>
               </div>
               <XCircle className="h-8 w-8 text-red-600" />
@@ -129,7 +129,7 @@ export const ExpenseManagement = () => {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-muted-foreground">Total ce mois</p>
+                <p className="text-muted-foreground text-sm font-medium">Total ce mois</p>
                 <p className="text-2xl font-bold">
                   {reports.reduce((total, report) => total + report.total_amount, 0).toFixed(2)} €
                 </p>
@@ -160,7 +160,7 @@ export const ExpenseManagement = () => {
           {reports.length === 0 ? (
             <Card>
               <CardContent className="p-8 text-center">
-                <Receipt className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
+                <Receipt className="text-muted-foreground mx-auto mb-4 h-12 w-12" />
                 <h3 className="mb-2 text-lg font-medium">Aucune note de frais</h3>
                 <p className="text-muted-foreground">
                   Commencez par créer votre première note de frais.
@@ -178,7 +178,7 @@ export const ExpenseManagement = () => {
                       <div className="flex items-center justify-between">
                         <div>
                           <CardTitle className="text-lg">{report.title}</CardTitle>
-                          <p className="text-sm text-muted-foreground">
+                          <p className="text-muted-foreground text-sm">
                             {report.employee_name} • Soumis le{' '}
                             {report.submission_date &&
                               new Date(report.submission_date).toLocaleDateString()}
@@ -220,7 +220,7 @@ export const ExpenseManagement = () => {
                         {reportItems.map(expense => (
                           <div
                             key={expense.id}
-                            className="flex items-center justify-between rounded-lg bg-muted/50 p-3"
+                            className="bg-muted/50 flex items-center justify-between rounded-lg p-3"
                           >
                             <div className="flex-1">
                               <div className="mb-1 flex items-center gap-2">
@@ -234,7 +234,7 @@ export const ExpenseManagement = () => {
                                 </Badge>
                                 <span className="text-sm font-medium">{expense.description}</span>
                               </div>
-                              <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                              <div className="text-muted-foreground flex items-center gap-4 text-xs">
                                 <span>{new Date(expense.expense_date).toLocaleDateString()}</span>
                                 {expense.location && <span>📍 {expense.location}</span>}
                                 {expense.mileage && <span>🛣️ {expense.mileage} km</span>}
@@ -308,7 +308,7 @@ export const ExpenseManagement = () => {
           {categories.length === 0 ? (
             <Card>
               <CardContent className="p-8 text-center">
-                <FileText className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
+                <FileText className="text-muted-foreground mx-auto mb-4 h-12 w-12" />
                 <h3 className="mb-2 text-lg font-medium">Aucune catégorie</h3>
                 <p className="text-muted-foreground">
                   Ajoutez des catégories pour organiser vos frais.
@@ -405,7 +405,7 @@ export const ExpenseManagement = () => {
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <h3 className="text-sm font-medium text-muted-foreground">Total des frais</h3>
+                    <h3 className="text-muted-foreground text-sm font-medium">Total des frais</h3>
                     <p className="text-2xl font-bold">
                       {expenseReports
                         .reduce((sum, report) => sum + report.total_amount, 0)
@@ -413,7 +413,7 @@ export const ExpenseManagement = () => {
                       €
                     </p>
                   </div>
-                  <Euro className="h-8 w-8 text-muted-foreground" />
+                  <Euro className="text-muted-foreground h-8 w-8" />
                 </div>
               </CardContent>
             </Card>
@@ -422,7 +422,7 @@ export const ExpenseManagement = () => {
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <h3 className="text-sm font-medium text-muted-foreground">Frais moyens</h3>
+                    <h3 className="text-muted-foreground text-sm font-medium">Frais moyens</h3>
                     <p className="text-2xl font-bold">
                       {expenseReports.length > 0
                         ? (
@@ -433,7 +433,7 @@ export const ExpenseManagement = () => {
                       €
                     </p>
                   </div>
-                  <Receipt className="h-8 w-8 text-muted-foreground" />
+                  <Receipt className="text-muted-foreground h-8 w-8" />
                 </div>
               </CardContent>
             </Card>
@@ -442,10 +442,10 @@ export const ExpenseManagement = () => {
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <h3 className="text-sm font-medium text-muted-foreground">Nombre de notes</h3>
+                    <h3 className="text-muted-foreground text-sm font-medium">Nombre de notes</h3>
                     <p className="text-2xl font-bold">{expenseReports.length}</p>
                   </div>
-                  <FileText className="h-8 w-8 text-muted-foreground" />
+                  <FileText className="text-muted-foreground h-8 w-8" />
                 </div>
               </CardContent>
             </Card>

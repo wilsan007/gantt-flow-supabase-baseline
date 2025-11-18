@@ -67,7 +67,7 @@ export const PermissionProvider: React.FC<PermissionProviderProps> = ({ children
     return (
       <div className="flex min-h-screen items-center justify-center">
         <div className="text-center">
-          <Loader2 className="mx-auto mb-4 h-8 w-8 animate-spin text-primary" />
+          <Loader2 className="text-primary mx-auto mb-4 h-8 w-8 animate-spin" />
           <p className="text-muted-foreground">Initialisation des permissions...</p>
         </div>
       </div>

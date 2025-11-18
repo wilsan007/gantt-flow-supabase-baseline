@@ -213,9 +213,9 @@ const CreateEvaluationDialogBase = ({
             )}
           </div>
 
-          <div className="rounded-lg bg-muted p-4">
+          <div className="bg-muted rounded-lg p-4">
             <h4 className="mb-2 font-medium">Information</h4>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-muted-foreground text-sm">
               {selectedType === 'annual' &&
                 "L'évaluation annuelle permet un bilan complet des performances sur l'année."}
               {selectedType === 'quarterly' &&

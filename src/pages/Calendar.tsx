@@ -322,7 +322,7 @@ export default function Calendar() {
                       {['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'].map(day => (
                         <div
                           key={day}
-                          className="text-center text-sm font-medium text-muted-foreground"
+                          className="text-muted-foreground text-center text-sm font-medium"
                         >
                           {day}
                         </div>
@@ -340,7 +340,7 @@ export default function Calendar() {
                           <button
                             key={day.toISOString()}
                             onClick={() => setSelectedDate(day)}
-                            className={`min-h-[80px] rounded-lg border p-2 text-left transition-colors hover:bg-accent ${!isCurrentMonth ? 'opacity-40' : ''} ${isToday(day) ? 'border-blue-500 bg-blue-50 dark:bg-blue-950/20' : ''} ${isSelected ? 'ring-2 ring-blue-500' : ''} `}
+                            className={`hover:bg-accent min-h-[80px] rounded-lg border p-2 text-left transition-colors ${!isCurrentMonth ? 'opacity-40' : ''} ${isToday(day) ? 'border-blue-500 bg-blue-50 dark:bg-blue-950/20' : ''} ${isSelected ? 'ring-2 ring-blue-500' : ''} `}
                           >
                             <div className="mb-1 text-sm font-medium">{format(day, 'd')}</div>
 
@@ -359,7 +359,7 @@ export default function Calendar() {
                                   </div>
                                 ))}
                                 {dayTasks.length > 2 && (
-                                  <div className="text-xs text-muted-foreground">
+                                  <div className="text-muted-foreground text-xs">
                                     +{dayTasks.length - 2} autre{dayTasks.length - 2 > 1 ? 's' : ''}
                                   </div>
                                 )}
@@ -381,7 +381,7 @@ export default function Calendar() {
                           key={day.toISOString()}
                           className={`p-2 text-center ${isToday(day) ? 'rounded-lg bg-blue-50 dark:bg-blue-950/20' : ''}`}
                         >
-                          <div className="text-sm text-muted-foreground">
+                          <div className="text-muted-foreground text-sm">
                             {format(day, 'EEE', { locale: fr })}
                           </div>
                           <div className="text-2xl font-bold">{format(day, 'd')}</div>
@@ -429,7 +429,7 @@ export default function Calendar() {
               </CardHeader>
               <CardContent>
                 {selectedDayTasks.length === 0 ? (
-                  <p className="py-4 text-center text-muted-foreground">
+                  <p className="text-muted-foreground py-4 text-center">
                     Aucune tâche pour ce jour
                   </p>
                 ) : (
@@ -437,7 +437,7 @@ export default function Calendar() {
                     {selectedDayTasks.map(task => (
                       <div
                         key={task.id}
-                        className="rounded-lg border p-3 transition-colors hover:bg-accent/50"
+                        className="hover:bg-accent/50 rounded-lg border p-3 transition-colors"
                       >
                         <div className="flex items-start justify-between gap-2">
                           <div className="flex-1">
@@ -446,7 +446,7 @@ export default function Calendar() {
                               <h4 className="text-sm font-medium">{task.title}</h4>
                             </div>
                             {task.description && (
-                              <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">
+                              <p className="text-muted-foreground mt-1 line-clamp-2 text-xs">
                                 {task.description}
                               </p>
                             )}
@@ -463,7 +463,7 @@ export default function Calendar() {
                             </Badge>
                           )}
                           {task.due_date && (
-                            <span className="flex items-center gap-1 text-muted-foreground">
+                            <span className="text-muted-foreground flex items-center gap-1">
                               <Clock className="h-3 w-3" />
                               {format(parseISO(task.due_date), 'HH:mm')}
                             </span>
@@ -483,7 +483,7 @@ export default function Calendar() {
               <CardContent className="pt-6">
                 <div className="text-center">
                   <p className="text-2xl font-bold">{filteredTasks.length}</p>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-muted-foreground text-sm">
                     {filterMode === 'personal'
                       ? 'Mes tâches'
                       : filterMode === 'team'
@@ -500,7 +500,7 @@ export default function Calendar() {
                   <p className="text-2xl font-bold">
                     {Array.from(tasksByDate.values()).filter(t => t.length > 0).length}
                   </p>
-                  <p className="text-sm text-muted-foreground">Jours avec tâches</p>
+                  <p className="text-muted-foreground text-sm">Jours avec tâches</p>
                 </div>
               </CardContent>
             </Card>
@@ -511,7 +511,7 @@ export default function Calendar() {
                   <p className="text-2xl font-bold">
                     {Math.round((filteredTasks.length / days.length) * 10) / 10}
                   </p>
-                  <p className="text-sm text-muted-foreground">Tâches/jour moyen</p>
+                  <p className="text-muted-foreground text-sm">Tâches/jour moyen</p>
                 </div>
               </CardContent>
             </Card>
@@ -522,7 +522,7 @@ export default function Calendar() {
                   <p className="text-2xl font-bold">
                     {filteredTasks.filter(t => t.priority?.toLowerCase() === 'high').length}
                   </p>
-                  <p className="text-sm text-muted-foreground">Haute priorité</p>
+                  <p className="text-muted-foreground text-sm">Haute priorité</p>
                 </div>
               </CardContent>
             </Card>

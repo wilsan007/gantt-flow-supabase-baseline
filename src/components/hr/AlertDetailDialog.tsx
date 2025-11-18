@@ -154,7 +154,7 @@ const AlertDetailDialogBase: React.FC<AlertDetailDialogProps> = ({ alert, open, 
             <CardContent>
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
                 <div className="space-y-2">
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <div className="text-muted-foreground flex items-center gap-2 text-sm">
                     <AlertTriangle className="h-4 w-4" />
                     Type d'alerte
                   </div>
@@ -162,7 +162,7 @@ const AlertDetailDialogBase: React.FC<AlertDetailDialogProps> = ({ alert, open, 
                 </div>
 
                 <div className="space-y-2">
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <div className="text-muted-foreground flex items-center gap-2 text-sm">
                     <Target className="h-4 w-4" />
                     Catégorie
                   </div>
@@ -170,7 +170,7 @@ const AlertDetailDialogBase: React.FC<AlertDetailDialogProps> = ({ alert, open, 
                 </div>
 
                 <div className="space-y-2">
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <div className="text-muted-foreground flex items-center gap-2 text-sm">
                     <Calendar className="h-4 w-4" />
                     Déclenché le
                   </div>
@@ -180,14 +180,14 @@ const AlertDetailDialogBase: React.FC<AlertDetailDialogProps> = ({ alert, open, 
                 </div>
 
                 <div className="space-y-2">
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <div className="text-muted-foreground flex items-center gap-2 text-sm">
                     <User className="h-4 w-4" />
                     Entité concernée
                   </div>
                   <div className="font-medium">
                     {alert.entity_name || 'Non spécifiée'}
                     {alert.entity_type && (
-                      <span className="ml-2 text-sm text-muted-foreground">
+                      <span className="text-muted-foreground ml-2 text-sm">
                         ({alert.entity_type})
                       </span>
                     )}
@@ -195,7 +195,7 @@ const AlertDetailDialogBase: React.FC<AlertDetailDialogProps> = ({ alert, open, 
                 </div>
 
                 <div className="space-y-2">
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <div className="text-muted-foreground flex items-center gap-2 text-sm">
                     <TrendingUp className="h-4 w-4" />
                     Niveau de sévérité
                   </div>
@@ -208,7 +208,7 @@ const AlertDetailDialogBase: React.FC<AlertDetailDialogProps> = ({ alert, open, 
               <Separator className="my-4" />
 
               <div className="space-y-2">
-                <div className="text-sm font-medium text-muted-foreground">
+                <div className="text-muted-foreground text-sm font-medium">
                   Description détaillée
                 </div>
                 <p className="text-sm leading-relaxed">{alert.description}</p>
@@ -218,13 +218,13 @@ const AlertDetailDialogBase: React.FC<AlertDetailDialogProps> = ({ alert, open, 
                 <>
                   <Separator className="my-4" />
                   <div className="space-y-2">
-                    <div className="text-sm font-medium text-muted-foreground">
+                    <div className="text-muted-foreground text-sm font-medium">
                       Données contextuelles
                     </div>
                     <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
                       {Object.entries(alert.context_data).map(([key, value]) => (
-                        <div key={key} className="rounded-lg bg-muted/50 p-3">
-                          <div className="text-xs capitalize text-muted-foreground">
+                        <div key={key} className="bg-muted/50 rounded-lg p-3">
+                          <div className="text-muted-foreground text-xs capitalize">
                             {key.replace(/([A-Z])/g, ' $1').toLowerCase()}
                           </div>
                           <div className="text-sm font-medium">
@@ -246,7 +246,7 @@ const AlertDetailDialogBase: React.FC<AlertDetailDialogProps> = ({ alert, open, 
                 <Lightbulb className="h-5 w-5 text-yellow-500" />
                 Solutions recommandées
                 {loadingSolutions && (
-                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+                  <div className="border-primary h-4 w-4 animate-spin rounded-full border-2 border-t-transparent" />
                 )}
               </CardTitle>
             </CardHeader>
@@ -254,12 +254,12 @@ const AlertDetailDialogBase: React.FC<AlertDetailDialogProps> = ({ alert, open, 
               {loadingSolutions ? (
                 <div className="flex items-center justify-center py-8">
                   <div className="text-center">
-                    <div className="mx-auto mb-2 h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-                    <p className="text-sm text-muted-foreground">Chargement des solutions...</p>
+                    <div className="border-primary mx-auto mb-2 h-8 w-8 animate-spin rounded-full border-2 border-t-transparent" />
+                    <p className="text-muted-foreground text-sm">Chargement des solutions...</p>
                   </div>
                 </div>
               ) : solutions.length === 0 ? (
-                <div className="py-8 text-center text-muted-foreground">
+                <div className="text-muted-foreground py-8 text-center">
                   <Lightbulb className="mx-auto mb-3 h-12 w-12 opacity-50" />
                   <p>Aucune solution spécifique trouvée pour ce type d'alerte</p>
                   <p className="text-sm">Consultez votre manager ou l'équipe RH</p>
@@ -269,7 +269,7 @@ const AlertDetailDialogBase: React.FC<AlertDetailDialogProps> = ({ alert, open, 
                   {solutions.map((solution, index) => (
                     <Card
                       key={solution.id}
-                      className={`${index === 0 ? 'ring-2 ring-primary/20' : ''}`}
+                      className={`${index === 0 ? 'ring-primary/20 ring-2' : ''}`}
                     >
                       <CardContent className="p-4">
                         <div className="mb-3 flex items-start justify-between">
@@ -282,7 +282,7 @@ const AlertDetailDialogBase: React.FC<AlertDetailDialogProps> = ({ alert, open, 
                                 </Badge>
                               )}
                             </div>
-                            <p className="mb-3 text-sm text-muted-foreground">
+                            <p className="text-muted-foreground mb-3 text-sm">
                               {solution.description}
                             </p>
                           </div>
@@ -292,7 +292,7 @@ const AlertDetailDialogBase: React.FC<AlertDetailDialogProps> = ({ alert, open, 
                           <div className="flex items-center gap-2">
                             <TrendingUp className="h-4 w-4 text-green-500" />
                             <div>
-                              <div className="text-xs text-muted-foreground">Efficacité</div>
+                              <div className="text-muted-foreground text-xs">Efficacité</div>
                               <div className="text-sm font-medium">
                                 {solution.effectiveness_score}%
                               </div>
@@ -302,7 +302,7 @@ const AlertDetailDialogBase: React.FC<AlertDetailDialogProps> = ({ alert, open, 
                           <div className="flex items-center gap-2">
                             <Clock className="h-4 w-4 text-blue-500" />
                             <div>
-                              <div className="text-xs text-muted-foreground">Délai</div>
+                              <div className="text-muted-foreground text-xs">Délai</div>
                               <div className="text-sm font-medium">
                                 {getImplementationTimeLabel(solution.implementation_time)}
                               </div>
@@ -312,7 +312,7 @@ const AlertDetailDialogBase: React.FC<AlertDetailDialogProps> = ({ alert, open, 
                           <div className="flex items-center gap-2">
                             <DollarSign className="h-4 w-4 text-orange-500" />
                             <div>
-                              <div className="text-xs text-muted-foreground">Coût</div>
+                              <div className="text-muted-foreground text-xs">Coût</div>
                               <Badge
                                 variant={getCostLevelBadge(solution.cost_level).variant}
                                 className="text-xs"
@@ -325,7 +325,7 @@ const AlertDetailDialogBase: React.FC<AlertDetailDialogProps> = ({ alert, open, 
                           <div className="flex items-center gap-2">
                             <Users className="h-4 w-4 text-purple-500" />
                             <div>
-                              <div className="text-xs text-muted-foreground">Rôles requis</div>
+                              <div className="text-muted-foreground text-xs">Rôles requis</div>
                               <div className="text-xs">
                                 {solution.required_roles?.length || 0} rôle(s)
                               </div>
@@ -342,7 +342,7 @@ const AlertDetailDialogBase: React.FC<AlertDetailDialogProps> = ({ alert, open, 
                               {solution.action_steps.steps.map(
                                 (step: string, stepIndex: number) => (
                                   <div key={stepIndex} className="flex items-start gap-2 text-sm">
-                                    <div className="mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs text-primary">
+                                    <div className="bg-primary/10 text-primary mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full text-xs">
                                       {stepIndex + 1}
                                     </div>
                                     <span>{step}</span>

@@ -222,7 +222,7 @@ const SubtaskCreationDialogBase = ({
             <Target className="h-5 w-5" />
             Créer une Sous-tâche
             {linkedActionId && (
-              <span className="mt-1 block text-sm text-muted-foreground">
+              <span className="text-muted-foreground mt-1 block text-sm">
                 Liée à une action spécifique
               </span>
             )}
@@ -239,7 +239,7 @@ const SubtaskCreationDialogBase = ({
               placeholder="Nom de la sous-tâche..."
               maxLength={100}
             />
-            <p className="text-xs text-muted-foreground">{title.length}/100 caractères</p>
+            <p className="text-muted-foreground text-xs">{title.length}/100 caractères</p>
           </div>
 
           {/* Dates */}
@@ -340,7 +340,7 @@ const SubtaskCreationDialogBase = ({
                 </SelectContent>
               </Select>
               {selectedActionId && selectedActionId !== 'none' && (
-                <p className="text-xs text-muted-foreground">
+                <p className="text-muted-foreground text-xs">
                   💡 Cette sous-tâche contribuera à l'accomplissement de l'action sélectionnée
                 </p>
               )}
@@ -348,11 +348,11 @@ const SubtaskCreationDialogBase = ({
           )}
 
           {/* Info parent */}
-          <div className="rounded-md bg-muted p-3">
-            <p className="text-sm text-muted-foreground">
+          <div className="bg-muted rounded-md p-3">
+            <p className="text-muted-foreground text-sm">
               <strong>Tâche parent:</strong> {parentTask.title}
             </p>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-muted-foreground text-sm">
               <strong>Responsable hérité:</strong> {parentTask.assignee}
             </p>
           </div>
@@ -385,22 +385,22 @@ const SubtaskCreationDialogBase = ({
                 {actions.map(action => (
                   <div
                     key={action.id}
-                    className="flex items-center justify-between rounded-md bg-muted/50 p-2"
+                    className="bg-muted/50 flex items-center justify-between rounded-md p-2"
                   >
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
                         <span className="text-sm font-medium">{action.title}</span>
-                        <span className="rounded bg-primary/20 px-2 py-1 text-xs text-primary">
+                        <span className="bg-primary/20 text-primary rounded px-2 py-1 text-xs">
                           {action.weight_percentage}%
                         </span>
                       </div>
                       {action.due_date && (
-                        <p className="text-xs text-muted-foreground">
+                        <p className="text-muted-foreground text-xs">
                           Échéance: {format(new Date(action.due_date), 'PPP', { locale: fr })}
                         </p>
                       )}
                       {action.notes && (
-                        <p className="truncate text-xs text-muted-foreground">{action.notes}</p>
+                        <p className="text-muted-foreground truncate text-xs">{action.notes}</p>
                       )}
                     </div>
                     <Button
@@ -408,7 +408,7 @@ const SubtaskCreationDialogBase = ({
                       variant="ghost"
                       size="sm"
                       onClick={() => removeAction(action.id)}
-                      className="h-8 w-8 p-0 text-destructive hover:text-destructive"
+                      className="text-destructive hover:text-destructive h-8 w-8 p-0"
                     >
                       <Trash2 className="h-3 w-3" />
                     </Button>
@@ -418,7 +418,7 @@ const SubtaskCreationDialogBase = ({
             )}
 
             {/* Formulaire d'ajout d'action */}
-            <div className="space-y-4 rounded-md border bg-muted/20 p-4">
+            <div className="bg-muted/20 space-y-4 rounded-md border p-4">
               <div className="flex items-center justify-between">
                 <Label className="flex items-center gap-2 text-sm font-medium">
                   <Plus className="h-4 w-4" />
@@ -449,7 +449,7 @@ const SubtaskCreationDialogBase = ({
                     className="text-sm"
                     maxLength={40}
                   />
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-muted-foreground text-xs">
                     {newActionTitle.length}/40 caractères
                   </p>
                 </div>
@@ -466,7 +466,7 @@ const SubtaskCreationDialogBase = ({
                       step={1}
                       className="w-full"
                     />
-                    <div className="flex justify-between text-xs text-muted-foreground">
+                    <div className="text-muted-foreground flex justify-between text-xs">
                       <span>1%</span>
                       <span>50%</span>
                       <span>100%</span>
@@ -527,7 +527,7 @@ const SubtaskCreationDialogBase = ({
                     setNewActionDueDate(undefined);
                     setNewActionNotes('');
                   }}
-                  className="w-full text-xs text-muted-foreground hover:text-foreground"
+                  className="text-muted-foreground hover:text-foreground w-full text-xs"
                 >
                   <Plus className="mr-2 h-3 w-3" />
                   Ajouter une autre action

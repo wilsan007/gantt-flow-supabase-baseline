@@ -136,7 +136,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({ open, on
               {/* Search and filters */}
               <div className="flex items-center gap-4">
                 <div className="relative flex-1">
-                  <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transform text-muted-foreground" />
+                  <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform" />
                   <Input
                     placeholder="Rechercher dans les notifications..."
                     value={searchTerm}
@@ -148,7 +148,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({ open, on
                 <select
                   value={selectedType}
                   onChange={e => setSelectedType(e.target.value)}
-                  className="rounded-md border bg-background px-3 py-2"
+                  className="bg-background rounded-md border px-3 py-2"
                 >
                   <option value="all">Tous les types</option>
                   {notificationTypes.map(type => (
@@ -171,17 +171,17 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({ open, on
 
               {/* Quick stats */}
               <div className="grid grid-cols-3 gap-4">
-                <div className="rounded-lg bg-muted p-3 text-center">
+                <div className="bg-muted rounded-lg p-3 text-center">
                   <div className="text-2xl font-bold">{unreadCount}</div>
-                  <div className="text-sm text-muted-foreground">Non lues</div>
+                  <div className="text-muted-foreground text-sm">Non lues</div>
                 </div>
-                <div className="rounded-lg bg-muted p-3 text-center">
+                <div className="bg-muted rounded-lg p-3 text-center">
                   <div className="text-2xl font-bold">{getPriorityNotifications().length}</div>
-                  <div className="text-sm text-muted-foreground">Prioritaires</div>
+                  <div className="text-muted-foreground text-sm">Prioritaires</div>
                 </div>
-                <div className="rounded-lg bg-muted p-3 text-center">
+                <div className="bg-muted rounded-lg p-3 text-center">
                   <div className="text-2xl font-bold">{notifications.length}</div>
-                  <div className="text-sm text-muted-foreground">Total</div>
+                  <div className="text-muted-foreground text-sm">Total</div>
                 </div>
               </div>
             </div>
@@ -190,11 +190,11 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({ open, on
             <ScrollArea className="mt-4 flex-1">
               <div className="space-y-2">
                 {loading ? (
-                  <div className="py-8 text-center text-muted-foreground">
+                  <div className="text-muted-foreground py-8 text-center">
                     Chargement des notifications...
                   </div>
                 ) : filteredNotifications.length === 0 ? (
-                  <div className="py-8 text-center text-muted-foreground">
+                  <div className="text-muted-foreground py-8 text-center">
                     {searchTerm || selectedType !== 'all'
                       ? 'Aucune notification trouvée pour ces critères'
                       : 'Aucune notification'}
@@ -203,8 +203,8 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({ open, on
                   filteredNotifications.map(notification => (
                     <div
                       key={notification.id}
-                      className={`cursor-pointer rounded-lg border p-4 transition-all hover:bg-accent/50 ${
-                        !notification.read_at ? 'border-l-4 border-l-primary bg-accent/20' : ''
+                      className={`hover:bg-accent/50 cursor-pointer rounded-lg border p-4 transition-all ${
+                        !notification.read_at ? 'border-l-primary bg-accent/20 border-l-4' : ''
                       }`}
                       onClick={() => handleNotificationClick(notification)}
                     >
@@ -228,9 +228,9 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({ open, on
                             )}
                           </div>
 
-                          <p className="text-sm text-muted-foreground">{notification.message}</p>
+                          <p className="text-muted-foreground text-sm">{notification.message}</p>
 
-                          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                          <div className="text-muted-foreground flex items-center gap-2 text-xs">
                             <Clock className="h-3 w-3" />
                             {formatDistanceToNow(new Date(notification.created_at), {
                               addSuffix: true,
@@ -264,7 +264,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({ open, on
           <TabsContent value="preferences" className="flex-1 overflow-hidden">
             <ScrollArea className="h-full">
               <div className="space-y-6">
-                <div className="text-sm text-muted-foreground">
+                <div className="text-muted-foreground text-sm">
                   Configurez les types de notifications que vous souhaitez recevoir.
                 </div>
 
@@ -278,7 +278,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({ open, on
                         <span className="text-xl">{type.icon}</span>
                         <div>
                           <Label className="font-medium">{type.label}</Label>
-                          <div className="text-sm text-muted-foreground">
+                          <div className="text-muted-foreground text-sm">
                             Recevoir des notifications pour {type.label.toLowerCase()}
                           </div>
                         </div>

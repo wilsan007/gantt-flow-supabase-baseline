@@ -99,25 +99,25 @@ export const CommentsColumn = ({ task }: CommentsColumnProps) => {
       <div className="mb-3 flex items-center gap-2">
         <MessageSquare className="h-4 w-4" />
         <span className="text-sm font-medium">Commentaires</span>
-        <span className="text-xs text-muted-foreground">({comments.length})</span>
+        <span className="text-muted-foreground text-xs">({comments.length})</span>
       </div>
 
       <ScrollArea className="mb-3 flex-1">
         <div className="space-y-3 pr-2">
           {loading ? (
-            <div className="text-center text-sm text-muted-foreground">Chargement...</div>
+            <div className="text-muted-foreground text-center text-sm">Chargement...</div>
           ) : comments.length === 0 ? (
-            <div className="text-center text-sm text-muted-foreground">Aucun commentaire</div>
+            <div className="text-muted-foreground text-center text-sm">Aucun commentaire</div>
           ) : (
             comments.map(comment => (
-              <div key={comment.id} className="rounded-md bg-muted/30 p-2">
-                <div className="mb-1 text-xs text-muted-foreground">
+              <div key={comment.id} className="bg-muted/30 rounded-md p-2">
+                <div className="text-muted-foreground mb-1 text-xs">
                   {formatDistanceToNow(new Date(comment.created_at), {
                     addSuffix: true,
                     locale: fr,
                   })}
                   {comment.comment_type && (
-                    <span className="ml-2 rounded bg-primary/10 px-1 text-primary">
+                    <span className="bg-primary/10 text-primary ml-2 rounded px-1">
                       {comment.comment_type}
                     </span>
                   )}

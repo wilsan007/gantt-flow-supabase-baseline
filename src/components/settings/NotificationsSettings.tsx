@@ -82,10 +82,10 @@ export const NotificationsSettings = () => {
               className="flex items-start justify-between border-b py-4 last:border-0"
             >
               <div className="flex flex-1 items-start gap-3">
-                <div className="mt-1 text-muted-foreground">{pref.icon}</div>
+                <div className="text-muted-foreground mt-1">{pref.icon}</div>
                 <div className="flex-1">
                   <Label className="text-base font-medium">{pref.label}</Label>
-                  <p className="mt-1 text-sm text-muted-foreground">{pref.description}</p>
+                  <p className="text-muted-foreground mt-1 text-sm">{pref.description}</p>
                 </div>
               </div>
               <div className="ml-4 flex flex-col gap-3">

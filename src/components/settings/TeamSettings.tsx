@@ -148,7 +148,7 @@ export const TeamSettings = () => {
             </div>
           ) : members.length === 0 ? (
             <div className="py-8 text-center">
-              <Users className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
+              <Users className="text-muted-foreground mx-auto mb-4 h-12 w-12" />
               <p className="text-muted-foreground">Aucun membre pour le moment</p>
               <Button
                 variant="outline"
@@ -164,7 +164,7 @@ export const TeamSettings = () => {
               {members.map(member => (
                 <div
                   key={member.id}
-                  className="flex items-center justify-between rounded-lg border p-4 transition-colors hover:bg-accent/50"
+                  className="hover:bg-accent/50 flex items-center justify-between rounded-lg border p-4 transition-colors"
                 >
                   <div className="flex items-center gap-4">
                     <Avatar className="h-10 w-10">
@@ -180,7 +180,7 @@ export const TeamSettings = () => {
                     </Avatar>
                     <div>
                       <p className="font-medium">{member.full_name}</p>
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <div className="text-muted-foreground flex items-center gap-2 text-sm">
                         <Mail className="h-3 w-3" />
                         {member.email}
                       </div>
@@ -209,7 +209,7 @@ export const TeamSettings = () => {
           <CardDescription>Invitations envoyées en attente d'acceptation</CardDescription>
         </CardHeader>
         <CardContent>
-          <p className="text-sm text-muted-foreground">Aucune invitation en attente</p>
+          <p className="text-muted-foreground text-sm">Aucune invitation en attente</p>
         </CardContent>
       </Card>
     </div>

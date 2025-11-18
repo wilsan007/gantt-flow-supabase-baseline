@@ -157,7 +157,7 @@ export const HealthSafety = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-foreground">Santé & Sécurité</h2>
+          <h2 className="text-foreground text-2xl font-bold">Santé & Sécurité</h2>
           <p className="text-muted-foreground">Gestion des incidents, formation et conformité</p>
         </div>
         <div className="flex gap-2">
@@ -178,10 +178,10 @@ export const HealthSafety = () => {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-muted-foreground">Incidents totaux</p>
+                <p className="text-muted-foreground text-sm font-medium">Incidents totaux</p>
                 <p className="text-2xl font-bold">{stats.totalIncidents}</p>
               </div>
-              <AlertTriangle className="h-8 w-8 text-muted-foreground" />
+              <AlertTriangle className="text-muted-foreground h-8 w-8" />
             </div>
           </CardContent>
         </Card>
@@ -190,7 +190,7 @@ export const HealthSafety = () => {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-muted-foreground">Incidents ouverts</p>
+                <p className="text-muted-foreground text-sm font-medium">Incidents ouverts</p>
                 <p className="text-2xl font-bold text-orange-600">{stats.openIncidents}</p>
               </div>
               <Clock className="h-8 w-8 text-orange-600" />
@@ -202,7 +202,7 @@ export const HealthSafety = () => {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-muted-foreground">Incidents critiques</p>
+                <p className="text-muted-foreground text-sm font-medium">Incidents critiques</p>
                 <p className="text-2xl font-bold text-red-600">{stats.criticalIncidents}</p>
               </div>
               <XCircle className="h-8 w-8 text-red-600" />
@@ -214,7 +214,7 @@ export const HealthSafety = () => {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-muted-foreground">Actions en cours</p>
+                <p className="text-muted-foreground text-sm font-medium">Actions en cours</p>
                 <p className="text-2xl font-bold text-blue-600">{stats.pendingActions}</p>
               </div>
               <CheckCircle className="h-8 w-8 text-blue-600" />
@@ -226,7 +226,7 @@ export const HealthSafety = () => {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-muted-foreground">Formation en retard</p>
+                <p className="text-muted-foreground text-sm font-medium">Formation en retard</p>
                 <p className="text-2xl font-bold text-red-600">{stats.overdueTraining}</p>
               </div>
               <BookOpen className="h-8 w-8 text-red-600" />
@@ -238,7 +238,7 @@ export const HealthSafety = () => {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-muted-foreground">Documents actifs</p>
+                <p className="text-muted-foreground text-sm font-medium">Documents actifs</p>
                 <p className="text-2xl font-bold text-green-600">{stats.activeDocuments}</p>
               </div>
               <FileText className="h-8 w-8 text-green-600" />
@@ -267,7 +267,7 @@ export const HealthSafety = () => {
           {realIncidents.length === 0 ? (
             <Card>
               <CardContent className="p-8 text-center">
-                <Shield className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
+                <Shield className="text-muted-foreground mx-auto mb-4 h-12 w-12" />
                 <h3 className="mb-2 text-lg font-medium">Aucun incident déclaré</h3>
                 <p className="text-muted-foreground">
                   Commencez par déclarer votre premier incident.
@@ -285,7 +285,7 @@ export const HealthSafety = () => {
                           {getTypeIcon(incident.type)}
                           {incident.title}
                         </CardTitle>
-                        <p className="text-sm text-muted-foreground">
+                        <p className="text-muted-foreground text-sm">
                           {incident.location} • Déclaré par {incident.reportedBy} le{' '}
                           {new Date(incident.reportedDate).toLocaleDateString()}
                         </p>
@@ -302,7 +302,7 @@ export const HealthSafety = () => {
                     <p className="text-sm">{incident.description}</p>
 
                     {incident.affectedEmployee && (
-                      <div className="rounded-lg bg-muted/50 p-3">
+                      <div className="bg-muted/50 rounded-lg p-3">
                         <p className="text-sm font-medium">
                           Employé concerné: {incident.affectedEmployee}
                         </p>
@@ -315,11 +315,11 @@ export const HealthSafety = () => {
                         {incident.actions.map(action => (
                           <div
                             key={action.id}
-                            className="flex items-center justify-between rounded bg-muted/30 p-2"
+                            className="bg-muted/30 flex items-center justify-between rounded p-2"
                           >
                             <div className="flex-1">
                               <p className="text-sm">{action.description}</p>
-                              <p className="text-xs text-muted-foreground">
+                              <p className="text-muted-foreground text-xs">
                                 Responsable: {action.responsiblePerson} • Échéance:{' '}
                                 {new Date(action.dueDate).toLocaleDateString()}
                               </p>
@@ -355,7 +355,7 @@ export const HealthSafety = () => {
           {realSafetyDocuments.length === 0 ? (
             <Card>
               <CardContent className="p-8 text-center">
-                <FileText className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
+                <FileText className="text-muted-foreground mx-auto mb-4 h-12 w-12" />
                 <h3 className="mb-2 text-lg font-medium">Aucun document</h3>
                 <p className="text-muted-foreground">
                   Ajoutez des documents de sécurité et conformité.
@@ -373,7 +373,7 @@ export const HealthSafety = () => {
                           <FileText className="h-5 w-5" />
                           {document.title}
                         </CardTitle>
-                        <p className="text-sm text-muted-foreground">
+                        <p className="text-muted-foreground text-sm">
                           {document.category} • Version {document.version}
                         </p>
                       </div>
@@ -422,7 +422,7 @@ export const HealthSafety = () => {
           {realTrainingRecords.length === 0 ? (
             <Card>
               <CardContent className="p-8 text-center">
-                <BookOpen className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
+                <BookOpen className="text-muted-foreground mx-auto mb-4 h-12 w-12" />
                 <h3 className="mb-2 text-lg font-medium">Aucune formation</h3>
                 <p className="text-muted-foreground">
                   Planifiez des formations de sécurité pour vos employés.
@@ -437,7 +437,7 @@ export const HealthSafety = () => {
                     <div className="flex items-center justify-between">
                       <div>
                         <CardTitle className="text-lg">{record.employeeName}</CardTitle>
-                        <p className="text-sm text-muted-foreground">{record.trainingTitle}</p>
+                        <p className="text-muted-foreground text-sm">{record.trainingTitle}</p>
                       </div>
                       <div className="flex items-center gap-2">
                         <Badge className={getStatusColor(record.status)}>{record.status}</Badge>

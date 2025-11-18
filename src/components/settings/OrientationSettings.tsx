@@ -48,7 +48,7 @@ export const OrientationSettings: React.FC = () => {
     <Card>
       <CardHeader>
         <div className="flex items-center gap-2">
-          <RotateCw className="h-5 w-5 text-primary" />
+          <RotateCw className="text-primary h-5 w-5" />
           <CardTitle>Orientation de l'Écran</CardTitle>
         </div>
         <CardDescription>
@@ -79,13 +79,13 @@ export const OrientationSettings: React.FC = () => {
             {options.map(option => (
               <div
                 key={option.value}
-                className="flex items-start space-x-3 space-y-0 rounded-lg border p-4 transition-colors hover:bg-accent/50"
+                className="hover:bg-accent/50 flex items-start space-y-0 space-x-3 rounded-lg border p-4 transition-colors"
               >
                 <RadioGroupItem value={option.value} id={option.value} className="mt-1" />
                 <div className="flex-1 space-y-1">
                   <Label
                     htmlFor={option.value}
-                    className="flex cursor-pointer items-center gap-2 text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                    className="flex cursor-pointer items-center gap-2 text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                   >
                     {option.label}
                     {option.recommended && (
@@ -94,7 +94,7 @@ export const OrientationSettings: React.FC = () => {
                       </Badge>
                     )}
                   </Label>
-                  <p className="text-xs text-muted-foreground">{option.description}</p>
+                  <p className="text-muted-foreground text-xs">{option.description}</p>
                 </div>
               </div>
             ))}
@@ -107,7 +107,7 @@ export const OrientationSettings: React.FC = () => {
             <div className="flex items-center justify-between">
               <div>
                 <Label className="text-sm font-medium">Vues avec notification désactivée</Label>
-                <p className="mt-1 text-xs text-muted-foreground">
+                <p className="text-muted-foreground mt-1 text-xs">
                   Vous avez choisi de ne plus afficher la notification pour ces vues
                 </p>
               </div>
@@ -126,10 +126,10 @@ export const OrientationSettings: React.FC = () => {
         )}
 
         {/* Info additionnelle */}
-        <div className="space-y-2 rounded-lg bg-muted/50 p-4">
+        <div className="bg-muted/50 space-y-2 rounded-lg p-4">
           <div className="flex items-start gap-2">
-            <Smartphone className="mt-0.5 h-4 w-4 flex-shrink-0 text-muted-foreground" />
-            <div className="space-y-1 text-xs text-muted-foreground">
+            <Smartphone className="text-muted-foreground mt-0.5 h-4 w-4 flex-shrink-0" />
+            <div className="text-muted-foreground space-y-1 text-xs">
               <p>
                 <strong>Pourquoi le mode paysage ?</strong>
               </p>

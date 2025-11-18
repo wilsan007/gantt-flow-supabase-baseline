@@ -164,7 +164,7 @@ export const NotificationPopup: React.FC<NotificationPopupProps> = ({ open, onOp
 
           <TabsContent value="notifications" className="flex flex-1 flex-col overflow-hidden">
             {activeNotifications.length === 0 ? (
-              <div className="flex flex-1 items-center justify-center text-muted-foreground">
+              <div className="text-muted-foreground flex flex-1 items-center justify-center">
                 <div className="text-center">
                   <Check className="mx-auto mb-4 h-12 w-12 text-green-500" />
                   <h3 className="text-lg font-medium">Tout est à jour !</h3>
@@ -220,7 +220,7 @@ export const NotificationPopup: React.FC<NotificationPopupProps> = ({ open, onOp
                             key={notification.id}
                             className={`cursor-pointer transition-all ${
                               selectedNotifications.includes(notification.id)
-                                ? 'bg-accent/50 ring-2 ring-primary'
+                                ? 'bg-accent/50 ring-primary ring-2'
                                 : 'hover:bg-accent/30'
                             } ${isNew ? 'border-l-4 border-l-blue-500' : ''}`}
                             onClick={() => {
@@ -250,10 +250,10 @@ export const NotificationPopup: React.FC<NotificationPopupProps> = ({ open, onOp
                               </div>
                             </CardHeader>
                             <CardContent>
-                              <p className="mb-2 text-sm text-muted-foreground">
+                              <p className="text-muted-foreground mb-2 text-sm">
                                 {notification.message}
                               </p>
-                              <div className="text-xs text-muted-foreground">
+                              <div className="text-muted-foreground text-xs">
                                 {formatDistanceToNow(new Date(notification.created_at), {
                                   addSuffix: true,
                                   locale: fr,
@@ -281,7 +281,7 @@ export const NotificationPopup: React.FC<NotificationPopupProps> = ({ open, onOp
                         </CardTitle>
                       </CardHeader>
                       <CardContent>
-                        <p className="mb-3 text-xs text-muted-foreground">
+                        <p className="text-muted-foreground mb-3 text-xs">
                           Envoyer des emails avec templates professionnels
                         </p>
                         <Button
@@ -305,7 +305,7 @@ export const NotificationPopup: React.FC<NotificationPopupProps> = ({ open, onOp
                         </CardTitle>
                       </CardHeader>
                       <CardContent>
-                        <p className="mb-3 text-xs text-muted-foreground">
+                        <p className="text-muted-foreground mb-3 text-xs">
                           Notifications push directes dans le navigateur
                         </p>
                         <Button
@@ -393,7 +393,7 @@ export const NotificationPopup: React.FC<NotificationPopupProps> = ({ open, onOp
           <TabsContent value="channels" className="flex-1 overflow-hidden">
             <ScrollArea className="h-full">
               <div className="space-y-4">
-                <div className="text-sm text-muted-foreground">
+                <div className="text-muted-foreground text-sm">
                   Configurez les différents canaux de notification disponibles.
                 </div>
 
@@ -417,7 +417,7 @@ export const NotificationPopup: React.FC<NotificationPopupProps> = ({ open, onOp
                       </CardHeader>
                       <CardContent>
                         <div className="space-y-2">
-                          <p className="text-sm text-muted-foreground">
+                          <p className="text-muted-foreground text-sm">
                             {channel.type === 'email' &&
                               'Notifications par email avec templates HTML'}
                             {channel.type === 'slack' && 'Intégration Slack via webhook'}
@@ -428,7 +428,7 @@ export const NotificationPopup: React.FC<NotificationPopupProps> = ({ open, onOp
                           </p>
 
                           {(channel.type === 'slack' || channel.type === 'teams') && (
-                            <div className="text-xs text-muted-foreground">
+                            <div className="text-muted-foreground text-xs">
                               <p>Pour configurer :</p>
                               <p>1. Créez un webhook dans {channel.name}</p>
                               <p>2. Copiez l'URL du webhook</p>

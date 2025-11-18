@@ -94,10 +94,10 @@ export function MySkillsProfile() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="flex items-center gap-2 text-3xl font-bold">
-            <Award className="h-8 w-8 text-primary" />
+            <Award className="text-primary h-8 w-8" />
             Mes Compétences
           </h1>
-          <p className="mt-1 text-muted-foreground">
+          <p className="text-muted-foreground mt-1">
             Gérez votre profil de compétences et développez votre carrière
           </p>
         </div>
@@ -167,19 +167,19 @@ export function MySkillsProfile() {
       <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
+            <CardTitle className="text-muted-foreground text-sm font-medium">
               Total Compétences
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold">{totalSkills}</div>
-            <p className="mt-1 text-xs text-muted-foreground">{certifiedSkills} certifiées</p>
+            <p className="text-muted-foreground mt-1 text-xs">{certifiedSkills} certifiées</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
+            <CardTitle className="text-muted-foreground text-sm font-medium">
               Taux de Certification
             </CardTitle>
           </CardHeader>
@@ -191,7 +191,7 @@ export function MySkillsProfile() {
 
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
+            <CardTitle className="text-muted-foreground text-sm font-medium">
               Compétences Critiques
             </CardTitle>
           </CardHeader>
@@ -199,7 +199,7 @@ export function MySkillsProfile() {
             <div className="text-3xl font-bold">
               {employeeSkills.filter(es => es.skill?.is_critical).length}
             </div>
-            <p className="mt-1 text-xs text-muted-foreground">
+            <p className="text-muted-foreground mt-1 text-xs">
               Sur {skills.filter(s => s.is_critical).length} totales
             </p>
           </CardContent>
@@ -211,7 +211,7 @@ export function MySkillsProfile() {
         <CardContent className="pt-6">
           <div className="flex flex-col gap-4 md:flex-row">
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transform text-muted-foreground" />
+              <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform" />
               <Input
                 placeholder="Rechercher une compétence..."
                 value={searchTerm}
@@ -242,7 +242,7 @@ export function MySkillsProfile() {
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         {filteredEmployeeSkills.length === 0 ? (
           <Card className="col-span-full">
-            <CardContent className="pt-6 text-center text-muted-foreground">
+            <CardContent className="text-muted-foreground pt-6 text-center">
               {searchTerm || categoryFilter !== 'all'
                 ? 'Aucune compétence ne correspond à vos filtres'
                 : 'Vous n\'avez pas encore ajouté de compétences. Cliquez sur "Ajouter une compétence" pour commencer !'}
@@ -291,7 +291,7 @@ export function MySkillsProfile() {
 
                   {/* Informations supplémentaires */}
                   {employeeSkill.years_experience > 0 && (
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <div className="text-muted-foreground flex items-center gap-2 text-sm">
                       <TrendingUp className="h-4 w-4" />
                       {employeeSkill.years_experience} an
                       {employeeSkill.years_experience > 1 ? 's' : ''} d'expérience

@@ -218,7 +218,7 @@ const SetupAccount: React.FC = () => {
                     className="h-11 text-base sm:h-10 sm:text-sm"
                   />
                   {currentPassword && (
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-muted-foreground text-xs">
                       💡 Pré-rempli avec votre mot de passe temporaire
                     </p>
                   )}
@@ -290,7 +290,7 @@ const SetupAccount: React.FC = () => {
                 <div className="w-full border-t border-gray-300" />
               </div>
               <div className="relative flex justify-center text-xs sm:text-sm">
-                <span className="bg-white px-3 text-muted-foreground">ET</span>
+                <span className="text-muted-foreground bg-white px-3">ET</span>
               </div>
             </div>
 
@@ -353,7 +353,7 @@ const SetupAccount: React.FC = () => {
               <Button
                 onClick={handleSkipToLater}
                 variant="ghost"
-                className="text-xs text-muted-foreground underline hover:text-foreground sm:text-sm"
+                className="text-muted-foreground hover:text-foreground text-xs underline sm:text-sm"
               >
                 ⏭️ Reporter la configuration et accéder au dashboard
               </Button>

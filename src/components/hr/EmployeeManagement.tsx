@@ -31,7 +31,7 @@ export const EmployeeManagement = () => {
   return (
     <div className="space-y-6 p-6">
       <div className="flex items-center justify-between">
-        <h2 className="bg-gradient-to-r from-primary to-accent bg-clip-text text-3xl font-bold text-transparent">
+        <h2 className="from-primary to-accent bg-gradient-to-r bg-clip-text text-3xl font-bold text-transparent">
           Gestion des Employés
         </h2>
       </div>
@@ -41,20 +41,20 @@ export const EmployeeManagement = () => {
         <Card className="modern-card hover-glow">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Employés</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
+            <Users className="text-muted-foreground h-4 w-4" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-primary">{employees.length}</div>
+            <div className="text-primary text-2xl font-bold">{employees.length}</div>
           </CardContent>
         </Card>
 
         <Card className="modern-card hover-glow">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">CDI</CardTitle>
-            <UserPlus className="h-4 w-4 text-muted-foreground" />
+            <UserPlus className="text-muted-foreground h-4 w-4" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-success">
+            <div className="text-success text-2xl font-bold">
               {employees.filter(e => e.contract_type === 'CDI').length}
             </div>
           </CardContent>
@@ -63,10 +63,10 @@ export const EmployeeManagement = () => {
         <Card className="modern-card hover-glow">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">CDD/Autres</CardTitle>
-            <Calendar className="h-4 w-4 text-muted-foreground" />
+            <Calendar className="text-muted-foreground h-4 w-4" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-warning">
+            <div className="text-warning text-2xl font-bold">
               {employees.filter(e => e.contract_type !== 'CDI' && e.contract_type).length}
             </div>
           </CardContent>
@@ -78,7 +78,7 @@ export const EmployeeManagement = () => {
         {employees.length === 0 ? (
           <Card className="modern-card">
             <CardContent className="p-8 text-center">
-              <Users className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
+              <Users className="text-muted-foreground mx-auto mb-4 h-12 w-12" />
               <p className="text-muted-foreground">Aucun employé trouvé</p>
             </CardContent>
           </Card>
@@ -109,25 +109,25 @@ export const EmployeeManagement = () => {
                         <h3 className="truncate text-lg font-semibold">{employee.full_name}</h3>
 
                         {employee.job_title && (
-                          <p className="mb-2 text-sm text-muted-foreground">{employee.job_title}</p>
+                          <p className="text-muted-foreground mb-2 text-sm">{employee.job_title}</p>
                         )}
 
                         <div className="space-y-2">
                           {employee.employee_id && (
-                            <p className="text-xs text-muted-foreground">
+                            <p className="text-muted-foreground text-xs">
                               <strong>ID:</strong> {employee.employee_id}
                             </p>
                           )}
 
                           {employee.hire_date && (
-                            <p className="text-xs text-muted-foreground">
+                            <p className="text-muted-foreground text-xs">
                               <strong>Embauché le:</strong>{' '}
                               {new Date(employee.hire_date).toLocaleDateString()}
                             </p>
                           )}
 
                           {department && (
-                            <p className="text-xs text-muted-foreground">
+                            <p className="text-muted-foreground text-xs">
                               <strong>Département:</strong> {department.name}
                             </p>
                           )}

@@ -160,7 +160,7 @@ export const DepartmentManagement = () => {
   return (
     <div className="space-y-6 p-6">
       <div className="flex items-center justify-between">
-        <h2 className="bg-gradient-to-r from-primary to-accent bg-clip-text text-3xl font-bold text-transparent">
+        <h2 className="from-primary to-accent bg-gradient-to-r bg-clip-text text-3xl font-bold text-transparent">
           Départements
         </h2>
 
@@ -253,7 +253,7 @@ export const DepartmentManagement = () => {
         {departments.length === 0 ? (
           <Card className="modern-card">
             <CardContent className="p-8 text-center">
-              <Building className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
+              <Building className="text-muted-foreground mx-auto mb-4 h-12 w-12" />
               <p className="text-muted-foreground">Aucun département configuré</p>
             </CardContent>
           </Card>
@@ -268,11 +268,11 @@ export const DepartmentManagement = () => {
                     <div className="space-y-4">
                       <div className="flex items-start justify-between">
                         <div className="flex items-center gap-3">
-                          <Building className="h-6 w-6 text-primary" />
+                          <Building className="text-primary h-6 w-6" />
                           <div>
                             <h3 className="text-lg font-semibold">{department.name}</h3>
                             {department.description && (
-                              <p className="line-clamp-2 text-sm text-muted-foreground">
+                              <p className="text-muted-foreground line-clamp-2 text-sm">
                                 {department.description}
                               </p>
                             )}
@@ -312,7 +312,7 @@ export const DepartmentManagement = () => {
                           </p>
                         )}
 
-                        <div className="flex items-center gap-2 text-muted-foreground">
+                        <div className="text-muted-foreground flex items-center gap-2">
                           <Users className="h-4 w-4" />
                           <span>Employés du département</span>
                         </div>

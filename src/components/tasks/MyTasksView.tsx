@@ -103,7 +103,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
   const isOverdue = dueDate && isBefore(dueDate, startOfDay(new Date()));
 
   return (
-    <div className="rounded-lg border p-4 transition-colors hover:bg-accent/50">
+    <div className="hover:bg-accent/50 rounded-lg border p-4 transition-colors">
       <div className="flex items-start justify-between gap-4">
         <div className="flex-1 space-y-2">
           <div className="flex items-center gap-2">
@@ -120,7 +120,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
           </div>
 
           {task.description && (
-            <p className="line-clamp-2 text-sm text-muted-foreground">{task.description}</p>
+            <p className="text-muted-foreground line-clamp-2 text-sm">{task.description}</p>
           )}
 
           <div className="flex flex-wrap items-center gap-2 text-xs">
@@ -413,13 +413,13 @@ export const MyTasksView: React.FC<MyTasksViewProps> = ({ showAllTasks = false }
         <CardContent className="pt-6">
           <div className="flex flex-wrap items-center gap-4">
             <div className="flex items-center gap-2">
-              <Filter className="h-4 w-4 text-muted-foreground" />
+              <Filter className="text-muted-foreground h-4 w-4" />
               <span className="text-sm font-medium">Filtres :</span>
             </div>
 
             {/* Filtre par projet */}
             <div className="flex items-center gap-2">
-              <label className="text-sm text-muted-foreground">Projet :</label>
+              <label className="text-muted-foreground text-sm">Projet :</label>
               <Select value={selectedProject} onValueChange={setSelectedProject}>
                 <SelectTrigger className="w-[200px]">
                   <SelectValue placeholder="Tous les projets" />
@@ -437,7 +437,7 @@ export const MyTasksView: React.FC<MyTasksViewProps> = ({ showAllTasks = false }
 
             {/* Filtre par personne assignée (disponible dans tous les modes) */}
             <div className="flex items-center gap-2">
-              <label className="text-sm text-muted-foreground">Assigné à :</label>
+              <label className="text-muted-foreground text-sm">Assigné à :</label>
               <Select
                 value={selectedAssignee}
                 onValueChange={setSelectedAssignee}
@@ -486,7 +486,7 @@ export const MyTasksView: React.FC<MyTasksViewProps> = ({ showAllTasks = false }
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground">Urgentes</p>
+                <p className="text-muted-foreground text-sm">Urgentes</p>
                 <p className="text-2xl font-bold">{categorizedTasks.urgent.length}</p>
               </div>
               <Flame className="h-8 w-8 text-red-500" />
@@ -498,7 +498,7 @@ export const MyTasksView: React.FC<MyTasksViewProps> = ({ showAllTasks = false }
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground">Aujourd'hui</p>
+                <p className="text-muted-foreground text-sm">Aujourd'hui</p>
                 <p className="text-2xl font-bold">{categorizedTasks.today.length}</p>
               </div>
               <Calendar className="h-8 w-8 text-blue-500" />
@@ -510,7 +510,7 @@ export const MyTasksView: React.FC<MyTasksViewProps> = ({ showAllTasks = false }
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground">Cette semaine</p>
+                <p className="text-muted-foreground text-sm">Cette semaine</p>
                 <p className="text-2xl font-bold">{categorizedTasks.thisWeek.length}</p>
               </div>
               <CalendarDays className="h-8 w-8 text-yellow-500" />
@@ -522,7 +522,7 @@ export const MyTasksView: React.FC<MyTasksViewProps> = ({ showAllTasks = false }
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground">Terminées</p>
+                <p className="text-muted-foreground text-sm">Terminées</p>
                 <p className="text-2xl font-bold">{completedTasks.length}</p>
               </div>
               <CheckCircle2 className="h-8 w-8 text-green-500" />
@@ -534,7 +534,7 @@ export const MyTasksView: React.FC<MyTasksViewProps> = ({ showAllTasks = false }
       {/* Section Urgent */}
       <Card>
         <CardHeader
-          className="cursor-pointer hover:bg-accent/50"
+          className="hover:bg-accent/50 cursor-pointer"
           onClick={() => toggleSection('urgent')}
         >
           <CardTitle className="flex items-center justify-between">
@@ -551,7 +551,7 @@ export const MyTasksView: React.FC<MyTasksViewProps> = ({ showAllTasks = false }
         {expandedSections.urgent && (
           <CardContent className="space-y-3">
             {categorizedTasks.urgent.length === 0 ? (
-              <p className="py-4 text-center text-muted-foreground">Aucune tâche urgente 🎉</p>
+              <p className="text-muted-foreground py-4 text-center">Aucune tâche urgente 🎉</p>
             ) : (
               categorizedTasks.urgent.map(task => (
                 <TaskItem
@@ -571,7 +571,7 @@ export const MyTasksView: React.FC<MyTasksViewProps> = ({ showAllTasks = false }
       {/* Section Aujourd'hui */}
       <Card>
         <CardHeader
-          className="cursor-pointer hover:bg-accent/50"
+          className="hover:bg-accent/50 cursor-pointer"
           onClick={() => toggleSection('today')}
         >
           <CardTitle className="flex items-center justify-between">
@@ -588,7 +588,7 @@ export const MyTasksView: React.FC<MyTasksViewProps> = ({ showAllTasks = false }
         {expandedSections.today && (
           <CardContent className="space-y-3">
             {categorizedTasks.today.length === 0 ? (
-              <p className="py-4 text-center text-muted-foreground">
+              <p className="text-muted-foreground py-4 text-center">
                 Aucune tâche pour aujourd'hui
               </p>
             ) : (
@@ -610,7 +610,7 @@ export const MyTasksView: React.FC<MyTasksViewProps> = ({ showAllTasks = false }
       {/* Section Cette Semaine */}
       <Card>
         <CardHeader
-          className="cursor-pointer hover:bg-accent/50"
+          className="hover:bg-accent/50 cursor-pointer"
           onClick={() => toggleSection('week')}
         >
           <CardTitle className="flex items-center justify-between">
@@ -627,7 +627,7 @@ export const MyTasksView: React.FC<MyTasksViewProps> = ({ showAllTasks = false }
         {expandedSections.week && (
           <CardContent className="space-y-3">
             {categorizedTasks.thisWeek.length === 0 ? (
-              <p className="py-4 text-center text-muted-foreground">Aucune tâche cette semaine</p>
+              <p className="text-muted-foreground py-4 text-center">Aucune tâche cette semaine</p>
             ) : (
               categorizedTasks.thisWeek.map(task => (
                 <TaskItem
@@ -647,7 +647,7 @@ export const MyTasksView: React.FC<MyTasksViewProps> = ({ showAllTasks = false }
       {/* Section Terminées Récemment */}
       <Card>
         <CardHeader
-          className="cursor-pointer hover:bg-accent/50"
+          className="hover:bg-accent/50 cursor-pointer"
           onClick={() => toggleSection('completed')}
         >
           <CardTitle className="flex items-center justify-between">
@@ -664,7 +664,7 @@ export const MyTasksView: React.FC<MyTasksViewProps> = ({ showAllTasks = false }
         {expandedSections.completed && (
           <CardContent className="space-y-3">
             {completedTasks.length === 0 ? (
-              <p className="py-4 text-center text-muted-foreground">
+              <p className="text-muted-foreground py-4 text-center">
                 Aucune tâche terminée récemment
               </p>
             ) : (
@@ -673,7 +673,7 @@ export const MyTasksView: React.FC<MyTasksViewProps> = ({ showAllTasks = false }
                   <div className="flex items-center justify-between">
                     <div>
                       <h4 className="font-medium line-through">{task.title}</h4>
-                      <p className="text-xs text-muted-foreground">
+                      <p className="text-muted-foreground text-xs">
                         Terminée{' '}
                         {task.updated_at &&
                           format(parseISO(task.updated_at), 'PPp', { locale: fr })}

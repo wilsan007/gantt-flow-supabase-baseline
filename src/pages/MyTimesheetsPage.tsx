@@ -83,7 +83,7 @@ export default function MyTimesheetsPage() {
               <span className="sm:hidden">Timesheets</span>
             </span>
           </h1>
-          <p className="mt-1 text-xs text-muted-foreground sm:text-sm md:text-base">
+          <p className="text-muted-foreground mt-1 text-xs sm:text-sm md:text-base">
             <span className="hidden sm:inline">
               Suivez vos heures travaillées et soumettez vos timesheets
             </span>
@@ -146,7 +146,7 @@ export default function MyTimesheetsPage() {
       <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-4">
         <Card>
           <CardHeader className="p-3 pb-2 sm:p-6 sm:pb-3">
-            <CardTitle className="text-xs font-medium text-muted-foreground sm:text-sm">
+            <CardTitle className="text-muted-foreground text-xs font-medium sm:text-sm">
               Total
             </CardTitle>
           </CardHeader>
@@ -157,7 +157,7 @@ export default function MyTimesheetsPage() {
 
         <Card>
           <CardHeader className="p-3 pb-2 sm:p-6 sm:pb-3">
-            <CardTitle className="text-xs font-medium text-muted-foreground sm:text-sm">
+            <CardTitle className="text-muted-foreground text-xs font-medium sm:text-sm">
               <span className="hidden sm:inline">En Attente</span>
               <span className="sm:hidden">Attente</span>
             </CardTitle>
@@ -169,7 +169,7 @@ export default function MyTimesheetsPage() {
 
         <Card>
           <CardHeader className="p-3 pb-2 sm:p-6 sm:pb-3">
-            <CardTitle className="text-xs font-medium text-muted-foreground sm:text-sm">
+            <CardTitle className="text-muted-foreground text-xs font-medium sm:text-sm">
               <span className="hidden sm:inline">Approuvés</span>
               <span className="sm:hidden">OK</span>
             </CardTitle>
@@ -181,7 +181,7 @@ export default function MyTimesheetsPage() {
 
         <Card>
           <CardHeader className="p-3 pb-2 sm:p-6 sm:pb-3">
-            <CardTitle className="text-xs font-medium text-muted-foreground sm:text-sm">
+            <CardTitle className="text-muted-foreground text-xs font-medium sm:text-sm">
               <span className="hidden sm:inline">Total Heures</span>
               <span className="sm:hidden">Heures</span>
             </CardTitle>
@@ -203,26 +203,26 @@ export default function MyTimesheetsPage() {
             {/* Tabs scroll horizontal mobile */}
             <div className="-mx-4 sm:mx-0">
               <TabsList className="flex w-full gap-1 overflow-x-auto p-1.5 sm:grid sm:grid-cols-4 sm:gap-2">
-                <TabsTrigger value="all" className="shrink-0 whitespace-nowrap text-xs sm:text-sm">
+                <TabsTrigger value="all" className="shrink-0 text-xs whitespace-nowrap sm:text-sm">
                   Toutes ({stats.total})
                 </TabsTrigger>
                 <TabsTrigger
                   value="pending"
-                  className="shrink-0 whitespace-nowrap text-xs sm:text-sm"
+                  className="shrink-0 text-xs whitespace-nowrap sm:text-sm"
                 >
                   <span className="hidden sm:inline">En Attente ({stats.pending})</span>
                   <span className="sm:hidden">Att. ({stats.pending})</span>
                 </TabsTrigger>
                 <TabsTrigger
                   value="approved"
-                  className="shrink-0 whitespace-nowrap text-xs sm:text-sm"
+                  className="shrink-0 text-xs whitespace-nowrap sm:text-sm"
                 >
                   <span className="hidden sm:inline">Approuvées ({stats.approved})</span>
                   <span className="sm:hidden">OK ({stats.approved})</span>
                 </TabsTrigger>
                 <TabsTrigger
                   value="rejected"
-                  className="shrink-0 whitespace-nowrap text-xs sm:text-sm"
+                  className="shrink-0 text-xs whitespace-nowrap sm:text-sm"
                 >
                   <span className="hidden sm:inline">Rejetées</span>
                   <span className="sm:hidden">Rejetées</span>
@@ -232,9 +232,9 @@ export default function MyTimesheetsPage() {
 
             <TabsContent value={selectedTab} className="mt-4 space-y-4">
               {loading ? (
-                <div className="py-8 text-center text-muted-foreground">Chargement...</div>
+                <div className="text-muted-foreground py-8 text-center">Chargement...</div>
               ) : filteredTimesheets.length === 0 ? (
-                <div className="py-8 text-center text-muted-foreground">
+                <div className="text-muted-foreground py-8 text-center">
                   Aucune feuille de temps pour le moment
                 </div>
               ) : (
@@ -317,7 +317,7 @@ export default function MyTimesheetsPage() {
                             </div>
 
                             {timesheet.notes && (
-                              <p className="mt-3 text-xs text-muted-foreground sm:text-sm">
+                              <p className="text-muted-foreground mt-3 text-xs sm:text-sm">
                                 <span className="font-medium">Notes:</span> {timesheet.notes}
                               </p>
                             )}

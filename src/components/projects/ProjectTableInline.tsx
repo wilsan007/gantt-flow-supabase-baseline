@@ -62,7 +62,7 @@ export const ProjectTableInline: React.FC<ProjectTableInlineProps> = ({
           {projects.length === 0 ? (
             <TableRow>
               <TableCell colSpan={compactMode ? 6 : 8} className="h-24 text-center">
-                <div className="flex flex-col items-center gap-2 text-muted-foreground">
+                <div className="text-muted-foreground flex flex-col items-center gap-2">
                   <Users className="h-8 w-8" />
                   <p>Aucun projet trouvé</p>
                 </div>

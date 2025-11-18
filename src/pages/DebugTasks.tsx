@@ -165,7 +165,7 @@ export default function DebugTasks() {
           <CardTitle>Informations Utilisateur</CardTitle>
         </CardHeader>
         <CardContent>
-          <pre className="overflow-auto rounded-lg bg-muted p-4 text-sm">
+          <pre className="bg-muted overflow-auto rounded-lg p-4 text-sm">
             {JSON.stringify(debugInfo.user, null, 2)}
           </pre>
         </CardContent>
@@ -176,7 +176,7 @@ export default function DebugTasks() {
           <CardTitle>Informations Tenant & Rôles</CardTitle>
         </CardHeader>
         <CardContent>
-          <pre className="overflow-auto rounded-lg bg-muted p-4 text-sm">
+          <pre className="bg-muted overflow-auto rounded-lg p-4 text-sm">
             {JSON.stringify(debugInfo.tenant, null, 2)}
           </pre>
         </CardContent>
@@ -187,7 +187,7 @@ export default function DebugTasks() {
           <CardTitle>Projets (Fonctionnent ✓)</CardTitle>
         </CardHeader>
         <CardContent>
-          <pre className="overflow-auto rounded-lg bg-muted p-4 text-sm">
+          <pre className="bg-muted overflow-auto rounded-lg p-4 text-sm">
             {JSON.stringify(debugInfo.projects, null, 2)}
           </pre>
         </CardContent>
@@ -198,7 +198,7 @@ export default function DebugTasks() {
           <CardTitle className="text-orange-600">Tâches - Toutes (Sans filtre tenant)</CardTitle>
         </CardHeader>
         <CardContent>
-          <pre className="overflow-auto rounded-lg bg-muted p-4 text-sm">
+          <pre className="bg-muted overflow-auto rounded-lg p-4 text-sm">
             {JSON.stringify(debugInfo.allTasks, null, 2)}
           </pre>
         </CardContent>
@@ -209,7 +209,7 @@ export default function DebugTasks() {
           <CardTitle className="text-red-600">Tâches - Par Tenant (Filtrées)</CardTitle>
         </CardHeader>
         <CardContent>
-          <pre className="overflow-auto rounded-lg bg-muted p-4 text-sm">
+          <pre className="bg-muted overflow-auto rounded-lg p-4 text-sm">
             {JSON.stringify(debugInfo.tenantTasks, null, 2)}
           </pre>
         </CardContent>
@@ -220,7 +220,7 @@ export default function DebugTasks() {
           <CardTitle>Tâches AVEC Jointures (useTasksEnterprise)</CardTitle>
         </CardHeader>
         <CardContent>
-          <pre className="overflow-auto rounded-lg bg-muted p-4 text-sm">
+          <pre className="bg-muted overflow-auto rounded-lg p-4 text-sm">
             {JSON.stringify(debugInfo.tasksWithJoins, null, 2)}
           </pre>
         </CardContent>
@@ -231,7 +231,7 @@ export default function DebugTasks() {
           <CardTitle>Tâches SANS Jointures</CardTitle>
         </CardHeader>
         <CardContent>
-          <pre className="overflow-auto rounded-lg bg-muted p-4 text-sm">
+          <pre className="bg-muted overflow-auto rounded-lg p-4 text-sm">
             {JSON.stringify(debugInfo.tasksWithoutJoins, null, 2)}
           </pre>
         </CardContent>
@@ -242,7 +242,7 @@ export default function DebugTasks() {
           <CardTitle>Employés</CardTitle>
         </CardHeader>
         <CardContent>
-          <pre className="overflow-auto rounded-lg bg-muted p-4 text-sm">
+          <pre className="bg-muted overflow-auto rounded-lg p-4 text-sm">
             {JSON.stringify(debugInfo.employees, null, 2)}
           </pre>
         </CardContent>
@@ -254,7 +254,7 @@ export default function DebugTasks() {
             <CardTitle>Tâches d'un Projet Spécifique</CardTitle>
           </CardHeader>
           <CardContent>
-            <pre className="overflow-auto rounded-lg bg-muted p-4 text-sm">
+            <pre className="bg-muted overflow-auto rounded-lg p-4 text-sm">
               {JSON.stringify(debugInfo.projectTasks, null, 2)}
             </pre>
           </CardContent>

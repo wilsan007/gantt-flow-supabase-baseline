@@ -88,7 +88,7 @@ export class ErrorBoundary extends Component<Props, State> {
               <div className="space-y-2">
                 <h3 className="text-lg font-semibold">Détails de l'erreur</h3>
                 <div className="rounded border border-red-200 bg-red-50 p-3">
-                  <p className="break-all font-mono text-sm text-red-800">
+                  <p className="font-mono text-sm break-all text-red-800">
                     {this.state.error?.message || 'Erreur inconnue'}
                   </p>
                 </div>

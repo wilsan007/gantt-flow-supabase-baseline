@@ -72,7 +72,7 @@ export const PermissionGate: React.FC<PermissionGateProps> = ({
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger asChild>
-          <div className={cn('flex items-center gap-1 text-muted-foreground', className)}>
+          <div className={cn('text-muted-foreground flex items-center gap-1', className)}>
             <Lock className="h-3 w-3" />
             <span className="text-xs italic">Protégé</span>
           </div>
@@ -108,7 +108,7 @@ export const EditableWithPermission: React.FC<EditableWithPermissionProps> = ({
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger asChild>
-            <div className="flex items-center gap-2 text-muted-foreground">
+            <div className="text-muted-foreground flex items-center gap-2">
               {readOnlyValue}
               <Lock className="h-3 w-3 opacity-50" />
             </div>

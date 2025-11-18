@@ -42,7 +42,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     return (
       <div className="flex min-h-screen items-center justify-center">
         <div className="text-center">
-          <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-b-2 border-primary"></div>
+          <div className="border-primary mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-b-2"></div>
           <p className="text-muted-foreground">Vérification des permissions...</p>
         </div>
       </div>
@@ -75,7 +75,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     }
 
     return (
-      <div className="flex min-h-screen items-center justify-center bg-background p-4">
+      <div className="bg-background flex min-h-screen items-center justify-center p-4">
         <Card className="w-full max-w-md">
           <CardHeader className="text-center">
             <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-red-100">
@@ -134,10 +134,10 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
             {getAccessRestrictions().length > 0 && (
               <div className="space-y-2">
                 <p className="text-sm font-medium">Restrictions actuelles :</p>
-                <ul className="space-y-1 text-sm text-muted-foreground">
+                <ul className="text-muted-foreground space-y-1 text-sm">
                   {getAccessRestrictions().map((restriction, index) => (
                     <li key={index} className="flex items-center gap-2">
-                      <div className="h-1 w-1 rounded-full bg-muted-foreground"></div>
+                      <div className="bg-muted-foreground h-1 w-1 rounded-full"></div>
                       {restriction}
                     </li>
                   ))}
@@ -158,7 +158,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
 
             {/* Message d'aide */}
             <div className="border-t pt-4 text-center">
-              <p className="text-xs text-muted-foreground">
+              <p className="text-muted-foreground text-xs">
                 Si vous pensez que c'est une erreur, contactez votre administrateur.
               </p>
             </div>

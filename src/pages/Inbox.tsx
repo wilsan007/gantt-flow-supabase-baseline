@@ -231,7 +231,7 @@ export default function Inbox() {
               <InboxIcon className="h-6 w-6 shrink-0 sm:h-8 sm:w-8" />
               <span className="truncate">Boîte de Réception</span>
             </h1>
-            <p className="mt-1 text-xs text-muted-foreground sm:text-sm">
+            <p className="text-muted-foreground mt-1 text-xs sm:text-sm">
               <span className="font-medium">
                 {stats.unread} non lu{stats.unread > 1 ? 's' : ''}
               </span>
@@ -266,9 +266,9 @@ export default function Inbox() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xl font-bold sm:text-2xl">{stats.unread}</p>
-                <p className="text-xs text-muted-foreground sm:text-sm">Non lus</p>
+                <p className="text-muted-foreground text-xs sm:text-sm">Non lus</p>
               </div>
-              <InboxIcon className="h-6 w-6 text-muted-foreground sm:h-8 sm:w-8" />
+              <InboxIcon className="text-muted-foreground h-6 w-6 sm:h-8 sm:w-8" />
             </div>
           </CardContent>
         </Card>
@@ -278,7 +278,7 @@ export default function Inbox() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xl font-bold sm:text-2xl">{stats.actionRequired}</p>
-                <p className="text-xs text-muted-foreground sm:text-sm">Actions</p>
+                <p className="text-muted-foreground text-xs sm:text-sm">Actions</p>
               </div>
               <AlertCircle className="h-6 w-6 text-orange-500 sm:h-8 sm:w-8" />
             </div>
@@ -290,7 +290,7 @@ export default function Inbox() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xl font-bold sm:text-2xl">{stats.tasks}</p>
-                <p className="text-xs text-muted-foreground sm:text-sm">Tâches</p>
+                <p className="text-muted-foreground text-xs sm:text-sm">Tâches</p>
               </div>
               <CheckCircle2 className="h-6 w-6 text-blue-500 sm:h-8 sm:w-8" />
             </div>
@@ -302,7 +302,7 @@ export default function Inbox() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xl font-bold sm:text-2xl">{stats.approvals}</p>
-                <p className="text-xs text-muted-foreground sm:text-sm">Approb.</p>
+                <p className="text-muted-foreground text-xs sm:text-sm">Approb.</p>
               </div>
               <Clock className="h-6 w-6 text-purple-500 sm:h-8 sm:w-8" />
             </div>
@@ -341,9 +341,9 @@ export default function Inbox() {
           {filteredItems.length === 0 ? (
             <Card>
               <CardContent className="flex flex-col items-center justify-center py-12">
-                <InboxIcon className="mb-4 h-16 w-16 text-muted-foreground" />
+                <InboxIcon className="text-muted-foreground mb-4 h-16 w-16" />
                 <p className="text-lg font-medium">Aucun élément</p>
-                <p className="text-sm text-muted-foreground">Votre boîte de réception est vide</p>
+                <p className="text-muted-foreground text-sm">Votre boîte de réception est vide</p>
               </CardContent>
             </Card>
           ) : (
@@ -381,7 +381,7 @@ export default function Inbox() {
                               {item.title}
                             </h3>
                             {item.description && (
-                              <p className="mt-1 line-clamp-2 text-xs text-muted-foreground sm:text-sm">
+                              <p className="text-muted-foreground mt-1 line-clamp-2 text-xs sm:text-sm">
                                 {item.description}
                               </p>
                             )}
@@ -402,7 +402,7 @@ export default function Inbox() {
 
                         {/* Footer - Actions adaptées mobile */}
                         <div className="mt-2 flex flex-col gap-2 sm:mt-3 sm:flex-row sm:items-center sm:justify-between">
-                          <span className="flex items-center gap-1 text-[11px] text-muted-foreground sm:text-xs">
+                          <span className="text-muted-foreground flex items-center gap-1 text-[11px] sm:text-xs">
                             <Calendar className="h-3 w-3 shrink-0" />
                             <span className="truncate">{formatDate(item.date)}</span>
                           </span>

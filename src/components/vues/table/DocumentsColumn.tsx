@@ -192,7 +192,7 @@ export const DocumentsColumn = ({ task }: DocumentsColumnProps) => {
         {documents.length > 0 && (
           <div className="max-h-32 space-y-1 overflow-y-auto">
             {documents.map(doc => (
-              <div key={doc.id} className="flex items-center gap-1 rounded bg-muted/50 p-1 text-xs">
+              <div key={doc.id} className="bg-muted/50 flex items-center gap-1 rounded p-1 text-xs">
                 <span className="flex-1 truncate">{doc.file_name}</span>
                 <Button
                   variant="ghost"

@@ -45,7 +45,7 @@ export default function MyRemoteWorkPage() {
             <Home className="h-8 w-8" />
             Mes Demandes de Télétravail
           </h1>
-          <p className="mt-1 text-muted-foreground">Gérez vos demandes de travail à distance</p>
+          <p className="text-muted-foreground mt-1">Gérez vos demandes de travail à distance</p>
         </div>
 
         <Button onClick={() => setIsDialogOpen(true)}>
@@ -58,7 +58,7 @@ export default function MyRemoteWorkPage() {
       <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Total</CardTitle>
+            <CardTitle className="text-muted-foreground text-sm font-medium">Total</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold">{stats.total}</div>
@@ -67,7 +67,7 @@ export default function MyRemoteWorkPage() {
 
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-muted-foreground">En Attente</CardTitle>
+            <CardTitle className="text-muted-foreground text-sm font-medium">En Attente</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-blue-600">{stats.pending}</div>
@@ -76,7 +76,7 @@ export default function MyRemoteWorkPage() {
 
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Approuvées</CardTitle>
+            <CardTitle className="text-muted-foreground text-sm font-medium">Approuvées</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-green-600">{stats.approved}</div>
@@ -85,7 +85,7 @@ export default function MyRemoteWorkPage() {
 
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Rejetées</CardTitle>
+            <CardTitle className="text-muted-foreground text-sm font-medium">Rejetées</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-red-600">{stats.rejected}</div>
@@ -110,9 +110,9 @@ export default function MyRemoteWorkPage() {
 
             <TabsContent value={selectedTab} className="mt-4 space-y-4">
               {loading ? (
-                <div className="py-8 text-center text-muted-foreground">Chargement...</div>
+                <div className="text-muted-foreground py-8 text-center">Chargement...</div>
               ) : filtered.length === 0 ? (
-                <div className="py-8 text-center text-muted-foreground">
+                <div className="text-muted-foreground py-8 text-center">
                   Aucune demande pour le moment
                 </div>
               ) : (
@@ -165,9 +165,9 @@ export default function MyRemoteWorkPage() {
                             </div>
 
                             {request.reason && (
-                              <div className="mt-3 rounded-md bg-muted/50 p-3">
+                              <div className="bg-muted/50 mt-3 rounded-md p-3">
                                 <p className="mb-1 text-sm font-medium">Raison:</p>
-                                <p className="text-sm text-muted-foreground">{request.reason}</p>
+                                <p className="text-muted-foreground text-sm">{request.reason}</p>
                               </div>
                             )}
 

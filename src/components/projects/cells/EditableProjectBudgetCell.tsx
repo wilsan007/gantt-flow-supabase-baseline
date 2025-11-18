@@ -134,7 +134,7 @@ export const EditableProjectBudgetCell: React.FC<EditableProjectBudgetCellProps>
   return (
     <TableCell className="py-2">
       <div className="flex items-center gap-2" onClick={e => e.stopPropagation()}>
-        <DollarSign className="h-4 w-4 shrink-0 text-muted-foreground" />
+        <DollarSign className="text-muted-foreground h-4 w-4 shrink-0" />
 
         {isEditing && !readOnly ? (
           <input
@@ -145,7 +145,7 @@ export const EditableProjectBudgetCell: React.FC<EditableProjectBudgetCellProps>
             onBlur={handleBlur}
             onKeyDown={handleKeyDown}
             className={cn(
-              'w-full rounded border-none bg-transparent px-2 py-1 outline-none ring-2 ring-blue-500'
+              'w-full rounded border-none bg-transparent px-2 py-1 ring-2 ring-blue-500 outline-none'
             )}
             placeholder="0"
           />

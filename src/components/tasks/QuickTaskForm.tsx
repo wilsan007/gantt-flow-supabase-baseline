@@ -411,17 +411,17 @@ export const QuickTaskForm: React.FC = () => {
         </CardHeader>
         <CardContent>
           {recentTasks.length === 0 ? (
-            <p className="py-4 text-center text-muted-foreground">Aucune tâche récente</p>
+            <p className="text-muted-foreground py-4 text-center">Aucune tâche récente</p>
           ) : (
             <div className="space-y-2">
               {recentTasks.map(task => (
                 <div
                   key={task.id}
-                  className="flex items-center justify-between rounded-lg border p-3 transition-colors hover:bg-accent/50"
+                  className="hover:bg-accent/50 flex items-center justify-between rounded-lg border p-3 transition-colors"
                 >
                   <div className="flex-1">
                     <p className="text-sm font-medium">{task.title}</p>
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-muted-foreground text-xs">
                       {task.created_at && format(new Date(task.created_at), 'dd/MM/yyyy HH:mm')}
                     </p>
                   </div>

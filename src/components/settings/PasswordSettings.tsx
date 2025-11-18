@@ -75,7 +75,7 @@ export const PasswordSettings = () => {
       {valid ? (
         <CheckCircle2 className="h-4 w-4 text-green-500" />
       ) : (
-        <XCircle className="h-4 w-4 text-muted-foreground" />
+        <XCircle className="text-muted-foreground h-4 w-4" />
       )}
       <span className={valid ? 'text-green-600 dark:text-green-400' : 'text-muted-foreground'}>
         {text}
@@ -108,7 +108,7 @@ export const PasswordSettings = () => {
                 type="button"
                 variant="ghost"
                 size="sm"
-                className="absolute right-0 top-0 h-full px-3"
+                className="absolute top-0 right-0 h-full px-3"
                 onClick={() => setShowPassword(!showPassword)}
               >
                 {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -130,7 +130,7 @@ export const PasswordSettings = () => {
 
           {/* Critères de validation */}
           {newPassword && (
-            <div className="space-y-2 rounded-lg bg-muted/50 p-4">
+            <div className="bg-muted/50 space-y-2 rounded-lg p-4">
               <p className="mb-2 text-sm font-medium">Critères de sécurité :</p>
               <ValidationItem valid={passwordValidation.minLength} text="Au moins 8 caractères" />
               <ValidationItem valid={passwordValidation.hasUpperCase} text="Une lettre majuscule" />

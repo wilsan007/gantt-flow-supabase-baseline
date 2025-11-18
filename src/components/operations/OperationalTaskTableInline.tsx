@@ -76,7 +76,7 @@ export const OperationalTaskTableInline: React.FC<OperationalTaskTableInlineProp
           {tasks.length === 0 ? (
             <TableRow>
               <TableCell colSpan={compactMode ? 5 : 8} className="h-24 text-center">
-                <div className="flex flex-col items-center gap-2 text-muted-foreground">
+                <div className="text-muted-foreground flex flex-col items-center gap-2">
                   <Calendar className="h-8 w-8" />
                   <p>Aucune tâche opérationnelle trouvée</p>
                 </div>

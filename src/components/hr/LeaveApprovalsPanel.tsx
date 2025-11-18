@@ -69,7 +69,7 @@ const ApprovalCard = ({ approval, onApprove, onReject }: ApprovalCardProps) => {
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 gap-3 text-sm sm:grid-cols-2">
             <div>
-              <div className="mb-1 flex items-center gap-2 text-muted-foreground">
+              <div className="text-muted-foreground mb-1 flex items-center gap-2">
                 <Calendar className="h-4 w-4" />
                 <span className="font-medium">Type</span>
               </div>
@@ -77,7 +77,7 @@ const ApprovalCard = ({ approval, onApprove, onReject }: ApprovalCardProps) => {
             </div>
 
             <div>
-              <div className="mb-1 flex items-center gap-2 text-muted-foreground">
+              <div className="text-muted-foreground mb-1 flex items-center gap-2">
                 <Clock className="h-4 w-4" />
                 <span className="font-medium">Durée</span>
               </div>
@@ -87,7 +87,7 @@ const ApprovalCard = ({ approval, onApprove, onReject }: ApprovalCardProps) => {
             </div>
 
             <div className="sm:col-span-2">
-              <div className="mb-1 flex items-center gap-2 text-muted-foreground">
+              <div className="text-muted-foreground mb-1 flex items-center gap-2">
                 <Calendar className="h-4 w-4" />
                 <span className="font-medium">Période</span>
               </div>
@@ -98,11 +98,11 @@ const ApprovalCard = ({ approval, onApprove, onReject }: ApprovalCardProps) => {
 
             {leaveRequest.reason && (
               <div className="sm:col-span-2">
-                <div className="mb-1 flex items-center gap-2 text-muted-foreground">
+                <div className="text-muted-foreground mb-1 flex items-center gap-2">
                   <FileText className="h-4 w-4" />
                   <span className="font-medium">Motif</span>
                 </div>
-                <p className="rounded bg-muted p-2 text-sm">{leaveRequest.reason}</p>
+                <p className="bg-muted rounded p-2 text-sm">{leaveRequest.reason}</p>
               </div>
             )}
           </div>
@@ -231,7 +231,7 @@ export const LeaveApprovalsPanel = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <Loader2 className="text-primary h-8 w-8 animate-spin" />
       </div>
     );
   }
@@ -244,7 +244,7 @@ export const LeaveApprovalsPanel = () => {
             <Bell className="h-5 w-5 sm:h-6 sm:w-6" />
             Approbations de Congés
           </h2>
-          <p className="mt-1 text-sm text-muted-foreground">Gérez les demandes en attente</p>
+          <p className="text-muted-foreground mt-1 text-sm">Gérez les demandes en attente</p>
         </div>
         <Button variant="outline" size="sm" onClick={refresh}>
           Actualiser
@@ -269,7 +269,7 @@ export const LeaveApprovalsPanel = () => {
         <TabsContent value="pending" className="mt-4 space-y-4">
           {pendingApprovals.length === 0 ? (
             <Card>
-              <CardContent className="py-12 text-center text-muted-foreground">
+              <CardContent className="text-muted-foreground py-12 text-center">
                 <CheckCircle className="mx-auto mb-4 h-12 w-12 opacity-50" />
                 <p>Aucune demande en attente d'approbation</p>
               </CardContent>
@@ -289,7 +289,7 @@ export const LeaveApprovalsPanel = () => {
         <TabsContent value="history" className="mt-4 space-y-4">
           {myApprovals.length === 0 ? (
             <Card>
-              <CardContent className="py-12 text-center text-muted-foreground">
+              <CardContent className="text-muted-foreground py-12 text-center">
                 <Clock className="mx-auto mb-4 h-12 w-12 opacity-50" />
                 <p>Aucun historique d'approbation</p>
               </CardContent>
@@ -316,7 +316,7 @@ export const LeaveApprovalsPanel = () => {
                 </CardHeader>
                 {approval.notes && (
                   <CardContent>
-                    <p className="text-sm text-muted-foreground">{approval.notes}</p>
+                    <p className="text-muted-foreground text-sm">{approval.notes}</p>
                   </CardContent>
                 )}
               </Card>

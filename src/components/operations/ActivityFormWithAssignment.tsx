@@ -254,7 +254,7 @@ export const ActivityFormWithAssignment: React.FC<ActivityFormWithAssignmentProp
                     }
                     placeholder="Activité {{date}}"
                   />
-                  <p className="mt-1 text-xs text-muted-foreground">
+                  <p className="text-muted-foreground mt-1 text-xs">
                     Variables disponibles : {'{'}
                     {'{'} date {'}'}
                     {'}'}, {'{'}
@@ -288,7 +288,7 @@ export const ActivityFormWithAssignment: React.FC<ActivityFormWithAssignmentProp
                         {errors.one_off_date}
                       </p>
                     )}
-                    <p className="mt-1 text-xs text-muted-foreground">
+                    <p className="text-muted-foreground mt-1 text-xs">
                       Date à laquelle la tâche doit être effectuée
                     </p>
                   </div>
@@ -313,7 +313,7 @@ export const ActivityFormWithAssignment: React.FC<ActivityFormWithAssignmentProp
                     </div>
                   </div>
 
-                  <div className="py-8 text-center text-muted-foreground">
+                  <div className="text-muted-foreground py-8 text-center">
                     <Calendar className="mx-auto mb-3 h-12 w-12 opacity-50" />
                     <p>La planification détaillée sera configurée après la création</p>
                     <p className="mt-1 text-sm">
@@ -369,7 +369,7 @@ export const ActivityFormWithAssignment: React.FC<ActivityFormWithAssignmentProp
                               <div>
                                 <div className="font-medium">{employee.full_name}</div>
                                 {employee.job_title && (
-                                  <div className="text-xs text-muted-foreground">
+                                  <div className="text-muted-foreground text-xs">
                                     {employee.job_title}
                                   </div>
                                 )}
@@ -417,7 +417,7 @@ export const ActivityFormWithAssignment: React.FC<ActivityFormWithAssignmentProp
             {/* Actions */}
             <Separator />
             <div className="flex items-center justify-between pt-2">
-              <div className="text-sm text-muted-foreground">
+              <div className="text-muted-foreground text-sm">
                 Étape {currentTab === 'info' ? '1' : '2'} sur 2
               </div>
               <div className="flex items-center gap-2">

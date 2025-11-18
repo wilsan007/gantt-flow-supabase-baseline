@@ -53,7 +53,7 @@ export default function MyAdminRequestsPage() {
             <FileText className="h-8 w-8" />
             Mes Demandes Administratives
           </h1>
-          <p className="mt-1 text-muted-foreground">Gérez vos demandes auprès du service RH</p>
+          <p className="text-muted-foreground mt-1">Gérez vos demandes auprès du service RH</p>
         </div>
 
         <Button onClick={() => setIsDialogOpen(true)}>
@@ -66,7 +66,7 @@ export default function MyAdminRequestsPage() {
       <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Total</CardTitle>
+            <CardTitle className="text-muted-foreground text-sm font-medium">Total</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold">{stats.total}</div>
@@ -75,7 +75,7 @@ export default function MyAdminRequestsPage() {
 
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-muted-foreground">En Attente</CardTitle>
+            <CardTitle className="text-muted-foreground text-sm font-medium">En Attente</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-blue-600">{stats.pending}</div>
@@ -84,7 +84,7 @@ export default function MyAdminRequestsPage() {
 
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-muted-foreground">En Cours</CardTitle>
+            <CardTitle className="text-muted-foreground text-sm font-medium">En Cours</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-yellow-600">{stats.in_progress}</div>
@@ -93,7 +93,7 @@ export default function MyAdminRequestsPage() {
 
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Terminées</CardTitle>
+            <CardTitle className="text-muted-foreground text-sm font-medium">Terminées</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-green-600">{stats.completed}</div>
@@ -118,9 +118,9 @@ export default function MyAdminRequestsPage() {
 
             <TabsContent value={selectedTab} className="mt-4 space-y-4">
               {loading ? (
-                <div className="py-8 text-center text-muted-foreground">Chargement...</div>
+                <div className="text-muted-foreground py-8 text-center">Chargement...</div>
               ) : filtered.length === 0 ? (
-                <div className="py-8 text-center text-muted-foreground">
+                <div className="text-muted-foreground py-8 text-center">
                   Aucune demande pour le moment
                 </div>
               ) : (
@@ -174,8 +174,8 @@ export default function MyAdminRequestsPage() {
                             </div>
 
                             {request.description && (
-                              <div className="mt-3 rounded-md bg-muted/50 p-3">
-                                <p className="text-sm text-muted-foreground">
+                              <div className="bg-muted/50 mt-3 rounded-md p-3">
+                                <p className="text-muted-foreground text-sm">
                                   {request.description}
                                 </p>
                               </div>
@@ -194,7 +194,7 @@ export default function MyAdminRequestsPage() {
                                   href={request.attachment_url}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className="flex items-center gap-1 text-sm text-primary hover:underline"
+                                  className="text-primary flex items-center gap-1 text-sm hover:underline"
                                 >
                                   <FileText className="h-4 w-4" />
                                   Voir pièce jointe

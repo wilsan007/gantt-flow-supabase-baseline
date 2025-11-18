@@ -29,7 +29,7 @@ export const SkillsTraining = () => {
   } = useSkillsTraining();
 
   if (loading) return <div className="p-6 text-center">Chargement des données de formation...</div>;
-  if (error) return <div className="p-6 text-center text-destructive">Erreur: {error}</div>;
+  if (error) return <div className="text-destructive p-6 text-center">Erreur: {error}</div>;
 
   const skillsMatrix = getSkillsMatrix();
   const skillsStats = getSkillsStats();
@@ -45,7 +45,7 @@ export const SkillsTraining = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-foreground">Compétences & Formations</h2>
+          <h2 className="text-foreground text-2xl font-bold">Compétences & Formations</h2>
           <p className="text-muted-foreground">
             Développement des compétences et gestion de la formation
           </p>
@@ -68,7 +68,7 @@ export const SkillsTraining = () => {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-muted-foreground">Compétences</p>
+                <p className="text-muted-foreground text-sm font-medium">Compétences</p>
                 <p className="text-2xl font-bold">{skillsStats.totalSkills}</p>
               </div>
               <Target className="h-8 w-8 text-blue-600" />
@@ -80,7 +80,7 @@ export const SkillsTraining = () => {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-muted-foreground">Évaluations</p>
+                <p className="text-muted-foreground text-sm font-medium">Évaluations</p>
                 <p className="text-2xl font-bold">{skillsStats.totalAssessments}</p>
               </div>
               <CheckCircle className="h-8 w-8 text-green-600" />
@@ -92,7 +92,7 @@ export const SkillsTraining = () => {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-muted-foreground">Niveau moyen</p>
+                <p className="text-muted-foreground text-sm font-medium">Niveau moyen</p>
                 <p className="text-2xl font-bold">{skillsStats.averageLevel.toFixed(1)}/5</p>
               </div>
               <Star className="h-8 w-8 text-yellow-600" />
@@ -118,7 +118,7 @@ export const SkillsTraining = () => {
             {skillsMatrix.length === 0 ? (
               <Card>
                 <CardContent className="p-8 text-center">
-                  <TrendingUp className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
+                  <TrendingUp className="text-muted-foreground mx-auto mb-4 h-12 w-12" />
                   <p className="text-muted-foreground">
                     Aucune évaluation de compétence disponible
                   </p>
@@ -140,16 +140,16 @@ export const SkillsTraining = () => {
                     <div className="flex items-center justify-between">
                       <div>
                         <CardTitle className="text-lg">{matrix.employeeName}</CardTitle>
-                        <p className="text-sm text-muted-foreground">
+                        <p className="text-muted-foreground text-sm">
                           {matrix.position} • {matrix.department}
                         </p>
                       </div>
                       <div className="flex items-center gap-2">
                         <Star className="h-5 w-5 text-yellow-500" />
-                        <span className="text-xl font-bold text-primary">
+                        <span className="text-primary text-xl font-bold">
                           {matrix.overallScore.toFixed(1)}
                         </span>
-                        <span className="text-sm text-muted-foreground">/ 5.0</span>
+                        <span className="text-muted-foreground text-sm">/ 5.0</span>
                       </div>
                     </div>
                   </CardHeader>
@@ -158,26 +158,26 @@ export const SkillsTraining = () => {
                       {matrix.skills.map((skill: any) => (
                         <div
                           key={skill.id}
-                          className="flex items-center justify-between rounded-lg bg-muted/50 p-3"
+                          className="bg-muted/50 flex items-center justify-between rounded-lg p-3"
                         >
                           <div className="flex-1">
                             <div className="mb-2 flex items-center justify-between">
                               <div>
                                 <p className="text-sm font-medium">{skill.name}</p>
-                                <p className="text-xs text-muted-foreground">{skill.category}</p>
+                                <p className="text-muted-foreground text-xs">{skill.category}</p>
                               </div>
                               <div className="flex items-center gap-2">
                                 <Badge className={getSkillLevelColor(skill.currentLevel)}>
                                   {skill.currentLevel}/5
                                 </Badge>
-                                <span className="text-xs text-muted-foreground">
+                                <span className="text-muted-foreground text-xs">
                                   → Cible: {skill.targetLevel}/5
                                 </span>
                               </div>
                             </div>
                             <div className="space-y-1">
                               <Progress value={(skill.currentLevel / 5) * 100} className="h-2" />
-                              <p className="text-xs text-muted-foreground">
+                              <p className="text-muted-foreground text-xs">
                                 Évalué le {skill.lastAssessed} par {skill.assessor}
                               </p>
                             </div>
@@ -197,7 +197,7 @@ export const SkillsTraining = () => {
             {skills.length === 0 ? (
               <Card className="md:col-span-2 lg:col-span-3">
                 <CardContent className="p-8 text-center">
-                  <Target className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
+                  <Target className="text-muted-foreground mx-auto mb-4 h-12 w-12" />
                   <p className="text-muted-foreground">Aucune compétence définie</p>
                   <Button
                     className="mt-4"
@@ -223,7 +223,7 @@ export const SkillsTraining = () => {
                     </div>
 
                     {skill.description && (
-                      <p className="mb-4 text-sm text-muted-foreground">{skill.description}</p>
+                      <p className="text-muted-foreground mb-4 text-sm">{skill.description}</p>
                     )}
 
                     <div className="text-sm">

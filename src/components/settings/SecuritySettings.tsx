@@ -88,7 +88,7 @@ export const SecuritySettings = () => {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-sm text-muted-foreground">Chargement...</p>
+          <p className="text-muted-foreground text-sm">Chargement...</p>
         </CardContent>
       </Card>
     );
@@ -120,7 +120,7 @@ export const SecuritySettings = () => {
                   <CheckCircle className="h-5 w-5 text-green-600" />
                   <div>
                     <p className="font-medium">Authentification à deux facteurs activée</p>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-muted-foreground text-sm">
                       Votre compte est protégé par 2FA
                     </p>
                   </div>
@@ -130,7 +130,7 @@ export const SecuritySettings = () => {
                   <AlertTriangle className="h-5 w-5 text-orange-600" />
                   <div>
                     <p className="font-medium">Authentification à deux facteurs désactivée</p>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-muted-foreground text-sm">
                       Activez la 2FA pour sécuriser votre compte
                     </p>
                   </div>
@@ -154,10 +154,10 @@ export const SecuritySettings = () => {
                   className="flex items-center justify-between rounded-lg border p-4"
                 >
                   <div className="flex items-center gap-3">
-                    <Shield className="h-5 w-5 text-primary" />
+                    <Shield className="text-primary h-5 w-5" />
                     <div>
                       <p className="font-medium">{factor.friendly_name}</p>
-                      <p className="text-sm text-muted-foreground">
+                      <p className="text-muted-foreground text-sm">
                         Configuré le {new Date(factor.created_at).toLocaleDateString('fr-FR')}
                       </p>
                     </div>
@@ -192,7 +192,7 @@ export const SecuritySettings = () => {
           <div className="flex items-center justify-between rounded-lg border p-4">
             <div>
               <p className="font-medium">Changer le mot de passe</p>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-muted-foreground text-sm">
                 Mettez à jour votre mot de passe régulièrement
               </p>
             </div>
@@ -204,7 +204,7 @@ export const SecuritySettings = () => {
           <div className="flex items-center justify-between rounded-lg border p-4">
             <div>
               <p className="font-medium">Sessions actives</p>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-muted-foreground text-sm">
                 Gérez les appareils connectés à votre compte
               </p>
             </div>

@@ -192,15 +192,15 @@ function RemoteWorkRequestDialogBase({
               onChange={e => setReason(e.target.value)}
               required
             />
-            <p className="text-xs text-muted-foreground">
+            <p className="text-muted-foreground text-xs">
               Ex: Contraintes familiales, déménagement, réduction temps de trajet, etc.
             </p>
           </div>
 
           {/* Informations complémentaires */}
-          <div className="space-y-2 rounded-lg bg-muted/50 p-4 text-sm">
+          <div className="bg-muted/50 space-y-2 rounded-lg p-4 text-sm">
             <p className="font-medium">Rappel des conditions :</p>
-            <ul className="list-inside list-disc space-y-1 text-muted-foreground">
+            <ul className="text-muted-foreground list-inside list-disc space-y-1">
               <li>Connexion internet stable requise</li>
               <li>Disponibilité pendant les heures de travail</li>
               <li>Participation aux réunions en visio</li>

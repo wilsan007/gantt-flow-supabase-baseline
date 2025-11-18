@@ -102,10 +102,10 @@ export const MFASetup = () => {
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-3">
-        <Shield className="h-6 w-6 text-primary" />
+        <Shield className="text-primary h-6 w-6" />
         <div>
           <h3 className="text-lg font-semibold">Authentification à deux facteurs (2FA)</h3>
-          <p className="text-sm text-muted-foreground">Renforcez la sécurité de votre compte</p>
+          <p className="text-muted-foreground text-sm">Renforcez la sécurité de votre compte</p>
         </div>
       </div>
 
@@ -125,9 +125,9 @@ export const MFASetup = () => {
 
       {!qrCode ? (
         <div className="space-y-4">
-          <div className="rounded-lg bg-muted p-4">
+          <div className="bg-muted rounded-lg p-4">
             <h4 className="mb-2 font-medium">Pourquoi activer la 2FA ?</h4>
-            <ul className="space-y-1 text-sm text-muted-foreground">
+            <ul className="text-muted-foreground space-y-1 text-sm">
               <li>✅ Protection contre 99.9% des attaques de phishing</li>
               <li>✅ Sécurité renforcée même si votre mot de passe est compromis</li>
               <li>✅ Conformité aux standards de sécurité enterprise</li>
@@ -142,7 +142,7 @@ export const MFASetup = () => {
         <div className="space-y-6">
           <div className="space-y-4">
             <h4 className="font-medium">Étape 1 : Scannez le QR Code</h4>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-muted-foreground text-sm">
               Utilisez une application d'authentification (Google Authenticator, Authy, Microsoft
               Authenticator)
             </p>
@@ -164,7 +164,7 @@ export const MFASetup = () => {
 
           <div className="space-y-4">
             <h4 className="font-medium">Étape 2 : Entrez le code de vérification</h4>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-muted-foreground text-sm">
               Entrez le code à 6 chiffres généré par votre application
             </p>
 

@@ -78,12 +78,12 @@ export const ProjectTableView: React.FC<ProjectTableViewProps> = ({ projects, ta
   return (
     <ResizablePanelGroup
       direction="horizontal"
-      className="overflow-hidden rounded-lg border border-border/50"
+      className="border-border/50 overflow-hidden rounded-lg border"
     >
       {/* Panel gauche - Projets */}
       <ResizablePanel defaultSize={40} minSize={30}>
-        <div className="h-full border-r bg-background">
-          <div className="border-b bg-muted/50 p-4">
+        <div className="bg-background h-full border-r">
+          <div className="bg-muted/50 border-b p-4">
             <h3 className="text-lg font-semibold">📁 Projets</h3>
           </div>
           <div className="max-h-[600px] space-y-3 overflow-y-auto p-4">
@@ -97,7 +97,7 @@ export const ProjectTableView: React.FC<ProjectTableViewProps> = ({ projects, ta
                   key={project.id}
                   className={`cursor-pointer transition-all ${
                     isSelected
-                      ? 'border-primary shadow-lg ring-2 ring-primary'
+                      ? 'border-primary ring-primary shadow-lg ring-2'
                       : 'hover:border-primary/50 hover:shadow-md'
                   }`}
                   onClick={() => scrollToProjectTasks(project.id)}
@@ -107,11 +107,11 @@ export const ProjectTableView: React.FC<ProjectTableViewProps> = ({ projects, ta
                       {/* Nom et statut du projet */}
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
-                          <span className="rounded bg-primary/20 px-2 py-1 text-sm font-bold text-primary">
+                          <span className="bg-primary/20 text-primary rounded px-2 py-1 text-sm font-bold">
                             #{projectIndex + 1}
                           </span>
                           <h4
-                            className="text-lg font-bold text-primary"
+                            className="text-primary text-lg font-bold"
                             style={{ fontSize: '1.1rem' }}
                           >
                             {project.name}
@@ -122,7 +122,7 @@ export const ProjectTableView: React.FC<ProjectTableViewProps> = ({ projects, ta
 
                       {/* Informations du projet */}
                       <div className="space-y-2">
-                        <div className="text-sm text-muted-foreground">
+                        <div className="text-muted-foreground text-sm">
                           Manager: {project.manager}
                         </div>
 
@@ -144,7 +144,7 @@ export const ProjectTableView: React.FC<ProjectTableViewProps> = ({ projects, ta
                           )}
                         </div>
 
-                        <div className="text-xs text-muted-foreground">
+                        <div className="text-muted-foreground text-xs">
                           {projectTasks.length} tâche{projectTasks.length > 1 ? 's' : ''}
                         </div>
                       </div>
@@ -161,10 +161,10 @@ export const ProjectTableView: React.FC<ProjectTableViewProps> = ({ projects, ta
 
       {/* Panel droit - Tâches */}
       <ResizablePanel defaultSize={60} minSize={40}>
-        <div className="h-full bg-background">
-          <div className="border-b bg-muted/50 p-4">
+        <div className="bg-background h-full">
+          <div className="bg-muted/50 border-b p-4">
             <h3 className="text-lg font-semibold">📝 Tâches Associées</h3>
-            <p className="mt-1 text-xs text-muted-foreground">
+            <p className="text-muted-foreground mt-1 text-xs">
               Cliquez sur un projet à gauche pour voir ses tâches
             </p>
           </div>
@@ -180,7 +180,7 @@ export const ProjectTableView: React.FC<ProjectTableViewProps> = ({ projects, ta
                   key={project.id}
                   id={`project-tasks-${project.id}`}
                   className={`space-y-2 transition-all ${
-                    isSelected ? 'rounded-lg bg-primary/5 p-3 ring-2 ring-primary/30' : ''
+                    isSelected ? 'bg-primary/5 ring-primary/30 rounded-lg p-3 ring-2' : ''
                   }`}
                 >
                   {/* Nom du projet en en-tête */}
@@ -193,12 +193,12 @@ export const ProjectTableView: React.FC<ProjectTableViewProps> = ({ projects, ta
                       fontFamily: 'system-ui, -apple-system, sans-serif',
                     }}
                   >
-                    <span className="rounded bg-primary/20 px-2 py-0.5 text-sm font-bold text-primary">
+                    <span className="bg-primary/20 text-primary rounded px-2 py-0.5 text-sm font-bold">
                       #{projectIndex + 1}
                     </span>
                     📁 {project.name}
                     {isSelected && (
-                      <span className="ml-2 text-xs font-normal text-primary/70">
+                      <span className="text-primary/70 ml-2 text-xs font-normal">
                         ← Projet sélectionné
                       </span>
                     )}
@@ -207,12 +207,12 @@ export const ProjectTableView: React.FC<ProjectTableViewProps> = ({ projects, ta
                   {/* Tâches du projet */}
                   <div className="space-y-2 pl-4">
                     {projectTasks.map(task => (
-                      <Card key={task.id} className="border-l-4 border-l-primary/30">
+                      <Card key={task.id} className="border-l-primary/30 border-l-4">
                         <CardContent className="p-3">
                           <div className="flex items-center justify-between">
                             <div className="flex-1">
                               <h5 className="font-medium">{task.title}</h5>
-                              <div className="text-sm text-muted-foreground">
+                              <div className="text-muted-foreground text-sm">
                                 Assigné à: {getAssigneeName(task.assignee)}
                               </div>
                             </div>
@@ -237,7 +237,7 @@ export const ProjectTableView: React.FC<ProjectTableViewProps> = ({ projects, ta
             {tasks.filter(task => !task.project_id || !projects.some(p => p.id === task.project_id))
               .length > 0 && (
               <div className="space-y-2">
-                <div className="border-b pb-1 font-bold text-muted-foreground">
+                <div className="text-muted-foreground border-b pb-1 font-bold">
                   📝 Tâches sans projet
                 </div>
                 <div className="space-y-2 pl-4">
@@ -246,12 +246,12 @@ export const ProjectTableView: React.FC<ProjectTableViewProps> = ({ projects, ta
                       task => !task.project_id || !projects.some(p => p.id === task.project_id)
                     )
                     .map(task => (
-                      <Card key={task.id} className="border-l-4 border-l-muted">
+                      <Card key={task.id} className="border-l-muted border-l-4">
                         <CardContent className="p-3">
                           <div className="flex items-center justify-between">
                             <div className="flex-1">
                               <h5 className="font-medium">{task.title}</h5>
-                              <div className="text-sm text-muted-foreground">
+                              <div className="text-muted-foreground text-sm">
                                 Assigné à: {getAssigneeName(task.assignee)}
                               </div>
                             </div>

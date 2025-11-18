@@ -163,12 +163,12 @@ export const ActivityCard: React.FC<ActivityCardProps> = ({
 
         <CardContent>
           {activity.description && (
-            <p className="mb-4 line-clamp-2 text-sm text-muted-foreground">
+            <p className="text-muted-foreground mb-4 line-clamp-2 text-sm">
               {activity.description}
             </p>
           )}
 
-          <div className="flex items-center justify-between text-xs text-muted-foreground">
+          <div className="text-muted-foreground flex items-center justify-between text-xs">
             <span>Créée le {new Date(activity.created_at).toLocaleDateString('fr-FR')}</span>
             {activity.task_title_template && (
               <span className="ml-2 truncate" title={activity.task_title_template}>

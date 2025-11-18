@@ -79,7 +79,7 @@ export const KPICard: React.FC<KPICardProps> = ({
       <CardContent className="p-6">
         <div className="flex items-start justify-between">
           <div className="flex-1">
-            <p className="mb-2 text-sm font-medium text-muted-foreground">{title}</p>
+            <p className="text-muted-foreground mb-2 text-sm font-medium">{title}</p>
             <div className="flex items-baseline gap-2">
               <p className={cn('text-3xl font-bold', iconColorClasses[color])}>
                 {formatValue(value)}
@@ -100,7 +100,7 @@ export const KPICard: React.FC<KPICardProps> = ({
                 </div>
               )}
             </div>
-            {trend?.label && <p className="mt-2 text-xs text-muted-foreground">{trend.label}</p>}
+            {trend?.label && <p className="text-muted-foreground mt-2 text-xs">{trend.label}</p>}
           </div>
           <div className={cn('rounded-lg p-3', colorClasses[color])}>
             <Icon className={cn('h-6 w-6', iconColorClasses[color])} />

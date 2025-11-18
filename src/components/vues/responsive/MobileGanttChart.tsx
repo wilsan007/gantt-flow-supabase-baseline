@@ -28,12 +28,12 @@ function MobileTaskCard({ task }: { task: Task }) {
   const statusColor = statusColors[task.status];
 
   return (
-    <Card className="glass mb-4 border-primary/30 bg-card/40 backdrop-blur-sm">
+    <Card className="glass border-primary/30 bg-card/40 mb-4 backdrop-blur-sm">
       <CardContent className="p-4">
         <div className="space-y-3">
           {/* Header with title and status */}
           <div className="flex items-start justify-between">
-            <h3 className="mr-2 flex-1 text-base font-semibold leading-tight text-foreground">
+            <h3 className="text-foreground mr-2 flex-1 text-base leading-tight font-semibold">
               {task.title}
             </h3>
             <Badge
@@ -51,13 +51,13 @@ function MobileTaskCard({ task }: { task: Task }) {
           {/* Assignee and Priority */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Avatar className="h-6 w-6 ring-2 ring-primary/40">
+              <Avatar className="ring-primary/40 h-6 w-6 ring-2">
                 <AvatarImage src="" alt={task.assignee || task.assigned_name || 'NA'} />
-                <AvatarFallback className="bg-primary/40 text-xs font-semibold text-primary-foreground">
+                <AvatarFallback className="bg-primary/40 text-primary-foreground text-xs font-semibold">
                   {(task.assignee || task.assigned_name || 'NA').slice(0, 2).toUpperCase()}
                 </AvatarFallback>
               </Avatar>
-              <span className="text-sm text-foreground/80">
+              <span className="text-foreground/80 text-sm">
                 {task.assignee || task.assigned_name || 'Non assigné'}
               </span>
             </div>
@@ -67,7 +67,7 @@ function MobileTaskCard({ task }: { task: Task }) {
           </div>
 
           {/* Dates */}
-          <div className="grid grid-cols-2 gap-2 text-xs text-foreground/70">
+          <div className="text-foreground/70 grid grid-cols-2 gap-2 text-xs">
             <div>
               <span className="block font-medium">Début</span>
               <span>{new Date(task.start_date).toLocaleDateString('fr-FR')}</span>
@@ -81,16 +81,16 @@ function MobileTaskCard({ task }: { task: Task }) {
           {/* Progress */}
           <div className="space-y-2">
             <div className="flex justify-between text-xs">
-              <span className="font-medium text-foreground/80">Progrès</span>
-              <span className="font-semibold text-primary">{task.progress}%</span>
+              <span className="text-foreground/80 font-medium">Progrès</span>
+              <span className="text-primary font-semibold">{task.progress}%</span>
             </div>
             <Progress value={task.progress} className="h-2" />
           </div>
 
           {/* Effort estimate */}
           {task.effort_estimate_h > 0 && (
-            <div className="flex items-center gap-1 text-xs text-foreground/70">
-              <span className="h-1 w-1 rounded-full bg-accent"></span>
+            <div className="text-foreground/70 flex items-center gap-1 text-xs">
+              <span className="bg-accent h-1 w-1 rounded-full"></span>
               Estimé: {task.effort_estimate_h}h
             </div>
           )}
@@ -148,7 +148,7 @@ export function MobileGanttChart({
                 statusTasks.length > 0 && (
                   <div key={status}>
                     <div className="mb-3 flex items-center gap-2">
-                      <h2 className="text-lg font-semibold text-foreground">
+                      <h2 className="text-foreground text-lg font-semibold">
                         {statusLabels[status as keyof typeof statusLabels]}
                       </h2>
                       <Badge

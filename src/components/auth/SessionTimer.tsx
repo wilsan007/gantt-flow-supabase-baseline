@@ -67,7 +67,7 @@ export const SessionTimer: React.FC<SessionTimerProps> = ({
           </TooltipTrigger>
           <TooltipContent>
             <p>Session expire dans {timeRemaining}</p>
-            <p className="mt-1 text-xs text-muted-foreground">Durée maximale : 2 heures</p>
+            <p className="text-muted-foreground mt-1 text-xs">Durée maximale : 2 heures</p>
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>
@@ -99,9 +99,9 @@ export const SessionTimer: React.FC<SessionTimerProps> = ({
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger asChild>
-          <div className="flex cursor-default items-center gap-2 rounded-md bg-muted/50 px-3 py-1.5 transition-colors hover:bg-muted">
+          <div className="bg-muted/50 hover:bg-muted flex cursor-default items-center gap-2 rounded-md px-3 py-1.5 transition-colors">
             <Clock
-              className={`h-4 w-4 ${expiringSoon ? 'animate-pulse text-destructive' : 'text-muted-foreground'}`}
+              className={`h-4 w-4 ${expiringSoon ? 'text-destructive animate-pulse' : 'text-muted-foreground'}`}
             />
             <span className={`text-sm font-medium ${expiringSoon ? 'text-destructive' : ''}`}>
               {timeRemaining}
@@ -111,8 +111,8 @@ export const SessionTimer: React.FC<SessionTimerProps> = ({
         <TooltipContent>
           <div className="space-y-1">
             <p className="font-medium">Temps restant de session</p>
-            <p className="text-xs text-muted-foreground">Maximum : 2 heures par session</p>
-            <p className="text-xs text-muted-foreground">Déconnexion automatique à l'expiration</p>
+            <p className="text-muted-foreground text-xs">Maximum : 2 heures par session</p>
+            <p className="text-muted-foreground text-xs">Déconnexion automatique à l'expiration</p>
           </div>
         </TooltipContent>
       </Tooltip>

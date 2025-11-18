@@ -188,7 +188,7 @@ export const EmployeeBadge: React.FC<EmployeeBadgeProps> = ({
   return (
     <div className={cn('flex items-center gap-2', className)}>
       {/* Avatar */}
-      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-badge-blue to-badge-purple text-xs font-bold text-white">
+      <div className="from-badge-blue to-badge-purple flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br text-xs font-bold text-white">
         {avatarUrl ? (
           <img src={avatarUrl} alt={name} className="h-full w-full rounded-full object-cover" />
         ) : (
@@ -254,7 +254,7 @@ export const MetricCard: React.FC<MetricCardProps> = ({
       <div className="flex items-center gap-3">
         {icon && <div className={cn('rounded-lg p-3', colorStyles[color])}>{icon}</div>}
         <div className="flex-1">
-          <p className="text-xs text-muted-foreground">{label}</p>
+          <p className="text-muted-foreground text-xs">{label}</p>
           <p className="text-2xl font-bold">{value}</p>
           {subtitle && (
             <p
@@ -318,12 +318,12 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
   return (
     <div className={cn('w-full', className)}>
       {showLabel && (
-        <div className="mb-1 flex justify-between text-xs text-muted-foreground">
+        <div className="text-muted-foreground mb-1 flex justify-between text-xs">
           <span>Progression</span>
           <span className="font-medium">{Math.round(percentage)}%</span>
         </div>
       )}
-      <div className={cn('overflow-hidden rounded-full bg-muted', sizeStyles[size])}>
+      <div className={cn('bg-muted overflow-hidden rounded-full', sizeStyles[size])}>
         <div
           className={cn('h-full rounded-full transition-all duration-300', colorStyles[color])}
           style={{ width: `${percentage}%` }}

@@ -146,7 +146,7 @@ export const EditableTitleCell = ({
           title={actionTitle}
         >
           {isSubtask ? (
-            <Trash2 className="h-3 w-3 text-destructive" />
+            <Trash2 className="text-destructive h-3 w-3" />
           ) : (
             <Plus className="h-3 w-3" />
           )}
@@ -154,7 +154,7 @@ export const EditableTitleCell = ({
 
         {/* Numéro d'ordre */}
         <span
-          className={cn('mr-2 flex-shrink-0 text-foreground/60', isSubtask ? 'text-xs' : 'text-xs')}
+          className={cn('text-foreground/60 mr-2 flex-shrink-0', isSubtask ? 'text-xs' : 'text-xs')}
         >
           {displayOrder}
         </span>
@@ -170,8 +170,8 @@ export const EditableTitleCell = ({
               onBlur={handleBlur}
               onKeyDown={handleKeyDown}
               className={cn(
-                'w-full rounded border-none bg-transparent px-2 py-1 outline-none ring-2 ring-blue-500',
-                isSubtask ? 'text-xs italic text-foreground/70' : 'text-foreground'
+                'w-full rounded border-none bg-transparent px-2 py-1 ring-2 ring-blue-500 outline-none',
+                isSubtask ? 'text-foreground/70 text-xs italic' : 'text-foreground'
               )}
               placeholder="Nom de la tâche..."
             />
@@ -182,7 +182,7 @@ export const EditableTitleCell = ({
                 'w-full truncate rounded px-2 py-1 transition-colors',
                 !readOnly && 'cursor-text hover:bg-gray-100 dark:hover:bg-gray-800',
                 readOnly && 'cursor-not-allowed opacity-60',
-                isSubtask ? 'text-xs italic text-foreground/70' : 'text-foreground',
+                isSubtask ? 'text-foreground/70 text-xs italic' : 'text-foreground',
                 !value && 'text-muted-foreground'
               )}
               title={readOnly ? 'Modification non autorisée' : undefined}

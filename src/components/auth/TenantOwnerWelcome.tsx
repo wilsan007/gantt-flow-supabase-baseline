@@ -189,7 +189,7 @@ const TenantOwnerWelcome: React.FC<TenantOwnerWelcomeProps> = ({ userEmail }) =>
               Accéder à mon tableau de bord
             </Button>
 
-            <p className="text-xs text-muted-foreground">
+            <p className="text-muted-foreground text-xs">
               Vous pouvez maintenant gérer votre entreprise et inviter vos employés.
             </p>
           </CardContent>

@@ -190,7 +190,7 @@ export const EnhancedEmployeeManagement = () => {
   return (
     <div className="space-y-6 p-6">
       <div className="flex items-center justify-between">
-        <h2 className="bg-gradient-to-r from-primary to-accent bg-clip-text text-3xl font-bold text-transparent">
+        <h2 className="from-primary to-accent bg-gradient-to-r bg-clip-text text-3xl font-bold text-transparent">
           Gestion Avancée des Employés
         </h2>
 
@@ -381,8 +381,8 @@ export const EnhancedEmployeeManagement = () => {
         <Card className="modern-card hover-glow">
           <CardContent className="p-4">
             <div className="text-center">
-              <div className="text-2xl font-bold text-primary">{employees.length}</div>
-              <div className="text-sm text-muted-foreground">Total Employés</div>
+              <div className="text-primary text-2xl font-bold">{employees.length}</div>
+              <div className="text-muted-foreground text-sm">Total Employés</div>
             </div>
           </CardContent>
         </Card>
@@ -390,10 +390,10 @@ export const EnhancedEmployeeManagement = () => {
         <Card className="modern-card hover-glow">
           <CardContent className="p-4">
             <div className="text-center">
-              <div className="text-2xl font-bold text-success">
+              <div className="text-success text-2xl font-bold">
                 {employees.filter(e => e.contract_type === 'CDI').length}
               </div>
-              <div className="text-sm text-muted-foreground">CDI</div>
+              <div className="text-muted-foreground text-sm">CDI</div>
             </div>
           </CardContent>
         </Card>
@@ -401,10 +401,10 @@ export const EnhancedEmployeeManagement = () => {
         <Card className="modern-card hover-glow">
           <CardContent className="p-4">
             <div className="text-center">
-              <div className="text-2xl font-bold text-warning">
+              <div className="text-warning text-2xl font-bold">
                 {employees.filter(e => e.contract_type && e.contract_type !== 'CDI').length}
               </div>
-              <div className="text-sm text-muted-foreground">Temporaires</div>
+              <div className="text-muted-foreground text-sm">Temporaires</div>
             </div>
           </CardContent>
         </Card>
@@ -412,7 +412,7 @@ export const EnhancedEmployeeManagement = () => {
         <Card className="modern-card hover-glow">
           <CardContent className="p-4">
             <div className="text-center">
-              <div className="text-2xl font-bold text-accent">
+              <div className="text-accent text-2xl font-bold">
                 {
                   employees.filter(e => {
                     const hireDate = e.hire_date ? new Date(e.hire_date) : null;
@@ -422,7 +422,7 @@ export const EnhancedEmployeeManagement = () => {
                   }).length
                 }
               </div>
-              <div className="text-sm text-muted-foreground">Nouveaux (3m)</div>
+              <div className="text-muted-foreground text-sm">Nouveaux (3m)</div>
             </div>
           </CardContent>
         </Card>
@@ -443,7 +443,7 @@ export const EnhancedEmployeeManagement = () => {
         {filteredEmployees.length === 0 ? (
           <Card className="modern-card">
             <CardContent className="p-8 text-center">
-              <Users className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
+              <Users className="text-muted-foreground mx-auto mb-4 h-12 w-12" />
               <p className="text-muted-foreground">Aucun employé trouvé</p>
             </CardContent>
           </Card>
@@ -469,7 +469,7 @@ export const EnhancedEmployeeManagement = () => {
                         <div className="flex-1">
                           <h3 className="text-lg font-semibold">{employee.full_name}</h3>
                           {employee.job_title && (
-                            <p className="text-sm text-muted-foreground">{employee.job_title}</p>
+                            <p className="text-muted-foreground text-sm">{employee.job_title}</p>
                           )}
                           {employee.contract_type && (
                             <Badge
@@ -503,7 +503,7 @@ export const EnhancedEmployeeManagement = () => {
                       </div>
                     </div>
 
-                    <div className="space-y-2 text-sm text-muted-foreground">
+                    <div className="text-muted-foreground space-y-2 text-sm">
                       {employee.employee_id && (
                         <p>
                           <strong>ID:</strong> {employee.employee_id}

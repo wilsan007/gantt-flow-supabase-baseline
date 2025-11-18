@@ -174,7 +174,7 @@ export const SmartAssigneeSelect: React.FC<SmartAssigneeSelectProps> = ({
           {/* Search and info */}
           <div className="space-y-4">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transform text-muted-foreground" />
+              <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform" />
               <Input
                 placeholder="Rechercher un employé..."
                 value={searchTerm}
@@ -183,7 +183,7 @@ export const SmartAssigneeSelect: React.FC<SmartAssigneeSelectProps> = ({
               />
             </div>
 
-            <div className="flex gap-4 text-sm text-muted-foreground">
+            <div className="text-muted-foreground flex gap-4 text-sm">
               <div className="flex items-center gap-1">
                 <Calendar className="h-4 w-4" />
                 Du {new Date(taskStartDate).toLocaleDateString()} au{' '}
@@ -213,7 +213,7 @@ export const SmartAssigneeSelect: React.FC<SmartAssigneeSelectProps> = ({
               return (
                 <div
                   key={employee.id}
-                  className="cursor-pointer rounded-lg border p-4 transition-colors hover:bg-accent/50"
+                  className="hover:bg-accent/50 cursor-pointer rounded-lg border p-4 transition-colors"
                   onClick={() => {
                     onAssigneeSelect(employee.id);
                     onOpenChange(false);
@@ -242,7 +242,7 @@ export const SmartAssigneeSelect: React.FC<SmartAssigneeSelectProps> = ({
                           )}
                         </div>
 
-                        <div className="mt-1 flex items-center gap-4 text-sm text-muted-foreground">
+                        <div className="text-muted-foreground mt-1 flex items-center gap-4 text-sm">
                           <div className="flex items-center gap-1">
                             <Clock className="h-3 w-3" />
                             {employee.currentTasks} tâches actives
@@ -282,7 +282,7 @@ export const SmartAssigneeSelect: React.FC<SmartAssigneeSelectProps> = ({
                           </div>
                         </div>
                         <Progress value={employee.workload} className="h-2" />
-                        <div className="text-xs text-muted-foreground">
+                        <div className="text-muted-foreground text-xs">
                           {employee.totalHours}h sur {employee.availableHours}h disponibles
                         </div>
                       </div>
@@ -294,7 +294,7 @@ export const SmartAssigneeSelect: React.FC<SmartAssigneeSelectProps> = ({
           </div>
 
           {filteredEmployees.length === 0 && (
-            <div className="py-8 text-center text-muted-foreground">
+            <div className="text-muted-foreground py-8 text-center">
               Aucun employé trouvé pour cette recherche
             </div>
           )}

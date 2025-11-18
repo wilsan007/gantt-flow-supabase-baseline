@@ -24,7 +24,7 @@ const HRPageWithCollaboratorInvitation: React.FC = () => {
           <h1 className="truncate text-2xl font-bold tracking-tight sm:text-3xl">
             Ressources Humaines
           </h1>
-          <p className="mt-1 text-sm text-muted-foreground sm:text-base">
+          <p className="text-muted-foreground mt-1 text-sm sm:text-base">
             <span className="hidden sm:inline">
               Gestion des employés, congés, présences et invitations
             </span>
@@ -39,7 +39,7 @@ const HRPageWithCollaboratorInvitation: React.FC = () => {
           <TabsList className="flex w-full gap-1 overflow-x-auto p-2 sm:grid sm:grid-cols-2 sm:gap-2 lg:grid-cols-5">
             <TabsTrigger
               value="overview"
-              className="flex shrink-0 items-center gap-2 whitespace-nowrap px-3 text-xs sm:px-4 sm:text-sm"
+              className="flex shrink-0 items-center gap-2 px-3 text-xs whitespace-nowrap sm:px-4 sm:text-sm"
             >
               <TrendingUp className="h-4 w-4" />
               <span className="hidden sm:inline">Vue d'ensemble</span>
@@ -48,7 +48,7 @@ const HRPageWithCollaboratorInvitation: React.FC = () => {
 
             <TabsTrigger
               value="employees"
-              className="flex shrink-0 items-center gap-2 whitespace-nowrap px-3 text-xs sm:px-4 sm:text-sm"
+              className="flex shrink-0 items-center gap-2 px-3 text-xs whitespace-nowrap sm:px-4 sm:text-sm"
             >
               <Users className="h-4 w-4" />
               <span className="hidden sm:inline">Employés</span>
@@ -57,7 +57,7 @@ const HRPageWithCollaboratorInvitation: React.FC = () => {
 
             <TabsTrigger
               value="invitations"
-              className="flex shrink-0 items-center gap-2 whitespace-nowrap px-3 text-xs sm:px-4 sm:text-sm"
+              className="flex shrink-0 items-center gap-2 px-3 text-xs whitespace-nowrap sm:px-4 sm:text-sm"
             >
               <UserPlus className="h-4 w-4" />
               <span className="hidden sm:inline">Invitations</span>
@@ -66,7 +66,7 @@ const HRPageWithCollaboratorInvitation: React.FC = () => {
 
             <TabsTrigger
               value="leaves"
-              className="flex shrink-0 items-center gap-2 whitespace-nowrap px-3 text-xs sm:px-4 sm:text-sm"
+              className="flex shrink-0 items-center gap-2 px-3 text-xs whitespace-nowrap sm:px-4 sm:text-sm"
             >
               <Calendar className="h-4 w-4" />
               Congés
@@ -74,7 +74,7 @@ const HRPageWithCollaboratorInvitation: React.FC = () => {
 
             <TabsTrigger
               value="attendance"
-              className="flex shrink-0 items-center gap-2 whitespace-nowrap px-3 text-xs sm:px-4 sm:text-sm"
+              className="flex shrink-0 items-center gap-2 px-3 text-xs whitespace-nowrap sm:px-4 sm:text-sm"
             >
               <Clock className="h-4 w-4" />
               <span className="hidden sm:inline">Présences</span>

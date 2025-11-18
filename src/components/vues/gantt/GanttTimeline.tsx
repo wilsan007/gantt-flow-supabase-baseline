@@ -77,12 +77,12 @@ export const GanttTimeline = ({
       units.push(
         <div
           key={i}
-          className="border-gantt-grid flex h-full items-center justify-center border-r text-xs text-foreground/70"
+          className="border-gantt-grid text-foreground/70 flex h-full items-center justify-center border-r text-xs"
           style={{ minWidth: config.unitWidth }}
         >
           <div className="text-center">
-            <div className="font-medium text-foreground">{config.getUnit(currentDate)}</div>
-            <div className="text-xs text-foreground/60 opacity-60">
+            <div className="text-foreground font-medium">{config.getUnit(currentDate)}</div>
+            <div className="text-foreground/60 text-xs opacity-60">
               {config.getSubUnit(currentDate)}
             </div>
           </div>

@@ -45,7 +45,7 @@ export default function MyAbsencesPage() {
             <AlertCircle className="h-8 w-8" />
             Mes Justificatifs d'Absence
           </h1>
-          <p className="mt-1 text-muted-foreground">
+          <p className="text-muted-foreground mt-1">
             Gérez vos justificatifs d'absence et certificats médicaux
           </p>
         </div>
@@ -60,7 +60,7 @@ export default function MyAbsencesPage() {
       <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Total</CardTitle>
+            <CardTitle className="text-muted-foreground text-sm font-medium">Total</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold">{stats.total}</div>
@@ -69,7 +69,7 @@ export default function MyAbsencesPage() {
 
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-muted-foreground">En Attente</CardTitle>
+            <CardTitle className="text-muted-foreground text-sm font-medium">En Attente</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-blue-600">{stats.pending}</div>
@@ -78,7 +78,7 @@ export default function MyAbsencesPage() {
 
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Approuvés</CardTitle>
+            <CardTitle className="text-muted-foreground text-sm font-medium">Approuvés</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-green-600">{stats.approved}</div>
@@ -87,7 +87,7 @@ export default function MyAbsencesPage() {
 
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Rejetés</CardTitle>
+            <CardTitle className="text-muted-foreground text-sm font-medium">Rejetés</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-red-600">{stats.rejected}</div>
@@ -112,9 +112,9 @@ export default function MyAbsencesPage() {
 
             <TabsContent value={selectedTab} className="mt-4 space-y-4">
               {loading ? (
-                <div className="py-8 text-center text-muted-foreground">Chargement...</div>
+                <div className="text-muted-foreground py-8 text-center">Chargement...</div>
               ) : filtered.length === 0 ? (
-                <div className="py-8 text-center text-muted-foreground">
+                <div className="text-muted-foreground py-8 text-center">
                   Aucun justificatif pour le moment
                 </div>
               ) : (
@@ -161,7 +161,7 @@ export default function MyAbsencesPage() {
                                     href={absence.document_url}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="flex items-center gap-1 text-primary hover:underline"
+                                    className="text-primary flex items-center gap-1 hover:underline"
                                   >
                                     <FileText className="h-4 w-4" />
                                     Voir document
@@ -171,7 +171,7 @@ export default function MyAbsencesPage() {
                             </div>
 
                             {absence.reason && (
-                              <p className="mt-3 text-sm text-muted-foreground">{absence.reason}</p>
+                              <p className="text-muted-foreground mt-3 text-sm">{absence.reason}</p>
                             )}
 
                             {absence.rejection_reason && (

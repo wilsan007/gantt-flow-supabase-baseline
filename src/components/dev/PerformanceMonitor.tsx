@@ -67,7 +67,7 @@ export const PerformanceMonitor: React.FC = () => {
 
   if (!isVisible || process.env.NODE_ENV === 'production') {
     return (
-      <div className="fixed bottom-4 right-4 z-50">
+      <div className="fixed right-4 bottom-4 z-50">
         <Button
           size="sm"
           variant="outline"
@@ -96,7 +96,7 @@ export const PerformanceMonitor: React.FC = () => {
   };
 
   return (
-    <div className="fixed bottom-4 right-4 z-50 max-h-96 w-96 overflow-y-auto">
+    <div className="fixed right-4 bottom-4 z-50 max-h-96 w-96 overflow-y-auto">
       <Card className="border-gray-600 bg-black/90 text-white">
         <CardHeader className="pb-2">
           <div className="flex items-center justify-between">

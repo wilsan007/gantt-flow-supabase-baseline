@@ -110,7 +110,7 @@ export const AbsenceTypeManagement = () => {
   return (
     <div className="space-y-6 p-6">
       <div className="flex items-center justify-between">
-        <h2 className="bg-gradient-to-r from-primary to-accent bg-clip-text text-3xl font-bold text-transparent">
+        <h2 className="from-primary to-accent bg-gradient-to-r bg-clip-text text-3xl font-bold text-transparent">
           Types d'Absence
         </h2>
 
@@ -212,7 +212,7 @@ export const AbsenceTypeManagement = () => {
         {absenceTypes.length === 0 ? (
           <Card className="modern-card">
             <CardContent className="p-8 text-center">
-              <Calendar className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
+              <Calendar className="text-muted-foreground mx-auto mb-4 h-12 w-12" />
               <p className="text-muted-foreground">Aucun type d'absence configuré</p>
             </CardContent>
           </Card>
@@ -225,7 +225,7 @@ export const AbsenceTypeManagement = () => {
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
                         <div
-                          className="h-4 w-4 rounded-full border-2 border-background"
+                          className="border-background h-4 w-4 rounded-full border-2"
                           style={{ backgroundColor: type.color }}
                         />
                         <div>
@@ -246,7 +246,7 @@ export const AbsenceTypeManagement = () => {
                       </div>
                     </div>
 
-                    <div className="space-y-2 text-sm text-muted-foreground">
+                    <div className="text-muted-foreground space-y-2 text-sm">
                       {type.max_days_per_year && (
                         <p>
                           <strong>Max/an:</strong> {type.max_days_per_year} jours

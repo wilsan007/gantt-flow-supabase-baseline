@@ -147,19 +147,19 @@ export const AdvancedFilters = ({
       <div className="flex flex-col gap-3 sm:flex-row">
         {/* Recherche textuelle */}
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
           <Input
             placeholder="Rechercher par titre, description..."
             value={filters.search}
             onChange={e => updateFilter('search', e.target.value)}
-            className="pl-10 pr-10"
+            className="pr-10 pl-10"
           />
           {filters.search && (
             <Button
               variant="ghost"
               size="sm"
               onClick={() => updateFilter('search', '')}
-              className="absolute right-1 top-1/2 h-7 w-7 -translate-y-1/2 p-0"
+              className="absolute top-1/2 right-1 h-7 w-7 -translate-y-1/2 p-0"
             >
               <X className="h-3 w-3" />
             </Button>
@@ -346,7 +346,7 @@ export const AdvancedFilters = ({
                 </Label>
                 <div className="grid grid-cols-2 gap-2">
                   <div>
-                    <Label className="text-xs text-muted-foreground">Du</Label>
+                    <Label className="text-muted-foreground text-xs">Du</Label>
                     <Input
                       type="date"
                       value={filters.dateFrom}
@@ -355,7 +355,7 @@ export const AdvancedFilters = ({
                     />
                   </div>
                   <div>
-                    <Label className="text-xs text-muted-foreground">Au</Label>
+                    <Label className="text-muted-foreground text-xs">Au</Label>
                     <Input
                       type="date"
                       value={filters.dateTo}
@@ -380,7 +380,7 @@ export const AdvancedFilters = ({
 
       {/* Badge résultats */}
       {hasActiveFilters && (
-        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+        <div className="text-muted-foreground flex items-center gap-2 text-sm">
           <Badge variant="outline">
             {filteredCount} / {totalTasks} tâches
           </Badge>

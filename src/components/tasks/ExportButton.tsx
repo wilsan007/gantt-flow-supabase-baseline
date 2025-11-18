@@ -69,12 +69,12 @@ export const ExportButton = ({
           <Download className={`mr-2 h-4 w-4 ${isExporting ? 'animate-pulse' : ''}`} />
           {isExporting ? 'Export...' : 'Exporter'}
           {tasksCount > 0 && !isExporting && (
-            <span className="ml-2 rounded bg-primary/10 px-1.5 py-0.5 text-xs">{tasksCount}</span>
+            <span className="bg-primary/10 ml-2 rounded px-1.5 py-0.5 text-xs">{tasksCount}</span>
           )}
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-56">
-        <DropdownMenuLabel className="text-xs text-muted-foreground">
+        <DropdownMenuLabel className="text-muted-foreground text-xs">
           Format d'export
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
@@ -83,7 +83,7 @@ export const ExportButton = ({
           <FileSpreadsheet className="mr-2 h-4 w-4 text-green-600" />
           <div className="flex flex-col">
             <span className="font-medium">Excel (.xlsx)</span>
-            <span className="text-xs text-muted-foreground">Tableau formaté avec métadonnées</span>
+            <span className="text-muted-foreground text-xs">Tableau formaté avec métadonnées</span>
           </div>
         </DropdownMenuItem>
 
@@ -91,7 +91,7 @@ export const ExportButton = ({
           <FileText className="mr-2 h-4 w-4 text-red-600" />
           <div className="flex flex-col">
             <span className="font-medium">PDF (.pdf)</span>
-            <span className="text-xs text-muted-foreground">Document imprimable professionnel</span>
+            <span className="text-muted-foreground text-xs">Document imprimable professionnel</span>
           </div>
         </DropdownMenuItem>
 
@@ -99,7 +99,7 @@ export const ExportButton = ({
           <FileDown className="mr-2 h-4 w-4 text-blue-600" />
           <div className="flex flex-col">
             <span className="font-medium">CSV (.csv)</span>
-            <span className="text-xs text-muted-foreground">Format universel compatible</span>
+            <span className="text-muted-foreground text-xs">Format universel compatible</span>
           </div>
         </DropdownMenuItem>
       </DropdownMenuContent>

@@ -151,7 +151,7 @@ const CollaboratorSetup: React.FC = () => {
                 <div className="flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-purple-600">
                   <Loader2 className="h-10 w-10 animate-spin text-white" />
                 </div>
-                <div className="absolute -bottom-1 -right-1 flex h-8 w-8 items-center justify-center rounded-full bg-white shadow-lg">
+                <div className="absolute -right-1 -bottom-1 flex h-8 w-8 items-center justify-center rounded-full bg-white shadow-lg">
                   <UserCheck className="h-5 w-5 text-blue-600" />
                 </div>
               </div>
@@ -181,7 +181,7 @@ const CollaboratorSetup: React.FC = () => {
         <CardContent className="space-y-4">
           {/* Informations de succès */}
           {state.status === 'success' && state.data && (
-            <div className="space-y-3 duration-700 animate-in fade-in slide-in-from-bottom-4">
+            <div className="animate-in fade-in slide-in-from-bottom-4 space-y-3 duration-700">
               <Alert className="border-green-200 bg-green-50">
                 <Building2 className="h-4 w-4 text-green-600" />
                 <AlertDescription className="text-green-800">
@@ -199,7 +199,7 @@ const CollaboratorSetup: React.FC = () => {
               )}
 
               <div className="pt-4 text-center">
-                <p className="text-sm text-muted-foreground">
+                <p className="text-muted-foreground text-sm">
                   Redirection vers le dashboard dans quelques instants...
                 </p>
                 <div className="mt-4 flex justify-center">
@@ -224,7 +224,7 @@ const CollaboratorSetup: React.FC = () => {
 
           {/* Loading / Waiting */}
           {(state.status === 'loading' || state.status === 'waiting') && (
-            <div className="space-y-4 duration-500 animate-in fade-in">
+            <div className="animate-in fade-in space-y-4 duration-500">
               <div className="space-y-2">
                 <div className="flex items-center gap-2 text-sm">
                   <div className="h-2 w-2 animate-pulse rounded-full bg-blue-600"></div>
@@ -256,7 +256,7 @@ const CollaboratorSetup: React.FC = () => {
 
           {/* Erreur */}
           {state.status === 'error' && (
-            <div className="space-y-4 duration-500 animate-in fade-in">
+            <div className="animate-in fade-in space-y-4 duration-500">
               <Alert variant="destructive">
                 <XCircle className="h-4 w-4" />
                 <AlertDescription>{state.message}</AlertDescription>

@@ -128,7 +128,7 @@ export const ChangeCompanyNameDialog: React.FC<ChangeCompanyNameDialogProps> = (
             </div>
 
             {currentName && (
-              <div className="text-sm text-muted-foreground">
+              <div className="text-muted-foreground text-sm">
                 <span className="font-medium">Nom actuel :</span> {currentName}
               </div>
             )}

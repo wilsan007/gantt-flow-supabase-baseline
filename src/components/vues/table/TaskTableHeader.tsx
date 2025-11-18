@@ -57,7 +57,7 @@ export const TaskTableHeader = ({
           <ExportButton tasks={tasks} filters={filters} variant="outline" size="sm" />
         )}
         {selectedTaskId && (
-          <div className="self-center text-sm text-muted-foreground">Tâche sélectionnée</div>
+          <div className="text-muted-foreground self-center text-sm">Tâche sélectionnée</div>
         )}
         <Input
           placeholder="Action rapide..."

@@ -22,7 +22,7 @@ export const RoleManagementButton: React.FC = () => {
         {userRoles.length > 0 && (
           <Badge
             variant="secondary"
-            className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center p-0 text-xs"
+            className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center p-0 text-xs"
           >
             {userRoles.length}
           </Badge>

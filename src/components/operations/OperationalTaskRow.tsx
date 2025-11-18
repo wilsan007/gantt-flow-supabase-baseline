@@ -42,7 +42,7 @@ export const OperationalTaskRow: React.FC<OperationalTaskRowProps> = ({
   return (
     <TableRow
       className={cn(
-        'cursor-pointer transition-colors hover:bg-muted/50',
+        'hover:bg-muted/50 cursor-pointer transition-colors',
         isSelected && 'bg-primary/10'
       )}
       onClick={() => onTaskClick?.(task)}
@@ -83,7 +83,7 @@ export const OperationalTaskRow: React.FC<OperationalTaskRowProps> = ({
           {/* Assigné à - Lecture seule pour l'instant */}
           <TableCell className="py-2">
             <div className="flex items-center gap-2">
-              <User className="h-4 w-4 text-muted-foreground" />
+              <User className="text-muted-foreground h-4 w-4" />
               <span className="truncate text-sm">{getAssigneeName(task.assigned_to)}</span>
             </div>
           </TableCell>
@@ -100,7 +100,7 @@ export const OperationalTaskRow: React.FC<OperationalTaskRowProps> = ({
             {task.department ? (
               <Badge variant="outline">{task.department}</Badge>
             ) : (
-              <span className="text-xs text-muted-foreground">-</span>
+              <span className="text-muted-foreground text-xs">-</span>
             )}
           </TableCell>
         </>

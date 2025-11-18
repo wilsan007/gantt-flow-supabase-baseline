@@ -178,7 +178,7 @@ export const ChangeLogoDialog: React.FC<ChangeLogoDialogProps> = ({
         <div className="grid gap-4 py-4">
           {/* Zone de prévisualisation */}
           <div className="flex flex-col items-center gap-4">
-            <div className="relative h-32 w-32 overflow-hidden rounded-lg border-2 border-dashed border-muted-foreground/25 bg-muted/10">
+            <div className="border-muted-foreground/25 bg-muted/10 relative h-32 w-32 overflow-hidden rounded-lg border-2 border-dashed">
               {previewUrl ? (
                 <>
                   <img
@@ -191,7 +191,7 @@ export const ChangeLogoDialog: React.FC<ChangeLogoDialogProps> = ({
                       type="button"
                       variant="destructive"
                       size="sm"
-                      className="absolute right-1 top-1 h-6 w-6 rounded-full p-0"
+                      className="absolute top-1 right-1 h-6 w-6 rounded-full p-0"
                       onClick={handleRemovePreview}
                     >
                       <X className="h-4 w-4" />
@@ -200,7 +200,7 @@ export const ChangeLogoDialog: React.FC<ChangeLogoDialogProps> = ({
                 </>
               ) : (
                 <div className="flex h-full items-center justify-center">
-                  <ImageIcon className="h-12 w-12 text-muted-foreground/50" />
+                  <ImageIcon className="text-muted-foreground/50 h-12 w-12" />
                 </div>
               )}
             </div>
@@ -224,7 +224,7 @@ export const ChangeLogoDialog: React.FC<ChangeLogoDialogProps> = ({
             </Button>
 
             {selectedFile && (
-              <div className="text-sm text-muted-foreground">
+              <div className="text-muted-foreground text-sm">
                 <span className="font-medium">Fichier sélectionné :</span> {selectedFile.name}
               </div>
             )}

@@ -83,7 +83,7 @@ const ActionCreationDialogBase = ({
               placeholder="Ex: Révision du code..."
               maxLength={40}
             />
-            <p className="text-xs text-muted-foreground">
+            <p className="text-muted-foreground text-xs">
               {title.length}/40 caractères (max 2 lignes : 0-20, 21-40)
             </p>
           </div>
@@ -99,7 +99,7 @@ const ActionCreationDialogBase = ({
               step={1}
               className="w-full"
             />
-            <div className="flex justify-between text-xs text-muted-foreground">
+            <div className="text-muted-foreground flex justify-between text-xs">
               <span>1%</span>
               <span>50%</span>
               <span>100%</span>

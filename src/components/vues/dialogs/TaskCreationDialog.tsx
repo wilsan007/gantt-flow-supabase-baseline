@@ -180,7 +180,7 @@ const TaskCreationDialogBase: React.FC<TaskCreationDialogProps> = ({
               placeholder="Nom de la tâche..."
               maxLength={100}
             />
-            <p className="text-xs text-muted-foreground">{title.length}/100 caractères</p>
+            <p className="text-muted-foreground text-xs">{title.length}/100 caractères</p>
           </div>
 
           {/* Responsable et Département */}

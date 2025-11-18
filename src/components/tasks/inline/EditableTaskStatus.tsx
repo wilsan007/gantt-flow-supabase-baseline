@@ -47,7 +47,7 @@ export const EditableTaskStatus = ({
 
   return (
     <Select value={value?.toLowerCase() || 'todo'} onValueChange={newValue => onChange(newValue)}>
-      <SelectTrigger className="h-auto w-auto border-0 px-2 py-1 hover:bg-accent">
+      <SelectTrigger className="hover:bg-accent h-auto w-auto border-0 px-2 py-1">
         <Badge className={currentStatus.color}>
           <StatusIcon className="mr-1 h-3 w-3" />
           {currentStatus.label}

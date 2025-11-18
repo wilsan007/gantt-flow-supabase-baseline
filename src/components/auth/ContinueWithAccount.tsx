@@ -104,22 +104,22 @@ export const ContinueWithAccount = ({
       <button
         onClick={handleContinue}
         disabled={loading}
-        className="group flex w-full items-center gap-3 rounded-lg border-2 border-primary/20 px-4 py-3 transition-all duration-200 hover:border-primary/40 hover:bg-accent/5 disabled:cursor-not-allowed disabled:opacity-50"
+        className="group border-primary/20 hover:border-primary/40 hover:bg-accent/5 flex w-full items-center gap-3 rounded-lg border-2 px-4 py-3 transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-50"
       >
         {/* Avatar */}
-        <Avatar className="h-10 w-10 border-2 border-primary/10">
+        <Avatar className="border-primary/10 h-10 w-10 border-2">
           <AvatarImage src={avatarUrl} alt={fullName} />
-          <AvatarFallback className="bg-primary/10 font-semibold text-primary">
+          <AvatarFallback className="bg-primary/10 text-primary font-semibold">
             {getInitials()}
           </AvatarFallback>
         </Avatar>
 
         {/* Texte */}
         <div className="flex-1 text-left">
-          <div className="text-sm font-semibold text-foreground transition-colors group-hover:text-primary">
+          <div className="text-foreground group-hover:text-primary text-sm font-semibold transition-colors">
             Continuer en tant que {fullName.split(' ')[0]}
           </div>
-          <div className="flex items-center gap-1 text-xs text-muted-foreground">
+          <div className="text-muted-foreground flex items-center gap-1 text-xs">
             {email}
             <ChevronDown className="inline h-3 w-3" />
           </div>
@@ -134,7 +134,7 @@ export const ContinueWithAccount = ({
         variant="ghost"
         size="sm"
         onClick={onRemove}
-        className="w-full text-xs text-muted-foreground hover:text-foreground"
+        className="text-muted-foreground hover:text-foreground w-full text-xs"
       >
         Utiliser un autre compte
       </Button>

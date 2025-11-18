@@ -112,7 +112,7 @@ export const LeaveBalanceManagement = () => {
   return (
     <div className="space-y-6 p-6">
       <div className="flex items-center justify-between">
-        <h2 className="bg-gradient-to-r from-primary to-accent bg-clip-text text-3xl font-bold text-transparent">
+        <h2 className="from-primary to-accent bg-gradient-to-r bg-clip-text text-3xl font-bold text-transparent">
           Soldes de Congés
         </h2>
 
@@ -229,7 +229,7 @@ export const LeaveBalanceManagement = () => {
         {filteredBalances.length === 0 ? (
           <Card className="modern-card">
             <CardContent className="p-8 text-center">
-              <Wallet className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
+              <Wallet className="text-muted-foreground mx-auto mb-4 h-12 w-12" />
               <p className="text-muted-foreground">
                 Aucun solde de congés configuré pour {selectedYear}
               </p>
@@ -251,7 +251,7 @@ export const LeaveBalanceManagement = () => {
                         <h3 className="text-lg font-semibold">
                           {employee?.full_name || 'Employé inconnu'}
                         </h3>
-                        <p className="text-sm text-muted-foreground">
+                        <p className="text-muted-foreground text-sm">
                           {absenceType?.name || 'Type inconnu'} - {balance.year}
                         </p>
                       </div>
@@ -264,7 +264,7 @@ export const LeaveBalanceManagement = () => {
                           </span>
                         </div>
                         <Progress value={usagePercentage} className="h-2" />
-                        <div className="text-sm text-muted-foreground">
+                        <div className="text-muted-foreground text-sm">
                           Restant: {balance.remaining_days} jour(s)
                         </div>
                       </div>

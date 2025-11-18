@@ -192,11 +192,11 @@ export const DocumentCellColumn = ({ task, isSubtask }: DocumentCellProps) => {
               {documents.map(doc => (
                 <div
                   key={doc.id}
-                  className="flex items-center justify-between rounded bg-muted/50 p-2"
+                  className="bg-muted/50 flex items-center justify-between rounded p-2"
                 >
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-sm font-medium">{doc.file_name}</p>
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-muted-foreground text-xs">
                       {new Date(doc.created_at).toLocaleDateString()}
                     </p>
                   </div>

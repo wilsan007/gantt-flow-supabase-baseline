@@ -130,7 +130,7 @@ export const EditableOperationalTitleCell: React.FC<EditableOperationalTitleCell
             onBlur={handleBlur}
             onKeyDown={handleKeyDown}
             className={cn(
-              'w-full rounded border-none bg-transparent px-2 py-1 font-medium outline-none ring-2 ring-blue-500'
+              'w-full rounded border-none bg-transparent px-2 py-1 font-medium ring-2 ring-blue-500 outline-none'
             )}
             placeholder="Titre de la tâche..."
           />

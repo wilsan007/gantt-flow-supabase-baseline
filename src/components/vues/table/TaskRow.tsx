@@ -160,7 +160,7 @@ export const TaskRow = ({
         >
           <Popover>
             <PopoverTrigger asChild>
-              <Button variant="ghost" className="h-full w-full justify-start px-2 hover:bg-accent">
+              <Button variant="ghost" className="hover:bg-accent h-full w-full justify-start px-2">
                 <SimpleAssigneeDisplay assignee={task.assignee} />
               </Button>
             </PopoverTrigger>

@@ -88,7 +88,7 @@ export const QuickInviteDialogModern: React.FC<QuickInviteDialogModernProps> = (
           <CheckCircle2 className="h-5 w-5 text-emerald-500" />
           <div>
             <p className="font-medium">Invitation envoyée !</p>
-            <p className="text-sm text-muted-foreground">{email}</p>
+            <p className="text-muted-foreground text-sm">{email}</p>
           </div>
         </div>
       );
@@ -108,7 +108,7 @@ export const QuickInviteDialogModern: React.FC<QuickInviteDialogModernProps> = (
           <AlertCircle className="h-5 w-5 text-red-500" />
           <div>
             <p className="font-medium">Erreur d'invitation</p>
-            <p className="text-sm text-muted-foreground">{error.message}</p>
+            <p className="text-muted-foreground text-sm">{error.message}</p>
           </div>
         </div>
       );
@@ -176,7 +176,7 @@ export const QuickInviteDialogModern: React.FC<QuickInviteDialogModernProps> = (
               disabled={loading}
             />
             {email.length > 0 && (
-              <div className="absolute right-3 top-1/2 -translate-y-1/2">
+              <div className="absolute top-1/2 right-3 -translate-y-1/2">
                 {emailValid ? (
                   <CheckCircle2 className="h-4 w-4 text-emerald-500" />
                 ) : (
@@ -209,7 +209,7 @@ export const QuickInviteDialogModern: React.FC<QuickInviteDialogModernProps> = (
               disabled={loading}
             />
             {fullName.length > 0 && (
-              <div className="absolute right-3 top-1/2 -translate-y-1/2">
+              <div className="absolute top-1/2 right-3 -translate-y-1/2">
                 {nameValid ? (
                   <CheckCircle2 className="h-4 w-4 text-emerald-500" />
                 ) : (
@@ -257,7 +257,7 @@ export const QuickInviteDialogModern: React.FC<QuickInviteDialogModernProps> = (
         <div className="space-y-2">
           <Label htmlFor="department" className="flex items-center gap-2">
             <Building2 className="h-4 w-4 text-emerald-600" />
-            Département <span className="text-xs text-muted-foreground">(optionnel)</span>
+            Département <span className="text-muted-foreground text-xs">(optionnel)</span>
           </Label>
           <Input
             id="department"
@@ -272,7 +272,7 @@ export const QuickInviteDialogModern: React.FC<QuickInviteDialogModernProps> = (
         <div className="space-y-2">
           <Label htmlFor="jobPosition" className="flex items-center gap-2">
             <Briefcase className="h-4 w-4 text-emerald-600" />
-            Poste <span className="text-xs text-muted-foreground">(optionnel)</span>
+            Poste <span className="text-muted-foreground text-xs">(optionnel)</span>
           </Label>
           <Input
             id="jobPosition"

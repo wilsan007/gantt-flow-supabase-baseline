@@ -347,7 +347,7 @@ const ModernTaskCreationDialogBase: React.FC<ModernTaskCreationDialogProps> = ({
                 autoFocus
               />
               {parentTask?.title && (
-                <p className="flex items-center gap-2 text-sm text-muted-foreground">
+                <p className="text-muted-foreground flex items-center gap-2 text-sm">
                   <Link2 className="h-4 w-4" />
                   Sous-tâche de: {parentTask.title}
                 </p>
@@ -360,7 +360,7 @@ const ModernTaskCreationDialogBase: React.FC<ModernTaskCreationDialogProps> = ({
               <div className="space-y-3">
                 {/* Statut */}
                 <div className="flex items-center gap-3">
-                  <Label className="flex w-32 items-center gap-2 text-sm text-muted-foreground">
+                  <Label className="text-muted-foreground flex w-32 items-center gap-2 text-sm">
                     <FileText className="h-4 w-4" />
                     Statut
                   </Label>
@@ -379,7 +379,7 @@ const ModernTaskCreationDialogBase: React.FC<ModernTaskCreationDialogProps> = ({
 
                 {/* Date de début */}
                 <div className="flex items-center gap-3">
-                  <Label className="flex w-32 items-center gap-2 text-sm text-muted-foreground">
+                  <Label className="text-muted-foreground flex w-32 items-center gap-2 text-sm">
                     <CalendarIcon className="h-4 w-4" />
                     Début
                   </Label>
@@ -412,7 +412,7 @@ const ModernTaskCreationDialogBase: React.FC<ModernTaskCreationDialogProps> = ({
 
                 {/* Date d'échéance */}
                 <div className="flex items-center gap-3">
-                  <Label className="flex w-32 items-center gap-2 text-sm text-muted-foreground">
+                  <Label className="text-muted-foreground flex w-32 items-center gap-2 text-sm">
                     <CalendarIcon className="h-4 w-4" />
                     Échéance
                   </Label>
@@ -447,7 +447,7 @@ const ModernTaskCreationDialogBase: React.FC<ModernTaskCreationDialogProps> = ({
 
                 {/* Temps estimé */}
                 <div className="flex items-center gap-3">
-                  <Label className="flex w-32 items-center gap-2 text-sm text-muted-foreground">
+                  <Label className="text-muted-foreground flex w-32 items-center gap-2 text-sm">
                     <Clock className="h-4 w-4" />
                     Temps (h)
                   </Label>
@@ -467,7 +467,7 @@ const ModernTaskCreationDialogBase: React.FC<ModernTaskCreationDialogProps> = ({
               <div className="space-y-3">
                 {/* Assigné */}
                 <div className="flex items-center gap-3">
-                  <Label className="flex w-32 items-center gap-2 text-sm text-muted-foreground">
+                  <Label className="text-muted-foreground flex w-32 items-center gap-2 text-sm">
                     <User className="h-4 w-4" />
                     Assigné
                   </Label>
@@ -486,7 +486,7 @@ const ModernTaskCreationDialogBase: React.FC<ModernTaskCreationDialogProps> = ({
                       </SelectTrigger>
                       <SelectContent>
                         {availableAssignees.length === 0 ? (
-                          <div className="p-2 text-center text-sm text-muted-foreground">
+                          <div className="text-muted-foreground p-2 text-center text-sm">
                             Aucun employé disponible
                           </div>
                         ) : (
@@ -494,7 +494,7 @@ const ModernTaskCreationDialogBase: React.FC<ModernTaskCreationDialogProps> = ({
                             <SelectItem key={person.id} value={person.id}>
                               <div className="flex flex-col">
                                 <span>{person.name}</span>
-                                <span className="text-xs text-muted-foreground">
+                                <span className="text-muted-foreground text-xs">
                                   {person.email}
                                 </span>
                               </div>
@@ -517,7 +517,7 @@ const ModernTaskCreationDialogBase: React.FC<ModernTaskCreationDialogProps> = ({
 
                 {/* Priorité */}
                 <div className="flex items-center gap-3">
-                  <Label className="flex w-32 items-center gap-2 text-sm text-muted-foreground">
+                  <Label className="text-muted-foreground flex w-32 items-center gap-2 text-sm">
                     <Flag className="h-4 w-4" />
                     Priorité
                   </Label>
@@ -536,7 +536,7 @@ const ModernTaskCreationDialogBase: React.FC<ModernTaskCreationDialogProps> = ({
 
                 {/* Département */}
                 <div className="flex items-center gap-3">
-                  <Label className="flex w-32 items-center gap-2 text-sm text-muted-foreground">
+                  <Label className="text-muted-foreground flex w-32 items-center gap-2 text-sm">
                     <Building2 className="h-4 w-4" />
                     Département
                   </Label>
@@ -554,7 +554,7 @@ const ModernTaskCreationDialogBase: React.FC<ModernTaskCreationDialogProps> = ({
                     </SelectTrigger>
                     <SelectContent>
                       {availableDepartments.length === 0 ? (
-                        <div className="p-2 text-center text-sm text-muted-foreground">
+                        <div className="text-muted-foreground p-2 text-center text-sm">
                           Aucun département disponible
                         </div>
                       ) : (
@@ -570,7 +570,7 @@ const ModernTaskCreationDialogBase: React.FC<ModernTaskCreationDialogProps> = ({
 
                 {/* Projet */}
                 <div className="flex items-center gap-3">
-                  <Label className="flex w-32 items-center gap-2 text-sm text-muted-foreground">
+                  <Label className="text-muted-foreground flex w-32 items-center gap-2 text-sm">
                     <FolderKanban className="h-4 w-4" />
                     Projet
                   </Label>
@@ -588,7 +588,7 @@ const ModernTaskCreationDialogBase: React.FC<ModernTaskCreationDialogProps> = ({
                     </SelectTrigger>
                     <SelectContent>
                       {availableProjects.length === 0 ? (
-                        <div className="p-2 text-center text-sm text-muted-foreground">
+                        <div className="text-muted-foreground p-2 text-center text-sm">
                           Aucun projet disponible
                         </div>
                       ) : (
@@ -607,7 +607,7 @@ const ModernTaskCreationDialogBase: React.FC<ModernTaskCreationDialogProps> = ({
             {/* Étiquettes */}
             <div className="space-y-2">
               <div className="flex items-center gap-3">
-                <Label className="flex w-32 items-center gap-2 text-sm text-muted-foreground">
+                <Label className="text-muted-foreground flex w-32 items-center gap-2 text-sm">
                   <Tag className="h-4 w-4" />
                   Étiquettes
                 </Label>
@@ -616,7 +616,7 @@ const ModernTaskCreationDialogBase: React.FC<ModernTaskCreationDialogProps> = ({
                     <Badge key={tag} variant="secondary" className="flex items-center gap-1">
                       {tag}
                       <X
-                        className="h-3 w-3 cursor-pointer hover:text-destructive"
+                        className="hover:text-destructive h-3 w-3 cursor-pointer"
                         onClick={() => removeTag(tag)}
                       />
                     </Badge>
@@ -718,12 +718,12 @@ const ModernTaskCreationDialogBase: React.FC<ModernTaskCreationDialogProps> = ({
                       {actions.map(action => (
                         <div
                           key={action.id}
-                          className="flex items-start gap-2 rounded-lg border bg-muted/30 p-3"
+                          className="bg-muted/30 flex items-start gap-2 rounded-lg border p-3"
                         >
                           <div className="flex-1">
                             <p className="text-sm font-medium">{action.name}</p>
                             {action.description && (
-                              <p className="mt-1 text-xs text-muted-foreground">
+                              <p className="text-muted-foreground mt-1 text-xs">
                                 {action.description}
                               </p>
                             )}
@@ -734,7 +734,7 @@ const ModernTaskCreationDialogBase: React.FC<ModernTaskCreationDialogProps> = ({
                             onClick={() => removeAction(action.id)}
                             className="h-8 w-8 p-0"
                           >
-                            <Trash2 className="h-4 w-4 text-destructive" />
+                            <Trash2 className="text-destructive h-4 w-4" />
                           </Button>
                         </div>
                       ))}
@@ -742,7 +742,7 @@ const ModernTaskCreationDialogBase: React.FC<ModernTaskCreationDialogProps> = ({
                   )}
 
                   {/* Formulaire d'ajout d'action */}
-                  <div className="space-y-2 rounded-lg border bg-muted/10 p-3">
+                  <div className="bg-muted/10 space-y-2 rounded-lg border p-3">
                     <Input
                       value={newActionName}
                       onChange={e => setNewActionName(e.target.value)}
@@ -773,7 +773,7 @@ const ModernTaskCreationDialogBase: React.FC<ModernTaskCreationDialogProps> = ({
 
             {/* Footer avec boutons */}
             <div className="flex items-center justify-between pt-2">
-              <div className="text-sm text-muted-foreground">
+              <div className="text-muted-foreground text-sm">
                 {actions.length > 0 && `${actions.length} action(s)`}
               </div>
               <div className="flex gap-2">

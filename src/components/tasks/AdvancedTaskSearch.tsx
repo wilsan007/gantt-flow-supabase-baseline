@@ -314,7 +314,7 @@ export const AdvancedTaskSearch: React.FC = () => {
           <div className="space-y-2">
             <Label>Recherche</Label>
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
               <Input
                 placeholder="Rechercher dans titres et descriptions..."
                 value={filters.query}
@@ -429,7 +429,7 @@ export const AdvancedTaskSearch: React.FC = () => {
         </CardHeader>
         <CardContent>
           {filteredTasks.length === 0 ? (
-            <p className="py-8 text-center text-muted-foreground">
+            <p className="text-muted-foreground py-8 text-center">
               Aucune tâche ne correspond aux critères de recherche
             </p>
           ) : (
@@ -437,7 +437,7 @@ export const AdvancedTaskSearch: React.FC = () => {
               {filteredTasks.map(task => (
                 <div
                   key={task.id}
-                  className={`flex items-center gap-4 rounded-lg border p-4 transition-colors hover:bg-accent/50 ${
+                  className={`hover:bg-accent/50 flex items-center gap-4 rounded-lg border p-4 transition-colors ${
                     selectedTasks.has(task.id)
                       ? 'border-blue-200 bg-blue-50 dark:bg-blue-950/20'
                       : ''

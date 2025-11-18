@@ -199,15 +199,15 @@ function AdministrativeRequestDialogBase({
                 <Upload className="h-4 w-4" />
               </Button>
             </div>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-muted-foreground text-xs">
               Joignez tout document pertinent (RIB, justificatif, etc.)
             </p>
           </div>
 
           {/* Informations */}
-          <div className="rounded-lg bg-muted/50 p-4 text-sm">
+          <div className="bg-muted/50 rounded-lg p-4 text-sm">
             <p className="mb-2 font-medium">Délais de traitement :</p>
-            <ul className="list-inside list-disc space-y-1 text-muted-foreground">
+            <ul className="text-muted-foreground list-inside list-disc space-y-1">
               <li>Attestations : 48h ouvrées</li>
               <li>Changements administratifs : 5 jours ouvrés</li>
               <li>Avances sur salaire : Traitement au cas par cas</li>

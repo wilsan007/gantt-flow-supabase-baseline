@@ -65,7 +65,7 @@ export const EditableOperationalCategoryCell: React.FC<EditableOperationalCatego
         <DropdownMenuTrigger asChild>
           <button
             className={cn(
-              'flex items-center gap-1 rounded border px-2 py-1 text-xs font-medium transition-colors hover:bg-accent'
+              'hover:bg-accent flex items-center gap-1 rounded border px-2 py-1 text-xs font-medium transition-colors'
             )}
             disabled={isLoading}
           >

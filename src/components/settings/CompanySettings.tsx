@@ -169,7 +169,7 @@ export const CompanySettings = () => {
         <CardContent className="space-y-4">
           {/* Aperçu du logo */}
           {logoUrl && (
-            <div className="flex items-center justify-center rounded-lg bg-muted p-6">
+            <div className="bg-muted flex items-center justify-center rounded-lg p-6">
               <img src={logoUrl} alt="Logo de l'entreprise" className="max-h-32 object-contain" />
             </div>
           )}
@@ -200,7 +200,7 @@ export const CompanySettings = () => {
               className="hidden"
               disabled={uploading}
             />
-            <p className="text-xs text-muted-foreground">
+            <p className="text-muted-foreground text-xs">
               PNG, SVG ou JPG. Recommandé : fond transparent, 500x500px max.
             </p>
           </div>
@@ -214,10 +214,10 @@ export const CompanySettings = () => {
           <CardDescription>Couleurs de marque et personnalisation complète</CardDescription>
         </CardHeader>
         <CardContent>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-muted-foreground text-sm">
             Cette fonctionnalité sera bientôt disponible. Vous pourrez personnaliser :
           </p>
-          <ul className="mt-2 list-inside list-disc space-y-1 text-sm text-muted-foreground">
+          <ul className="text-muted-foreground mt-2 list-inside list-disc space-y-1 text-sm">
             <li>Couleurs primaires et secondaires</li>
             <li>Polices personnalisées</li>
             <li>Favicon personnalisé</li>

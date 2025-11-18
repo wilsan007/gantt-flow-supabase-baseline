@@ -16,14 +16,14 @@ export function ResponsiveLayout({ children, className = '' }: ResponsiveLayoutP
       {/* Animated background elements - smaller on mobile */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <div
-          className={`absolute -right-40 -top-40 animate-pulse rounded-full bg-gradient-to-br from-primary/20 to-accent/20 blur-3xl ${isMobile ? 'h-40 w-40' : 'h-80 w-80'} `}
+          className={`from-primary/20 to-accent/20 absolute -top-40 -right-40 animate-pulse rounded-full bg-gradient-to-br blur-3xl ${isMobile ? 'h-40 w-40' : 'h-80 w-80'} `}
         ></div>
         <div
-          className={`absolute -bottom-40 -left-40 animate-pulse rounded-full bg-gradient-to-tr from-accent/20 to-tech-cyan/20 blur-3xl ${isMobile ? 'h-40 w-40' : 'h-80 w-80'} `}
+          className={`from-accent/20 to-tech-cyan/20 absolute -bottom-40 -left-40 animate-pulse rounded-full bg-gradient-to-tr blur-3xl ${isMobile ? 'h-40 w-40' : 'h-80 w-80'} `}
           style={{ animationDelay: '2s' }}
         ></div>
         <div
-          className={`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform animate-pulse rounded-full bg-gradient-to-br from-tech-purple/10 to-tech-blue/10 blur-3xl ${isMobile ? 'h-48 w-48' : 'h-96 w-96'} `}
+          className={`from-tech-purple/10 to-tech-blue/10 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transform animate-pulse rounded-full bg-gradient-to-br blur-3xl ${isMobile ? 'h-48 w-48' : 'h-96 w-96'} `}
           style={{ animationDelay: '4s' }}
         ></div>
       </div>

@@ -43,7 +43,7 @@ export const SubTaskRow = ({
           >
             <Plus className="h-3 w-3" />
           </Button>
-          <span className="mr-2 text-xs text-muted-foreground">{task.display_order}</span>
+          <span className="text-muted-foreground mr-2 text-xs">{task.display_order}</span>
           {task.title}
         </div>
       </TableCell>
@@ -51,7 +51,7 @@ export const SubTaskRow = ({
       <TableCell>
         <Popover>
           <PopoverTrigger asChild>
-            <Button variant="ghost" className="w-full justify-start px-2 text-sm hover:bg-accent">
+            <Button variant="ghost" className="hover:bg-accent w-full justify-start px-2 text-sm">
               <SimpleAssigneeDisplay assignee={task.assignee} />
             </Button>
           </PopoverTrigger>
@@ -68,14 +68,14 @@ export const SubTaskRow = ({
 
       <TableCell>
         <div className="flex items-center gap-2 text-sm">
-          <CalendarDays className="h-3 w-3 text-muted-foreground" />
+          <CalendarDays className="text-muted-foreground h-3 w-3" />
           {formatDate(task.start_date)}
         </div>
       </TableCell>
 
       <TableCell>
         <div className="flex items-center gap-2 text-sm">
-          <CalendarDays className="h-3 w-3 text-muted-foreground" />
+          <CalendarDays className="text-muted-foreground h-3 w-3" />
           {formatDate(task.due_date)}
         </div>
       </TableCell>
@@ -94,7 +94,7 @@ export const SubTaskRow = ({
 
       <TableCell>
         <div className="flex items-center gap-2 text-sm">
-          <Clock className="h-3 w-3 text-muted-foreground" />
+          <Clock className="text-muted-foreground h-3 w-3" />
           {task.effort_estimate_h}h
         </div>
       </TableCell>
@@ -102,7 +102,7 @@ export const SubTaskRow = ({
       <TableCell>
         <div className="space-y-1">
           <Progress value={task.progress} className="h-2" />
-          <span className="text-xs text-muted-foreground">{task.progress}%</span>
+          <span className="text-muted-foreground text-xs">{task.progress}%</span>
         </div>
       </TableCell>
 

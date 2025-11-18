@@ -21,7 +21,7 @@ export const SimpleAssigneeDisplay = ({ assignee, className = '' }: SimpleAssign
 
   if (!assigneeStr || assigneeStr === 'Non assigné') {
     return (
-      <div className={`flex items-center gap-2 text-muted-foreground ${className}`}>
+      <div className={`text-muted-foreground flex items-center gap-2 ${className}`}>
         <User className="h-4 w-4" />
         <span className="text-sm">Non assigné</span>
       </div>
@@ -32,7 +32,7 @@ export const SimpleAssigneeDisplay = ({ assignee, className = '' }: SimpleAssign
     <div className={`flex items-center gap-2 ${className}`}>
       <Avatar className="h-6 w-6">
         <AvatarImage src="" alt={assigneeStr} />
-        <AvatarFallback className="bg-primary/20 text-xs font-semibold text-primary">
+        <AvatarFallback className="bg-primary/20 text-primary text-xs font-semibold">
           {assigneeStr.slice(0, 2).toUpperCase()}
         </AvatarFallback>
       </Avatar>

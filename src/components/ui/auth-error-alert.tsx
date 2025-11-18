@@ -92,7 +92,7 @@ export const AuthErrorAlert: React.FC<AuthErrorAlertProps> = ({
 
           {/* Message */}
           <AlertDescription
-            className={`${styles.message} whitespace-pre-line text-sm leading-relaxed`}
+            className={`${styles.message} text-sm leading-relaxed whitespace-pre-line`}
           >
             {message}
           </AlertDescription>
@@ -197,7 +197,7 @@ export const AuthErrorList: React.FC<AuthErrorListProps> = ({
           <Button
             variant="ghost"
             size="sm"
-            className="text-xs text-muted-foreground"
+            className="text-muted-foreground text-xs"
             onClick={() => {
               // Afficher toutes les erreurs ou implémenter une pagination
               console.log(`${hiddenCount} erreurs supplémentaires masquées`);

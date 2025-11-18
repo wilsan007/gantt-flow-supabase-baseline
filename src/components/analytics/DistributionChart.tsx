@@ -34,9 +34,9 @@ const CustomTooltip = ({ active, payload }: any) => {
   if (active && payload && payload.length) {
     const data = payload[0];
     return (
-      <div className="rounded-lg border border-border bg-popover p-3 shadow-lg">
+      <div className="border-border bg-popover rounded-lg border p-3 shadow-lg">
         <p className="text-sm font-medium">{data.name}</p>
-        <p className="mt-1 text-xs text-muted-foreground">
+        <p className="text-muted-foreground mt-1 text-xs">
           {data.value} ({((data.value / data.payload.total) * 100).toFixed(1)}%)
         </p>
       </div>
@@ -62,7 +62,7 @@ export const DistributionChart: React.FC<DistributionChartProps> = ({
       </CardHeader>
       <CardContent>
         {total === 0 ? (
-          <div className="flex h-[300px] items-center justify-center text-muted-foreground">
+          <div className="text-muted-foreground flex h-[300px] items-center justify-center">
             <p className="text-sm">Aucune donnée à afficher</p>
           </div>
         ) : (

@@ -42,7 +42,7 @@ export default function MyTrainingsPage() {
             <BookOpen className="h-6 w-6 shrink-0 sm:h-7 sm:w-7 md:h-8 md:w-8" />
             <span className="truncate">Mes Formations</span>
           </h1>
-          <p className="mt-1 text-xs text-muted-foreground sm:text-sm md:text-base">
+          <p className="text-muted-foreground mt-1 text-xs sm:text-sm md:text-base">
             <span className="hidden sm:inline">Suivez votre progression et vos certifications</span>
             <span className="sm:hidden">Progression formations</span>
           </p>
@@ -61,7 +61,7 @@ export default function MyTrainingsPage() {
       <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-4">
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Total</CardTitle>
+            <CardTitle className="text-muted-foreground text-sm font-medium">Total</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold">{myEnrollments.length}</div>
@@ -70,7 +70,7 @@ export default function MyTrainingsPage() {
 
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-muted-foreground">En Cours</CardTitle>
+            <CardTitle className="text-muted-foreground text-sm font-medium">En Cours</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-blue-600">{enrolled.length}</div>
@@ -79,7 +79,7 @@ export default function MyTrainingsPage() {
 
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Terminées</CardTitle>
+            <CardTitle className="text-muted-foreground text-sm font-medium">Terminées</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-green-600">{completed.length}</div>
@@ -88,7 +88,7 @@ export default function MyTrainingsPage() {
 
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
+            <CardTitle className="text-muted-foreground text-sm font-medium">
               Heures Totales
             </CardTitle>
           </CardHeader>
@@ -116,7 +116,7 @@ export default function MyTrainingsPage() {
 
             <TabsContent value="enrolled" className="mt-4 space-y-4">
               {enrolled.length === 0 ? (
-                <div className="py-8 text-center text-muted-foreground">
+                <div className="text-muted-foreground py-8 text-center">
                   Aucune formation en cours
                 </div>
               ) : (
@@ -131,7 +131,7 @@ export default function MyTrainingsPage() {
                         <div className="flex items-start justify-between">
                           <div className="flex-1">
                             <div className="mb-2 flex items-center gap-3">
-                              <BookOpen className="h-5 w-5 text-primary" />
+                              <BookOpen className="text-primary h-5 w-5" />
                               <h3 className="text-lg font-semibold">
                                 {enrollment.training?.title}
                               </h3>
@@ -142,7 +142,7 @@ export default function MyTrainingsPage() {
                             </div>
 
                             {enrollment.training?.description && (
-                              <p className="mb-3 text-sm text-muted-foreground">
+                              <p className="text-muted-foreground mb-3 text-sm">
                                 {enrollment.training.description}
                               </p>
                             )}
@@ -182,7 +182,7 @@ export default function MyTrainingsPage() {
 
             <TabsContent value="completed" className="mt-4 space-y-4">
               {completed.length === 0 ? (
-                <div className="py-8 text-center text-muted-foreground">
+                <div className="text-muted-foreground py-8 text-center">
                   Aucune formation terminée
                 </div>
               ) : (
@@ -196,7 +196,7 @@ export default function MyTrainingsPage() {
                         <div className="flex items-start justify-between">
                           <div className="flex-1">
                             <div className="mb-2 flex items-center gap-3">
-                              <BookOpen className="h-5 w-5 text-primary" />
+                              <BookOpen className="text-primary h-5 w-5" />
                               <h3 className="text-lg font-semibold">
                                 {enrollment.training?.title}
                               </h3>
@@ -236,7 +236,7 @@ export default function MyTrainingsPage() {
 
             <TabsContent value="cancelled" className="mt-4 space-y-4">
               {cancelled.length === 0 ? (
-                <div className="py-8 text-center text-muted-foreground">
+                <div className="text-muted-foreground py-8 text-center">
                   Aucune formation annulée
                 </div>
               ) : (
@@ -244,7 +244,7 @@ export default function MyTrainingsPage() {
                   <Card key={enrollment.id}>
                     <CardContent className="pt-6">
                       <div className="flex items-center gap-3">
-                        <BookOpen className="h-5 w-5 text-muted-foreground" />
+                        <BookOpen className="text-muted-foreground h-5 w-5" />
                         <h3 className="font-semibold">{enrollment.training?.title}</h3>
                         <Badge className="bg-gray-500">Annulée</Badge>
                       </div>

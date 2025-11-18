@@ -129,7 +129,7 @@ export const AbsenceCalendar: React.FC<AbsenceCalendarProps> = ({
         {/* En-têtes des jours */}
         <div className="mb-2 grid grid-cols-7 gap-2">
           {weekDays.map(day => (
-            <div key={day} className="py-2 text-center text-xs font-medium text-muted-foreground">
+            <div key={day} className="text-muted-foreground py-2 text-center text-xs font-medium">
               {day}
             </div>
           ))}
@@ -148,8 +148,8 @@ export const AbsenceCalendar: React.FC<AbsenceCalendarProps> = ({
                   'relative min-h-[60px] rounded-lg border p-2 transition-colors',
                   day.isCurrentMonth
                     ? 'border-border bg-background'
-                    : 'border-transparent bg-muted/30',
-                  isToday && 'ring-2 ring-primary',
+                    : 'bg-muted/30 border-transparent',
+                  isToday && 'ring-primary ring-2',
                   hasAbsences && 'border-red-200 bg-red-50',
                   !day.isCurrentMonth && 'opacity-40'
                 )}
@@ -174,7 +174,7 @@ export const AbsenceCalendar: React.FC<AbsenceCalendarProps> = ({
                       </div>
                     ))}
                     {day.absences.length > 2 && (
-                      <div className="text-[10px] text-muted-foreground">
+                      <div className="text-muted-foreground text-[10px]">
                         +{day.absences.length - 2}
                       </div>
                     )}
@@ -186,13 +186,13 @@ export const AbsenceCalendar: React.FC<AbsenceCalendarProps> = ({
         </div>
 
         {/* Légende */}
-        <div className="mt-4 flex items-center gap-4 text-xs text-muted-foreground">
+        <div className="text-muted-foreground mt-4 flex items-center gap-4 text-xs">
           <div className="flex items-center gap-2">
             <div className="h-4 w-4 rounded border border-red-200 bg-red-50"></div>
             <span>Absences</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="h-4 w-4 rounded ring-2 ring-primary"></div>
+            <div className="ring-primary h-4 w-4 rounded ring-2"></div>
             <span>Aujourd'hui</span>
           </div>
         </div>

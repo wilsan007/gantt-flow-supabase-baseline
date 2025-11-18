@@ -198,7 +198,7 @@ const ActivityDetailDialogBase: React.FC<ActivityDetailDialogProps> = ({
                     rows={4}
                   />
                 ) : (
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-muted-foreground text-sm">
                     {activity.description || 'Aucune description'}
                   </p>
                 )}
@@ -214,7 +214,7 @@ const ActivityDetailDialogBase: React.FC<ActivityDetailDialogProps> = ({
                     }
                   />
                 ) : (
-                  <p className="rounded bg-muted p-2 font-mono text-sm">
+                  <p className="bg-muted rounded p-2 font-mono text-sm">
                     {activity.task_title_template || 'Aucun template'}
                   </p>
                 )}
@@ -258,7 +258,7 @@ const ActivityDetailDialogBase: React.FC<ActivityDetailDialogProps> = ({
                 />
               ) : schedule ? (
                 <div className="space-y-4">
-                  <div className="rounded-lg bg-muted p-4">
+                  <div className="bg-muted rounded-lg p-4">
                     <Label>Règle RRULE</Label>
                     <code className="mt-2 block text-sm">{schedule.rrule || 'Aucune'}</code>
                   </div>

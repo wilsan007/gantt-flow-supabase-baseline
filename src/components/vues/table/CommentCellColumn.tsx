@@ -119,11 +119,11 @@ export const CommentCellColumn = ({ task, isSubtask }: CommentCellProps) => {
           <ScrollArea className="mb-3 flex-1">
             <div className="space-y-3 pr-2">
               {comments.length === 0 ? (
-                <div className="text-center text-sm text-muted-foreground">Aucun commentaire</div>
+                <div className="text-muted-foreground text-center text-sm">Aucun commentaire</div>
               ) : (
                 comments.map(comment => (
-                  <div key={comment.id} className="rounded-md bg-muted/30 p-2">
-                    <div className="mb-1 text-xs text-muted-foreground">
+                  <div key={comment.id} className="bg-muted/30 rounded-md p-2">
+                    <div className="text-muted-foreground mb-1 text-xs">
                       {formatDistanceToNow(new Date(comment.created_at), {
                         addSuffix: true,
                         locale: fr,

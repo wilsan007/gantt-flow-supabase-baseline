@@ -36,7 +36,7 @@ export const RoleIndicator = () => {
   if (isLoading) {
     return (
       <div className="animate-pulse">
-        <div className="h-6 w-20 rounded bg-muted"></div>
+        <div className="bg-muted h-6 w-20 rounded"></div>
       </div>
     );
   }
@@ -99,12 +99,12 @@ export const RoleIndicator = () => {
         <div className="space-y-4 p-4">
           {/* En-tête avec rôle principal */}
           <div className="flex items-center gap-3 border-b pb-3">
-            <div className={`rounded-full bg-muted p-2 ${roleDisplay.color}`}>
+            <div className={`bg-muted rounded-full p-2 ${roleDisplay.color}`}>
               <IconComponent className="h-4 w-4" />
             </div>
             <div>
               <p className="font-medium">{roleDisplay.label}</p>
-              <p className="text-xs text-muted-foreground">Niveau : {getAccessLevel()}</p>
+              <p className="text-muted-foreground text-xs">Niveau : {getAccessLevel()}</p>
             </div>
           </div>
 
@@ -141,7 +141,7 @@ export const RoleIndicator = () => {
                 {getAccessRestrictions().map((restriction, index) => (
                   <div
                     key={index}
-                    className="flex items-center gap-2 text-xs text-muted-foreground"
+                    className="text-muted-foreground flex items-center gap-2 text-xs"
                   >
                     <XCircle className="h-3 w-3 text-red-500" />
                     <span>{restriction}</span>
@@ -153,7 +153,7 @@ export const RoleIndicator = () => {
 
           {/* Permissions spécifiques */}
           <div className="space-y-2 border-t pt-2">
-            <p className="text-xs font-medium text-muted-foreground">Permissions détaillées :</p>
+            <p className="text-muted-foreground text-xs font-medium">Permissions détaillées :</p>
             <div className="grid grid-cols-2 gap-1 text-xs">
               <div className="flex items-center gap-1">
                 {accessRights.canManageUsers ? (

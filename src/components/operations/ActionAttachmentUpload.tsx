@@ -245,7 +245,7 @@ export const ActionAttachmentUpload: React.FC<ActionAttachmentUploadProps> = ({
           <DialogDescription>
             Action : <span className="font-semibold">{actionTitle}</span>
             <br />
-            <span className="mt-2 flex items-center gap-1 text-xs text-muted-foreground">
+            <span className="text-muted-foreground mt-2 flex items-center gap-1 text-xs">
               <AlertCircle className="h-3 w-3" />
               L'action ne peut être validée sans au moins un fichier
             </span>
@@ -254,7 +254,7 @@ export const ActionAttachmentUpload: React.FC<ActionAttachmentUploadProps> = ({
 
         {/* Zone de sélection */}
         <div className="space-y-4">
-          <div className="rounded-lg border-2 border-dashed border-muted-foreground/25 p-6 text-center transition-colors hover:border-primary">
+          <div className="border-muted-foreground/25 hover:border-primary rounded-lg border-2 border-dashed p-6 text-center transition-colors">
             <input
               ref={fileInputRef}
               type="file"
@@ -264,9 +264,9 @@ export const ActionAttachmentUpload: React.FC<ActionAttachmentUploadProps> = ({
               className="hidden"
               disabled={uploading}
             />
-            <Upload className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
+            <Upload className="text-muted-foreground mx-auto mb-4 h-12 w-12" />
             <p className="mb-1 text-sm font-medium">Cliquez pour sélectionner ou glissez-déposez</p>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-muted-foreground text-xs">
               Images, PDF, Documents Word • Max 10MB par fichier
             </p>
             <Button
@@ -289,7 +289,7 @@ export const ActionAttachmentUpload: React.FC<ActionAttachmentUploadProps> = ({
               </div>
 
               {files.map((fileItem, index) => (
-                <div key={index} className="space-y-3 rounded-lg border bg-muted/30 p-4">
+                <div key={index} className="bg-muted/30 space-y-3 rounded-lg border p-4">
                   <div className="flex items-start gap-3">
                     {/* Icon/Preview */}
                     <div className="flex-shrink-0">
@@ -307,7 +307,7 @@ export const ActionAttachmentUpload: React.FC<ActionAttachmentUploadProps> = ({
                     {/* Info */}
                     <div className="min-w-0 flex-1">
                       <p className="truncate font-medium">{fileItem.file.name}</p>
-                      <p className="text-xs text-muted-foreground">
+                      <p className="text-muted-foreground text-xs">
                         {(fileItem.file.size / 1024).toFixed(1)} KB •{' '}
                         {getFileType(fileItem.file.type).toUpperCase()}
                       </p>

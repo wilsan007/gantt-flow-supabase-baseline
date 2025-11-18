@@ -210,7 +210,7 @@ export const TaskAssignmentManager: React.FC<TaskAssignmentManagerProps> = ({
         </CardHeader>
         <CardContent>
           {unassignedTasks.length === 0 ? (
-            <p className="py-4 text-center text-muted-foreground">
+            <p className="text-muted-foreground py-4 text-center">
               Toutes les tâches sont assignées
             </p>
           ) : (
@@ -264,7 +264,7 @@ export const TaskAssignmentManager: React.FC<TaskAssignmentManagerProps> = ({
                   </Avatar>
                   <div>
                     <h4 className="font-medium">{employee.full_name}</h4>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-muted-foreground text-sm">
                       {employeeTasks.length} tâche{employeeTasks.length > 1 ? 's' : ''} •{' '}
                       {totalHours}h
                     </p>
@@ -301,7 +301,7 @@ export const TaskAssignmentManager: React.FC<TaskAssignmentManagerProps> = ({
                   ))}
 
                   {employeeTasks.length > 3 && (
-                    <p className="text-center text-xs text-muted-foreground">
+                    <p className="text-muted-foreground text-center text-xs">
                       +{employeeTasks.length - 3} autres tâches
                     </p>
                   )}

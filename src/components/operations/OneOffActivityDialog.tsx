@@ -213,7 +213,7 @@ const OneOffActivityDialogBase: React.FC<OneOffActivityDialogProps> = ({
           {/* Actions Templates */}
           <div className="space-y-2">
             <Label>Actions à effectuer (optionnel)</Label>
-            <p className="mb-3 text-sm text-muted-foreground">
+            <p className="text-muted-foreground mb-3 text-sm">
               Définissez une checklist d'actions qui seront automatiquement ajoutées à la tâche
             </p>
             <ActionTemplateList templates={actionTemplates} onChange={setActionTemplates} />
@@ -221,7 +221,7 @@ const OneOffActivityDialogBase: React.FC<OneOffActivityDialogProps> = ({
 
           {/* Erreur */}
           {error && (
-            <div className="rounded border border-destructive bg-destructive/10 px-4 py-3 text-destructive">
+            <div className="border-destructive bg-destructive/10 text-destructive rounded border px-4 py-3">
               <p className="text-sm font-medium">{error}</p>
             </div>
           )}

@@ -176,12 +176,12 @@ export const TaskCalendar: React.FC = () => {
     <div className="space-y-6">
       {/* Header - Design Futuriste Responsive */}
       <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 p-[2px] shadow-2xl">
-        <div className="flex flex-col gap-4 rounded-2xl bg-background/95 p-4 backdrop-blur-xl md:p-6 lg:flex-row lg:items-center lg:justify-between">
+        <div className="bg-background/95 flex flex-col gap-4 rounded-2xl p-4 backdrop-blur-xl md:p-6 lg:flex-row lg:items-center lg:justify-between">
           <div className="space-y-1">
             <h2 className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-2xl font-bold text-transparent md:text-3xl">
               📅 Calendrier
             </h2>
-            <p className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-base font-semibold capitalize text-transparent md:text-lg">
+            <p className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-base font-semibold text-transparent capitalize md:text-lg">
               {format(currentDate, 'MMMM yyyy', { locale: fr })}
             </p>
           </div>
@@ -260,7 +260,7 @@ export const TaskCalendar: React.FC = () => {
         <CardContent className="pt-6">
           <div className="flex flex-wrap items-center gap-4">
             <div className="flex items-center gap-2">
-              <Filter className="h-4 w-4 text-muted-foreground" />
+              <Filter className="text-muted-foreground h-4 w-4" />
               <label className="text-sm font-medium">Filtrer par personne :</label>
             </div>
             <Select
@@ -294,7 +294,7 @@ export const TaskCalendar: React.FC = () => {
             </Select>
             {selectedAssignee !== 'all' && <Badge variant="secondary">Filtre actif</Badge>}
             {!employeesLoading && employees.length === 0 && (
-              <span className="text-xs text-muted-foreground">(Aucun employé disponible)</span>
+              <span className="text-muted-foreground text-xs">(Aucun employé disponible)</span>
             )}
           </div>
         </CardContent>
@@ -311,7 +311,7 @@ export const TaskCalendar: React.FC = () => {
                   {['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'].map((day, idx) => (
                     <div
                       key={day}
-                      className="rounded-lg bg-gradient-to-r from-blue-500/10 to-purple-500/10 py-1.5 text-center text-[10px] font-bold text-foreground sm:py-2 sm:text-xs md:text-sm"
+                      className="text-foreground rounded-lg bg-gradient-to-r from-blue-500/10 to-purple-500/10 py-1.5 text-center text-[10px] font-bold sm:py-2 sm:text-xs md:text-sm"
                     >
                       <span className="hidden sm:inline">{day}</span>
                       <span className="sm:hidden">{day.charAt(0)}</span>
@@ -412,7 +412,7 @@ export const TaskCalendar: React.FC = () => {
                       key={day.toISOString()}
                       className={`p-2 text-center ${isToday(day) ? 'rounded-lg bg-blue-50 dark:bg-blue-950/20' : ''}`}
                     >
-                      <div className="text-sm text-muted-foreground">
+                      <div className="text-muted-foreground text-sm">
                         {format(day, 'EEE', { locale: fr })}
                       </div>
                       <div className="text-2xl font-bold">{format(day, 'd')}</div>
@@ -466,7 +466,7 @@ export const TaskCalendar: React.FC = () => {
                 <div className="mb-4 rounded-full bg-gradient-to-r from-gray-400/20 to-gray-500/20 p-4">
                   <CalendarIcon className="h-8 w-8 text-gray-400" />
                 </div>
-                <p className="text-center text-sm font-medium text-muted-foreground">
+                <p className="text-muted-foreground text-center text-sm font-medium">
                   Aucune tâche pour ce jour
                 </p>
               </div>
@@ -475,15 +475,15 @@ export const TaskCalendar: React.FC = () => {
                 {selectedDayTasks.map(task => (
                   <div
                     key={task.id}
-                    className="group relative overflow-hidden rounded-lg border-2 border-transparent bg-gradient-to-br from-white/80 to-gray-50/80 p-3 shadow-lg backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:border-purple-500/50 hover:shadow-2xl dark:from-gray-800/80 dark:to-gray-900/80 sm:rounded-xl sm:p-4"
+                    className="group relative overflow-hidden rounded-lg border-2 border-transparent bg-gradient-to-br from-white/80 to-gray-50/80 p-3 shadow-lg backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:border-purple-500/50 hover:shadow-2xl sm:rounded-xl sm:p-4 dark:from-gray-800/80 dark:to-gray-900/80"
                   >
                     <div className="flex items-start justify-between gap-2 sm:gap-3">
                       <div className="min-w-0 flex-1">
-                        <h4 className="text-xs font-bold text-foreground sm:text-sm">
+                        <h4 className="text-foreground text-xs font-bold sm:text-sm">
                           {task.title}
                         </h4>
                         {task.description && (
-                          <p className="mt-1 line-clamp-2 text-[11px] text-muted-foreground sm:mt-1.5 sm:text-xs">
+                          <p className="text-muted-foreground mt-1 line-clamp-2 text-[11px] sm:mt-1.5 sm:text-xs">
                             {task.description}
                           </p>
                         )}
@@ -521,7 +521,7 @@ export const TaskCalendar: React.FC = () => {
       <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-4">
         {/* Total tâches */}
         <Card className="hover:shadow-3xl group relative overflow-hidden rounded-xl border-0 bg-gradient-to-br from-blue-500 to-cyan-500 p-[2px] shadow-2xl transition-all duration-300 hover:scale-105 sm:rounded-2xl">
-          <CardContent className="rounded-xl bg-background/95 py-4 backdrop-blur-xl sm:rounded-2xl sm:pt-6">
+          <CardContent className="bg-background/95 rounded-xl py-4 backdrop-blur-xl sm:rounded-2xl sm:pt-6">
             <div className="text-center">
               <div className="mb-1.5 flex justify-center sm:mb-2">
                 <div className="rounded-full bg-gradient-to-r from-blue-500 to-cyan-500 p-2 sm:p-3">
@@ -531,7 +531,7 @@ export const TaskCalendar: React.FC = () => {
               <p className="bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-2xl font-bold text-transparent sm:text-3xl md:text-4xl">
                 {tasks.length}
               </p>
-              <p className="mt-0.5 text-xs font-semibold text-muted-foreground sm:mt-1 sm:text-sm">
+              <p className="text-muted-foreground mt-0.5 text-xs font-semibold sm:mt-1 sm:text-sm">
                 Total tâches
               </p>
             </div>
@@ -540,7 +540,7 @@ export const TaskCalendar: React.FC = () => {
 
         {/* Jours avec tâches */}
         <Card className="hover:shadow-3xl group relative overflow-hidden rounded-xl border-0 bg-gradient-to-br from-purple-500 to-pink-500 p-[2px] shadow-2xl transition-all duration-300 hover:scale-105 sm:rounded-2xl">
-          <CardContent className="rounded-xl bg-background/95 py-4 backdrop-blur-xl sm:rounded-2xl sm:pt-6">
+          <CardContent className="bg-background/95 rounded-xl py-4 backdrop-blur-xl sm:rounded-2xl sm:pt-6">
             <div className="text-center">
               <div className="mb-1.5 flex justify-center sm:mb-2">
                 <div className="rounded-full bg-gradient-to-r from-purple-500 to-pink-500 p-2 sm:p-3">
@@ -550,7 +550,7 @@ export const TaskCalendar: React.FC = () => {
               <p className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-2xl font-bold text-transparent sm:text-3xl md:text-4xl">
                 {Array.from(tasksByDate.values()).filter(t => t.length > 0).length}
               </p>
-              <p className="mt-0.5 text-xs font-semibold text-muted-foreground sm:mt-1 sm:text-sm">
+              <p className="text-muted-foreground mt-0.5 text-xs font-semibold sm:mt-1 sm:text-sm">
                 Jours avec tâches
               </p>
             </div>
@@ -559,7 +559,7 @@ export const TaskCalendar: React.FC = () => {
 
         {/* Moyenne par jour */}
         <Card className="hover:shadow-3xl group relative overflow-hidden rounded-xl border-0 bg-gradient-to-br from-emerald-500 to-teal-500 p-[2px] shadow-2xl transition-all duration-300 hover:scale-105 sm:rounded-2xl">
-          <CardContent className="rounded-xl bg-background/95 py-4 backdrop-blur-xl sm:rounded-2xl sm:pt-6">
+          <CardContent className="bg-background/95 rounded-xl py-4 backdrop-blur-xl sm:rounded-2xl sm:pt-6">
             <div className="text-center">
               <div className="mb-1.5 flex justify-center sm:mb-2">
                 <div className="rounded-full bg-gradient-to-r from-emerald-500 to-teal-500 p-2 sm:p-3">
@@ -569,7 +569,7 @@ export const TaskCalendar: React.FC = () => {
               <p className="bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-2xl font-bold text-transparent sm:text-3xl md:text-4xl">
                 {Math.round((tasks.length / days.length) * 10) / 10}
               </p>
-              <p className="mt-0.5 text-xs font-semibold text-muted-foreground sm:mt-1 sm:text-sm">
+              <p className="text-muted-foreground mt-0.5 text-xs font-semibold sm:mt-1 sm:text-sm">
                 Tâches/jour moyen
               </p>
             </div>
@@ -578,7 +578,7 @@ export const TaskCalendar: React.FC = () => {
 
         {/* Haute priorité */}
         <Card className="hover:shadow-3xl group relative overflow-hidden rounded-xl border-0 bg-gradient-to-br from-rose-500 to-red-500 p-[2px] shadow-2xl transition-all duration-300 hover:scale-105 sm:rounded-2xl">
-          <CardContent className="rounded-xl bg-background/95 py-4 backdrop-blur-xl sm:rounded-2xl sm:pt-6">
+          <CardContent className="bg-background/95 rounded-xl py-4 backdrop-blur-xl sm:rounded-2xl sm:pt-6">
             <div className="text-center">
               <div className="mb-1.5 flex justify-center sm:mb-2">
                 <div className="rounded-full bg-gradient-to-r from-rose-500 to-red-500 p-2 sm:p-3">
@@ -588,7 +588,7 @@ export const TaskCalendar: React.FC = () => {
               <p className="bg-gradient-to-r from-rose-600 to-red-600 bg-clip-text text-2xl font-bold text-transparent sm:text-3xl md:text-4xl">
                 {tasks.filter(t => t.priority?.toLowerCase() === 'high').length}
               </p>
-              <p className="mt-0.5 text-xs font-semibold text-muted-foreground sm:mt-1 sm:text-sm">
+              <p className="text-muted-foreground mt-0.5 text-xs font-semibold sm:mt-1 sm:text-sm">
                 Haute priorité
               </p>
             </div>

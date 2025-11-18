@@ -74,7 +74,7 @@ export const AssigneeSelect = ({
       <PopoverTrigger asChild>
         <Button
           variant="ghost"
-          className="h-auto w-full justify-start py-1 text-left font-normal hover:bg-accent"
+          className="hover:bg-accent h-auto w-full justify-start py-1 text-left font-normal"
         >
           {assignedEmployee ? (
             <div className="flex items-center gap-2">
@@ -87,18 +87,18 @@ export const AssigneeSelect = ({
               <span className="text-sm">{assignedEmployee.full_name}</span>
             </div>
           ) : (
-            <div className="flex items-center gap-2 text-muted-foreground">
+            <div className="text-muted-foreground flex items-center gap-2">
               <User className="h-4 w-4" />
               <span className="text-sm">Non assigné</span>
             </div>
           )}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-80 border bg-background p-0" align="start">
+      <PopoverContent className="bg-background w-80 border p-0" align="start">
         <div className="space-y-2 p-4">
           <div className="flex items-center justify-between">
             <h4 className="text-sm font-medium">Assigner à</h4>
-            <span className="text-xs text-muted-foreground">
+            <span className="text-muted-foreground text-xs">
               {filteredEmployees.length} personne{filteredEmployees.length > 1 ? 's' : ''}
             </span>
           </div>
@@ -106,25 +106,25 @@ export const AssigneeSelect = ({
           {/* Option Non assigné */}
           <button
             onClick={handleUnassign}
-            className="flex w-full items-center gap-2 rounded-sm px-2 py-2 text-left text-sm hover:bg-accent"
+            className="hover:bg-accent flex w-full items-center gap-2 rounded-sm px-2 py-2 text-left text-sm"
           >
-            <User className="h-5 w-5 text-muted-foreground" />
+            <User className="text-muted-foreground h-5 w-5" />
             <span className="flex-1">Non assigné</span>
             {!assignedEmployee && <Check className="h-4 w-4 text-green-600" />}
           </button>
 
           <div className="border-t pt-2">
             {loading ? (
-              <div className="py-2 text-sm text-muted-foreground">Chargement...</div>
+              <div className="text-muted-foreground py-2 text-sm">Chargement...</div>
             ) : filteredEmployees.length === 0 ? (
-              <div className="py-2 text-sm text-muted-foreground">Aucun employé dans ce tenant</div>
+              <div className="text-muted-foreground py-2 text-sm">Aucun employé dans ce tenant</div>
             ) : (
               <div className="max-h-48 space-y-1 overflow-y-auto">
                 {filteredEmployees.map(employee => (
                   <button
                     key={employee.id}
                     onClick={() => handleProfileSelect(employee.user_id || employee.id)}
-                    className="flex w-full items-center gap-2 rounded-sm px-2 py-2 text-left text-sm hover:bg-accent"
+                    className="hover:bg-accent flex w-full items-center gap-2 rounded-sm px-2 py-2 text-left text-sm"
                   >
                     <Avatar className="h-6 w-6">
                       <AvatarImage src={employee.avatar_url} />

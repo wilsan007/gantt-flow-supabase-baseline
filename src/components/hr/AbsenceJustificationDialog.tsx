@@ -183,7 +183,7 @@ function AbsenceJustificationDialogBase({
                 <FileUp className="h-4 w-4" />
               </Button>
             </div>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-muted-foreground text-xs">
               {absenceType === 'sick_leave'
                 ? 'Certificat médical obligatoire pour arrêt maladie'
                 : 'Téléchargez ou collez le lien du justificatif'}

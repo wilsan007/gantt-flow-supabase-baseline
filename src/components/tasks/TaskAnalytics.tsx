@@ -316,7 +316,7 @@ export const TaskAnalytics: React.FC = () => {
         </CardHeader>
         <CardContent>
           {topContributors.length === 0 ? (
-            <p className="py-4 text-center text-muted-foreground">
+            <p className="text-muted-foreground py-4 text-center">
               Aucune tâche terminée récemment
             </p>
           ) : (
@@ -324,7 +324,7 @@ export const TaskAnalytics: React.FC = () => {
               {topContributors.map((contributor, index) => (
                 <div
                   key={contributor.id}
-                  className="flex items-center justify-between rounded-lg border p-3 transition-colors hover:bg-accent/50"
+                  className="hover:bg-accent/50 flex items-center justify-between rounded-lg border p-3 transition-colors"
                 >
                   <div className="flex items-center gap-3">
                     <div
@@ -342,7 +342,7 @@ export const TaskAnalytics: React.FC = () => {
                     </div>
                     <div>
                       <p className="font-medium">{contributor.name}</p>
-                      <p className="text-xs text-muted-foreground">
+                      <p className="text-muted-foreground text-xs">
                         {contributor.completedTasks} tâche
                         {contributor.completedTasks > 1 ? 's' : ''} terminée
                         {contributor.completedTasks > 1 ? 's' : ''}
@@ -380,17 +380,17 @@ export const TaskAnalytics: React.FC = () => {
           <div className="grid grid-cols-1 gap-4 text-center md:grid-cols-3">
             <div>
               <p className="text-2xl font-bold">{tasks.length}</p>
-              <p className="text-sm text-muted-foreground">Total tâches</p>
+              <p className="text-muted-foreground text-sm">Total tâches</p>
             </div>
             <div>
               <p className="text-2xl font-bold">{employees.length}</p>
-              <p className="text-sm text-muted-foreground">Collaborateurs</p>
+              <p className="text-muted-foreground text-sm">Collaborateurs</p>
             </div>
             <div>
               <p className="text-2xl font-bold">
                 {tasks.filter(t => t.status === 'in_progress' || t.status === 'en_cours').length}
               </p>
-              <p className="text-sm text-muted-foreground">En cours</p>
+              <p className="text-muted-foreground text-sm">En cours</p>
             </div>
           </div>
         </CardContent>

@@ -15,11 +15,11 @@ interface ErrorStateProps {
 
 export const ErrorState: React.FC<ErrorStateProps> = ({ error, onRetry }) => {
   return (
-    <Card className="w-full border-destructive">
+    <Card className="border-destructive w-full">
       <CardContent className="flex flex-col items-center justify-center py-12">
-        <AlertCircle className="mb-4 h-12 w-12 text-destructive" />
-        <p className="mb-2 text-lg font-semibold text-destructive">Erreur de chargement</p>
-        <p className="mb-6 max-w-md text-center text-sm text-muted-foreground">
+        <AlertCircle className="text-destructive mb-4 h-12 w-12" />
+        <p className="text-destructive mb-2 text-lg font-semibold">Erreur de chargement</p>
+        <p className="text-muted-foreground mb-6 max-w-md text-center text-sm">
           {error || 'Une erreur est survenue lors du chargement des données'}
         </p>
         {onRetry && (

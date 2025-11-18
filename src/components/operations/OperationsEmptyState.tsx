@@ -27,7 +27,7 @@ export const OperationsEmptyState: React.FC<OperationsEmptyStateProps> = ({
             <Sparkles className="h-10 w-10 text-white" />
           </div>
           <h1 className="mb-4 text-4xl font-bold">Activités Opérationnelles</h1>
-          <p className="mx-auto max-w-2xl text-xl text-muted-foreground">
+          <p className="text-muted-foreground mx-auto max-w-2xl text-xl">
             Automatisez vos tâches récurrentes et planifiez vos opérations ponctuelles hors projet
           </p>
         </div>
@@ -43,7 +43,7 @@ export const OperationsEmptyState: React.FC<OperationsEmptyStateProps> = ({
                 </div>
                 <div>
                   <h3 className="mb-2 text-xl font-semibold">Activités Récurrentes</h3>
-                  <p className="mb-4 text-sm text-muted-foreground">
+                  <p className="text-muted-foreground mb-4 text-sm">
                     Génération automatique de tâches selon une planification (quotidienne,
                     hebdomadaire, mensuelle)
                   </p>
@@ -79,7 +79,7 @@ export const OperationsEmptyState: React.FC<OperationsEmptyStateProps> = ({
                 </div>
                 <div>
                   <h3 className="mb-2 text-xl font-semibold">Activités Ponctuelles</h3>
-                  <p className="mb-4 text-sm text-muted-foreground">
+                  <p className="text-muted-foreground mb-4 text-sm">
                     Création manuelle d'une tâche unique à une date précise
                   </p>
                 </div>
@@ -117,21 +117,21 @@ export const OperationsEmptyState: React.FC<OperationsEmptyStateProps> = ({
             <div className="text-center">
               <div className="mb-2 text-3xl">🔄</div>
               <h4 className="mb-2 font-semibold">Génération Automatique</h4>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-muted-foreground text-sm">
                 Les tâches récurrentes sont générées automatiquement chaque jour par le système
               </p>
             </div>
             <div className="text-center">
               <div className="mb-2 text-3xl">✅</div>
               <h4 className="mb-2 font-semibold">Actions Prédéfinies</h4>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-muted-foreground text-sm">
                 Créez des checklists qui seront automatiquement clonées sur chaque tâche
               </p>
             </div>
             <div className="text-center">
               <div className="mb-2 text-3xl">📊</div>
               <h4 className="mb-2 font-semibold">Statistiques Détaillées</h4>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-muted-foreground text-sm">
                 Suivez le taux de complétion et les performances de vos activités
               </p>
             </div>
@@ -140,7 +140,7 @@ export const OperationsEmptyState: React.FC<OperationsEmptyStateProps> = ({
 
         {/* Call to Action */}
         <div className="mt-12 text-center">
-          <p className="text-sm text-muted-foreground">
+          <p className="text-muted-foreground text-sm">
             Besoin d'aide pour démarrer ?{' '}
             <a href="/docs/operations" className="text-primary hover:underline">
               Consultez la documentation

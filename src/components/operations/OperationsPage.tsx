@@ -101,7 +101,7 @@ export const OperationsPage: React.FC = () => {
       <div className="mb-6 flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Activités Opérationnelles</h1>
-          <p className="mt-1 text-muted-foreground">
+          <p className="text-muted-foreground mt-1">
             Gérez vos tâches récurrentes et ponctuelles hors projet
           </p>
         </div>
@@ -146,7 +146,7 @@ export const OperationsPage: React.FC = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{tasks.length}</div>
-            <p className="mt-1 text-xs text-muted-foreground">
+            <p className="text-muted-foreground mt-1 text-xs">
               {metrics.cacheHit ? '⚡ Cache' : `${metrics.fetchTime.toFixed(0)}ms`}
             </p>
           </CardContent>
@@ -158,7 +158,7 @@ export const OperationsPage: React.FC = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-gray-600">{todoCount}</div>
-            <p className="mt-1 text-xs text-muted-foreground">Non commencées</p>
+            <p className="text-muted-foreground mt-1 text-xs">Non commencées</p>
           </CardContent>
         </Card>
 
@@ -168,7 +168,7 @@ export const OperationsPage: React.FC = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-blue-600">{inProgressCount}</div>
-            <p className="mt-1 text-xs text-muted-foreground">Actives</p>
+            <p className="text-muted-foreground mt-1 text-xs">Actives</p>
           </CardContent>
         </Card>
 
@@ -178,7 +178,7 @@ export const OperationsPage: React.FC = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-green-600">{completedCount}</div>
-            <p className="mt-1 text-xs text-muted-foreground">Complétées</p>
+            <p className="text-muted-foreground mt-1 text-xs">Complétées</p>
           </CardContent>
         </Card>
       </div>
@@ -189,7 +189,7 @@ export const OperationsPage: React.FC = () => {
           <div className="flex flex-col gap-4 md:flex-row">
             {/* Recherche */}
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transform text-muted-foreground" />
+              <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform" />
               <Input
                 placeholder="Rechercher une activité..."
                 value={searchTerm}
@@ -232,13 +232,13 @@ export const OperationsPage: React.FC = () => {
       {/* Liste des tâches */}
       {loading && tasks.length === 0 ? (
         <div className="py-12 text-center">
-          <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
+          <div className="border-primary mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-4 border-t-transparent"></div>
           <p className="text-muted-foreground">Chargement des activités...</p>
         </div>
       ) : error ? (
         <Card className="border-destructive">
           <CardContent className="pt-6">
-            <div className="text-center text-destructive">
+            <div className="text-destructive text-center">
               <p className="font-semibold">Erreur lors du chargement</p>
               <p className="mt-2 text-sm">{error}</p>
               <Button onClick={() => refresh()} className="mt-4">
@@ -251,9 +251,9 @@ export const OperationsPage: React.FC = () => {
         <Card>
           <CardContent className="pt-6">
             <div className="py-12 text-center">
-              <CalendarClock className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
+              <CalendarClock className="text-muted-foreground mx-auto mb-4 h-12 w-12" />
               <p className="text-lg font-semibold">Aucune activité trouvée</p>
-              <p className="mt-2 text-sm text-muted-foreground">
+              <p className="text-muted-foreground mt-2 text-sm">
                 Créez votre première activité récurrente ou ponctuelle
               </p>
               <div className="mt-6 flex justify-center gap-2">
@@ -279,9 +279,9 @@ export const OperationsPage: React.FC = () => {
         <Card>
           <CardContent className="pt-6">
             <div className="py-12 text-center">
-              <CalendarClock className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
+              <CalendarClock className="text-muted-foreground mx-auto mb-4 h-12 w-12" />
               <p className="text-lg font-semibold">Mode Cards temporairement désactivé</p>
-              <p className="mt-2 text-sm text-muted-foreground">
+              <p className="text-muted-foreground mt-2 text-sm">
                 Utilisez le mode Tableau pour gérer vos tâches opérationnelles
               </p>
               <Button onClick={() => setViewMode('table')} className="mt-4">

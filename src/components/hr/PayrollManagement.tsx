@@ -146,7 +146,7 @@ export const PayrollManagement = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-foreground">Gestion de la Paie</h2>
+          <h2 className="text-foreground text-2xl font-bold">Gestion de la Paie</h2>
           <p className="text-muted-foreground">Préparation et contrôles de paie</p>
         </div>
         <div className="flex gap-2">
@@ -191,7 +191,7 @@ export const PayrollManagement = () => {
                       <CardTitle className="text-lg">
                         {formatPeriod(period.year, period.month)}
                       </CardTitle>
-                      <p className="text-sm text-muted-foreground">
+                      <p className="text-muted-foreground text-sm">
                         {period.totalEmployees} employés
                       </p>
                     </div>
@@ -204,19 +204,19 @@ export const PayrollManagement = () => {
                 <CardContent className="space-y-4">
                   <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
                     <div>
-                      <p className="text-sm font-medium text-muted-foreground">Salaire brut</p>
+                      <p className="text-muted-foreground text-sm font-medium">Salaire brut</p>
                       <p className="text-xl font-bold">{period.totalGross.toLocaleString()} €</p>
                     </div>
                     <div>
-                      <p className="text-sm font-medium text-muted-foreground">Salaire net</p>
+                      <p className="text-muted-foreground text-sm font-medium">Salaire net</p>
                       <p className="text-xl font-bold">{period.totalNet.toLocaleString()} €</p>
                     </div>
                     <div>
-                      <p className="text-sm font-medium text-muted-foreground">Charges sociales</p>
+                      <p className="text-muted-foreground text-sm font-medium">Charges sociales</p>
                       <p className="text-xl font-bold">{period.totalCharges.toLocaleString()} €</p>
                     </div>
                     <div>
-                      <p className="text-sm font-medium text-muted-foreground">Coût total</p>
+                      <p className="text-muted-foreground text-sm font-medium">Coût total</p>
                       <p className="text-xl font-bold">
                         {(period.totalGross + period.totalCharges).toLocaleString()} €
                       </p>
@@ -224,7 +224,7 @@ export const PayrollManagement = () => {
                   </div>
 
                   {period.lockDate && (
-                    <div className="text-sm text-muted-foreground">
+                    <div className="text-muted-foreground text-sm">
                       🔒 Verrouillé le {period.lockDate}
                       {period.processedDate && ` • Traité le ${period.processedDate}`}
                     </div>
@@ -283,30 +283,30 @@ export const PayrollManagement = () => {
                   <div className="flex items-center justify-between">
                     <div>
                       <CardTitle className="text-lg">{payroll.employeeName}</CardTitle>
-                      <p className="text-sm text-muted-foreground">{payroll.position}</p>
+                      <p className="text-muted-foreground text-sm">{payroll.position}</p>
                     </div>
                     <div className="text-right">
                       <p className="text-xl font-bold">{payroll.netTotal.toLocaleString()} €</p>
-                      <p className="text-sm text-muted-foreground">Net à payer</p>
+                      <p className="text-muted-foreground text-sm">Net à payer</p>
                     </div>
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
                     <div>
-                      <p className="text-sm font-medium text-muted-foreground">Salaire de base</p>
+                      <p className="text-muted-foreground text-sm font-medium">Salaire de base</p>
                       <p className="font-bold">{payroll.baseSalary.toLocaleString()} €</p>
                     </div>
                     <div>
-                      <p className="text-sm font-medium text-muted-foreground">Total brut</p>
+                      <p className="text-muted-foreground text-sm font-medium">Total brut</p>
                       <p className="font-bold">{payroll.grossTotal.toLocaleString()} €</p>
                     </div>
                     <div>
-                      <p className="text-sm font-medium text-muted-foreground">Charges sociales</p>
+                      <p className="text-muted-foreground text-sm font-medium">Charges sociales</p>
                       <p className="font-bold">{payroll.socialCharges.toLocaleString()} €</p>
                     </div>
                     <div>
-                      <p className="text-sm font-medium text-muted-foreground">
+                      <p className="text-muted-foreground text-sm font-medium">
                         Heures travaillées
                       </p>
                       <p className="font-bold">
@@ -370,14 +370,14 @@ export const PayrollManagement = () => {
                       {getStatusIcon(check.status)}
                       <div>
                         <h3 className="font-medium">{check.description}</h3>
-                        <p className="text-sm text-muted-foreground">{check.details}</p>
+                        <p className="text-muted-foreground text-sm">{check.details}</p>
                       </div>
                     </div>
                     <Badge className={getCheckStatusColor(check.status)}>{check.status}</Badge>
                   </div>
 
                   {check.affectedEmployees && check.affectedEmployees.length > 0 && (
-                    <div className="mt-3 rounded-lg bg-muted/50 p-3">
+                    <div className="bg-muted/50 mt-3 rounded-lg p-3">
                       <p className="mb-2 text-sm font-medium">Employés concernés:</p>
                       <div className="flex flex-wrap gap-2">
                         {check.affectedEmployees.map((employee, index) => (
@@ -404,7 +404,7 @@ export const PayrollManagement = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <p className="text-sm text-muted-foreground">
+                <p className="text-muted-foreground text-sm">
                   Générer les écritures comptables pour intégration dans votre logiciel de
                   comptabilité
                 </p>
@@ -429,7 +429,7 @@ export const PayrollManagement = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <p className="text-sm text-muted-foreground">
+                <p className="text-muted-foreground text-sm">
                   Préparer les fichiers pour les déclarations URSSAF et autres organismes sociaux
                 </p>
                 <div className="flex gap-2">
@@ -453,7 +453,7 @@ export const PayrollManagement = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <p className="text-sm text-muted-foreground">
+                <p className="text-muted-foreground text-sm">
                   Analyses des coûts salariaux par département, évolution des charges
                 </p>
                 <div className="flex gap-2">
@@ -477,7 +477,7 @@ export const PayrollManagement = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <p className="text-sm text-muted-foreground">
+                <p className="text-muted-foreground text-sm">
                   Génération automatique et envoi des bulletins de paie par email
                 </p>
                 <div className="flex gap-2">

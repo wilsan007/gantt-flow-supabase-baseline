@@ -53,8 +53,8 @@ export const PermissionGate: React.FC<PermissionGateProps> = ({
   if (isLoading) {
     return (
       <div className="flex items-center justify-center p-2">
-        <div className="flex animate-pulse items-center gap-2 text-sm text-muted-foreground">
-          <div className="h-4 w-4 rounded bg-muted"></div>
+        <div className="text-muted-foreground flex animate-pulse items-center gap-2 text-sm">
+          <div className="bg-muted h-4 w-4 rounded"></div>
           <span>Vérification des permissions...</span>
         </div>
       </div>
@@ -74,9 +74,9 @@ export const PermissionGate: React.FC<PermissionGateProps> = ({
 
     // Fallback par défaut
     return (
-      <Card className="border-dashed border-muted-foreground/30">
+      <Card className="border-muted-foreground/30 border-dashed">
         <CardContent className="flex items-center justify-center p-4">
-          <div className="text-center text-muted-foreground">
+          <div className="text-muted-foreground text-center">
             <Lock className="mx-auto mb-2 h-6 w-6 opacity-50" />
             <p className="text-sm">Accès restreint</p>
             <p className="text-xs opacity-70">Permissions insuffisantes pour afficher ce contenu</p>
@@ -109,10 +109,10 @@ export const AccessDenied: React.FC<AccessDeniedProps> = ({
   return (
     <Card className={`border-destructive/20 ${className}`}>
       <CardContent className="flex items-center gap-3 p-4">
-        {showIcon && <AlertTriangle className="h-5 w-5 flex-shrink-0 text-destructive" />}
+        {showIcon && <AlertTriangle className="text-destructive h-5 w-5 flex-shrink-0" />}
         <div>
-          <h4 className="font-medium text-destructive">{title}</h4>
-          <p className="mt-1 text-sm text-muted-foreground">{message}</p>
+          <h4 className="text-destructive font-medium">{title}</h4>
+          <p className="text-muted-foreground mt-1 text-sm">{message}</p>
         </div>
       </CardContent>
     </Card>

@@ -100,7 +100,7 @@ export const AttendanceManagement = () => {
   return (
     <div className="space-y-6 p-6">
       <div className="flex items-center justify-between">
-        <h2 className="bg-gradient-to-r from-primary to-accent bg-clip-text text-3xl font-bold text-transparent">
+        <h2 className="from-primary to-accent bg-gradient-to-r bg-clip-text text-3xl font-bold text-transparent">
           Gestion des Présences
         </h2>
 
@@ -217,7 +217,7 @@ export const AttendanceManagement = () => {
         {filteredAttendances.length === 0 ? (
           <Card className="modern-card">
             <CardContent className="p-8 text-center">
-              <Clock className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
+              <Clock className="text-muted-foreground mx-auto mb-4 h-12 w-12" />
               <p className="text-muted-foreground">
                 Aucune présence enregistrée pour le {new Date(selectedDate).toLocaleDateString()}
               </p>
@@ -243,7 +243,7 @@ export const AttendanceManagement = () => {
                         </Badge>
                       </div>
 
-                      <div className="space-y-1 text-sm text-muted-foreground">
+                      <div className="text-muted-foreground space-y-1 text-sm">
                         <p>
                           <strong>Date:</strong> {new Date(attendance.date).toLocaleDateString()}
                         </p>

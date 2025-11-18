@@ -135,7 +135,7 @@ export const OccurrencesList: React.FC<OccurrencesListProps> = ({ activityId, ac
       <div className="grid grid-cols-4 gap-4">
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Total</CardTitle>
+            <CardTitle className="text-muted-foreground text-sm font-medium">Total</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats.total}</div>
@@ -143,7 +143,7 @@ export const OccurrencesList: React.FC<OccurrencesListProps> = ({ activityId, ac
         </Card>
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">À faire</CardTitle>
+            <CardTitle className="text-muted-foreground text-sm font-medium">À faire</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-gray-700">{stats.todo}</div>
@@ -151,7 +151,7 @@ export const OccurrencesList: React.FC<OccurrencesListProps> = ({ activityId, ac
         </Card>
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">En cours</CardTitle>
+            <CardTitle className="text-muted-foreground text-sm font-medium">En cours</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-blue-600">{stats.doing}</div>
@@ -159,7 +159,7 @@ export const OccurrencesList: React.FC<OccurrencesListProps> = ({ activityId, ac
         </Card>
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Terminées</CardTitle>
+            <CardTitle className="text-muted-foreground text-sm font-medium">Terminées</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-green-600">{stats.done}</div>
@@ -170,7 +170,7 @@ export const OccurrencesList: React.FC<OccurrencesListProps> = ({ activityId, ac
       {/* Filtres */}
       <div className="flex gap-4">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transform text-muted-foreground" />
+          <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform" />
           <Input
             placeholder="Rechercher une tâche..."
             value={searchTerm}
@@ -195,12 +195,12 @@ export const OccurrencesList: React.FC<OccurrencesListProps> = ({ activityId, ac
       {/* Table */}
       {loading ? (
         <div className="py-12 text-center">
-          <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
+          <div className="border-primary mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-4 border-t-transparent"></div>
           <p className="text-muted-foreground">Chargement des occurrences...</p>
         </div>
       ) : error ? (
         <Card className="border-destructive">
-          <CardContent className="pt-6 text-center text-destructive">
+          <CardContent className="text-destructive pt-6 text-center">
             <p className="font-semibold">Erreur lors du chargement</p>
             <p className="mt-2 text-sm">{error}</p>
             <Button onClick={fetchTasks} className="mt-4">
@@ -211,9 +211,9 @@ export const OccurrencesList: React.FC<OccurrencesListProps> = ({ activityId, ac
       ) : filteredTasks.length === 0 ? (
         <Card>
           <CardContent className="py-12 pt-6 text-center">
-            <Calendar className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
+            <Calendar className="text-muted-foreground mx-auto mb-4 h-12 w-12" />
             <p className="text-lg font-semibold">Aucune occurrence générée</p>
-            <p className="mt-2 text-sm text-muted-foreground">
+            <p className="text-muted-foreground mt-2 text-sm">
               Les tâches apparaîtront ici une fois que l'Edge Function aura généré les occurrences
             </p>
           </CardContent>
@@ -264,11 +264,11 @@ export const OccurrencesList: React.FC<OccurrencesListProps> = ({ activityId, ac
                       <div className="flex items-center gap-2">
                         <div className="h-2 flex-1 rounded-full bg-gray-200">
                           <div
-                            className="h-2 rounded-full bg-primary transition-all"
+                            className="bg-primary h-2 rounded-full transition-all"
                             style={{ width: `${task.progress}%` }}
                           />
                         </div>
-                        <span className="w-10 text-right text-xs text-muted-foreground">
+                        <span className="text-muted-foreground w-10 text-right text-xs">
                           {task.progress}%
                         </span>
                       </div>
@@ -289,7 +289,7 @@ export const OccurrencesList: React.FC<OccurrencesListProps> = ({ activityId, ac
           {/* Pagination */}
           {totalPages > 1 && (
             <div className="flex items-center justify-between">
-              <p className="text-sm text-muted-foreground">
+              <p className="text-muted-foreground text-sm">
                 Page {page + 1} sur {totalPages} ({filteredTasks.length} tâche(s))
               </p>
               <div className="flex gap-2">

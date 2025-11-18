@@ -44,7 +44,7 @@ export const LanguageSettings = () => {
             </div>
           ))}
         </RadioGroup>
-        <p className="mt-4 text-sm text-muted-foreground">
+        <p className="text-muted-foreground mt-4 text-sm">
           Note : La traduction complète de l'interface est en cours de développement.
         </p>
       </CardContent>

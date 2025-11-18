@@ -130,7 +130,7 @@ export const ProfileSettings = () => {
         <div className="flex items-center gap-4">
           <Avatar className="h-20 w-20">
             <AvatarImage src={avatarUrl} alt={fullName} />
-            <AvatarFallback className="bg-primary text-lg text-primary-foreground">
+            <AvatarFallback className="bg-primary text-primary-foreground text-lg">
               {initials}
             </AvatarFallback>
           </Avatar>
@@ -160,7 +160,7 @@ export const ProfileSettings = () => {
               className="hidden"
               disabled={uploading}
             />
-            <p className="mt-2 text-xs text-muted-foreground">JPG, PNG ou GIF. Max 2MB.</p>
+            <p className="text-muted-foreground mt-2 text-xs">JPG, PNG ou GIF. Max 2MB.</p>
           </div>
         </div>
 
@@ -180,7 +180,7 @@ export const ProfileSettings = () => {
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
             <Input id="email" type="email" value={email} disabled className="bg-muted" />
-            <p className="text-xs text-muted-foreground">
+            <p className="text-muted-foreground text-xs">
               L'email ne peut pas être modifié. Contactez l'administrateur si nécessaire.
             </p>
           </div>

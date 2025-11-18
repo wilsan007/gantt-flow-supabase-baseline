@@ -9,7 +9,7 @@ export const Settings = () => {
       <div className="mx-auto max-w-4xl">
         <div className="mb-6 sm:mb-8">
           <h1 className="text-2xl font-bold sm:text-3xl">Paramètres</h1>
-          <p className="mt-2 text-sm text-muted-foreground sm:text-base">
+          <p className="text-muted-foreground mt-2 text-sm sm:text-base">
             Gérez vos paramètres de compte et de sécurité
           </p>
         </div>

@@ -285,12 +285,12 @@ export const ActionTemplateForm: React.FC<ActionTemplateFormProps> = ({
               </div>
 
               {/* Switch: Hériter ou personnaliser */}
-              <div className="flex items-center justify-between rounded-lg bg-muted/50 p-4">
+              <div className="bg-muted/50 flex items-center justify-between rounded-lg p-4">
                 <div className="flex items-center gap-3">
-                  <UserCheck className="h-5 w-5 text-muted-foreground" />
+                  <UserCheck className="text-muted-foreground h-5 w-5" />
                   <div>
                     <p className="font-medium">Hériter de la tâche principale</p>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-muted-foreground text-sm">
                       Même personne que la tâche principale
                     </p>
                   </div>
@@ -333,7 +333,7 @@ export const ActionTemplateForm: React.FC<ActionTemplateFormProps> = ({
                               <User className="h-4 w-4" />
                               <span>{employee.full_name}</span>
                               {employee.job_title && (
-                                <span className="text-xs text-muted-foreground">
+                                <span className="text-muted-foreground text-xs">
                                   ({employee.job_title})
                                 </span>
                               )}
@@ -385,7 +385,7 @@ export const ActionTemplateForm: React.FC<ActionTemplateFormProps> = ({
                 <Label className="text-base font-semibold">
                   {activityKind === 'recurring' ? 'Position temporelle' : "Date de l'action"}
                 </Label>
-                <p className="mt-1 text-sm text-muted-foreground">
+                <p className="text-muted-foreground mt-1 text-sm">
                   {activityKind === 'recurring'
                     ? 'Quand cette action doit-elle être effectuée par rapport à la tâche principale ?'
                     : 'À quelle date cette action doit-elle être réalisée ?'}
@@ -396,11 +396,11 @@ export const ActionTemplateForm: React.FC<ActionTemplateFormProps> = ({
               {activityKind === 'recurring' && (
                 <>
                   {/* Date calculée */}
-                  <div className="rounded-lg border-2 border-dashed bg-muted/50 p-4">
+                  <div className="bg-muted/50 rounded-lg border-2 border-dashed p-4">
                     <div className="flex items-center justify-between">
                       <div>
                         <div className="mb-1 flex items-center gap-2">
-                          <p className="text-sm text-muted-foreground">Tâche principale</p>
+                          <p className="text-muted-foreground text-sm">Tâche principale</p>
                           <Badge variant="secondary" className="px-1.5 py-0 text-[10px]">
                             🔒 Fixe
                           </Badge>
@@ -415,7 +415,7 @@ export const ActionTemplateForm: React.FC<ActionTemplateFormProps> = ({
                       </div>
                       <div className="text-right">
                         <div className="mb-1 flex items-center justify-end gap-2">
-                          <p className="text-sm text-muted-foreground">Cette action</p>
+                          <p className="text-muted-foreground text-sm">Cette action</p>
                           <Badge
                             variant="outline"
                             className="border-blue-500 px-1.5 py-0 text-[10px] text-blue-600"
@@ -432,7 +432,7 @@ export const ActionTemplateForm: React.FC<ActionTemplateFormProps> = ({
                         </p>
                       </div>
                     </div>
-                    <p className="mt-3 text-center text-xs text-muted-foreground">
+                    <p className="text-muted-foreground mt-3 text-center text-xs">
                       🔒 La date de la tâche parent est fixe (non modifiable)
                     </p>
                   </div>
@@ -540,7 +540,7 @@ export const ActionTemplateForm: React.FC<ActionTemplateFormProps> = ({
                                           ? `J+${offset}`
                                           : `J${offset}`}
                                     </div>
-                                    <div className="text-[10px] text-muted-foreground">
+                                    <div className="text-muted-foreground text-[10px]">
                                       {formatDate(offset)}
                                     </div>
                                   </div>
@@ -564,7 +564,7 @@ export const ActionTemplateForm: React.FC<ActionTemplateFormProps> = ({
                           </div>
 
                           {/* Légende */}
-                          <div className="mt-4 flex items-center justify-center gap-4 text-xs text-muted-foreground">
+                          <div className="text-muted-foreground mt-4 flex items-center justify-center gap-4 text-xs">
                             <div className="flex items-center gap-1">
                               <div className="h-3 w-3 rounded border-2 border-orange-500 bg-orange-50" />
                               <span>Tâche principale</span>
@@ -580,7 +580,7 @@ export const ActionTemplateForm: React.FC<ActionTemplateFormProps> = ({
                   </div>
 
                   {/* Info sur la fréquence */}
-                  <p className="text-center text-xs text-muted-foreground">{timelineInfo}</p>
+                  <p className="text-muted-foreground text-center text-xs">{timelineInfo}</p>
                 </>
               )}
 
@@ -588,10 +588,10 @@ export const ActionTemplateForm: React.FC<ActionTemplateFormProps> = ({
               {activityKind === 'one_off' && (
                 <div className="space-y-4">
                   {/* Date de la tâche parent (lecture seule) */}
-                  <div className="rounded-lg border-2 border-dashed bg-muted/50 p-4">
+                  <div className="bg-muted/50 rounded-lg border-2 border-dashed p-4">
                     <div className="mb-2 flex items-center gap-2">
-                      <Calendar className="h-4 w-4 text-muted-foreground" />
-                      <Label className="text-sm font-medium text-muted-foreground">
+                      <Calendar className="text-muted-foreground h-4 w-4" />
+                      <Label className="text-muted-foreground text-sm font-medium">
                         Tâche ponctuelle parent
                       </Label>
                     </div>
@@ -603,7 +603,7 @@ export const ActionTemplateForm: React.FC<ActionTemplateFormProps> = ({
                         year: 'numeric',
                       })}
                     </p>
-                    <p className="mt-1 text-xs text-muted-foreground">
+                    <p className="text-muted-foreground mt-1 text-xs">
                       🔒 Date fixe de référence (non modifiable)
                     </p>
                   </div>
@@ -642,7 +642,7 @@ export const ActionTemplateForm: React.FC<ActionTemplateFormProps> = ({
                         {errors.specific_date}
                       </p>
                     )}
-                    <p className="mt-1 text-xs text-muted-foreground">
+                    <p className="text-muted-foreground mt-1 text-xs">
                       📅 Sélectionnez une date dans la fourchette autorisée
                     </p>
                   </div>

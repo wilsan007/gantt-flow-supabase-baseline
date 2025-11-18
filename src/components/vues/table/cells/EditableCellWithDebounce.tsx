@@ -164,7 +164,7 @@ export const EditableCellWithDebounce = ({
             onBlur={handleBlur}
             onKeyDown={handleKeyDown}
             className={cn(
-              'flex-1 rounded border-none bg-transparent px-2 py-1 outline-none ring-2 ring-blue-500',
+              'flex-1 rounded border-none bg-transparent px-2 py-1 ring-2 ring-blue-500 outline-none',
               isSubtask && 'text-xs'
             )}
             placeholder={placeholder}
@@ -174,7 +174,7 @@ export const EditableCellWithDebounce = ({
             className={cn(
               'flex-1 rounded px-2 py-1 transition-colors hover:bg-gray-100 dark:hover:bg-gray-800',
               isSubtask && 'text-xs',
-              !value && 'italic text-muted-foreground'
+              !value && 'text-muted-foreground italic'
             )}
           >
             {value || placeholder}

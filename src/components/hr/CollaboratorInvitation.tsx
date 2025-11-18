@@ -256,7 +256,7 @@ export const CollaboratorInvitation: React.FC = () => {
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">En attente</p>
+                  <p className="text-muted-foreground text-sm font-medium">En attente</p>
                   <p className="text-2xl font-bold">{stats.pending}</p>
                 </div>
                 <Clock className="h-8 w-8 text-orange-500 opacity-75" />
@@ -268,7 +268,7 @@ export const CollaboratorInvitation: React.FC = () => {
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">Acceptées</p>
+                  <p className="text-muted-foreground text-sm font-medium">Acceptées</p>
                   <p className="text-2xl font-bold">{stats.accepted}</p>
                 </div>
                 <CheckCircle2 className="h-8 w-8 text-green-500 opacity-75" />
@@ -280,7 +280,7 @@ export const CollaboratorInvitation: React.FC = () => {
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">Expirées</p>
+                  <p className="text-muted-foreground text-sm font-medium">Expirées</p>
                   <p className="text-2xl font-bold">{stats.expired}</p>
                 </div>
                 <XCircle className="h-8 w-8 text-gray-400 opacity-75" />
@@ -292,7 +292,7 @@ export const CollaboratorInvitation: React.FC = () => {
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">Total</p>
+                  <p className="text-muted-foreground text-sm font-medium">Total</p>
                   <p className="text-2xl font-bold">{stats.total}</p>
                 </div>
                 <Users className="h-8 w-8 text-blue-500 opacity-75" />
@@ -331,7 +331,7 @@ export const CollaboratorInvitation: React.FC = () => {
                   Email <span className="text-red-500">*</span>
                 </Label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                  <Mail className="text-muted-foreground absolute top-3 left-3 h-4 w-4" />
                   <Input
                     id="email"
                     type="email"
@@ -396,7 +396,7 @@ export const CollaboratorInvitation: React.FC = () => {
                         <SelectItem key={role.value} value={role.value}>
                           <div className="flex flex-col">
                             <span className="font-medium">{role.label}</span>
-                            <span className="text-xs text-muted-foreground">
+                            <span className="text-muted-foreground text-xs">
                               {role.description}
                             </span>
                           </div>
@@ -406,7 +406,7 @@ export const CollaboratorInvitation: React.FC = () => {
                       <SelectItem value="autre">
                         <div className="flex flex-col">
                           <span className="font-medium">✏️ Autre</span>
-                          <span className="text-xs text-muted-foreground">
+                          <span className="text-muted-foreground text-xs">
                             Spécifier un rôle personnalisé
                           </span>
                         </div>
@@ -433,7 +433,7 @@ export const CollaboratorInvitation: React.FC = () => {
                   required
                   className="border-primary"
                 />
-                <p className="text-xs text-muted-foreground">
+                <p className="text-muted-foreground text-xs">
                   💡 Ce rôle personnalisé sera créé pour ce collaborateur
                 </p>
               </div>
@@ -516,7 +516,7 @@ export const CollaboratorInvitation: React.FC = () => {
               {pendingInvitations.map(invitation => (
                 <div
                   key={invitation.id}
-                  className="flex items-center justify-between rounded-lg border p-4 transition-colors hover:bg-accent/50"
+                  className="hover:bg-accent/50 flex items-center justify-between rounded-lg border p-4 transition-colors"
                 >
                   <div className="flex-1 space-y-1">
                     <div className="flex items-center gap-2">
@@ -526,9 +526,9 @@ export const CollaboratorInvitation: React.FC = () => {
                           invitation.role_to_assign}
                       </Badge>
                     </div>
-                    <p className="text-sm text-muted-foreground">{invitation.email}</p>
+                    <p className="text-muted-foreground text-sm">{invitation.email}</p>
                     {(invitation.department || invitation.job_position) && (
-                      <p className="text-xs text-muted-foreground">
+                      <p className="text-muted-foreground text-xs">
                         {[invitation.department, invitation.job_position]
                           .filter(Boolean)
                           .join(' • ')}
@@ -562,7 +562,7 @@ export const CollaboratorInvitation: React.FC = () => {
         <CardHeader>
           <CardTitle className="text-base">ℹ️ Comment ça marche ?</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-2 text-sm text-muted-foreground">
+        <CardContent className="text-muted-foreground space-y-2 text-sm">
           <p>• Le collaborateur reçoit un email avec un lien d'invitation</p>
           <p>• Il crée son compte en utilisant le mot de passe temporaire fourni</p>
           <p>• Il est automatiquement ajouté à votre entreprise avec le rôle spécifié</p>

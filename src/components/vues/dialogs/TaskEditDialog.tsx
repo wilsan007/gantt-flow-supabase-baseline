@@ -98,7 +98,7 @@ const TaskEditDialogBase: React.FC<TaskEditDialogProps> = ({
               placeholder="Titre de la tâche"
               maxLength={80}
             />
-            <p className="text-xs text-muted-foreground">
+            <p className="text-muted-foreground text-xs">
               {title.length}/80 caractères (limite pour préserver la mise en page)
             </p>
           </div>

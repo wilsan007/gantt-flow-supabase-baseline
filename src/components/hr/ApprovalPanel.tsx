@@ -170,7 +170,7 @@ export function ApprovalPanel() {
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div className="min-w-0 flex-1">
             <div className="mb-2 flex flex-wrap items-center gap-2 sm:gap-3">
-              <Receipt className="h-4 w-4 shrink-0 text-muted-foreground sm:h-5 sm:w-5" />
+              <Receipt className="text-muted-foreground h-4 w-4 shrink-0 sm:h-5 sm:w-5" />
               <h3 className="min-w-0 flex-1 truncate text-sm font-semibold sm:text-base">
                 {expense.title}
               </h3>
@@ -202,7 +202,7 @@ export function ApprovalPanel() {
               </div>
             </div>
             {expense.description && (
-              <p className="mt-3 line-clamp-2 text-xs text-muted-foreground sm:text-sm">
+              <p className="text-muted-foreground mt-3 line-clamp-2 text-xs sm:text-sm">
                 {expense.description}
               </p>
             )}
@@ -239,7 +239,7 @@ export function ApprovalPanel() {
         <div className="flex items-start justify-between">
           <div className="flex-1">
             <div className="mb-2 flex items-center gap-3">
-              <Clock className="h-5 w-5 text-muted-foreground" />
+              <Clock className="text-muted-foreground h-5 w-5" />
               <h3 className="font-semibold">
                 Semaine du {format(new Date(timesheet.week_start_date), 'dd MMM', { locale: fr })}
               </h3>
@@ -292,7 +292,7 @@ export function ApprovalPanel() {
         <div className="flex items-start justify-between">
           <div className="flex-1">
             <div className="mb-2 flex items-center gap-3">
-              <AlertCircle className="h-5 w-5 text-muted-foreground" />
+              <AlertCircle className="text-muted-foreground h-5 w-5" />
               <h3 className="font-semibold capitalize">
                 {absence.absence_type?.replace(/_/g, ' ')}
               </h3>
@@ -322,7 +322,7 @@ export function ApprovalPanel() {
               </div>
             </div>
             {absence.reason && (
-              <p className="mt-3 text-sm text-muted-foreground">{absence.reason}</p>
+              <p className="text-muted-foreground mt-3 text-sm">{absence.reason}</p>
             )}
           </div>
           <div className="ml-4 flex gap-2">
@@ -355,7 +355,7 @@ export function ApprovalPanel() {
         <div className="flex items-start justify-between">
           <div className="flex-1">
             <div className="mb-2 flex items-center gap-3">
-              <Home className="h-5 w-5 text-muted-foreground" />
+              <Home className="text-muted-foreground h-5 w-5" />
               <h3 className="font-semibold">
                 Télétravail - {request.frequency?.replace(/_/g, ' ')}
               </h3>
@@ -378,7 +378,7 @@ export function ApprovalPanel() {
               </div>
             </div>
             {request.reason && (
-              <p className="mt-3 text-sm text-muted-foreground">{request.reason}</p>
+              <p className="text-muted-foreground mt-3 text-sm">{request.reason}</p>
             )}
           </div>
           <div className="ml-4 flex gap-2">
@@ -411,7 +411,7 @@ export function ApprovalPanel() {
         <div className="flex items-start justify-between">
           <div className="flex-1">
             <div className="mb-2 flex items-center gap-3">
-              <FileText className="h-5 w-5 text-muted-foreground" />
+              <FileText className="text-muted-foreground h-5 w-5" />
               <h3 className="font-semibold">{request.subject}</h3>
               <Badge className="bg-blue-500">En attente</Badge>
             </div>
@@ -426,7 +426,7 @@ export function ApprovalPanel() {
               </div>
             </div>
             {request.description && (
-              <p className="mt-3 text-sm text-muted-foreground">{request.description}</p>
+              <p className="text-muted-foreground mt-3 text-sm">{request.description}</p>
             )}
           </div>
           <div className="ml-4 flex gap-2">
@@ -464,7 +464,7 @@ export function ApprovalPanel() {
             <span className="sm:hidden">Approbations</span>
           </span>
         </h1>
-        <p className="mt-1 text-xs text-muted-foreground sm:text-sm md:text-base">
+        <p className="text-muted-foreground mt-1 text-xs sm:text-sm md:text-base">
           Gérez les demandes de votre équipe
         </p>
       </div>
@@ -473,7 +473,7 @@ export function ApprovalPanel() {
       <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-5">
         <Card>
           <CardHeader className="p-3 pb-2 sm:p-6 sm:pb-3">
-            <CardTitle className="text-xs font-medium text-muted-foreground sm:text-sm">
+            <CardTitle className="text-muted-foreground text-xs font-medium sm:text-sm">
               <span className="hidden sm:inline">Total En Attente</span>
               <span className="sm:hidden">Total</span>
             </CardTitle>
@@ -484,7 +484,7 @@ export function ApprovalPanel() {
         </Card>
         <Card>
           <CardHeader className="p-3 pb-2 sm:p-6 sm:pb-3">
-            <CardTitle className="text-xs font-medium text-muted-foreground sm:text-sm">
+            <CardTitle className="text-muted-foreground text-xs font-medium sm:text-sm">
               <span className="hidden sm:inline">Notes de Frais</span>
               <span className="sm:hidden">Frais</span>
             </CardTitle>
@@ -495,7 +495,7 @@ export function ApprovalPanel() {
         </Card>
         <Card>
           <CardHeader className="p-3 pb-2 sm:p-6 sm:pb-3">
-            <CardTitle className="text-xs font-medium text-muted-foreground sm:text-sm">
+            <CardTitle className="text-muted-foreground text-xs font-medium sm:text-sm">
               Timesheets
             </CardTitle>
           </CardHeader>
@@ -505,7 +505,7 @@ export function ApprovalPanel() {
         </Card>
         <Card>
           <CardHeader className="p-3 pb-2 sm:p-6 sm:pb-3">
-            <CardTitle className="text-xs font-medium text-muted-foreground sm:text-sm">
+            <CardTitle className="text-muted-foreground text-xs font-medium sm:text-sm">
               Absences
             </CardTitle>
           </CardHeader>
@@ -515,7 +515,7 @@ export function ApprovalPanel() {
         </Card>
         <Card>
           <CardHeader className="p-3 pb-2 sm:p-6 sm:pb-3">
-            <CardTitle className="text-xs font-medium text-muted-foreground sm:text-sm">
+            <CardTitle className="text-muted-foreground text-xs font-medium sm:text-sm">
               Autres
             </CardTitle>
           </CardHeader>
@@ -538,12 +538,12 @@ export function ApprovalPanel() {
             {/* Tabs scroll horizontal mobile */}
             <div className="-mx-4 sm:mx-0">
               <TabsList className="flex w-full gap-1 overflow-x-auto p-1.5 sm:grid sm:grid-cols-5 sm:gap-2">
-                <TabsTrigger value="all" className="shrink-0 whitespace-nowrap text-xs sm:text-sm">
+                <TabsTrigger value="all" className="shrink-0 text-xs whitespace-nowrap sm:text-sm">
                   Toutes ({totalPending})
                 </TabsTrigger>
                 <TabsTrigger
                   value="expenses"
-                  className="shrink-0 whitespace-nowrap text-xs sm:text-sm"
+                  className="shrink-0 text-xs whitespace-nowrap sm:text-sm"
                 >
                   <span className="hidden sm:inline">
                     Notes de Frais ({pendingExpenses.length})
@@ -552,20 +552,20 @@ export function ApprovalPanel() {
                 </TabsTrigger>
                 <TabsTrigger
                   value="timesheets"
-                  className="shrink-0 whitespace-nowrap text-xs sm:text-sm"
+                  className="shrink-0 text-xs whitespace-nowrap sm:text-sm"
                 >
                   <span className="hidden sm:inline">Timesheets ({pendingTimesheets.length})</span>
                   <span className="sm:hidden">Time ({pendingTimesheets.length})</span>
                 </TabsTrigger>
                 <TabsTrigger
                   value="absences"
-                  className="shrink-0 whitespace-nowrap text-xs sm:text-sm"
+                  className="shrink-0 text-xs whitespace-nowrap sm:text-sm"
                 >
                   Absences ({pendingAbsences.length})
                 </TabsTrigger>
                 <TabsTrigger
                   value="other"
-                  className="shrink-0 whitespace-nowrap text-xs sm:text-sm"
+                  className="shrink-0 text-xs whitespace-nowrap sm:text-sm"
                 >
                   Autres ({pendingRemoteWork.length + pendingAdminRequests.length})
                 </TabsTrigger>
@@ -576,7 +576,7 @@ export function ApprovalPanel() {
               {loading ? (
                 <div className="py-8 text-center">Chargement...</div>
               ) : totalPending === 0 ? (
-                <div className="py-8 text-center text-muted-foreground">
+                <div className="text-muted-foreground py-8 text-center">
                   Aucune demande en attente
                 </div>
               ) : (
@@ -592,7 +592,7 @@ export function ApprovalPanel() {
 
             <TabsContent value="expenses" className="mt-4 space-y-4">
               {pendingExpenses.length === 0 ? (
-                <div className="py-8 text-center text-muted-foreground">
+                <div className="text-muted-foreground py-8 text-center">
                   Aucune note de frais en attente
                 </div>
               ) : (
@@ -602,7 +602,7 @@ export function ApprovalPanel() {
 
             <TabsContent value="timesheets" className="mt-4 space-y-4">
               {pendingTimesheets.length === 0 ? (
-                <div className="py-8 text-center text-muted-foreground">
+                <div className="text-muted-foreground py-8 text-center">
                   Aucun timesheet en attente
                 </div>
               ) : (
@@ -612,7 +612,7 @@ export function ApprovalPanel() {
 
             <TabsContent value="absences" className="mt-4 space-y-4">
               {pendingAbsences.length === 0 ? (
-                <div className="py-8 text-center text-muted-foreground">
+                <div className="text-muted-foreground py-8 text-center">
                   Aucune absence en attente
                 </div>
               ) : (
@@ -622,7 +622,7 @@ export function ApprovalPanel() {
 
             <TabsContent value="other" className="mt-4 space-y-4">
               {pendingRemoteWork.length + pendingAdminRequests.length === 0 ? (
-                <div className="py-8 text-center text-muted-foreground">
+                <div className="text-muted-foreground py-8 text-center">
                   Aucune autre demande en attente
                 </div>
               ) : (

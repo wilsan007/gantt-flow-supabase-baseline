@@ -120,7 +120,7 @@ export function ResponsiveDialog({
                   {title}
                 </DrawerTitle>
                 {description && (
-                  <DrawerDescription className="mt-1 text-left text-sm text-muted-foreground">
+                  <DrawerDescription className="text-muted-foreground mt-1 text-left text-sm">
                     {description}
                   </DrawerDescription>
                 )}
@@ -144,7 +144,7 @@ export function ResponsiveDialog({
               )}
             </div>
             {/* Barre de glisse (drag indicator) */}
-            <div className="mx-auto mt-4 h-1.5 w-16 rounded-full bg-muted" />
+            <div className="bg-muted mx-auto mt-4 h-1.5 w-16 rounded-full" />
           </DrawerHeader>
 
           {/* Contenu Mobile - Scrollable */}
@@ -167,7 +167,7 @@ export function ResponsiveDialog({
           theme.bodyBg,
           theme.shadow,
           theme.transition,
-          'duration-300 animate-in fade-in-0 zoom-in-95',
+          'animate-in fade-in-0 zoom-in-95 duration-300',
           className
         )}
         onPointerDownOutside={e => {
@@ -184,7 +184,7 @@ export function ResponsiveDialog({
                 {title}
               </DialogTitle>
               {description && (
-                <DialogDescription className="mt-2 text-sm text-muted-foreground">
+                <DialogDescription className="text-muted-foreground mt-2 text-sm">
                   {description}
                 </DialogDescription>
               )}
@@ -211,7 +211,7 @@ export function ResponsiveDialog({
         <div className={cn('flex-1 overflow-y-auto px-6 py-4', contentClassName)}>{children}</div>
 
         {/* Footer Desktop */}
-        {footer && <DialogFooter className="border-t px-6 pb-6 pt-4">{footer}</DialogFooter>}
+        {footer && <DialogFooter className="border-t px-6 pt-4 pb-6">{footer}</DialogFooter>}
       </DialogContent>
     </Dialog>
   );

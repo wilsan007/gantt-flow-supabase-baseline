@@ -80,7 +80,7 @@ export default function Analytics() {
                   <span className="sm:hidden">Stats</span>
                 </span>
               </h1>
-              <p className="mt-1 text-xs text-muted-foreground sm:text-sm">
+              <p className="text-muted-foreground mt-1 text-xs sm:text-sm">
                 <span className="hidden sm:inline">Votre performance et vos réalisations</span>
                 <span className="sm:hidden">Performance</span>
               </p>
@@ -108,7 +108,7 @@ export default function Analytics() {
                     <span className="hidden sm:inline">{stat.title}</span>
                     <span className="sm:hidden">{stat.title.split(' ')[0]}</span>
                   </CardTitle>
-                  <div className={`rounded-lg bg-background/50 p-1.5 sm:p-2`}>
+                  <div className={`bg-background/50 rounded-lg p-1.5 sm:p-2`}>
                     <stat.icon className={`h-3.5 w-3.5 ${stat.color} sm:h-4 sm:w-4`} />
                   </div>
                 </CardHeader>
@@ -145,13 +145,13 @@ export default function Analytics() {
                         {day}
                       </span>
                       <div className="flex flex-1 items-center gap-2">
-                        <div className="h-2 flex-1 overflow-hidden rounded-full bg-muted sm:h-2.5">
+                        <div className="bg-muted h-2 flex-1 overflow-hidden rounded-full sm:h-2.5">
                           <div
                             className="h-full rounded-full bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 transition-all duration-500"
                             style={{ width: `${percentage}%` }}
                           />
                         </div>
-                        <span className="w-6 shrink-0 text-xs text-muted-foreground sm:w-8 sm:text-sm">
+                        <span className="text-muted-foreground w-6 shrink-0 text-xs sm:w-8 sm:text-sm">
                           {hours}h
                         </span>
                       </div>
@@ -193,7 +193,7 @@ export default function Analytics() {
                       <p className="truncate text-xs font-medium sm:text-sm">
                         {achievement.title.split(' ').slice(1).join(' ')}
                       </p>
-                      <p className="line-clamp-1 text-xs text-muted-foreground">
+                      <p className="text-muted-foreground line-clamp-1 text-xs">
                         {achievement.desc}
                       </p>
                     </div>
@@ -214,9 +214,9 @@ export default function Analytics() {
         </div>
 
         {/* Note - Gradient card */}
-        <Card className="border-2 bg-gradient-to-r from-primary/10 via-accent/10 to-purple-500/10 backdrop-blur-sm">
+        <Card className="from-primary/10 via-accent/10 border-2 bg-gradient-to-r to-purple-500/10 backdrop-blur-sm">
           <CardContent className="p-4 sm:p-6">
-            <p className="text-center text-xs text-muted-foreground sm:text-sm">
+            <p className="text-muted-foreground text-center text-xs sm:text-sm">
               <span className="hidden sm:inline">
                 💡 Ces statistiques sont basées sur votre activité. Connectez-vous quotidiennement
                 pour suivre votre progression !

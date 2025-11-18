@@ -72,7 +72,7 @@ export const ActionTemplateList: React.FC<ActionTemplateListProps> = ({
 
   if (readonly && templates.length === 0) {
     return (
-      <div className="py-8 text-center text-muted-foreground">
+      <div className="text-muted-foreground py-8 text-center">
         <CheckSquare className="mx-auto mb-2 h-12 w-12 opacity-50" />
         <p>Aucune action définie pour cette activité</p>
       </div>
@@ -84,7 +84,7 @@ export const ActionTemplateList: React.FC<ActionTemplateListProps> = ({
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <CheckSquare className="h-5 w-5 text-muted-foreground" />
+          <CheckSquare className="text-muted-foreground h-5 w-5" />
           <Label className="text-base font-semibold">Actions templates ({templates.length})</Label>
         </div>
         {!readonly && (
@@ -99,10 +99,10 @@ export const ActionTemplateList: React.FC<ActionTemplateListProps> = ({
       {!readonly && templates.length === 0 && (
         <Card className="border-dashed">
           <CardContent className="pt-6 text-center">
-            <p className="text-sm text-muted-foreground">
+            <p className="text-muted-foreground text-sm">
               Les actions seront automatiquement clonées sur chaque tâche générée
             </p>
-            <p className="mt-1 text-xs text-muted-foreground">
+            <p className="text-muted-foreground mt-1 text-xs">
               Vous pouvez les réorganiser par glisser-déposer
             </p>
           </CardContent>
@@ -116,7 +116,7 @@ export const ActionTemplateList: React.FC<ActionTemplateListProps> = ({
             <div
               {...provided.droppableProps}
               ref={provided.innerRef}
-              className={`space-y-2 ${snapshot.isDraggingOver ? 'rounded-lg bg-muted/50 p-2' : ''}`}
+              className={`space-y-2 ${snapshot.isDraggingOver ? 'bg-muted/50 rounded-lg p-2' : ''}`}
             >
               {templates.map((template, index) => (
                 <Draggable
@@ -130,7 +130,7 @@ export const ActionTemplateList: React.FC<ActionTemplateListProps> = ({
                       ref={provided.innerRef}
                       {...provided.draggableProps}
                       className={`transition-shadow ${
-                        snapshot.isDragging ? 'shadow-lg ring-2 ring-primary' : ''
+                        snapshot.isDragging ? 'ring-primary shadow-lg ring-2' : ''
                       }`}
                     >
                       <CardContent className="p-4">
@@ -141,7 +141,7 @@ export const ActionTemplateList: React.FC<ActionTemplateListProps> = ({
                               {...provided.dragHandleProps}
                               className="flex cursor-grab items-start pt-2 active:cursor-grabbing"
                             >
-                              <GripVertical className="h-5 w-5 text-muted-foreground" />
+                              <GripVertical className="text-muted-foreground h-5 w-5" />
                             </div>
                           )}
 
@@ -161,7 +161,7 @@ export const ActionTemplateList: React.FC<ActionTemplateListProps> = ({
                                     {template.title || '(Sans titre)'}
                                   </h4>
                                   {template.description && (
-                                    <p className="mt-1 text-sm text-muted-foreground">
+                                    <p className="text-muted-foreground mt-1 text-sm">
                                       {template.description}
                                     </p>
                                   )}
@@ -193,7 +193,7 @@ export const ActionTemplateList: React.FC<ActionTemplateListProps> = ({
                               onClick={() => handleRemove(index)}
                               size="sm"
                               variant="ghost"
-                              className="flex-shrink-0 hover:bg-destructive/10 hover:text-destructive"
+                              className="hover:bg-destructive/10 hover:text-destructive flex-shrink-0"
                             >
                               <X className="h-4 w-4" />
                             </Button>
@@ -212,7 +212,7 @@ export const ActionTemplateList: React.FC<ActionTemplateListProps> = ({
 
       {/* Validation */}
       {!readonly && templates.some(t => t.title.trim() === '') && (
-        <p className="text-sm text-destructive">⚠️ Certaines actions n'ont pas de titre</p>
+        <p className="text-destructive text-sm">⚠️ Certaines actions n'ont pas de titre</p>
       )}
     </div>
   );

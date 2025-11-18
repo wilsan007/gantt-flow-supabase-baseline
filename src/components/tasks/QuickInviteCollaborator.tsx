@@ -175,7 +175,7 @@ export const QuickInviteCollaborator: React.FC<QuickInviteCollaboratorProps> = (
 
         {success ? (
           <div className="py-8 text-center">
-            <CheckCircle2 className="mx-auto mb-4 h-16 w-16 text-green-500 animate-in zoom-in" />
+            <CheckCircle2 className="animate-in zoom-in mx-auto mb-4 h-16 w-16 text-green-500" />
             <h3 className="mb-2 text-lg font-semibold text-green-700">Invitation envoyée !</h3>
             <p className="text-sm text-gray-600">Un email a été envoyé à {formData.email}</p>
           </div>
@@ -233,7 +233,7 @@ export const QuickInviteCollaborator: React.FC<QuickInviteCollaboratorProps> = (
                   ))}
                 </SelectContent>
               </Select>
-              <p className="mt-1 text-xs text-muted-foreground">
+              <p className="text-muted-foreground mt-1 text-xs">
                 Le rôle peut être modifié plus tard dans la gestion RH
               </p>
             </div>

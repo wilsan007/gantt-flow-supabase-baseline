@@ -419,7 +419,7 @@ const DynamicTable = ({ demoTasks, isDemoMode = false }: DynamicTableProps = {})
         {viewMode === 'tasks' ? (
           <ResizablePanelGroup
             direction="horizontal"
-            className="overflow-hidden rounded-lg border border-border/50"
+            className="border-border/50 overflow-hidden rounded-lg border"
           >
             <ResizablePanel defaultSize={60} minSize={40} maxSize={80}>
               <TaskFixedColumns

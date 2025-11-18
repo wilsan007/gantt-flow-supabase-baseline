@@ -30,7 +30,7 @@ export const AppearanceSettings = () => {
               <RadioGroupItem value="light" id="light" className="peer sr-only" />
               <Label
                 htmlFor="light"
-                className="flex cursor-pointer flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
+                className="border-muted bg-popover hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary flex cursor-pointer flex-col items-center justify-between rounded-md border-2 p-4"
               >
                 <Sun className="mb-3 h-6 w-6" />
                 <span className="text-sm font-medium">Clair</span>
@@ -40,7 +40,7 @@ export const AppearanceSettings = () => {
               <RadioGroupItem value="dark" id="dark" className="peer sr-only" />
               <Label
                 htmlFor="dark"
-                className="flex cursor-pointer flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
+                className="border-muted bg-popover hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary flex cursor-pointer flex-col items-center justify-between rounded-md border-2 p-4"
               >
                 <Moon className="mb-3 h-6 w-6" />
                 <span className="text-sm font-medium">Sombre</span>
@@ -50,7 +50,7 @@ export const AppearanceSettings = () => {
               <RadioGroupItem value="system" id="system" className="peer sr-only" />
               <Label
                 htmlFor="system"
-                className="flex cursor-pointer flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
+                className="border-muted bg-popover hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary flex cursor-pointer flex-col items-center justify-between rounded-md border-2 p-4"
               >
                 <Monitor className="mb-3 h-6 w-6" />
                 <span className="text-sm font-medium">Système</span>

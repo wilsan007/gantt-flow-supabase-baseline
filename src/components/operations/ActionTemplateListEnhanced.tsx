@@ -191,7 +191,7 @@ export const ActionTemplateListEnhanced: React.FC<ActionTemplateListEnhancedProp
 
   if (readonly && templates.length === 0) {
     return (
-      <div className="py-8 text-center text-muted-foreground">
+      <div className="text-muted-foreground py-8 text-center">
         <CheckSquare className="mx-auto mb-2 h-12 w-12 opacity-50" />
         <p>Aucune action définie pour cette activité</p>
       </div>
@@ -204,7 +204,7 @@ export const ActionTemplateListEnhanced: React.FC<ActionTemplateListEnhancedProp
         {/* Header */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <CheckSquare className="h-5 w-5 text-muted-foreground" />
+            <CheckSquare className="text-muted-foreground h-5 w-5" />
             <h3 className="text-base font-semibold">Actions ({templates.length})</h3>
           </div>
           {!readonly && (
@@ -219,10 +219,10 @@ export const ActionTemplateListEnhanced: React.FC<ActionTemplateListEnhancedProp
         {!readonly && templates.length === 0 && (
           <Card className="border-dashed">
             <CardContent className="pt-6 text-center">
-              <p className="text-sm text-muted-foreground">
+              <p className="text-muted-foreground text-sm">
                 Créez des actions qui seront automatiquement clonées pour chaque tâche
               </p>
-              <p className="mt-1 text-xs text-muted-foreground">
+              <p className="text-muted-foreground mt-1 text-xs">
                 Assignez des personnes et définissez leur position temporelle
               </p>
             </CardContent>
@@ -236,7 +236,7 @@ export const ActionTemplateListEnhanced: React.FC<ActionTemplateListEnhancedProp
               <div
                 {...provided.droppableProps}
                 ref={provided.innerRef}
-                className={`space-y-2 ${snapshot.isDraggingOver ? 'rounded-lg bg-muted/50 p-2' : ''}`}
+                className={`space-y-2 ${snapshot.isDraggingOver ? 'bg-muted/50 rounded-lg p-2' : ''}`}
               >
                 {templates.map((template, index) => (
                   <Draggable
@@ -250,7 +250,7 @@ export const ActionTemplateListEnhanced: React.FC<ActionTemplateListEnhancedProp
                         ref={provided.innerRef}
                         {...provided.draggableProps}
                         className={`transition-all ${
-                          snapshot.isDragging ? 'shadow-lg ring-2 ring-primary' : ''
+                          snapshot.isDragging ? 'ring-primary shadow-lg ring-2' : ''
                         }`}
                       >
                         <CardContent className="p-4">
@@ -261,7 +261,7 @@ export const ActionTemplateListEnhanced: React.FC<ActionTemplateListEnhancedProp
                                 {...provided.dragHandleProps}
                                 className="flex cursor-grab items-center active:cursor-grabbing"
                               >
-                                <GripVertical className="h-5 w-5 text-muted-foreground" />
+                                <GripVertical className="text-muted-foreground h-5 w-5" />
                               </div>
                             )}
 
@@ -279,16 +279,16 @@ export const ActionTemplateListEnhanced: React.FC<ActionTemplateListEnhancedProp
                                       onClick={() => handleAttachmentClick(template)}
                                       size="sm"
                                       variant="ghost"
-                                      className="relative h-6 w-6 p-0 hover:bg-primary/10"
+                                      className="hover:bg-primary/10 relative h-6 w-6 p-0"
                                     >
                                       <Paperclip className="h-3.5 w-3.5" />
-                                      <Plus className="absolute -right-0.5 -top-0.5 h-2.5 w-2.5 text-green-600" />
+                                      <Plus className="absolute -top-0.5 -right-0.5 h-2.5 w-2.5 text-green-600" />
 
                                       {/* Compteur de fichiers */}
                                       {attachmentCounts[template.id] > 0 && (
                                         <Badge
                                           variant="destructive"
-                                          className="absolute -right-2 -top-2 flex h-4 w-4 items-center justify-center p-0 text-[9px]"
+                                          className="absolute -top-2 -right-2 flex h-4 w-4 items-center justify-center p-0 text-[9px]"
                                         >
                                           {attachmentCounts[template.id]}
                                         </Badge>
@@ -301,7 +301,7 @@ export const ActionTemplateListEnhanced: React.FC<ActionTemplateListEnhancedProp
                                         ? `${attachmentCounts[template.id]} fichier(s) • Cliquez pour ajouter`
                                         : 'Ajouter des preuves de réalisation'}
                                     </p>
-                                    <p className="mt-1 text-[10px] text-muted-foreground">
+                                    <p className="text-muted-foreground mt-1 text-[10px]">
                                       ⚠️ Requis pour validation
                                     </p>
                                   </TooltipContent>
@@ -316,13 +316,13 @@ export const ActionTemplateListEnhanced: React.FC<ActionTemplateListEnhancedProp
 
                               {/* Description */}
                               {template.description && (
-                                <p className="line-clamp-2 text-sm text-muted-foreground">
+                                <p className="text-muted-foreground line-clamp-2 text-sm">
                                   {template.description}
                                 </p>
                               )}
 
                               {/* Métadonnées */}
-                              <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
+                              <div className="text-muted-foreground flex flex-wrap items-center gap-3 text-xs">
                                 {/* Assignation */}
                                 <div className="flex items-center gap-1.5">
                                   {template.inherit_assignee ? (
@@ -378,7 +378,7 @@ export const ActionTemplateListEnhanced: React.FC<ActionTemplateListEnhancedProp
                                   onClick={() => handleDeleteClick(template.id)}
                                   size="sm"
                                   variant="ghost"
-                                  className="h-8 w-8 p-0 hover:bg-destructive/10 hover:text-destructive"
+                                  className="hover:bg-destructive/10 hover:text-destructive h-8 w-8 p-0"
                                   disabled={loading}
                                 >
                                   <Trash2 className="h-3.5 w-3.5" />

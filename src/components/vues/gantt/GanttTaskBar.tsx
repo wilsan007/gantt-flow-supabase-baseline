@@ -65,7 +65,7 @@ export const GanttTaskBar = ({
         />
 
         <div
-          className="absolute left-0 top-0 flex h-full w-4 cursor-ew-resize items-center justify-center border-r border-white/30 bg-white/20 opacity-0 transition-all hover:bg-white/40 hover:!opacity-100 group-hover:opacity-100 dark:bg-white/10 dark:hover:bg-white/30"
+          className="absolute top-0 left-0 flex h-full w-4 cursor-ew-resize items-center justify-center border-r border-white/30 bg-white/20 opacity-0 transition-all group-hover:opacity-100 hover:bg-white/40 hover:!opacity-100 dark:bg-white/10 dark:hover:bg-white/30"
           onMouseDown={e => {
             e.stopPropagation();
             e.preventDefault();
@@ -77,7 +77,7 @@ export const GanttTaskBar = ({
         </div>
 
         <div
-          className="absolute right-0 top-0 flex h-full w-4 cursor-ew-resize items-center justify-center border-l border-white/30 bg-white/20 opacity-0 transition-all hover:bg-white/40 hover:!opacity-100 group-hover:opacity-100 dark:bg-white/10 dark:hover:bg-white/30"
+          className="absolute top-0 right-0 flex h-full w-4 cursor-ew-resize items-center justify-center border-l border-white/30 bg-white/20 opacity-0 transition-all group-hover:opacity-100 hover:bg-white/40 hover:!opacity-100 dark:bg-white/10 dark:hover:bg-white/30"
           onMouseDown={e => {
             e.stopPropagation();
             e.preventDefault();
@@ -94,7 +94,7 @@ export const GanttTaskBar = ({
           title="Déplacer la tâche"
         >
           {/* Taux de progression en gras et gros - centré */}
-          <span className="pointer-events-none whitespace-nowrap text-2xl font-extrabold text-white drop-shadow-[0_2px_6px_rgba(0,0,0,0.9)] dark:text-white">
+          <span className="pointer-events-none text-2xl font-extrabold whitespace-nowrap text-white drop-shadow-[0_2px_6px_rgba(0,0,0,0.9)] dark:text-white">
             {task.progress}%
           </span>
         </div>

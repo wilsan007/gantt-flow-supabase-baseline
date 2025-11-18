@@ -58,8 +58,8 @@ export const ActivityStatisticsCard: React.FC<ActivityStatisticsCardProps> = ({ 
       <Card>
         <CardContent className="pt-6">
           <div className="py-8 text-center">
-            <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
-            <p className="text-sm text-muted-foreground">Chargement des statistiques...</p>
+            <div className="border-primary mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-4 border-t-transparent"></div>
+            <p className="text-muted-foreground text-sm">Chargement des statistiques...</p>
           </div>
         </CardContent>
       </Card>
@@ -71,9 +71,9 @@ export const ActivityStatisticsCard: React.FC<ActivityStatisticsCardProps> = ({ 
       <Card className="border-destructive">
         <CardContent className="pt-6">
           <div className="py-8 text-center">
-            <AlertCircle className="mx-auto mb-4 h-12 w-12 text-destructive" />
-            <p className="font-semibold text-destructive">Erreur lors du chargement</p>
-            <p className="mt-2 text-sm text-muted-foreground">
+            <AlertCircle className="text-destructive mx-auto mb-4 h-12 w-12" />
+            <p className="text-destructive font-semibold">Erreur lors du chargement</p>
+            <p className="text-muted-foreground mt-2 text-sm">
               {error || 'Données non disponibles'}
             </p>
             <Button onClick={loadStatistics} variant="outline" className="mt-4">
@@ -100,10 +100,10 @@ export const ActivityStatisticsCard: React.FC<ActivityStatisticsCardProps> = ({ 
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <span className="text-sm font-medium">Taux de complétion</span>
-              <span className="text-2xl font-bold text-primary">{stats.completion_rate}%</span>
+              <span className="text-primary text-2xl font-bold">{stats.completion_rate}%</span>
             </div>
             <Progress value={stats.completion_rate} className="h-3" />
-            <p className="text-xs text-muted-foreground">
+            <p className="text-muted-foreground text-xs">
               {stats.completed_count} sur {stats.total_occurrences} occurrence(s) terminée(s)
             </p>
           </div>
@@ -137,9 +137,9 @@ export const ActivityStatisticsCard: React.FC<ActivityStatisticsCardProps> = ({ 
 
           {/* Temps moyen de complétion */}
           {stats.avg_completion_time_days !== null && (
-            <div className="flex items-center justify-between rounded-lg bg-muted p-3">
+            <div className="bg-muted flex items-center justify-between rounded-lg p-3">
               <div className="flex items-center gap-2">
-                <TrendingUp className="h-5 w-5 text-muted-foreground" />
+                <TrendingUp className="text-muted-foreground h-5 w-5" />
                 <span className="text-sm font-medium">Temps moyen de complétion</span>
               </div>
               <span className="text-lg font-bold">
@@ -179,11 +179,11 @@ export const ActivityStatisticsCard: React.FC<ActivityStatisticsCardProps> = ({ 
       {stats.total_occurrences === 0 && (
         <Card className="border-dashed">
           <CardContent className="py-8 pt-6 text-center">
-            <BarChart3 className="mx-auto mb-4 h-12 w-12 text-muted-foreground opacity-50" />
-            <p className="text-sm text-muted-foreground">
+            <BarChart3 className="text-muted-foreground mx-auto mb-4 h-12 w-12 opacity-50" />
+            <p className="text-muted-foreground text-sm">
               Aucune occurrence générée pour le moment
             </p>
-            <p className="mt-1 text-xs text-muted-foreground">
+            <p className="text-muted-foreground mt-1 text-xs">
               Les statistiques apparaîtront une fois que des tâches auront été générées
             </p>
           </CardContent>

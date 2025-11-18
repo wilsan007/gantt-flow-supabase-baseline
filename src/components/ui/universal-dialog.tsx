@@ -115,7 +115,7 @@ function MobileDialogWrapper({
         className={cn('max-h-[90vh]', theme.bodyBg, theme.border, theme.transition, className)}
       >
         {/* Barre de glisse (drag indicator) */}
-        <div className="mx-auto mt-2 h-1.5 w-16 rounded-full bg-muted" />
+        <div className="bg-muted mx-auto mt-2 h-1.5 w-16 rounded-full" />
 
         {/* Contenu avec thème */}
         <div className={cn('flex flex-1 flex-col overflow-hidden', theme.bodyBg)}>
@@ -192,7 +192,7 @@ function MobileDialogContent({
             </div>
           )}
           {description && (
-            <div className="mt-1 text-sm text-muted-foreground">
+            <div className="text-muted-foreground mt-1 text-sm">
               {(description as React.ReactElement).props.children}
             </div>
           )}

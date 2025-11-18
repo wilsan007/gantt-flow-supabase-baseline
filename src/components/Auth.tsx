@@ -232,7 +232,7 @@ export const Auth = ({ onAuthStateChange }: AuthProps) => {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background">
+    <div className="bg-background flex min-h-screen items-center justify-center">
       <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle>{isSignUp ? 'Créer un compte' : 'Connexion'}</CardTitle>
@@ -264,7 +264,7 @@ export const Auth = ({ onAuthStateChange }: AuthProps) => {
                   autoComplete="off"
                   required
                 />
-                <p className="text-center text-sm text-muted-foreground">
+                <p className="text-muted-foreground text-center text-sm">
                   Entrez le code à 6 chiffres depuis votre application d'authentification
                 </p>
               </div>

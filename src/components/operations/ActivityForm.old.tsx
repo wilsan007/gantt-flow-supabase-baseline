@@ -371,7 +371,7 @@ export const ActivityForm: React.FC<ActivityFormProps> = ({ activity, kind, onSa
           </div>
 
           {/* Aperçu RRULE */}
-          <div className="rounded-lg bg-muted p-3">
+          <div className="bg-muted rounded-lg p-3">
             <p className="mb-1 text-sm font-medium">Règle générée (RRULE):</p>
             <code className="text-xs">{generateRRule() || 'Aucune'}</code>
           </div>
@@ -389,8 +389,8 @@ export const ActivityForm: React.FC<ActivityFormProps> = ({ activity, kind, onSa
 
           <div className="space-y-3">
             {actionTemplates.map((action, index) => (
-              <div key={index} className="flex gap-2 rounded-lg border bg-card p-3">
-                <GripVertical className="mt-1 h-5 w-5 flex-shrink-0 cursor-move text-muted-foreground" />
+              <div key={index} className="bg-card flex gap-2 rounded-lg border p-3">
+                <GripVertical className="text-muted-foreground mt-1 h-5 w-5 flex-shrink-0 cursor-move" />
                 <div className="flex-1 space-y-2">
                   <Input
                     value={action.title}
@@ -417,7 +417,7 @@ export const ActivityForm: React.FC<ActivityFormProps> = ({ activity, kind, onSa
           </div>
 
           {actionTemplates.length === 0 && (
-            <div className="py-8 text-center text-muted-foreground">
+            <div className="text-muted-foreground py-8 text-center">
               <p>Aucune action définie</p>
               <p className="mt-1 text-sm">
                 Les actions seront clonées automatiquement sur chaque tâche générée

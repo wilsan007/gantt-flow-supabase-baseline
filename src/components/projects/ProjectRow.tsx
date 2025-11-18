@@ -54,7 +54,7 @@ export const ProjectRow: React.FC<ProjectRowProps> = ({
   return (
     <TableRow
       className={cn(
-        'cursor-pointer transition-colors hover:bg-muted/50',
+        'hover:bg-muted/50 cursor-pointer transition-colors',
         isSelected && 'bg-primary/10'
       )}
       onClick={() => onProjectClick?.(project)}
@@ -77,7 +77,7 @@ export const ProjectRow: React.FC<ProjectRowProps> = ({
       <TableCell className="py-2">
         <div className="flex items-center gap-2">
           <Progress value={project.progress || 0} className="h-2 w-full" />
-          <span className="min-w-[40px] text-right text-xs text-muted-foreground">
+          <span className="text-muted-foreground min-w-[40px] text-right text-xs">
             {project.progress || 0}%
           </span>
         </div>

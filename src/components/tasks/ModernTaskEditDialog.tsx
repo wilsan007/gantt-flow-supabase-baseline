@@ -230,7 +230,7 @@ const ModernTaskEditDialogBase: React.FC<ModernTaskEditDialogProps> = ({
               autoFocus
             />
             {task.parent_id && (
-              <p className="flex items-center gap-2 text-sm text-muted-foreground">
+              <p className="text-muted-foreground flex items-center gap-2 text-sm">
                 <Link2 className="h-4 w-4" />
                 Sous-tâche
               </p>
@@ -243,7 +243,7 @@ const ModernTaskEditDialogBase: React.FC<ModernTaskEditDialogProps> = ({
             <div className="space-y-3">
               {/* Statut */}
               <div className="flex items-center gap-3">
-                <Label className="flex w-32 items-center gap-2 text-sm text-muted-foreground">
+                <Label className="text-muted-foreground flex w-32 items-center gap-2 text-sm">
                   <FileText className="h-4 w-4" />
                   Statut
                 </Label>
@@ -262,7 +262,7 @@ const ModernTaskEditDialogBase: React.FC<ModernTaskEditDialogProps> = ({
 
               {/* Date de début */}
               <div className="flex items-center gap-3">
-                <Label className="flex w-32 items-center gap-2 text-sm text-muted-foreground">
+                <Label className="text-muted-foreground flex w-32 items-center gap-2 text-sm">
                   <CalendarIcon className="h-4 w-4" />
                   Début
                 </Label>
@@ -292,7 +292,7 @@ const ModernTaskEditDialogBase: React.FC<ModernTaskEditDialogProps> = ({
 
               {/* Date d'échéance */}
               <div className="flex items-center gap-3">
-                <Label className="flex w-32 items-center gap-2 text-sm text-muted-foreground">
+                <Label className="text-muted-foreground flex w-32 items-center gap-2 text-sm">
                   <CalendarIcon className="h-4 w-4" />
                   Échéance
                 </Label>
@@ -323,7 +323,7 @@ const ModernTaskEditDialogBase: React.FC<ModernTaskEditDialogProps> = ({
 
               {/* Responsable */}
               <div className="flex items-center gap-3">
-                <Label className="flex w-32 items-center gap-2 text-sm text-muted-foreground">
+                <Label className="text-muted-foreground flex w-32 items-center gap-2 text-sm">
                   <User className="h-4 w-4" />
                   Responsable
                 </Label>
@@ -343,7 +343,7 @@ const ModernTaskEditDialogBase: React.FC<ModernTaskEditDialogProps> = ({
 
               {/* Priorité */}
               <div className="flex items-center gap-3">
-                <Label className="flex w-32 items-center gap-2 text-sm text-muted-foreground">
+                <Label className="text-muted-foreground flex w-32 items-center gap-2 text-sm">
                   <Flag className="h-4 w-4" />
                   Priorité
                 </Label>
@@ -365,7 +365,7 @@ const ModernTaskEditDialogBase: React.FC<ModernTaskEditDialogProps> = ({
             <div className="space-y-3">
               {/* Projet */}
               <div className="flex items-center gap-3">
-                <Label className="flex w-32 items-center gap-2 text-sm text-muted-foreground">
+                <Label className="text-muted-foreground flex w-32 items-center gap-2 text-sm">
                   <FolderKanban className="h-4 w-4" />
                   Projet
                 </Label>
@@ -385,7 +385,7 @@ const ModernTaskEditDialogBase: React.FC<ModernTaskEditDialogProps> = ({
 
               {/* Département */}
               <div className="flex items-center gap-3">
-                <Label className="flex w-32 items-center gap-2 text-sm text-muted-foreground">
+                <Label className="text-muted-foreground flex w-32 items-center gap-2 text-sm">
                   <Building2 className="h-4 w-4" />
                   Département
                 </Label>
@@ -405,7 +405,7 @@ const ModernTaskEditDialogBase: React.FC<ModernTaskEditDialogProps> = ({
 
               {/* Effort estimé */}
               <div className="flex items-center gap-3">
-                <Label className="flex w-32 items-center gap-2 text-sm text-muted-foreground">
+                <Label className="text-muted-foreground flex w-32 items-center gap-2 text-sm">
                   <Clock className="h-4 w-4" />
                   Effort (heures)
                 </Label>
@@ -420,7 +420,7 @@ const ModernTaskEditDialogBase: React.FC<ModernTaskEditDialogProps> = ({
 
               {/* Tags */}
               <div className="flex items-start gap-3">
-                <Label className="flex w-32 items-center gap-2 pt-2 text-sm text-muted-foreground">
+                <Label className="text-muted-foreground flex w-32 items-center gap-2 pt-2 text-sm">
                   <Tag className="h-4 w-4" />
                   Tags
                 </Label>
@@ -464,7 +464,7 @@ const ModernTaskEditDialogBase: React.FC<ModernTaskEditDialogProps> = ({
               className="flex w-full items-center justify-between p-2"
               onClick={() => setShowDescription(!showDescription)}
             >
-              <span className="flex items-center gap-2 text-sm text-muted-foreground">
+              <span className="text-muted-foreground flex items-center gap-2 text-sm">
                 <FileText className="h-4 w-4" />
                 Description
               </span>
@@ -494,7 +494,7 @@ const ModernTaskEditDialogBase: React.FC<ModernTaskEditDialogProps> = ({
               className="flex w-full items-center justify-between p-2"
               onClick={() => setShowActions(!showActions)}
             >
-              <span className="flex items-center gap-2 text-sm text-muted-foreground">
+              <span className="text-muted-foreground flex items-center gap-2 text-sm">
                 <Target className="h-4 w-4" />
                 Actions ({actions.length})
               </span>
@@ -512,7 +512,7 @@ const ModernTaskEditDialogBase: React.FC<ModernTaskEditDialogProps> = ({
                     <div className="flex-1 space-y-1">
                       <p className="font-medium">{action.name}</p>
                       {action.description && (
-                        <p className="text-sm text-muted-foreground">{action.description}</p>
+                        <p className="text-muted-foreground text-sm">{action.description}</p>
                       )}
                     </div>
                     <Button
@@ -521,7 +521,7 @@ const ModernTaskEditDialogBase: React.FC<ModernTaskEditDialogProps> = ({
                       size="icon"
                       onClick={() => removeAction(action.id)}
                     >
-                      <Trash2 className="h-4 w-4 text-destructive" />
+                      <Trash2 className="text-destructive h-4 w-4" />
                     </Button>
                   </div>
                 ))}

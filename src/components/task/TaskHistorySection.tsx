@@ -31,7 +31,7 @@ export const TaskHistorySection: React.FC<TaskHistorySectionProps> = ({
         </CardHeader>
         <CardContent>
           <div className="flex items-center justify-center py-8">
-            <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-primary"></div>
+            <div className="border-primary h-8 w-8 animate-spin rounded-full border-b-2"></div>
           </div>
         </CardContent>
       </Card>
@@ -48,7 +48,7 @@ export const TaskHistorySection: React.FC<TaskHistorySectionProps> = ({
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="py-8 text-center text-muted-foreground">
+          <div className="text-muted-foreground py-8 text-center">
             <p>Erreur lors du chargement de l'historique</p>
             <p className="text-sm">{error}</p>
           </div>
@@ -67,7 +67,7 @@ export const TaskHistorySection: React.FC<TaskHistorySectionProps> = ({
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="py-8 text-center text-muted-foreground">
+          <div className="text-muted-foreground py-8 text-center">
             <Activity className="mx-auto mb-4 h-12 w-12 opacity-50" />
             <p>Aucune modification enregistrée</p>
             <p className="text-sm">L'historique apparaîtra ici lors des prochaines modifications</p>
@@ -131,12 +131,12 @@ const HistoryEntry: React.FC<HistoryEntryProps> = ({
   return (
     <div className="relative">
       {/* Timeline line */}
-      {!isLast && <div className="absolute bottom-0 left-6 top-12 w-0.5 bg-border" />}
+      {!isLast && <div className="bg-border absolute top-12 bottom-0 left-6 w-0.5" />}
 
       <div className="flex items-start gap-4">
         {/* Icon */}
         <div
-          className={`flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-muted text-lg ${colorClass}`}
+          className={`bg-muted flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full text-lg ${colorClass}`}
         >
           {icon}
         </div>
@@ -144,13 +144,13 @@ const HistoryEntry: React.FC<HistoryEntryProps> = ({
         {/* Content */}
         <div className="min-w-0 flex-1">
           <div className="mb-1 flex items-center justify-between">
-            <p className="text-sm font-medium text-foreground">{message}</p>
+            <p className="text-foreground text-sm font-medium">{message}</p>
             <Badge variant="outline" className={`text-xs ${colorClass} border-current`}>
               {entry.action_type}
             </Badge>
           </div>
 
-          <div className="flex items-center gap-4 text-xs text-muted-foreground">
+          <div className="text-muted-foreground flex items-center gap-4 text-xs">
             <div className="flex items-center gap-1">
               <User className="h-3 w-3" />
               <span>{entry.user_email || 'Système'}</span>
@@ -169,7 +169,7 @@ const HistoryEntry: React.FC<HistoryEntryProps> = ({
 
           {/* Détails supplémentaires pour certains types de modifications */}
           {entry.action_type === 'updated' && entry.field_name && (
-            <div className="mt-2 rounded bg-muted/50 p-2 text-xs">
+            <div className="bg-muted/50 mt-2 rounded p-2 text-xs">
               <div className="flex justify-between">
                 <span className="font-medium">Champ:</span>
                 <span>{entry.field_name}</span>

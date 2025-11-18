@@ -73,11 +73,11 @@ export function EmptyStateWithTemplates({
     <div className={cn('mx-auto w-full max-w-5xl space-y-6 p-6', className)}>
       {/* Header */}
       <div className="space-y-3 text-center">
-        <div className="flex items-center justify-center gap-2 text-primary">
+        <div className="text-primary flex items-center justify-center gap-2">
           <Sparkles className="h-8 w-8" />
           <h2 className="text-3xl font-bold">Bienvenue sur Wadashaqayn! 🎉</h2>
         </div>
-        <p className="mx-auto max-w-2xl text-lg text-muted-foreground">
+        <p className="text-muted-foreground mx-auto max-w-2xl text-lg">
           Vous n'avez pas encore de tâches. Commencez avec ces templates pour découvrir comment
           organiser votre travail efficacement.
         </p>
@@ -95,7 +95,7 @@ export function EmptyStateWithTemplates({
               key={template.id}
               className={cn(
                 'border-2 transition-all duration-200 hover:shadow-lg',
-                isExpanded && 'ring-2 ring-primary/20'
+                isExpanded && 'ring-primary/20 ring-2'
               )}
             >
               <CardHeader className="pb-3">
@@ -115,7 +115,7 @@ export function EmptyStateWithTemplates({
                         </Badge>
                       </div>
                       <CardDescription className="text-sm">{template.description}</CardDescription>
-                      <div className="mt-2 flex items-center gap-3 text-xs text-muted-foreground">
+                      <div className="text-muted-foreground mt-2 flex items-center gap-3 text-xs">
                         <div className="flex items-center gap-1">
                           <Clock className="h-3 w-3" />
                           {template.estimatedTime}
@@ -157,7 +157,7 @@ export function EmptyStateWithTemplates({
               {isExpanded && (
                 <CardContent className="space-y-4 pt-0">
                   {/* Help Text */}
-                  <div className="rounded-lg border border-primary/10 bg-primary/5 p-3 text-sm">
+                  <div className="border-primary/10 bg-primary/5 rounded-lg border p-3 text-sm">
                     <p className="text-primary/80">💡 {template.helpText}</p>
                   </div>
 
@@ -181,7 +181,7 @@ export function EmptyStateWithTemplates({
                           <Checkbox checked={action.is_done} disabled className="mt-0.5" />
                           <div className="flex-1 space-y-1">
                             <div className="flex items-center gap-2">
-                              <span className="text-xs font-medium text-muted-foreground">
+                              <span className="text-muted-foreground text-xs font-medium">
                                 {actionIndex + 1}.
                               </span>
                               <p
@@ -193,7 +193,7 @@ export function EmptyStateWithTemplates({
                                 {action.title}
                               </p>
                             </div>
-                            <p className="text-xs text-muted-foreground">{action.description}</p>
+                            <p className="text-muted-foreground text-xs">{action.description}</p>
                           </div>
                         </div>
                       ))}
@@ -233,7 +233,7 @@ export function EmptyStateWithTemplates({
       </div>
 
       {/* Bottom tip */}
-      <p className="text-center text-xs text-muted-foreground">
+      <p className="text-muted-foreground text-center text-xs">
         💡 Astuce: Vous pourrez toujours créer vos propres tâches avec le bouton "+ Nouvelle tâche"
       </p>
     </div>

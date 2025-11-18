@@ -114,7 +114,7 @@ export const ErrorAlert: React.FC<ErrorAlertProps> = ({
           {showDetails && (error.details || error.suggestion) && (
             <div className="mt-3 space-y-2">
               {error.details && (
-                <div className="rounded border bg-white/50 p-2 text-xs text-muted-foreground">
+                <div className="text-muted-foreground rounded border bg-white/50 p-2 text-xs">
                   <strong>Détails :</strong> {error.details}
                 </div>
               )}
@@ -155,7 +155,7 @@ export const ErrorAlert: React.FC<ErrorAlertProps> = ({
                 </Button>
               )}
 
-              <div className="ml-auto flex items-center gap-1 text-xs text-muted-foreground">
+              <div className="text-muted-foreground ml-auto flex items-center gap-1 text-xs">
                 <Clock className="h-3 w-3" />
                 {error.timestamp.toLocaleTimeString()}
               </div>
@@ -204,7 +204,7 @@ export const ErrorList: React.FC<ErrorListProps> = ({
     <div className={cn('space-y-2', className)}>
       {onClearAll && errors.length > 1 && (
         <div className="flex items-center justify-between">
-          <span className="text-sm text-muted-foreground">
+          <span className="text-muted-foreground text-sm">
             {errors.length} erreur{errors.length > 1 ? 's' : ''} détectée
             {errors.length > 1 ? 's' : ''}
           </span>

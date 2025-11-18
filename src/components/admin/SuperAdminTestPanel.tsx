@@ -244,7 +244,7 @@ export const SuperAdminTestPanel: React.FC = () => {
               <div className="space-y-3 text-sm">
                 <div>
                   <strong>Test Super Admin :</strong>
-                  <ol className="ml-4 mt-1 list-inside list-decimal space-y-1">
+                  <ol className="mt-1 ml-4 list-inside list-decimal space-y-1">
                     <li>Connectez-vous avec un compte super admin</li>
                     <li>
                       Vérifiez que les boutons "Super Admin" et "Rôles & Permissions" sont visibles
@@ -256,7 +256,7 @@ export const SuperAdminTestPanel: React.FC = () => {
 
                 <div>
                   <strong>Test Minuteur d'Inactivité :</strong>
-                  <ol className="ml-4 mt-1 list-inside list-decimal space-y-1">
+                  <ol className="mt-1 ml-4 list-inside list-decimal space-y-1">
                     <li>Activez le minuteur avec le switch</li>
                     <li>Attendez ou simulez l'inactivité</li>
                     <li>Vérifiez que l'alerte n'apparaît qu'aux 5 dernières minutes</li>

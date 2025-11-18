@@ -147,7 +147,7 @@ export const UserMenu: React.FC<UserMenuProps> = ({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <button className="flex items-center gap-2 rounded-lg px-2 py-1.5 transition-colors hover:bg-accent">
+        <button className="hover:bg-accent flex items-center gap-2 rounded-lg px-2 py-1.5 transition-colors">
           <div className="relative">
             <Avatar className="h-8 w-8">
               <AvatarImage
@@ -156,18 +156,18 @@ export const UserMenu: React.FC<UserMenuProps> = ({
                 referrerPolicy="no-referrer"
                 loading="lazy"
               />
-              <AvatarFallback className="bg-primary text-xs text-primary-foreground">
+              <AvatarFallback className="bg-primary text-primary-foreground text-xs">
                 {initials}
               </AvatarFallback>
             </Avatar>
             {/* Indicateur de statut */}
             <div
-              className={`absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full border-2 border-background ${statusConfig[userStatus].color}`}
+              className={`border-background absolute right-0 bottom-0 h-2.5 w-2.5 rounded-full border-2 ${statusConfig[userStatus].color}`}
             />
           </div>
           <div className="hidden text-left md:block">
-            <p className="text-sm font-medium leading-none">{fullName}</p>
-            <p className="text-xs text-muted-foreground">{statusConfig[userStatus].label}</p>
+            <p className="text-sm leading-none font-medium">{fullName}</p>
+            <p className="text-muted-foreground text-xs">{statusConfig[userStatus].label}</p>
           </div>
         </button>
       </DropdownMenuTrigger>
@@ -188,8 +188,8 @@ export const UserMenu: React.FC<UserMenuProps> = ({
               </AvatarFallback>
             </Avatar>
             <div className="flex flex-col space-y-1">
-              <p className="text-sm font-semibold leading-none">{fullName}</p>
-              <p className="text-xs text-muted-foreground">{email}</p>
+              <p className="text-sm leading-none font-semibold">{fullName}</p>
+              <p className="text-muted-foreground text-xs">{email}</p>
               {isTenantAdmin && tenantName && (
                 <Badge variant="secondary" className="w-fit text-xs">
                   Admin · {tenantName}
@@ -287,7 +287,7 @@ export const UserMenu: React.FC<UserMenuProps> = ({
         {isSuperAdmin && isTenantAdmin && (
           <>
             <DropdownMenuSeparator />
-            <DropdownMenuLabel className="text-xs text-muted-foreground">
+            <DropdownMenuLabel className="text-muted-foreground text-xs">
               Gestion Entreprise
             </DropdownMenuLabel>
 
@@ -322,7 +322,7 @@ export const UserMenu: React.FC<UserMenuProps> = ({
         <DropdownMenuSeparator />
 
         {/* Outils personnels */}
-        <DropdownMenuLabel className="text-xs text-muted-foreground">
+        <DropdownMenuLabel className="text-muted-foreground text-xs">
           Outils personnels
         </DropdownMenuLabel>
 

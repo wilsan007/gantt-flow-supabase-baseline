@@ -211,7 +211,7 @@ export const ScheduleForm: React.FC<ScheduleFormProps> = ({ value, onChange, act
             ))}
           </div>
           {weekDays.length === 0 && (
-            <p className="text-sm text-destructive">⚠️ Sélectionnez au moins un jour</p>
+            <p className="text-destructive text-sm">⚠️ Sélectionnez au moins un jour</p>
           )}
         </div>
       )}
@@ -226,7 +226,7 @@ export const ScheduleForm: React.FC<ScheduleFormProps> = ({ value, onChange, act
             onChange={e => setMonthDays(e.target.value)}
             placeholder="Ex: 1,15,30"
           />
-          <p className="text-xs text-muted-foreground">
+          <p className="text-muted-foreground text-xs">
             Entrez les numéros des jours (1-31) séparés par des virgules
           </p>
         </div>
@@ -281,18 +281,18 @@ export const ScheduleForm: React.FC<ScheduleFormProps> = ({ value, onChange, act
           value={windowDays}
           onChange={e => setWindowDays(parseInt(e.target.value) || 30)}
         />
-        <p className="text-xs text-muted-foreground">
+        <p className="text-muted-foreground text-xs">
           Les tâches seront générées jusqu'à {windowDays} jours à l'avance
         </p>
       </div>
 
       {/* Aperçu RRULE */}
-      <div className="space-y-2 rounded-lg bg-muted p-4">
+      <div className="bg-muted space-y-2 rounded-lg p-4">
         <div className="flex items-center gap-2">
-          <Info className="h-4 w-4 text-muted-foreground" />
+          <Info className="text-muted-foreground h-4 w-4" />
           <span className="text-sm font-medium">Règle de récurrence (RRULE)</span>
         </div>
-        <code className="block rounded bg-background p-2 text-xs">
+        <code className="bg-background block rounded p-2 text-xs">
           {generateRRule() || 'Aucune règle définie'}
         </code>
       </div>

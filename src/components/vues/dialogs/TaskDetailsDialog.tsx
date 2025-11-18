@@ -66,7 +66,7 @@ const TaskDetailsDialogBase = ({ open, onOpenChange, task }: TaskDetailsDialogPr
       <DialogContent className="max-h-[90vh] max-w-4xl overflow-hidden">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-3">
-            <span className="text-sm text-muted-foreground">#{task.display_order}</span>
+            <span className="text-muted-foreground text-sm">#{task.display_order}</span>
             <span>{task.title}</span>
             <Badge className={priorityColors[task.priority]} variant="outline">
               {task.priority}
@@ -90,22 +90,22 @@ const TaskDetailsDialogBase = ({ open, onOpenChange, task }: TaskDetailsDialogPr
               <CardContent className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <div className="space-y-3">
                   <div className="flex items-center gap-3">
-                    <Users className="h-4 w-4 text-muted-foreground" />
+                    <Users className="text-muted-foreground h-4 w-4" />
                     <span className="font-medium">Responsable:</span>
                     <span>{task.assignee}</span>
                   </div>
                   <div className="flex items-center gap-3">
-                    <Calendar className="h-4 w-4 text-muted-foreground" />
+                    <Calendar className="text-muted-foreground h-4 w-4" />
                     <span className="font-medium">Début:</span>
                     <span>{formatDate(task.start_date)}</span>
                   </div>
                   <div className="flex items-center gap-3">
-                    <Calendar className="h-4 w-4 text-muted-foreground" />
+                    <Calendar className="text-muted-foreground h-4 w-4" />
                     <span className="font-medium">Échéance:</span>
                     <span>{formatDate(task.due_date)}</span>
                   </div>
                   <div className="flex items-center gap-3">
-                    <Clock className="h-4 w-4 text-muted-foreground" />
+                    <Clock className="text-muted-foreground h-4 w-4" />
                     <span className="font-medium">Effort estimé:</span>
                     <span>{task.effort_estimate_h}h</span>
                   </div>
@@ -113,14 +113,14 @@ const TaskDetailsDialogBase = ({ open, onOpenChange, task }: TaskDetailsDialogPr
                 <div className="space-y-3">
                   <div>
                     <div className="mb-2 flex items-center gap-2">
-                      <TrendingUp className="h-4 w-4 text-muted-foreground" />
+                      <TrendingUp className="text-muted-foreground h-4 w-4" />
                       <span className="font-medium">Progression: {task.progress}%</span>
                     </div>
                     <Progress value={task.progress} className="w-full" />
                   </div>
                   {taskDetails?.budget && (
                     <div className="flex items-center gap-3">
-                      <Euro className="h-4 w-4 text-muted-foreground" />
+                      <Euro className="text-muted-foreground h-4 w-4" />
                       <span className="font-medium">Budget:</span>
                       <span>{taskDetails?.budget}€</span>
                     </div>
@@ -139,14 +139,14 @@ const TaskDetailsDialogBase = ({ open, onOpenChange, task }: TaskDetailsDialogPr
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div className="rounded-lg bg-muted p-3">
+                  <div className="bg-muted rounded-lg p-3">
                     <p className="font-medium">{department.name}</p>
                     {department.description && (
-                      <p className="mt-1 text-sm text-muted-foreground">{department.description}</p>
+                      <p className="text-muted-foreground mt-1 text-sm">{department.description}</p>
                     )}
                     {department.budget && (
                       <div className="mt-2 flex items-center gap-2">
-                        <Euro className="h-4 w-4 text-muted-foreground" />
+                        <Euro className="text-muted-foreground h-4 w-4" />
                         <span className="text-sm">Budget: {department.budget}€</span>
                       </div>
                     )}
@@ -168,13 +168,13 @@ const TaskDetailsDialogBase = ({ open, onOpenChange, task }: TaskDetailsDialogPr
                   {taskDetails?.description && (
                     <div>
                       <h4 className="mb-2 font-medium">Description</h4>
-                      <p className="rounded-lg bg-muted p-3 text-sm">{taskDetails?.description}</p>
+                      <p className="bg-muted rounded-lg p-3 text-sm">{taskDetails?.description}</p>
                     </div>
                   )}
                   {taskDetails?.acceptance_criteria && (
                     <div>
                       <h4 className="mb-2 font-medium">Critères d'acceptation</h4>
-                      <p className="rounded-lg bg-muted p-3 text-sm">
+                      <p className="bg-muted rounded-lg p-3 text-sm">
                         {taskDetails?.acceptance_criteria}
                       </p>
                     </div>
@@ -199,7 +199,7 @@ const TaskDetailsDialogBase = ({ open, onOpenChange, task }: TaskDetailsDialogPr
                       {task.task_actions.map(action => (
                         <div
                           key={action.id}
-                          className="flex items-center gap-3 rounded-lg bg-muted p-2"
+                          className="bg-muted flex items-center gap-3 rounded-lg p-2"
                         >
                           <div
                             className={`h-3 w-3 rounded-full ${action.is_done ? 'bg-green-500' : 'bg-gray-300'}`}
@@ -225,14 +225,14 @@ const TaskDetailsDialogBase = ({ open, onOpenChange, task }: TaskDetailsDialogPr
                       {subtasks.map(subtask => (
                         <div
                           key={subtask.id}
-                          className="flex items-center gap-3 rounded-lg bg-muted p-2"
+                          className="bg-muted flex items-center gap-3 rounded-lg p-2"
                         >
                           <Badge className={statusColors[subtask.status]} variant="outline">
                             {subtask.status}
                           </Badge>
                           <span>{subtask.title}</span>
                           <div className="ml-auto flex items-center gap-2">
-                            <span className="text-sm text-muted-foreground">
+                            <span className="text-muted-foreground text-sm">
                               {subtask.effort_estimate_h}h
                             </span>
                             <Progress value={subtask.progress} className="w-16" />
@@ -256,22 +256,22 @@ const TaskDetailsDialogBase = ({ open, onOpenChange, task }: TaskDetailsDialogPr
               </CardHeader>
               <CardContent className="grid grid-cols-2 gap-4 md:grid-cols-4">
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-primary">{totalEffort}h</div>
-                  <div className="text-sm text-muted-foreground">Effort total</div>
+                  <div className="text-primary text-2xl font-bold">{totalEffort}h</div>
+                  <div className="text-muted-foreground text-sm">Effort total</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-primary">{subtasks?.length || 0}</div>
-                  <div className="text-sm text-muted-foreground">Sous-tâches</div>
+                  <div className="text-primary text-2xl font-bold">{subtasks?.length || 0}</div>
+                  <div className="text-muted-foreground text-sm">Sous-tâches</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-primary">{participants?.length || 1}</div>
-                  <div className="text-sm text-muted-foreground">Participants</div>
+                  <div className="text-primary text-2xl font-bold">{participants?.length || 1}</div>
+                  <div className="text-muted-foreground text-sm">Participants</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-primary">
+                  <div className="text-primary text-2xl font-bold">
                     {task.task_actions?.length || 0}
                   </div>
-                  <div className="text-sm text-muted-foreground">Actions</div>
+                  <div className="text-muted-foreground text-sm">Actions</div>
                 </div>
               </CardContent>
             </Card>
@@ -288,7 +288,7 @@ const TaskDetailsDialogBase = ({ open, onOpenChange, task }: TaskDetailsDialogPr
                 <CardContent>
                   <div className="flex flex-wrap gap-3">
                     {participants.map((participant, index) => (
-                      <div key={index} className="flex items-center gap-2 rounded-lg bg-muted p-2">
+                      <div key={index} className="bg-muted flex items-center gap-2 rounded-lg p-2">
                         <Avatar className="h-8 w-8">
                           <AvatarFallback>{participant.charAt(0).toUpperCase()}</AvatarFallback>
                         </Avatar>
@@ -312,7 +312,7 @@ const TaskDetailsDialogBase = ({ open, onOpenChange, task }: TaskDetailsDialogPr
                 <CardContent>
                   <div className="space-y-2">
                     {dependencies.map(dep => (
-                      <div key={dep.id} className="flex items-center gap-3 rounded-lg bg-muted p-2">
+                      <div key={dep.id} className="bg-muted flex items-center gap-3 rounded-lg p-2">
                         <Badge variant="outline">{dep.dependency_type}</Badge>
                         <span>{dep.depends_on_task_title}</span>
                       </div>
@@ -342,7 +342,7 @@ const TaskDetailsDialogBase = ({ open, onOpenChange, task }: TaskDetailsDialogPr
                         </div>
                         <p className="mb-2 text-sm">{risk.risk_description}</p>
                         {risk.mitigation_plan && (
-                          <p className="text-sm text-muted-foreground">
+                          <p className="text-muted-foreground text-sm">
                             <strong>Plan d'atténuation:</strong> {risk.mitigation_plan}
                           </p>
                         )}
@@ -365,10 +365,10 @@ const TaskDetailsDialogBase = ({ open, onOpenChange, task }: TaskDetailsDialogPr
                 <CardContent>
                   <div className="space-y-3">
                     {comments.map(comment => (
-                      <div key={comment.id} className="border-l-2 border-primary pl-4">
+                      <div key={comment.id} className="border-primary border-l-2 pl-4">
                         <div className="mb-1 flex items-center gap-2">
                           <Badge variant="outline">{comment.comment_type}</Badge>
-                          <span className="text-sm text-muted-foreground">
+                          <span className="text-muted-foreground text-sm">
                             {formatDate(comment.created_at)}
                           </span>
                         </div>

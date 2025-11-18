@@ -213,7 +213,7 @@ export function ExpenseReportForm({ onSuccess, onCancel }: ExpenseReportFormProp
                 <Upload className="h-4 w-4" />
               </Button>
             </div>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-muted-foreground text-xs">
               Téléchargez ou collez le lien du justificatif
             </p>
           </div>

@@ -47,7 +47,7 @@ export const GanttTaskList = ({ tasks, rowHeight, displayMode = 'tasks' }: Gantt
   return (
     <div className="glass border-gantt-grid/50 bg-gantt-task-bg/30 w-64 border-r backdrop-blur-sm">
       <div className="border-gantt-grid/50 bg-gantt-header flex h-20 items-center border-b px-4">
-        <span className="font-medium text-foreground">
+        <span className="text-foreground font-medium">
           {displayMode === 'projects' ? 'Projets' : 'Tâches'}
         </span>
       </div>
@@ -62,7 +62,7 @@ export const GanttTaskList = ({ tasks, rowHeight, displayMode = 'tasks' }: Gantt
             >
               <div>
                 <div
-                  className="text-lg font-bold text-foreground"
+                  className="text-foreground text-lg font-bold"
                   style={{
                     fontFamily: 'system-ui, -apple-system, sans-serif',
                     color: task.color,
@@ -70,7 +70,7 @@ export const GanttTaskList = ({ tasks, rowHeight, displayMode = 'tasks' }: Gantt
                 >
                   📁 {task.name}
                 </div>
-                <div className="text-sm text-foreground/70">
+                <div className="text-foreground/70 text-sm">
                   <span className="inline-flex items-center gap-1">
                     <span
                       className="h-2 w-2 rounded-full"
@@ -89,7 +89,7 @@ export const GanttTaskList = ({ tasks, rowHeight, displayMode = 'tasks' }: Gantt
               {/* Header du projet */}
               <div className="bg-gantt-header/50 border-gantt-grid/50 border-b px-4 py-2">
                 <div
-                  className="font-bold text-foreground"
+                  className="text-foreground font-bold"
                   style={{
                     fontFamily: 'system-ui, -apple-system, sans-serif',
                     fontSize: '1.1rem',
@@ -108,8 +108,8 @@ export const GanttTaskList = ({ tasks, rowHeight, displayMode = 'tasks' }: Gantt
                   style={{ height: rowHeight }}
                 >
                   <div>
-                    <div className="font-medium text-foreground">{task.name}</div>
-                    <div className="text-sm text-foreground/70">
+                    <div className="text-foreground font-medium">{task.name}</div>
+                    <div className="text-foreground/70 text-sm">
                       <span className="inline-flex items-center gap-1">
                         <span
                           className="h-2 w-2 rounded-full"

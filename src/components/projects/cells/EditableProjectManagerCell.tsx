@@ -148,14 +148,14 @@ export const EditableProjectManagerCell: React.FC<EditableProjectManagerCellProp
             )}
             title={readOnly ? 'Modification non autorisée' : 'Cliquer pour assigner'}
           >
-            <Users className="h-4 w-4 text-muted-foreground" />
+            <Users className="text-muted-foreground h-4 w-4" />
             <span className="truncate">{currentManagerName}</span>
           </div>
         ) : (
           <div className="space-y-2">
             {/* Dropdown des employés */}
             {showOptions && (
-              <div className="absolute left-0 top-0 z-50 max-h-60 w-64 overflow-y-auto rounded-md border bg-white shadow-lg dark:bg-gray-900">
+              <div className="absolute top-0 left-0 z-50 max-h-60 w-64 overflow-y-auto rounded-md border bg-white shadow-lg dark:bg-gray-900">
                 <div className="p-1">
                   {/* Option "Non assigné" */}
                   <div
@@ -166,7 +166,7 @@ export const EditableProjectManagerCell: React.FC<EditableProjectManagerCellProp
                     onClick={() => handleSelectManager('')}
                   >
                     <div className="flex items-center gap-2">
-                      <Users className="h-4 w-4 text-muted-foreground" />
+                      <Users className="text-muted-foreground h-4 w-4" />
                       <span>Non assigné</span>
                     </div>
                   </div>
@@ -182,7 +182,7 @@ export const EditableProjectManagerCell: React.FC<EditableProjectManagerCellProp
                       onClick={() => handleSelectManager(employee.id)}
                     >
                       <div className="flex items-center gap-2">
-                        <Users className="h-4 w-4 text-muted-foreground" />
+                        <Users className="text-muted-foreground h-4 w-4" />
                         <span className="truncate">{employee.full_name}</span>
                       </div>
                     </div>
@@ -193,7 +193,7 @@ export const EditableProjectManagerCell: React.FC<EditableProjectManagerCellProp
 
             {/* Indicateur de sauvegarde automatique */}
             {isSaving && (
-              <div className="flex items-center gap-2 pt-2 text-xs text-muted-foreground">
+              <div className="text-muted-foreground flex items-center gap-2 pt-2 text-xs">
                 <Loader2 className="h-3 w-3 animate-spin" />
                 <span>Sauvegarde en cours...</span>
               </div>

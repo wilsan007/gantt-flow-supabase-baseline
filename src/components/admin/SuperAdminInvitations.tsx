@@ -308,7 +308,7 @@ export const SuperAdminInvitations: React.FC = () => {
         <CardHeader className="p-4 sm:p-6">
           <CardTitle className="text-base sm:text-lg">ℹ️ Informations</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-1.5 p-4 text-xs text-muted-foreground sm:space-y-2 sm:p-6 sm:text-sm">
+        <CardContent className="text-muted-foreground space-y-1.5 p-4 text-xs sm:space-y-2 sm:p-6 sm:text-sm">
           <p>• L'invitation expire automatiquement après 7 jours</p>
           <p>• Le tenant owner pourra créer son entreprise lors de l'inscription</p>
           <p className="hidden sm:block">• Un UUID unique sera pré-généré pour le futur tenant</p>

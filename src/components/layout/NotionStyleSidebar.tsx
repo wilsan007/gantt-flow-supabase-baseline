@@ -50,12 +50,14 @@ interface NotionStyleSidebarProps {
   accessLoading: boolean;
   isTenantAdmin: boolean;
   signOut: () => Promise<void>;
+  onLinkClick?: () => void; // Callback optionnel pour fermer le menu mobile
 }
 
 export const NotionStyleSidebar: React.FC<NotionStyleSidebarProps> = ({
   accessRights,
   accessLoading,
   isTenantAdmin,
+  onLinkClick,
   signOut,
 }) => {
   const location = useLocation();
@@ -156,14 +158,14 @@ export const NotionStyleSidebar: React.FC<NotionStyleSidebarProps> = ({
   return (
     <aside
       className={cn(
-        'sticky top-0 hidden h-screen transition-all duration-300 lg:flex lg:flex-col',
+        'sticky top-0 flex h-screen flex-col transition-all duration-300',
         'border-r border-zinc-800 bg-zinc-950 text-white',
         isCollapsed ? 'w-16' : 'w-64'
       )}
     >
       {/* Header Sidebar avec bouton Toggle */}
       <div className="flex items-center justify-between border-b border-zinc-800 p-4">
-        <Link to="/" className="flex items-center gap-2 overflow-hidden">
+        <Link to="/" className="flex items-center gap-2 overflow-hidden" onClick={onLinkClick}>
           <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-blue-600 to-purple-600">
             <span className="text-sm font-bold text-white">W</span>
           </div>
@@ -227,6 +229,7 @@ export const NotionStyleSidebar: React.FC<NotionStyleSidebarProps> = ({
                   <Link
                     key={item.to}
                     to={item.to}
+                    onClick={onLinkClick}
                     title={isCollapsed ? item.label : undefined}
                     className={cn(
                       'group relative flex items-center gap-2 rounded-md text-sm transition-colors',
@@ -296,6 +299,7 @@ export const NotionStyleSidebar: React.FC<NotionStyleSidebarProps> = ({
                     <Link
                       key={item.to}
                       to={item.to}
+                      onClick={onLinkClick}
                       className={cn(
                         'flex items-center gap-2 rounded-lg px-3 py-2 text-sm transition-all',
                         isActivePath(item.to)
@@ -348,10 +352,11 @@ export const NotionStyleSidebar: React.FC<NotionStyleSidebarProps> = ({
                   <Link
                     key={item.to}
                     to={item.to}
+                    onClick={onLinkClick}
                     title={isCollapsed ? item.label : undefined}
                     className={cn(
-                      'group relative flex items-center gap-2 rounded-lg text-sm transition-all',
-                      isCollapsed ? 'justify-center px-1 py-2' : 'px-3 py-2',
+                      'group relative flex items-center gap-2 rounded-md text-sm transition-colors',
+                      isCollapsed ? 'justify-center px-1 py-2' : 'px-2 py-1.5',
                       isActivePath(item.to)
                         ? 'bg-zinc-800 font-medium text-white shadow-sm'
                         : 'text-zinc-400 hover:bg-zinc-800/60 hover:text-white'
@@ -407,6 +412,7 @@ export const NotionStyleSidebar: React.FC<NotionStyleSidebarProps> = ({
                 <Link
                   key={item.to}
                   to={item.to}
+                  onClick={onLinkClick}
                   title={isCollapsed ? item.label : undefined}
                   className={cn(
                     'flex items-center gap-2 rounded-lg text-sm transition-all',
@@ -429,7 +435,7 @@ export const NotionStyleSidebar: React.FC<NotionStyleSidebarProps> = ({
       <div className={cn('space-y-2 border-t border-zinc-800', isCollapsed ? 'p-2' : 'p-3')}>
         {/* Bouton Inviter (Tenant Admin) */}
         {isTenantAdmin && (
-          <Link to="/invite-collaborators" className="block">
+          <Link to="/invite-collaborators" className="block" onClick={onLinkClick}>
             <Button
               variant="outline"
               size="sm"

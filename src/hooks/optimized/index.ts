@@ -83,21 +83,36 @@ export function useTasks() {
   const updateTask = useCallback(
     async (taskId: string, updates: Partial<Task>) => {
       try {
-        const { data: updated, error: updateError } = await supabase
+        // ✅ VALIDATION: Vérifier que la tâche existe dans la liste locale
+        const existingTask = tasks.find(t => t.id === taskId);
+        if (!existingTask) {
+          throw new Error(
+            'Tâche introuvable. Vérifiez que vous déplacez bien une tâche et non une barre de projet.'
+          );
+        }
+
+        // ✅ D'abord faire l'update sans select pour éviter les problèmes RLS
+        const { error: updateError } = await supabase
           .from('tasks')
           .update(updates)
-          .eq('id', taskId)
-          .select()
-          .single();
+          .eq('id', taskId);
 
-        if (updateError) throw updateError;
+        if (updateError) {
+          console.error('Erreur update:', updateError);
+          throw updateError;
+        }
 
+        // ✅ Ensuite rafraîchir les données via refetch (qui a les bonnes permissions)
         await refetch();
+
+        // ✅ Récupérer la tâche mise à jour depuis le cache local
+        const updated = tasks.find(t => t.id === taskId);
 
         toast({
           title: '✅ Tâche mise à jour',
           description: 'Les modifications ont été enregistrées',
         });
+
         return updated;
       } catch (err: any) {
         toast({
@@ -108,7 +123,7 @@ export function useTasks() {
         throw err;
       }
     },
-    [refetch, toast]
+    [refetch, toast, tasks]
   );
 
   // ✅ deleteTask (ancienne API) - Implémentation directe avec Supabase
@@ -189,18 +204,54 @@ export function useTasks() {
 
         if (fetchError) throw fetchError;
 
-        // Toggle le statut
+        // Toggle le statut (is_done est le bon champ)
         const { error: updateError } = await supabase
           .from('task_actions')
-          .update({ is_completed: !action.is_completed })
+          .update({ is_done: !action.is_done })
           .eq('id', actionId);
 
         if (updateError) throw updateError;
 
+        // Recalculer le progress de la tâche
+        const { data: allActions } = await supabase
+          .from('task_actions')
+          .select('weight_percentage, is_done')
+          .eq('task_id', taskId);
+
+        if (allActions && allActions.length > 0) {
+          const totalWeight = allActions.reduce(
+            (sum, act) => sum + (act.weight_percentage || 0),
+            0
+          );
+          const completedWeight = allActions
+            .filter(act => act.is_done)
+            .reduce((sum, act) => sum + (act.weight_percentage || 0), 0);
+
+          const newProgress =
+            totalWeight === 0 ? 0 : Math.round((completedWeight / totalWeight) * 100);
+
+          // Calculer le nouveau statut
+          let newStatus = 'todo';
+          if (newProgress === 100) {
+            newStatus = 'done';
+          } else if (newProgress > 0) {
+            newStatus = 'doing';
+          }
+
+          // Mettre à jour la tâche avec le nouveau progress
+          await supabase
+            .from('tasks')
+            .update({
+              progress: newProgress,
+              status: newStatus,
+            })
+            .eq('id', taskId);
+        }
+
         await refetch();
 
         toast({
-          title: action.is_completed ? 'Action réactivée' : '✅ Action complétée',
+          title: action.is_done ? 'Action réactivée' : '✅ Action complétée',
           description: action.title,
         });
       } catch (err: any) {
@@ -222,8 +273,8 @@ export function useTasks() {
         const { error } = await supabase.from('task_actions').insert({
           task_id: taskId,
           title,
-          is_completed: false,
-          description: '',
+          is_done: false,
+          notes: '',
         });
 
         if (error) throw error;
@@ -261,7 +312,7 @@ export function useTasks() {
         const { error } = await supabase.from('task_actions').insert({
           task_id: taskId,
           ...actionData,
-          is_completed: false,
+          is_done: false,
         });
 
         if (error) throw error;

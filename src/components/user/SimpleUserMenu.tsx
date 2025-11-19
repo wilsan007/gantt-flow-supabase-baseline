@@ -109,8 +109,8 @@ export const SimpleUserMenu: React.FC<SimpleUserMenuProps> = ({
           </Button>
         </DropdownMenuTrigger>
 
-        <DropdownMenuContent className="w-64" align="end">
-          <ScrollArea className="max-h-[80vh]">
+        <DropdownMenuContent className="max-h-[85vh] w-64" align="end">
+          <ScrollArea className="max-h-[calc(85vh-4rem)]">
             {/* En-tête utilisateur */}
             <DropdownMenuLabel className="font-normal">
               <div className="flex items-center gap-3 py-2">

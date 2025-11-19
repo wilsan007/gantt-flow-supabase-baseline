@@ -1,14 +1,40 @@
+# Robots.txt pour Wadashaqayn - Plateforme de gestion de projets
+# Dernière mise à jour : 19 Novembre 2025
+
+# Google
 User-agent: Googlebot
 Allow: /
+Crawl-delay: 0
 
+# Bing
 User-agent: Bingbot
 Allow: /
+Crawl-delay: 0
 
+# Yandex
+User-agent: Yandex
+Allow: /
+
+# Twitter
 User-agent: Twitterbot
 Allow: /
 
+# Facebook
 User-agent: facebookexternalhit
 Allow: /
 
+# LinkedIn
+User-agent: LinkedInBot
+Allow: /
+
+# Tous les autres robots
 User-agent: *
 Allow: /
+
+# Sitemap
+Sitemap: https://wadashaqayn.org/sitemap.xml
+
+# Disallow sensitive paths (optional)
+Disallow: /api/
+Disallow: /admin/
+Disallow: /_next/

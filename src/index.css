@@ -1,20 +1,90 @@
 @import 'tailwindcss';
 
-/* Animation de défilement horizontal lent pour les cartes de modules */
-@keyframes scroll {
+/* Animations futuristes pour la landing page */
+@keyframes blob {
   0% {
-    transform: translateX(0);
+    transform: translate(0px, 0px) scale(1);
+  }
+  33% {
+    transform: translate(30px, -50px) scale(1.1);
+  }
+  66% {
+    transform: translate(-20px, 20px) scale(0.9);
   }
   100% {
+    transform: translate(0px, 0px) scale(1);
+  }
+}
+
+@keyframes gradient {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes pulse-subtle {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+.animate-blob {
+  animation: blob 7s infinite;
+}
+
+.animation-delay-2000 {
+  animation-delay: 2s;
+}
+
+.animation-delay-4000 {
+  animation-delay: 4s;
+}
+
+.animate-gradient {
+  background-size: 200% 200%;
+  animation: gradient 3s ease infinite;
+}
+
+.animate-pulse-subtle {
+  animation: pulse-subtle 2s ease-in-out infinite;
+}
+
+/* Animation de défilement horizontal pour carrousel infini seamless 
+   12 cartes originales + 12 cartes répétées = 24 cartes total
+   L'animation scroll exactement 12 cartes (50% de la largeur totale)
+   Quand on revient à 0%, la transition est invisible car les 12 dernières = les 12 premières
+   
+   Séquence visible : Tableaux → Tâches → Gantt → Kanban → RH → Temps → 
+                     Frais → Formation → Auto → Analytics → Notifs → Mobile →
+                     [TRANSITION SEAMLESS] → Tableaux → Tâches → ...
+*/
+@keyframes scrollSeamless {
+  from {
+    transform: translateX(0%);
+  }
+  to {
     transform: translateX(-50%);
   }
 }
 
-.animate-scroll {
-  animation: scroll 60s linear infinite;
+.animate-scroll-seamless {
+  /* Animation linéaire infinie ultra fluide - 100s pour voir TOUTES les cartes défiler lentement */
+  animation: scrollSeamless 100s linear infinite;
+  /* GPU acceleration pour performance maximale */
+  will-change: transform;
+  /* Garantit une interpolation parfaite sans saccade */
+  animation-timing-function: linear;
 }
 
-.animate-scroll:hover {
+.animate-scroll-seamless:hover {
   animation-play-state: paused;
 }
 

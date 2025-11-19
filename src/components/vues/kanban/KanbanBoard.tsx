@@ -152,10 +152,8 @@ function KanbanColumn({ column, tasks }: KanbanColumnProps) {
     <div className="min-w-0 flex-1">
       <Card className="glass glow-accent transition-smooth border-primary/30 h-full">
         <CardHeader className="border-primary/30 from-primary/15 to-accent/15 border-b bg-gradient-to-r pb-3 backdrop-blur-sm">
-          <CardTitle className="text-foreground flex items-center justify-between text-lg">
-            <span className="from-tech-purple to-tech-cyan bg-gradient-to-r bg-clip-text font-bold text-transparent">
-              {column.title}
-            </span>
+          <CardTitle className="flex items-center justify-between text-lg">
+            <span className="text-foreground font-bold">{column.title}</span>
             <Badge
               variant="secondary"
               className="border-primary/50 bg-primary/40 text-primary-foreground ml-2 font-semibold shadow-lg"

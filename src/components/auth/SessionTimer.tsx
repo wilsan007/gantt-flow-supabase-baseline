@@ -94,23 +94,23 @@ export const SessionTimer: React.FC<SessionTimerProps> = ({
     );
   }
 
-  // Mode normal : Badge avec tooltip
+  // Mode normal : N'afficher que si expiration proche (< 5 min)
+  if (!expiringSoon) {
+    return null; // Masquer le timer si > 5 minutes restantes
+  }
+
   return (
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger asChild>
-          <div className="bg-muted/50 hover:bg-muted flex cursor-default items-center gap-2 rounded-md px-3 py-1.5 transition-colors">
-            <Clock
-              className={`h-4 w-4 ${expiringSoon ? 'text-destructive animate-pulse' : 'text-muted-foreground'}`}
-            />
-            <span className={`text-sm font-medium ${expiringSoon ? 'text-destructive' : ''}`}>
-              {timeRemaining}
-            </span>
+          <div className="bg-muted/50 hover:bg-muted flex animate-pulse cursor-default items-center gap-2 rounded-md px-3 py-1.5 transition-colors">
+            <Clock className="text-destructive h-4 w-4" />
+            <span className="text-destructive text-sm font-medium">{timeRemaining}</span>
           </div>
         </TooltipTrigger>
         <TooltipContent>
           <div className="space-y-1">
-            <p className="font-medium">Temps restant de session</p>
+            <p className="font-medium">⚠️ Session expire bientôt!</p>
             <p className="text-muted-foreground text-xs">Maximum : 2 heures par session</p>
             <p className="text-muted-foreground text-xs">Déconnexion automatique à l'expiration</p>
           </div>

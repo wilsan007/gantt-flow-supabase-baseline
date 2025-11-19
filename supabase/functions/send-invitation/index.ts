@@ -398,69 +398,111 @@ serve(async req => {
       if (resendApiKey) {
         console.log('✅ RESEND_API_KEY trouvée, préparation email...');
 
-        // En mode test Resend, utiliser l'email du propriétaire du compte
-        const testEmail = 'osman.awaleh.adn@gmail.com';
-        const actualRecipient = email;
+        // ✅ Production : Envoyer directement à l'adresse email de l'invité
+        const recipientEmail = email;
 
         const emailHtml = `
-          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-            <div style="background: #007bff; color: white; padding: 20px; text-align: center;">
-              <h1>🎉 Bienvenue ${fullName} !</h1>
-            </div>
-            <div style="padding: 20px; border: 1px solid #ddd;">
-              <p>Vous avez été invité(e) à créer votre compte <strong>Tenant Owner</strong> pour gérer votre entreprise.</p>
-              
-              <div style="background: #fff3cd; border: 1px solid #ffeaa7; padding: 15px; border-radius: 6px; margin: 20px 0;">
-                <h4 style="margin: 0 0 10px 0; color: #856404;">📋 Étapes à suivre :</h4>
-                <ol style="margin: 0; padding-left: 20px; color: #856404;">
-                  <li>Cliquez sur le bouton "Confirmer mon email" ci-dessous</li>
-                  <li>Vous serez redirigé vers l'application</li>
-                  <li>Connectez-vous avec vos identifiants temporaires</li>
-                  <li>Changez votre mot de passe lors de la première connexion</li>
-                </ol>
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          </head>
+          <body style="margin: 0; padding: 20px; background-color: #f5f5f5; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
+            <div style="max-width: 600px; margin: 0 auto; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+              <!-- Header -->
+              <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 40px 20px; text-align: center;">
+                <img src="https://wadashaqayn.org/logo-w.svg" alt="Wadashaqayn" style="width: 60px; height: 60px; margin-bottom: 20px;" />
+                <h1 style="margin: 0; font-size: 28px; font-weight: 600;">🎉 Bienvenue sur Wadashaqayn</h1>
+                <p style="margin: 10px 0 0 0; font-size: 16px; opacity: 0.9;">Votre plateforme de gestion de projets et d'équipes</p>
               </div>
               
-              <div style="background: #f8f9fa; padding: 15px; margin: 20px 0;">
-                <strong>Email :</strong> ${actualRecipient}<br>
-                <strong>Mot de passe temporaire :</strong> ${tempPassword}<br>
-                <small style="color: #666;">⚠️ Changez ce mot de passe après votre première connexion</small>
-              </div>
-              
-              <div style="text-align: center; margin: 30px 0;">
-                <a href="${confirmationUrl}" style="background: #28a745; color: white; padding: 15px 30px; text-decoration: none; border-radius: 6px; font-weight: bold; font-size: 16px; display: inline-block; box-shadow: 0 2px 4px rgba(40,167,69,0.3);">
-                  🚀 Confirmer mon email et accéder à mon compte
-                </a>
-              </div>
-              
-              <div style="background: #d1ecf1; border: 1px solid #bee5eb; padding: 15px; border-radius: 6px; margin: 20px 0;">
-                <p style="margin: 0; font-size: 14px; color: #0c5460;">
-                  <strong>💡 Problème avec le lien ?</strong><br>
-                  Si le lien ne fonctionne pas, copiez-collez cette URL dans votre navigateur :<br>
-                  <code style="background: white; padding: 2px 4px; border-radius: 3px; font-size: 12px; word-break: break-all;">${confirmationUrl}</code>
+              <!-- Content -->
+              <div style="padding: 40px 30px;">
+                <p style="font-size: 16px; line-height: 1.6; color: #333; margin: 0 0 20px 0;">Bonjour <strong>${fullName}</strong>,</p>
+                
+                <p style="font-size: 16px; line-height: 1.6; color: #333; margin: 0 0 20px 0;">
+                  Vous avez été invité(e) à créer votre compte <strong>Administrateur Principal</strong> pour gérer <strong>${companyName}</strong> sur Wadashaqayn.
                 </p>
+                
+                <!-- Steps Box -->
+                <div style="background: #f8f9ff; border-left: 4px solid #667eea; padding: 20px; border-radius: 6px; margin: 30px 0;">
+                  <h3 style="margin: 0 0 15px 0; color: #667eea; font-size: 18px;">📋 Étapes pour activer votre compte</h3>
+                  <ol style="margin: 0; padding-left: 20px; color: #555; line-height: 1.8;">
+                    <li>Cliquez sur le bouton "Activer mon compte" ci-dessous</li>
+                    <li>Vous serez redirigé(e) vers la plateforme Wadashaqayn</li>
+                    <li>Connectez-vous avec vos identifiants temporaires</li>
+                    <li>Définissez votre nouveau mot de passe sécurisé</li>
+                  </ol>
+                </div>
+                
+                <!-- Credentials Box -->
+                <div style="background: #f8f9fa; border: 2px solid #e0e0e0; padding: 20px; margin: 20px 0; border-radius: 6px;">
+                  <h4 style="margin: 0 0 15px 0; color: #333; font-size: 16px;">🔐 Vos identifiants temporaires</h4>
+                  <p style="margin: 0 0 10px 0; font-size: 14px; color: #666;">
+                    <strong style="color: #333;">Adresse email :</strong><br>
+                    <span style="font-family: 'Courier New', monospace; background: white; padding: 8px 12px; display: inline-block; margin-top: 5px; border-radius: 4px; border: 1px solid #ddd;">${recipientEmail}</span>
+                  </p>
+                  <p style="margin: 0 0 10px 0; font-size: 14px; color: #666;">
+                    <strong style="color: #333;">Mot de passe temporaire :</strong><br>
+                    <span style="font-family: 'Courier New', monospace; background: white; padding: 8px 12px; display: inline-block; margin-top: 5px; border-radius: 4px; border: 1px solid #ddd; color: #e74c3c; font-weight: bold;">${tempPassword}</span>
+                  </p>
+                  <p style="margin: 15px 0 0 0; padding: 10px; background: #fff3cd; border-radius: 4px; font-size: 13px; color: #856404;">
+                    ⚠️ <strong>Important :</strong> Vous devrez changer ce mot de passe lors de votre première connexion pour des raisons de sécurité.
+                  </p>
+                </div>
+                
+                <!-- CTA Button -->
+                <div style="text-align: center; margin: 40px 0;">
+                  <a href="${confirmationUrl}" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 16px 40px; text-decoration: none; border-radius: 50px; font-weight: 600; font-size: 16px; display: inline-block; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4); transition: all 0.3s ease;">
+                    ✨ Activer mon compte maintenant
+                  </a>
+                </div>
+                
+                <!-- Alternative Link -->
+                <div style="background: #e8f4f8; border: 1px solid #bee5eb; padding: 20px; border-radius: 6px; margin: 20px 0;">
+                  <p style="margin: 0 0 10px 0; font-size: 14px; color: #0c5460;">
+                    <strong>💡 Le bouton ne fonctionne pas ?</strong>
+                  </p>
+                  <p style="margin: 0; font-size: 13px; color: #0c5460; line-height: 1.6;">
+                    Copiez et collez ce lien dans votre navigateur :
+                  </p>
+                  <div style="background: white; padding: 12px; margin-top: 10px; border-radius: 4px; border: 1px solid #d1ecf1; word-break: break-all;">
+                    <code style="font-family: 'Courier New', monospace; font-size: 12px; color: #667eea;">${confirmationUrl}</code>
+                  </div>
+                </div>
+                
+                <!-- Security Notice -->
+                <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e0e0e0;">
+                  <p style="margin: 0; font-size: 13px; color: #999; line-height: 1.6;">
+                    <strong>🔒 Sécurité :</strong> Ce lien d'activation est valable 7 jours et ne peut être utilisé qu'une seule fois. Si vous n'avez pas demandé cette invitation, vous pouvez ignorer cet email en toute sécurité.
+                  </p>
+                </div>
+              </div>
+              
+              <!-- Footer -->
+              <div style="background: #f8f9fa; padding: 30px; text-align: center; border-top: 1px solid #e0e0e0;">
+                <p style="margin: 0 0 10px 0; color: #666; font-size: 14px;">Cordialement,<br><strong>L'équipe Wadashaqayn</strong></p>
+                <p style="margin: 10px 0 0 0; font-size: 12px; color: #999;">© 2025 Wadashaqayn. Tous droits réservés.</p>
               </div>
             </div>
-          </div>
+          </body>
+          </html>
         `;
 
-        // Modifier le contenu pour indiquer le vrai destinataire
-        const testEmailHtml = emailHtml.replace(
-          `<strong>Email :</strong> ${email}`,
-          `<strong>Email destinataire :</strong> ${actualRecipient}<br><strong>Email de test :</strong> ${testEmail}`
-        );
-
-        console.log('📤 Envoi vers Resend API...');
-        console.log('   - Destinataire:', testEmail);
-        console.log('   - Sujet: [TEST] Bienvenue', fullName);
+        console.log('📤 Envoi email vers Resend API...');
+        console.log('   - Destinataire:', recipientEmail);
+        console.log('   - Entreprise:', companyName);
+        console.log('   - Rôle: Administrateur Principal (Tenant Owner)');
 
         const response = await fetch('https://api.resend.com/emails', {
           method: 'POST',
           headers: { Authorization: `Bearer ${resendApiKey}`, 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            from: 'Wadashaqeen <onboarding@resend.dev>',
-            to: [testEmail], // Utiliser l'email autorisé pour les tests
-            subject: `[TEST] Bienvenue ${fullName} - Invitation pour ${actualRecipient}`,
-            html: testEmailHtml,
+            from: 'Wadashaqayn <onboarding@wadashaqayn.org>',
+            to: [recipientEmail],
+            subject: `✨ Bienvenue sur Wadashaqayn - Activez votre compte ${companyName}`,
+            html: emailHtml,
           }),
         });
 

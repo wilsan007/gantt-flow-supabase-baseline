@@ -356,7 +356,7 @@ export function TaskTableWithOnboarding() {
     return (
       <div className="relative">
         {/* Bannière mode démo */}
-        <div className="mb-4 rounded-lg border-2 border-blue-200 bg-gradient-to-r from-blue-50 to-purple-50 p-4">
+        <div className="mb-2 rounded-lg border-2 border-blue-200 bg-gradient-to-r from-blue-50 to-purple-50 p-2 sm:mb-4 sm:p-4">
           <div className="flex items-start gap-3">
             <div className="text-2xl">🎨</div>
             <div className="flex-1">
@@ -393,7 +393,7 @@ export function TaskTableWithOnboarding() {
   // Si onboarding dismissed mais toujours 0 tâches et pas en mode démo
   if (!loading && tasks.length === 0 && onboardingDismissed && !showDemoData) {
     return (
-      <div className="flex h-full w-full items-center justify-center p-8">
+      <div className="flex h-full w-full items-center justify-center p-4 sm:p-8">
         <div className="max-w-md space-y-4 text-center">
           <div className="mb-4 text-6xl">📋</div>
           <h3 className="text-2xl font-bold">Aucune tâche pour le moment</h3>

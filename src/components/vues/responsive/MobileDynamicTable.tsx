@@ -235,7 +235,8 @@ export function MobileDynamicTable({
             .filter(action => action.is_done)
             .reduce((sum, action) => sum + action.weight_percentage, 0);
 
-          const newProgress = totalWeight === 0 ? 0 : Math.round(completedWeight);
+          const newProgress =
+            totalWeight === 0 ? 0 : Math.round((completedWeight / totalWeight) * 100);
 
           let newStatus = task.status;
           if (newProgress === 100) {

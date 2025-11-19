@@ -106,13 +106,11 @@ interface MobileKanbanColumnProps {
 function MobileKanbanColumn({ column, tasks }: MobileKanbanColumnProps) {
   return (
     <div className="h-full">
-      <div className="bg-background/80 sticky top-0 z-10 mb-4 flex items-center justify-between py-2 backdrop-blur-sm">
-        <h2 className="from-tech-purple to-tech-cyan bg-gradient-to-r bg-clip-text text-lg font-semibold text-transparent">
-          {column.title}
-        </h2>
+      <div className="bg-background/80 sticky top-0 z-10 mb-2 flex items-center justify-between py-1 backdrop-blur-sm">
+        <h2 className="text-foreground text-base font-semibold">{column.title}</h2>
         <Badge
           variant="secondary"
-          className="border-primary/50 bg-primary/40 text-primary-foreground font-semibold"
+          className="border-primary/50 bg-primary/40 text-primary-foreground text-xs font-semibold"
         >
           {tasks.length}
         </Badge>
@@ -194,17 +192,17 @@ export function MobileKanbanBoard() {
         <CardContent className="p-0">
           {/* Mobile: Tabs for different columns */}
           <Tabs defaultValue="todo" className="w-full">
-            <TabsList className="from-primary/10 via-accent/10 to-tech-purple/10 grid w-full grid-cols-4 rounded-t-xl border-b bg-gradient-to-r">
+            <TabsList className="from-primary/10 via-accent/10 to-tech-purple/10 grid w-full grid-cols-4 rounded-t-xl border-b bg-gradient-to-r p-0">
               {COLUMNS.map(column => (
                 <TabsTrigger
                   key={column.id}
                   value={column.id}
-                  className="transition-smooth data-[state=active]:bg-primary/20 data-[state=active]:text-primary text-xs font-semibold"
+                  className="transition-smooth data-[state=active]:bg-primary/20 data-[state=active]:text-primary min-h-[32px] py-1 text-xs font-semibold"
                 >
-                  {column.title}
+                  <span className="truncate">{column.title}</span>
                   <Badge
                     variant="secondary"
-                    className="bg-primary/30 text-primary-foreground ml-1 text-xs"
+                    className="bg-primary/30 text-primary-foreground ml-1 text-[10px]"
                   >
                     {tasksByStatus.find(c => c.id === column.id)?.tasks.length || 0}
                   </Badge>
@@ -216,7 +214,7 @@ export function MobileKanbanBoard() {
               <TabsContent
                 key={column.id}
                 value={column.id}
-                className="bg-card/30 p-4 backdrop-blur-sm"
+                className="bg-card/30 p-2 backdrop-blur-sm"
               >
                 <MobileKanbanColumn column={column} tasks={column.tasks} />
               </TabsContent>

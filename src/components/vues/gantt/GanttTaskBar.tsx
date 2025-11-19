@@ -4,7 +4,7 @@ import { darkenColor, lightenColor } from '@/lib/ganttColors';
 
 interface GanttTaskBarProps {
   task: GanttTask;
-  index: number;
+  index: number; // Keep for compatibility but use verticalPosition if provided
   rowHeight: number;
   startDate: Date;
   config: ViewConfig;
@@ -15,6 +15,8 @@ interface GanttTaskBarProps {
     taskId: string,
     action: 'drag' | 'resize-left' | 'resize-right'
   ) => void;
+  isSubtask?: boolean; // Si c'est une sous-tâche (pour affichage plus fin)
+  verticalPosition?: number; // Position verticale cumulative calculée (en pixels)
 }
 
 export const GanttTaskBar = ({
@@ -26,6 +28,8 @@ export const GanttTaskBar = ({
   isDragging,
   isResizing,
   onMouseDown,
+  isSubtask = false,
+  verticalPosition,
 }: GanttTaskBarProps) => {
   const left = getUnitPosition(task.startDate, startDate, config);
   const width = getTaskWidth(task, config);
@@ -35,24 +39,37 @@ export const GanttTaskBar = ({
   const completedColor = darkenColor(baseColor, 20); // Partie complétée plus foncée
   const remainingColor = lightenColor(baseColor, 40); // Partie restante plus claire
 
+  // Ajuster la hauteur et l'épaisseur pour les sous-tâches
+  // Pour garder la même proportion : padding = 16.6% de rowHeight
+  const barPadding = isSubtask ? 7 : 10; // Proportion identique (7/42 ≈ 10/60)
+  const barHeight = rowHeight - barPadding * 2;
+  const borderWidth = isSubtask ? 1 : 2; // Bordure plus fine pour sous-tâches
+
+  // Utiliser verticalPosition si fourni (pour alignement parfait avec hauteurs variables)
+  const topPosition =
+    verticalPosition !== undefined ? verticalPosition + barPadding : index * rowHeight + barPadding;
+
   return (
     <div
       data-task-id={task.id}
       className="absolute"
       style={{
-        top: index * rowHeight + 10,
+        top: topPosition,
         left: left,
         width: width,
-        height: rowHeight - 20,
+        height: barHeight,
       }}
     >
       <div
-        className={`group relative h-full overflow-hidden rounded-lg border-2 ${
+        className={`group relative h-full overflow-hidden rounded-lg ${
           isDragging || isResizing ? 'z-10 scale-105 shadow-lg' : 'hover:shadow-md'
         } shadow-sm transition-all duration-200`}
         style={{
           backgroundColor: remainingColor, // Fond = partie non complétée
           borderColor: baseColor,
+          borderWidth: `${borderWidth}px`,
+          borderStyle: 'solid',
+          opacity: isSubtask ? 0.85 : 1, // Légèrement transparent pour sous-tâches
         }}
       >
         {/* Partie complétée (progression) */}
@@ -73,7 +90,10 @@ export const GanttTaskBar = ({
           }}
           title="Redimensionner le début"
         >
-          <div className="h-8 w-0.5 rounded bg-white opacity-90" />
+          <div
+            className="w-0.5 rounded bg-white opacity-90"
+            style={{ height: isSubtask ? '1rem' : '2rem' }}
+          />
         </div>
 
         <div
@@ -85,7 +105,10 @@ export const GanttTaskBar = ({
           }}
           title="Redimensionner la fin"
         >
-          <div className="h-8 w-0.5 rounded bg-white opacity-90" />
+          <div
+            className="w-0.5 rounded bg-white opacity-90"
+            style={{ height: isSubtask ? '1rem' : '2rem' }}
+          />
         </div>
 
         <div
@@ -93,8 +116,11 @@ export const GanttTaskBar = ({
           onMouseDown={e => onMouseDown(e, task.id, 'drag')}
           title="Déplacer la tâche"
         >
-          {/* Taux de progression en gras et gros - centré */}
-          <span className="pointer-events-none text-2xl font-extrabold whitespace-nowrap text-white drop-shadow-[0_2px_6px_rgba(0,0,0,0.9)] dark:text-white">
+          {/* Taux de progression en gras et gros - centré avec taille adaptée */}
+          <span
+            className="pointer-events-none font-extrabold whitespace-nowrap text-white drop-shadow-[0_2px_6px_rgba(0,0,0,0.9)] dark:text-white"
+            style={{ fontSize: isSubtask ? '1rem' : '1.5rem' }}
+          >
             {task.progress}%
           </span>
         </div>

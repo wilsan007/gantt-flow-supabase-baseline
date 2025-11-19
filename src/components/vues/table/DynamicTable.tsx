@@ -173,7 +173,8 @@ const DynamicTable = ({ demoTasks, isDemoMode = false }: DynamicTableProps = {})
             .filter(action => action.is_done)
             .reduce((sum, action) => sum + action.weight_percentage, 0);
 
-          const newProgress = totalWeight === 0 ? 0 : Math.round(completedWeight);
+          const newProgress =
+            totalWeight === 0 ? 0 : Math.round((completedWeight / totalWeight) * 100);
 
           // Calculer le nouveau statut
           let newStatus = task.status;
@@ -381,7 +382,7 @@ const DynamicTable = ({ demoTasks, isDemoMode = false }: DynamicTableProps = {})
       />
 
       {/* Boutons de basculement Projet/Tâches */}
-      <div className="px-6 pb-4">
+      <div className={`${isMobile ? 'px-2 pt-2 pb-2' : 'px-6 pb-4'}`}>
         <ToggleGroup
           type="single"
           value={viewMode}
@@ -415,7 +416,7 @@ const DynamicTable = ({ demoTasks, isDemoMode = false }: DynamicTableProps = {})
           />
         </div>
       )}
-      <CardContent className="bg-gantt-header/20 backdrop-blur-sm">
+      <CardContent className={`bg-gantt-header/20 backdrop-blur-sm ${isMobile ? 'p-0' : ''}`}>
         {viewMode === 'tasks' ? (
           <ResizablePanelGroup
             direction="horizontal"

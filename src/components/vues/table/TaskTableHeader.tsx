@@ -6,6 +6,7 @@ import { ActionCreationDialog } from './ActionCreationDialog';
 import { ExportButton } from '@/components/tasks/ExportButton';
 import { Task } from '@/hooks/optimized';
 import { TaskFilters } from '@/components/tasks/AdvancedFilters';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface TaskTableHeaderProps {
   newActionTitle: string;
@@ -34,57 +35,66 @@ export const TaskTableHeader = ({
   onCreateTask,
   tasks = [],
   filters,
-}: TaskTableHeaderProps) => (
-  <CardHeader>
-    <div className="flex items-center justify-between">
-      <CardTitle className="flex items-center gap-2">
-        <Target className="h-5 w-5" />
-        Tableau Dynamique d'Exécution
-      </CardTitle>
-      <div className="flex gap-2">
-        {onCreateTask && (
+}: TaskTableHeaderProps) => {
+  const isMobile = useIsMobile();
+
+  // Masquer complètement le header sur mobile
+  if (isMobile) {
+    return null;
+  }
+
+  return (
+    <CardHeader className="p-6">
+      <div className="flex items-center justify-between">
+        <CardTitle className="flex items-center gap-2 text-lg">
+          <Target className="h-5 w-5" />
+          <span>Tableau Dynamique d'Exécution</span>
+        </CardTitle>
+        <div className="flex gap-2">
+          {onCreateTask && (
+            <Button
+              onClick={onCreateTask}
+              size="sm"
+              variant="default"
+              className="bg-primary hover:bg-primary/90"
+            >
+              <Plus className="mr-2 h-4 w-4" />
+              Nouvelle Tâche
+            </Button>
+          )}
+          {tasks.length > 0 && (
+            <ExportButton tasks={tasks} filters={filters} variant="outline" size="sm" />
+          )}
+          {selectedTaskId && (
+            <div className="text-muted-foreground self-center text-sm">Tâche sélectionnée</div>
+          )}
+          <Input
+            placeholder="Action rapide..."
+            value={newActionTitle}
+            onChange={e => setNewActionTitle(e.target.value)}
+            onKeyPress={e => e.key === 'Enter' && isActionButtonEnabled && onAddActionColumn()}
+            className="w-40"
+          />
           <Button
-            onClick={onCreateTask}
+            onClick={onAddActionColumn}
             size="sm"
-            variant="default"
-            className="bg-primary hover:bg-primary/90"
+            disabled={!isActionButtonEnabled}
+            title={
+              !selectedTaskId
+                ? "Sélectionnez d'abord une tâche"
+                : !newActionTitle.trim()
+                  ? "Entrez un nom pour l'action"
+                  : ''
+            }
           >
-            <Plus className="mr-2 h-4 w-4" />
-            Nouvelle Tâche
+            <Plus className="h-4 w-4" />
           </Button>
-        )}
-        {tasks.length > 0 && (
-          <ExportButton tasks={tasks} filters={filters} variant="outline" size="sm" />
-        )}
-        {selectedTaskId && (
-          <div className="text-muted-foreground self-center text-sm">Tâche sélectionnée</div>
-        )}
-        <Input
-          placeholder="Action rapide..."
-          value={newActionTitle}
-          onChange={e => setNewActionTitle(e.target.value)}
-          onKeyPress={e => e.key === 'Enter' && isActionButtonEnabled && onAddActionColumn()}
-          className="w-40"
-        />
-        <Button
-          onClick={onAddActionColumn}
-          size="sm"
-          disabled={!isActionButtonEnabled}
-          title={
-            !selectedTaskId
-              ? "Sélectionnez d'abord une tâche"
-              : !newActionTitle.trim()
-                ? "Entrez un nom pour l'action"
-                : ''
-          }
-        >
-          <Plus className="h-4 w-4" />
-        </Button>
-        <ActionCreationDialog
-          onCreateAction={onCreateDetailedAction}
-          selectedTaskId={selectedTaskId}
-        />
+          <ActionCreationDialog
+            onCreateAction={onCreateDetailedAction}
+            selectedTaskId={selectedTaskId}
+          />
+        </div>
       </div>
-    </div>
-  </CardHeader>
-);
+    </CardHeader>
+  );
+};

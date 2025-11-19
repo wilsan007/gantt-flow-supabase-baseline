@@ -8,6 +8,7 @@ import { GanttHeader } from '../gantt/GanttHeader';
 import { GanttTimeline } from '../gantt/GanttTimeline';
 import { GanttLoadingState, GanttErrorState } from '../gantt/GanttStates';
 import { MobileGanttChart } from '../responsive/MobileGanttChart';
+import { ProjectProgressBar } from '../gantt/ProjectProgressBar';
 import { useGanttDrag } from '@/hooks/useGanttDrag';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { AdvancedFilters, type TaskFilters } from '@/components/tasks/AdvancedFilters';
@@ -152,7 +153,31 @@ const GanttChart = () => {
     try {
       setDateUpdateError(null); // Effacer les erreurs précédentes
       setErrorTaskInfo(null); // Effacer les infos de tâche en erreur
-      await updateTaskDates(taskId, startDate, endDate);
+
+      // ✅ VALIDATION: Vérifier que la tâche reste dans les limites du projet
+      const task = tasks.find(t => t.id === taskId);
+      if (task && task.project_id) {
+        const project = projects.find(p => p.id === task.project_id);
+        if (project && project.start_date && project.end_date) {
+          const projectStart = new Date(project.start_date);
+          const projectEnd = new Date(project.end_date);
+          const newStart = new Date(startDate);
+          const newEnd = new Date(endDate);
+
+          // Vérifier si la tâche sort des limites du projet
+          if (newStart < projectStart || newEnd > projectEnd) {
+            throw new Error(
+              `❌ La tâche doit rester dans la période du projet\n\n` +
+                `📅 Période du projet: ${projectStart.toLocaleDateString('fr-FR')} - ${projectEnd.toLocaleDateString('fr-FR')}\n` +
+                `📅 Dates demandées: ${newStart.toLocaleDateString('fr-FR')} - ${newEnd.toLocaleDateString('fr-FR')}\n\n` +
+                `💡 Veuillez déplacer la tâche à l'intérieur de la période du projet "${project.name}"`
+            );
+          }
+        }
+      }
+
+      // ✅ CORRECTION : updateTaskDates attend un objet {start_date, due_date}
+      await updateTaskDates(taskId, { start_date: startDate, due_date: endDate });
     } catch (error: any) {
       console.error('Erreur lors de la mise à jour des dates:', error);
 
@@ -291,6 +316,7 @@ const GanttChart = () => {
       priority: task.priority,
       status: task.status,
       project_id: task.project_id, // ✅ Uniquement project_id, pas project_name
+      parent_id: task.parent_id, // ✅ ID de la tâche parente (si sous-tâche)
     };
   };
 
@@ -314,6 +340,46 @@ const GanttChart = () => {
   // Utiliser filteredTasks au lieu de tasks en mode tâches pour appliquer les filtres
   const ganttTasks =
     displayMode === 'tasks' ? filteredTasks.map(getGanttTask) : projects.map(getGanttProject);
+
+  // Calculer les données des projets pour affichage dans le timeline
+  const projectsData = React.useMemo(() => {
+    if (displayMode !== 'tasks' || !ganttTasks.length) return [];
+
+    const grouped = ganttTasks.reduce((groups: { [key: string]: typeof ganttTasks }, task) => {
+      const projectKey = task.project_id || 'no-project';
+      if (!groups[projectKey]) groups[projectKey] = [];
+      groups[projectKey].push(task);
+      return groups;
+    }, {});
+
+    return projects
+      .filter(project => grouped[project.id] && project.start_date && project.end_date)
+      .map(project => {
+        const projectTasks = grouped[project.id];
+
+        // ✅ Utiliser les vraies dates du projet depuis la base de données
+        const projectStart = new Date(project.start_date!);
+        const projectEnd = new Date(project.end_date!);
+        const durationDays = Math.ceil(
+          (projectEnd.getTime() - projectStart.getTime()) / (1000 * 60 * 60 * 24)
+        );
+
+        // ✅ Calculer la progression moyenne des tâches pour le projet
+        const totalProgress = projectTasks.reduce((sum, task) => sum + (task.progress || 0), 0);
+        const avgProgress =
+          projectTasks.length > 0 ? Math.round(totalProgress / projectTasks.length) : 0;
+
+        return {
+          projectId: project.id,
+          projectName: project.name,
+          projectColor: projectColorMap[project.id],
+          projectProgress: project.progress || avgProgress, // Utiliser le progress du projet ou calculé
+          projectDuration: durationDays,
+          projectStart,
+          projectEnd,
+        };
+      });
+  }, [displayMode, ganttTasks, projects, projectColorMap]);
 
   const {
     draggedTask,
@@ -369,7 +435,9 @@ const GanttChart = () => {
         <GanttHeader viewMode={viewMode} onViewModeChange={setViewMode} />
 
         {/* Boutons de basculement Projet/Tâches */}
-        <div className="bg-gantt-header/20 space-y-4 px-6 pb-4">
+        <div
+          className={`bg-gantt-header/20 ${isMobile ? 'space-y-2 px-2 pt-2 pb-2' : 'space-y-4 px-6 pb-4'}`}
+        >
           <div className="flex flex-col items-start justify-between gap-3 sm:flex-row sm:items-center">
             <div className="flex items-center gap-3">
               <ToggleGroup
@@ -485,59 +553,152 @@ const GanttChart = () => {
                       // Étape 2: Utiliser l'ordre original des projets pour garantir la cohérence numéros/couleurs
                       // Le nom et la couleur viennent UNIQUEMENT du tableau projects[] via project_id
                       const orderedProjectGroups = projects
-                        .filter(project => groupedTasks[project.id]) // Garder seulement les projets avec tâches
-                        .map((project, index) => ({
-                          projectId: project.id,
-                          projectName: project.name, // ✅ Nom du projet depuis projects[] via project_id
-                          projectNumber: index + 1,
-                          projectColor: projectColorMap[project.id], // ✅ Couleur du projet via project_id
-                          tasks: groupedTasks[project.id],
-                        }));
+                        .filter(
+                          project =>
+                            groupedTasks[project.id] && project.start_date && project.end_date
+                        ) // Garder seulement les projets avec tâches ET dates
+                        .map((project, index) => {
+                          const projectTasks = groupedTasks[project.id];
+
+                          // ✅ Utiliser les vraies dates du projet depuis la base de données
+                          const projectStart = new Date(project.start_date!);
+                          const projectEnd = new Date(project.end_date!);
+                          const durationDays = Math.ceil(
+                            (projectEnd.getTime() - projectStart.getTime()) / (1000 * 60 * 60 * 24)
+                          );
+
+                          // ✅ Calculer la progression moyenne des tâches pour le projet
+                          const totalProgress = projectTasks.reduce(
+                            (sum, task) => sum + (task.progress || 0),
+                            0
+                          );
+                          const avgProgress =
+                            projectTasks.length > 0
+                              ? Math.round(totalProgress / projectTasks.length)
+                              : 0;
+
+                          return {
+                            projectId: project.id,
+                            projectName: project.name, // ✅ Nom du projet depuis projects[] via project_id
+                            projectNumber: index + 1,
+                            projectColor: projectColorMap[project.id], // ✅ Couleur du projet via project_id
+                            projectProgress: project.progress || avgProgress, // Utiliser le progress du projet ou calculé
+                            projectDuration: durationDays,
+                            tasks: projectTasks,
+                          };
+                        });
 
                       // Ajouter les tâches sans projet à la fin
                       if (groupedTasks['no-project']) {
+                        const noProjectTasks = groupedTasks['no-project'];
+                        const totalProgress = noProjectTasks.reduce(
+                          (sum, task) => sum + (task.progress || 0),
+                          0
+                        );
+                        const avgProgress =
+                          noProjectTasks.length > 0
+                            ? Math.round(totalProgress / noProjectTasks.length)
+                            : 0;
+
+                        const startDates = noProjectTasks.map(t => new Date(t.startDate).getTime());
+                        const endDates = noProjectTasks.map(t => new Date(t.endDate).getTime());
+                        const durationDays = Math.ceil(
+                          (Math.max(...endDates) - Math.min(...startDates)) / (1000 * 60 * 60 * 24)
+                        );
+
                         orderedProjectGroups.push({
                           projectId: 'no-project',
                           projectName: 'Sans projet',
                           projectNumber: null,
                           projectColor: '#6b7280',
-                          tasks: groupedTasks['no-project'],
+                          projectProgress: avgProgress,
+                          projectDuration: durationDays,
+                          tasks: noProjectTasks,
                         });
                       }
 
                       // Étape 3: Afficher dans l'ordre correct
                       return orderedProjectGroups.map(
-                        ({ projectId, projectName, projectNumber, projectColor, tasks }) => (
+                        ({
+                          projectId,
+                          projectName,
+                          projectNumber,
+                          projectColor,
+                          projectProgress,
+                          projectDuration,
+                          tasks,
+                        }) => (
                           <div key={projectId}>
                             <div
-                              className="border-gantt-grid/50 flex items-center border-b-2 px-4"
+                              className="border-gantt-grid/50 border-b-2 px-4"
                               style={{
                                 height: rowHeight,
                                 backgroundColor: projectColor,
                                 opacity: 0.9,
                               }}
                             >
-                              <div className="flex items-center gap-2 font-bold text-white">
-                                {projectNumber && (
-                                  <span className="rounded bg-white/20 px-2 py-0.5 text-sm">
-                                    #{projectNumber}
-                                  </span>
-                                )}
-                                📁 {projectName}
-                              </div>
+                              <ProjectProgressBar
+                                projectNumber={projectNumber}
+                                projectName={projectName}
+                                projectColor={projectColor}
+                                projectProgress={projectProgress}
+                                projectDuration={projectDuration}
+                                taskCount={tasks.length}
+                              />
                             </div>
-                            {tasks.map(task => (
-                              <div
-                                key={task.id}
-                                className="border-gantt-grid/30 hover:bg-gantt-hover/20 transition-smooth flex cursor-pointer items-center border-b px-6"
-                                style={{ height: rowHeight }}
-                              >
-                                <div>
-                                  <div className="text-foreground font-medium">{task.name}</div>
-                                  <div className="text-foreground/70 text-sm">{task.assignee}</div>
-                                </div>
-                              </div>
-                            ))}
+                            {(() => {
+                              // Organiser les tâches hiérarchiquement : parents d'abord, puis leurs sous-tâches
+                              const parentTasks = tasks.filter(t => !t.parent_id);
+                              const childTasks = tasks.filter(t => t.parent_id);
+
+                              const orderedTasks: typeof tasks = [];
+                              parentTasks.forEach(parent => {
+                                orderedTasks.push(parent);
+                                // Ajouter les sous-tâches de ce parent juste après
+                                const children = childTasks.filter(
+                                  child => child.parent_id === parent.id
+                                );
+                                orderedTasks.push(...children);
+                              });
+
+                              return orderedTasks.map(task => {
+                                const isSubtask = !!task.parent_id;
+                                const subtaskHeight = isSubtask ? rowHeight * 0.7 : rowHeight; // 30% plus petit
+
+                                return (
+                                  <div
+                                    key={task.id}
+                                    className="border-gantt-grid/30 hover:bg-gantt-hover/20 transition-smooth flex cursor-pointer items-center border-b"
+                                    style={{
+                                      height: subtaskHeight,
+                                      paddingLeft: isSubtask ? '3rem' : '1.5rem', // 3rem = retrait pour sous-tâches
+                                      paddingRight: '1.5rem',
+                                    }}
+                                  >
+                                    <div className="min-w-0 flex-1">
+                                      <div
+                                        className="text-foreground truncate"
+                                        style={{
+                                          fontWeight: isSubtask ? 'normal' : '500',
+                                          fontStyle: isSubtask ? 'italic' : 'normal',
+                                          fontSize: isSubtask ? '0.9rem' : '1rem',
+                                        }}
+                                        title={task.name}
+                                      >
+                                        {isSubtask && '↳ '}
+                                        {task.name}
+                                      </div>
+                                      <div
+                                        className="text-foreground/70 truncate text-sm"
+                                        title={task.assignee}
+                                      >
+                                        {task.assignee}
+                                      </div>
+                                    </div>
+                                  </div>
+                                );
+                              });
+                            })()}
                           </div>
                         )
                       );
@@ -569,6 +730,8 @@ const GanttChart = () => {
                   resizeTask={resizeTask}
                   onTaskMouseDown={onTaskMouseDown}
                   displayMode={displayMode}
+                  projectsOrder={projects}
+                  projectsData={projectsData}
                 />
               </div>
             </div>

@@ -165,7 +165,7 @@ const HRPage = () => {
   return (
     <ResponsiveLayout>
       {/* Header avec navigation retour - Ultra compact mobile */}
-      <div className="mb-4 flex flex-col gap-3 sm:mb-6 md:mb-8 md:flex-row md:items-start md:justify-between">
+      <div className="mb-2 flex flex-col gap-2 sm:mb-4 sm:gap-3 md:mb-6 md:flex-row md:items-start md:justify-between">
         <div className="flex items-center gap-2 sm:gap-4">
           <Button
             variant="outline"
@@ -195,7 +195,7 @@ const HRPage = () => {
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         {/* Tabs principales - Scroll horizontal mobile */}
         <div className="-mx-4 sm:mx-0">
-          <TabsList className="modern-card glow-primary from-primary/10 via-accent/10 to-tech-purple/10 flex w-full gap-1 overflow-x-auto border-2 bg-gradient-to-r p-2 sm:grid sm:grid-cols-6 sm:gap-2 sm:p-3 md:mb-8">
+          <TabsList className="modern-card glow-primary from-primary/10 via-accent/10 to-tech-purple/10 flex w-full gap-1 overflow-x-auto border-2 bg-gradient-to-r p-1.5 sm:grid sm:grid-cols-6 sm:gap-2 sm:p-2 md:mb-4">
             <TabsTrigger
               value="dashboard"
               className="flex shrink-0 items-center gap-2 px-3 whitespace-nowrap sm:px-4"
@@ -241,13 +241,19 @@ const HRPage = () => {
           </TabsList>
         </div>
 
-        <TabsContent value="dashboard" className="mt-4 sm:mt-6">
+        <TabsContent
+          value="dashboard"
+          className="m-0 data-[state=active]:mt-2 sm:data-[state=active]:mt-3"
+        >
           <div className="modern-card transition-smooth hover-glow rounded-xl">
             <HRDashboardWithSuspense />
           </div>
         </TabsContent>
 
-        <TabsContent value="personnel" className="mt-4 sm:mt-6">
+        <TabsContent
+          value="personnel"
+          className="m-0 data-[state=active]:mt-2 sm:data-[state=active]:mt-3"
+        >
           <div className="space-y-4 sm:space-y-6">
             <div className="flex gap-2">
               <Button
@@ -277,14 +283,20 @@ const HRPage = () => {
           </div>
         </TabsContent>
 
-        <TabsContent value="performance" className="mt-4 sm:mt-6">
+        <TabsContent
+          value="performance"
+          className="m-0 data-[state=active]:mt-2 sm:data-[state=active]:mt-3"
+        >
           <div className="modern-card transition-smooth hover-glow rounded-xl">
             <PerformanceManagementWithSuspense />
           </div>
         </TabsContent>
 
-        <TabsContent value="operations" className="mt-4 sm:mt-6">
-          <div className="space-y-4 sm:space-y-6">
+        <TabsContent
+          value="operations"
+          className="m-0 data-[state=active]:mt-2 sm:data-[state=active]:mt-3"
+        >
+          <div className="space-y-2 sm:space-y-4">
             {/* Sous-tabs opérations - Grid responsive */}
             <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap">
               <Button
@@ -399,8 +411,11 @@ const HRPage = () => {
           </div>
         </TabsContent>
 
-        <TabsContent value="development" className="mt-4 sm:mt-6">
-          <div className="space-y-4 sm:space-y-6">
+        <TabsContent
+          value="development"
+          className="m-0 data-[state=active]:mt-2 sm:data-[state=active]:mt-3"
+        >
+          <div className="space-y-2 sm:space-y-4">
             <div className="flex gap-2">
               <Button
                 variant={activeSubTab.development === 'skills' ? 'default' : 'outline'}
@@ -418,7 +433,10 @@ const HRPage = () => {
           </div>
         </TabsContent>
 
-        <TabsContent value="safety" className="mt-4 sm:mt-6">
+        <TabsContent
+          value="safety"
+          className="m-0 data-[state=active]:mt-2 sm:data-[state=active]:mt-3"
+        >
           <div className="modern-card transition-smooth hover-glow rounded-xl">
             <HealthSafetyWithSuspense />
           </div>

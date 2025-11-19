@@ -573,64 +573,117 @@ serve(async req => {
       const resendApiKey = Deno.env.get('RESEND_API_KEY');
 
       if (resendApiKey) {
-        const testEmail = 'osman.awaleh.adn@gmail.com';
+        // ✅ Production : Envoyer directement à l'adresse email de l'invité
+        const recipientEmail = email;
 
         const emailHtml = `
-          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0;">
-              <h1 style="margin: 0;">🎉 Invitation à rejoindre ${tenantName}</h1>
-            </div>
-            
-            <div style="padding: 30px; border: 1px solid #e0e0e0; border-top: none; border-radius: 0 0 10px 10px;">
-              <p style="font-size: 16px; color: #333;">Bonjour <strong>${fullName}</strong>,</p>
-              
-              <p style="font-size: 16px; color: #555; line-height: 1.6;">
-                <strong>${inviter.email}</strong> vous a invité(e) à rejoindre <strong>${tenantName}</strong> 
-                en tant que <strong>${roleToAssign}</strong>.
-              </p>
-              
-              ${department ? `<p style="font-size: 14px; color: #666;">📁 Département : <strong>${department}</strong></p>` : ''}
-              ${jobPosition ? `<p style="font-size: 14px; color: #666;">💼 Poste : <strong>${jobPosition}</strong></p>` : ''}
-              
-              <div style="background: #f8f9fa; padding: 20px; margin: 25px 0; border-radius: 8px; border-left: 4px solid #667eea;">
-                <h3 style="margin: 0 0 15px 0; color: #333;">🚀 Pour commencer :</h3>
-                <ol style="margin: 0; padding-left: 20px; color: #555; line-height: 1.8;">
-                  <li>Cliquez sur le bouton ci-dessous</li>
-                  <li>Vous serez redirigé vers l'application</li>
-                  <li>Connectez-vous avec vos identifiants temporaires</li>
-                  <li>Changez votre mot de passe lors de la première connexion</li>
-                </ol>
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          </head>
+          <body style="margin: 0; padding: 20px; background-color: #f5f5f5; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
+            <div style="max-width: 600px; margin: 0 auto; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+              <!-- Header -->
+              <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 40px 20px; text-align: center;">
+                <img src="https://wadashaqayn.org/logo-w.svg" alt="Wadashaqayn" style="width: 60px; height: 60px; margin-bottom: 20px;" />
+                <h1 style="margin: 0; font-size: 28px; font-weight: 600;">👋 Invitation à rejoindre l'équipe</h1>
+                <p style="margin: 10px 0 0 0; font-size: 16px; opacity: 0.9;">${tenantName}</p>
               </div>
               
-              <div style="background: #fff3cd; padding: 15px; margin: 20px 0; border-radius: 6px; border: 1px solid #ffeaa7;">
-                <p style="margin: 0; font-size: 14px; color: #856404;">
-                  <strong>📧 Email :</strong> ${email}<br>
-                  <strong>🔑 Mot de passe temporaire :</strong> <code style="background: white; padding: 2px 6px; border-radius: 3px;">${tempPassword}</code><br>
-                  <small>⚠️ Changez ce mot de passe après votre première connexion</small>
+              <!-- Content -->
+              <div style="padding: 40px 30px;">
+                <p style="font-size: 16px; line-height: 1.6; color: #333; margin: 0 0 20px 0;">Bonjour <strong>${fullName}</strong>,</p>
+                
+                <p style="font-size: 16px; line-height: 1.6; color: #333; margin: 0 0 20px 0;">
+                  <strong>${inviter.full_name || inviter.email}</strong> vous invite à rejoindre l'équipe de <strong>${tenantName}</strong> sur la plateforme Wadashaqayn.
                 </p>
+                
+                <!-- Role & Info Box -->
+                <div style="background: #f8f9ff; border-left: 4px solid #667eea; padding: 20px; border-radius: 6px; margin: 30px 0;">
+                  <h3 style="margin: 0 0 15px 0; color: #667eea; font-size: 18px;">👥 Votre rôle dans l'équipe</h3>
+                  <p style="margin: 0 0 10px 0; font-size: 15px; color: #555;">
+                    <strong style="color: #333;">Rôle :</strong> ${roleToAssign === 'collaborator' ? 'Collaborateur' : roleToAssign}
+                  </p>
+                  ${department ? `<p style="margin: 0 0 10px 0; font-size: 15px; color: #555;"><strong style="color: #333;">📁 Département :</strong> ${department}</p>` : ''}
+                  ${jobPosition ? `<p style="margin: 0; font-size: 15px; color: #555;"><strong style="color: #333;">💼 Poste :</strong> ${jobPosition}</p>` : ''}
+                </div>
+                
+                <!-- Steps Box -->
+                <div style="background: #f8f9fa; padding: 20px; margin: 25px 0; border-radius: 8px; border-left: 4px solid #667eea;">
+                  <h3 style="margin: 0 0 15px 0; color: #333; font-size: 18px;">🚀 Comment rejoindre l'équipe</h3>
+                  <ol style="margin: 0; padding-left: 20px; color: #555; line-height: 1.8;">
+                    <li>Cliquez sur le bouton "Accepter l'invitation" ci-dessous</li>
+                    <li>Vous serez redirigé(e) vers la plateforme Wadashaqayn</li>
+                    <li>Connectez-vous avec vos identifiants temporaires</li>
+                    <li>Définissez votre nouveau mot de passe sécurisé</li>
+                  </ol>
+                </div>
+                
+                <!-- Credentials Box -->
+                <div style="background: #f8f9fa; border: 2px solid #e0e0e0; padding: 20px; margin: 20px 0; border-radius: 6px;">
+                  <h4 style="margin: 0 0 15px 0; color: #333; font-size: 16px;">🔐 Vos identifiants temporaires</h4>
+                  <p style="margin: 0 0 10px 0; font-size: 14px; color: #666;">
+                    <strong style="color: #333;">Adresse email :</strong><br>
+                    <span style="font-family: 'Courier New', monospace; background: white; padding: 8px 12px; display: inline-block; margin-top: 5px; border-radius: 4px; border: 1px solid #ddd;">${recipientEmail}</span>
+                  </p>
+                  <p style="margin: 0 0 10px 0; font-size: 14px; color: #666;">
+                    <strong style="color: #333;">Mot de passe temporaire :</strong><br>
+                    <span style="font-family: 'Courier New', monospace; background: white; padding: 8px 12px; display: inline-block; margin-top: 5px; border-radius: 4px; border: 1px solid #ddd; color: #e74c3c; font-weight: bold;">${tempPassword}</span>
+                  </p>
+                  <p style="margin: 15px 0 0 0; padding: 10px; background: #fff3cd; border-radius: 4px; font-size: 13px; color: #856404;">
+                    ⚠️ <strong>Important :</strong> Vous devrez changer ce mot de passe lors de votre première connexion pour des raisons de sécurité.
+                  </p>
+                </div>
+                
+                <!-- CTA Button -->
+                <div style="text-align: center; margin: 40px 0;">
+                  <a href="${confirmationUrl}" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 16px 40px; text-decoration: none; border-radius: 50px; font-weight: 600; font-size: 16px; display: inline-block; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4); transition: all 0.3s ease;">
+                    ✅ Accepter l'invitation et rejoindre l'équipe
+                  </a>
+                </div>
+                
+                <!-- Alternative Link -->
+                <div style="background: #e8f4f8; border: 1px solid #bee5eb; padding: 20px; border-radius: 6px; margin: 20px 0;">
+                  <p style="margin: 0 0 10px 0; font-size: 14px; color: #0c5460;">
+                    <strong>💡 Le bouton ne fonctionne pas ?</strong>
+                  </p>
+                  <p style="margin: 0; font-size: 13px; color: #0c5460; line-height: 1.6;">
+                    Copiez et collez ce lien dans votre navigateur :
+                  </p>
+                  <div style="background: white; padding: 12px; margin-top: 10px; border-radius: 4px; border: 1px solid #d1ecf1; word-break: break-all;">
+                    <code style="font-family: 'Courier New', monospace; font-size: 12px; color: #667eea;">${confirmationUrl}</code>
+                  </div>
+                </div>
+                
+                <!-- Security Notice -->
+                <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e0e0e0;">
+                  <p style="margin: 0; font-size: 13px; color: #999; line-height: 1.6;">
+                    <strong>🕒 Validité :</strong> Cette invitation expire dans 7 jours et ne peut être utilisée qu'une seule fois.
+                  </p>
+                  <p style="margin: 10px 0 0 0; font-size: 13px; color: #999; line-height: 1.6;">
+                    <strong>🔒 Sécurité :</strong> Si vous n'avez pas demandé cette invitation, vous pouvez ignorer cet email en toute sécurité.
+                  </p>
+                </div>
               </div>
               
-              <div style="text-align: center; margin: 35px 0;">
-                <a href="${confirmationUrl}" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 16px 40px; text-decoration: none; border-radius: 50px; font-weight: bold; font-size: 16px; display: inline-block; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);">
-                  ✨ Rejoindre ${tenantName}
-                </a>
-              </div>
-              
-              <div style="background: #e8f4f8; border: 1px solid #b8dce8; padding: 15px; border-radius: 6px; margin: 20px 0;">
-                <p style="margin: 0; font-size: 13px; color: #0c5460;">
-                  <strong>💡 Problème avec le bouton ?</strong><br>
-                  Copiez-collez ce lien dans votre navigateur :<br>
-                  <code style="background: white; padding: 2px 4px; border-radius: 3px; font-size: 11px; word-break: break-all; display: block; margin-top: 8px;">${confirmationUrl}</code>
-                </p>
-              </div>
-              
-              <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e0e0e0; font-size: 12px; color: #999; text-align: center;">
-                <p style="margin: 0;">Cette invitation expire dans 7 jours.</p>
-                <p style="margin: 5px 0 0 0;">Si vous n'avez pas demandé cette invitation, ignorez cet email.</p>
+              <!-- Footer -->
+              <div style="background: #f8f9fa; padding: 30px; text-align: center; border-top: 1px solid #e0e0e0;">
+                <p style="margin: 0 0 5px 0; color: #666; font-size: 14px;">Invité par <strong>${inviter.full_name || inviter.email}</strong></p>
+                <p style="margin: 0 0 15px 0; color: #666; font-size: 14px;">Cordialement,<br><strong>L'équipe Wadashaqayn</strong></p>
+                <p style="margin: 10px 0 0 0; font-size: 12px; color: #999;">© 2025 Wadashaqayn. Tous droits réservés.</p>
               </div>
             </div>
-          </div>
+          </body>
+          </html>
         `;
+
+        console.log('📤 Envoi email vers Resend API...');
+        console.log('   - Destinataire:', recipientEmail);
+        console.log('   - Organisation:', tenantName);
+        console.log('   - Rôle:', roleToAssign);
+        console.log('   - Invité par:', inviter.full_name || inviter.email);
 
         const response = await fetch('https://api.resend.com/emails', {
           method: 'POST',
@@ -639,9 +692,9 @@ serve(async req => {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            from: 'Wadashaqeen <onboarding@resend.dev>',
-            to: [testEmail],
-            subject: `🎉 ${inviter.email} vous invite à rejoindre ${tenantName}`,
+            from: 'Wadashaqayn <onboarding@wadashaqayn.org>',
+            to: [recipientEmail],
+            subject: `👋 Invitation à rejoindre ${tenantName} sur Wadashaqayn`,
             html: emailHtml,
           }),
         });

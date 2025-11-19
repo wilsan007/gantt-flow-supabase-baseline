@@ -50,6 +50,7 @@ import { ProjectCreationDialog } from '@/components/projects/ProjectCreationDial
 import { ProjectDetailsDialog } from '@/components/projects/ProjectDetailsDialog';
 import { ProjectTableInline } from '@/components/projects/ProjectTableInline';
 import { LayoutGrid, LayoutList } from 'lucide-react';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface ProjectDashboardEnterpriseProps {
   showMetrics?: boolean;
@@ -60,6 +61,7 @@ export const ProjectDashboardEnterprise: React.FC<ProjectDashboardEnterpriseProp
   showMetrics = true,
   compactMode = false,
 }) => {
+  const isMobile = useIsMobile();
   // États locaux pour les filtres
   const [filters, setFilters] = useState<ProjectFilters>({});
 
@@ -268,131 +270,136 @@ export const ProjectDashboardEnterprise: React.FC<ProjectDashboardEnterpriseProp
 
       {/* Filtres et Actions (Pattern Linear) - Ultra Responsive */}
       <Card>
-        <CardHeader className="p-4 sm:p-6">
-          <div className="flex flex-col gap-3 sm:gap-4">
-            {/* Titre et badge */}
-            <div className="flex items-start justify-between gap-2">
-              <div className="min-w-0 flex-1">
-                <CardTitle className="flex flex-wrap items-center gap-2 text-lg sm:text-xl">
-                  <span className="truncate">Gestion des Projets</span>
-                  {isSuperAdmin && (
-                    <Badge variant="secondary" className="shrink-0 text-xs">
-                      Super Admin
-                    </Badge>
+        {/* Masquer header complètement sur mobile */}
+        {!isMobile && (
+          <CardHeader className="p-6">
+            <div className="flex flex-col gap-3 sm:gap-4">
+              {/* Titre et badge */}
+              <div className="flex items-start justify-between gap-2">
+                <div className="min-w-0 flex-1">
+                  <CardTitle className="flex flex-wrap items-center gap-2 text-lg sm:text-xl">
+                    <span className="truncate">Gestion des Projets</span>
+                    {isSuperAdmin && (
+                      <Badge variant="secondary" className="shrink-0 text-xs">
+                        Super Admin
+                      </Badge>
+                    )}
+                  </CardTitle>
+                  {!compactMode && (
+                    <p className="text-muted-foreground mt-1 text-xs sm:text-sm">
+                      <span className="font-medium">{totalCount} projets</span>
+                      {/* Métriques techniques masquées sur mobile */}
+                      <span className="hidden md:inline">
+                        {' '}
+                        • Cache: {metrics.cacheHit ? '✅' : '❌'} • Données:{' '}
+                        {(metrics.dataSize / 1024).toFixed(1)}KB • Fetch:{' '}
+                        {metrics.fetchTime.toFixed(0)}ms
+                      </span>
+                      {isDataStale && <span className="text-orange-600"> • Données obsolètes</span>}
+                    </p>
                   )}
-                </CardTitle>
-                {!compactMode && (
-                  <p className="text-muted-foreground mt-1 text-xs sm:text-sm">
-                    <span className="font-medium">{totalCount} projets</span>
-                    {/* Métriques techniques masquées sur mobile */}
-                    <span className="hidden md:inline">
-                      {' '}
-                      • Cache: {metrics.cacheHit ? '✅' : '❌'} • Données:{' '}
-                      {(metrics.dataSize / 1024).toFixed(1)}KB • Fetch:{' '}
-                      {metrics.fetchTime.toFixed(0)}ms
-                    </span>
-                    {isDataStale && <span className="text-orange-600"> • Données obsolètes</span>}
-                  </p>
-                )}
-              </div>
+                </div>
 
-              {/* Bouton refresh toujours visible */}
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={refresh}
-                disabled={loading}
-                className="shrink-0"
-              >
-                <RefreshCw className={`h-4 w-4 sm:mr-2 ${loading ? 'animate-spin' : ''}`} />
-                <span className="hidden sm:inline">Actualiser</span>
-              </Button>
-            </div>
-
-            {/* Actions principales - Stack sur mobile, inline sur desktop */}
-            <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-              <Button
-                variant="default"
-                size="sm"
-                className="w-full justify-center sm:w-auto"
-                onClick={() => setIsCreateDialogOpen(true)}
-              >
-                <Plus className="mr-2 h-4 w-4" />
-                Nouveau Projet
-              </Button>
-
-              {/* Toggle vue grille/tableau */}
-              <div className="flex gap-1 rounded-md border p-1">
+                {/* Bouton refresh toujours visible */}
                 <Button
-                  variant={viewMode === 'grid' ? 'default' : 'ghost'}
+                  variant="outline"
                   size="sm"
-                  className="h-7 px-2"
-                  onClick={() => setViewMode('grid')}
+                  onClick={refresh}
+                  disabled={loading}
+                  className="shrink-0"
                 >
-                  <LayoutGrid className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant={viewMode === 'table' ? 'default' : 'ghost'}
-                  size="sm"
-                  className="h-7 px-2"
-                  onClick={() => setViewMode('table')}
-                >
-                  <LayoutList className="h-4 w-4" />
+                  <RefreshCw className={`h-4 w-4 sm:mr-2 ${loading ? 'animate-spin' : ''}`} />
+                  <span className="hidden sm:inline">Actualiser</span>
                 </Button>
               </div>
 
-              <Button variant="outline" size="sm" className="w-full justify-center sm:w-auto">
-                <Download className="mr-2 h-4 w-4" />
-                <span className="hidden sm:inline">Exporter</span>
-                <span className="sm:hidden">Export</span>
-              </Button>
-            </div>
-          </div>
-        </CardHeader>
+              {/* Actions principales - Stack sur mobile, inline sur desktop */}
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+                <Button
+                  variant="default"
+                  size="sm"
+                  className="w-full justify-center sm:w-auto"
+                  onClick={() => setIsCreateDialogOpen(true)}
+                >
+                  <Plus className="mr-2 h-4 w-4" />
+                  Nouveau Projet
+                </Button>
 
-        <CardContent className="p-4 sm:p-6">
-          {/* Barre de recherche et filtres - Mobile First */}
-          <div className="mb-4 space-y-3 sm:mb-6 sm:space-y-0">
-            {/* Recherche - Pleine largeur sur mobile */}
-            <div className="w-full">
-              <div className="relative">
-                <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform" />
-                <Input
-                  placeholder="Rechercher des projets..."
-                  value={searchTerm}
-                  onChange={e => handleSearchChange(e.target.value)}
-                  className="h-10 pl-10 text-base sm:h-9 sm:text-sm"
-                />
+                {/* Toggle vue grille/tableau */}
+                <div className="flex gap-1 rounded-md border p-1">
+                  <Button
+                    variant={viewMode === 'grid' ? 'default' : 'ghost'}
+                    size="sm"
+                    className="h-7 px-2"
+                    onClick={() => setViewMode('grid')}
+                  >
+                    <LayoutGrid className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant={viewMode === 'table' ? 'default' : 'ghost'}
+                    size="sm"
+                    className="h-7 px-2"
+                    onClick={() => setViewMode('table')}
+                  >
+                    <LayoutList className="h-4 w-4" />
+                  </Button>
+                </div>
+
+                <Button variant="outline" size="sm" className="w-full justify-center sm:w-auto">
+                  <Download className="mr-2 h-4 w-4" />
+                  <span className="hidden sm:inline">Exporter</span>
+                  <span className="sm:hidden">Export</span>
+                </Button>
               </div>
             </div>
+          </CardHeader>
+        )}
 
-            {/* Filtres - Stack mobile, inline desktop */}
-            <div className="grid grid-cols-2 gap-2 sm:flex sm:gap-2">
-              <Select onValueChange={handleStatusFilterChange}>
-                <SelectTrigger className="h-10 sm:h-9 sm:w-40">
-                  <Filter className="mr-2 h-3.5 w-3.5 shrink-0 sm:hidden" />
-                  <SelectValue placeholder="Statut" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="active">Actif</SelectItem>
-                  <SelectItem value="completed">Terminé</SelectItem>
-                  <SelectItem value="on_hold">En pause</SelectItem>
-                  <SelectItem value="cancelled">Annulé</SelectItem>
-                </SelectContent>
-              </Select>
+        <CardContent className={isMobile ? 'p-0' : 'p-6'}>
+          {/* Barre de recherche et filtres - Masqués sur mobile */}
+          {!isMobile && (
+            <div className="mb-6 space-y-0">
+              {/* Recherche - Pleine largeur sur mobile */}
+              <div className="w-full">
+                <div className="relative">
+                  <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform" />
+                  <Input
+                    placeholder="Rechercher des projets..."
+                    value={searchTerm}
+                    onChange={e => handleSearchChange(e.target.value)}
+                    className="h-10 pl-10 text-base sm:h-9 sm:text-sm"
+                  />
+                </div>
+              </div>
 
-              <Select onValueChange={handlePriorityFilterChange}>
-                <SelectTrigger className="h-10 sm:h-9 sm:w-40">
-                  <SelectValue placeholder="Priorité" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="high">Haute</SelectItem>
-                  <SelectItem value="medium">Moyenne</SelectItem>
-                  <SelectItem value="low">Basse</SelectItem>
-                </SelectContent>
-              </Select>
+              {/* Filtres - Stack mobile, inline desktop */}
+              <div className="grid grid-cols-2 gap-2 sm:flex sm:gap-2">
+                <Select onValueChange={handleStatusFilterChange}>
+                  <SelectTrigger className="h-10 sm:h-9 sm:w-40">
+                    <Filter className="mr-2 h-3.5 w-3.5 shrink-0 sm:hidden" />
+                    <SelectValue placeholder="Statut" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="active">Actif</SelectItem>
+                    <SelectItem value="completed">Terminé</SelectItem>
+                    <SelectItem value="on_hold">En pause</SelectItem>
+                    <SelectItem value="cancelled">Annulé</SelectItem>
+                  </SelectContent>
+                </Select>
+
+                <Select onValueChange={handlePriorityFilterChange}>
+                  <SelectTrigger className="h-10 sm:h-9 sm:w-40">
+                    <SelectValue placeholder="Priorité" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="high">Haute</SelectItem>
+                    <SelectItem value="medium">Moyenne</SelectItem>
+                    <SelectItem value="low">Basse</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Grille des projets */}
           {loading && projects.length === 0 ? (

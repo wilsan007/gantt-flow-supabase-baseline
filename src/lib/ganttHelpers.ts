@@ -11,6 +11,7 @@ export interface GanttTask {
   priority: string;
   status: string;
   project_id?: string; // ✅ UNIQUEMENT project_id pour lier au projet (pas de projectName)
+  parent_id?: string; // ✅ ID de la tâche parente (si sous-tâche)
 }
 
 export interface ViewConfig {

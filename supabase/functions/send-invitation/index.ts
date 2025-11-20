@@ -322,7 +322,7 @@ serve(async req => {
       type: 'magiclink',
       email: email,
       options: {
-        redirectTo: `${baseUrl}/auth/callback?email=${encodeURIComponent(email)}&type=magiclink&invitation=true`,
+        redirectTo: `${baseUrl}/auth/callback?email=${encodeURIComponent(email)}&type=magiclink&invitation=tenant_owner`,
       },
     });
 

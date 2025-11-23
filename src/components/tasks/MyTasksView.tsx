@@ -1,692 +1,447 @@
 /**
- * MyTasksView - Vue personnalisée des tâches de l'utilisateur
+ * MyTasksView - Vue des tâches assignées (Futuristic Edition 🚀)
  *
- * Affiche les tâches organisées par urgence :
- * - 🔥 Urgent (échéance < 24h ou priorité haute)
- */
-
-// @ts-nocheck
-
-/**
- * (suite du commentaire)
- * - 📅 Aujourd'hui
- * - 📆 Cette semaine
- * - ✅ Terminées récemment
+ * Design : Glassmorphism, Néons, Dégradés
  */
 
 import React, { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import {
   CheckCircle2,
   Clock,
-  AlertTriangle,
+  AlertCircle,
   Calendar,
-  ChevronRight,
-  Flame,
-  CalendarDays,
+  Filter,
+  SortAsc,
+  MoreVertical,
+  Briefcase,
   User,
-  RefreshCw,
-} from '@/lib/icons';
+  ArrowRight,
+  Sparkles,
+  Zap,
+  Target,
+} from 'lucide-react';
 import { useTasks, type Task } from '@/hooks/optimized';
-import { useProjects } from '@/hooks/optimized';
-import { useEmployees } from '@/hooks/useEmployees';
 import { useTaskEditPermissions } from '@/hooks/useTaskEditPermissions';
-import { EditableTaskTitle } from '@/components/tasks/inline/EditableTaskTitle';
-import { EditableTaskPriority } from '@/components/tasks/inline/EditableTaskPriority';
-import { EditableTaskStatus } from '@/components/tasks/inline/EditableTaskStatus';
-import { EditableTaskAssignee } from '@/components/tasks/inline/EditableTaskAssignee';
-import { supabase } from '@/integrations/supabase/client';
-import { format, isToday, isThisWeek, isBefore, startOfDay, addDays, parseISO } from 'date-fns';
+import { format, isToday, isTomorrow, isThisWeek, parseISO, isPast } from 'date-fns';
 import { fr } from 'date-fns/locale';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { Filter } from 'lucide-react';
-
-interface TaskItemProps {
-  task: Task;
-  onComplete: (taskId: string) => void;
-  onPostpone: (taskId: string) => void;
-  onDelegate: (taskId: string) => void;
-  onUpdate: (taskId: string, field: string, value: any) => Promise<void>;
-}
-
-const TaskItem: React.FC<TaskItemProps> = ({
-  task,
-  onComplete,
-  onPostpone,
-  onDelegate,
-  onUpdate,
-}) => {
-  const permissions = useTaskEditPermissions({ task });
-  const getPriorityColor = (priority: string) => {
-    switch (priority?.toLowerCase()) {
-      case 'high':
-      case 'haute':
-        return 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300';
-      case 'medium':
-      case 'moyenne':
-        return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300';
-      case 'low':
-      case 'basse':
-        return 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300';
-      default:
-        return 'bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-300';
-    }
-  };
-
-  const getStatusColor = (status: string) => {
-    switch (status?.toLowerCase()) {
-      case 'in_progress':
-      case 'en_cours':
-        return 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300';
-      case 'completed':
-      case 'terminé':
-        return 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300';
-      case 'blocked':
-      case 'bloqué':
-        return 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300';
-      default:
-        return 'bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-300';
-    }
-  };
-
-  const dueDate = task.due_date ? parseISO(task.due_date) : null;
-  const isOverdue = dueDate && isBefore(dueDate, startOfDay(new Date()));
-
-  return (
-    <div className="hover:bg-accent/50 rounded-lg border p-4 transition-colors">
-      <div className="flex items-start justify-between gap-4">
-        <div className="flex-1 space-y-2">
-          <div className="flex items-center gap-2">
-            <EditableTaskTitle
-              value={task.title}
-              onChange={value => onUpdate(task.id, 'title', value)}
-              readOnly={!permissions.canEditTitle}
-            />
-            {isOverdue && (
-              <Badge variant="destructive" className="text-xs">
-                En retard
-              </Badge>
-            )}
-          </div>
-
-          {task.description && (
-            <p className="text-muted-foreground line-clamp-2 text-sm">{task.description}</p>
-          )}
-
-          <div className="flex flex-wrap items-center gap-2 text-xs">
-            {dueDate && (
-              <Badge variant="outline" className="gap-1">
-                <Clock className="h-3 w-3" />
-                {format(dueDate, 'dd MMM HH:mm', { locale: fr })}
-              </Badge>
-            )}
-
-            {task.priority && (
-              <EditableTaskPriority
-                value={task.priority}
-                onChange={value => onUpdate(task.id, 'priority', value)}
-                readOnly={!permissions.canEditPriority}
-              />
-            )}
-
-            {task.status && (
-              <EditableTaskStatus
-                value={task.status}
-                onChange={value => onUpdate(task.id, 'status', value)}
-                readOnly={!permissions.canEditStatus}
-              />
-            )}
-
-            {(task.projects?.name || task.project_id) && (
-              <Badge variant="secondary" className="gap-1">
-                📁 {task.projects?.name || `Projet #${task.project_id.slice(0, 8)}`}
-              </Badge>
-            )}
-
-            {/* Assigné - Éditable avec permissions + Isolation Tenant */}
-            <div className="inline-flex">
-              <EditableTaskAssignee
-                value={task.assigned_to || task.assignee_id || null}
-                onChange={value => onUpdate(task.id, 'assigned_to', value)}
-                readOnly={!permissions.canEditAssignee}
-                taskTenantId={task.tenant_id}
-              />
-            </div>
-          </div>
-        </div>
-
-        <div className="flex gap-1">
-          <Button
-            size="sm"
-            variant="ghost"
-            onClick={() => onComplete(task.id)}
-            title="Marquer comme terminé"
-          >
-            <CheckCircle2 className="h-4 w-4" />
-          </Button>
-          <Button size="sm" variant="ghost" onClick={() => onPostpone(task.id)} title="Reporter">
-            <Clock className="h-4 w-4" />
-          </Button>
-          <Button size="sm" variant="ghost" onClick={() => onDelegate(task.id)} title="Déléguer">
-            <User className="h-4 w-4" />
-          </Button>
-        </div>
-      </div>
-    </div>
-  );
-};
+import { EditableTaskTitle } from './inline/EditableTaskTitle';
+import { EditableTaskStatus } from './inline/EditableTaskStatus';
+import { EditableTaskPriority } from './inline/EditableTaskPriority';
+import { EditableTaskAssignee } from './inline/EditableTaskAssignee';
 
 interface MyTasksViewProps {
-  showAllTasks?: boolean; // Si true, afficher toutes les tâches visibles selon permissions
+  limit?: number;
+  compact?: boolean;
 }
 
-export const MyTasksView: React.FC<MyTasksViewProps> = ({ showAllTasks = false }) => {
-  const { tasks, loading, error, updateTask, refresh } = useTasks();
-  const { projects } = useProjects();
-  const { employees, loading: employeesLoading } = useEmployees();
-  const [user, setUser] = React.useState<any>(null);
-  const [selectedProject, setSelectedProject] = React.useState<string>('all');
-  const [selectedAssignee, setSelectedAssignee] = React.useState<string>('all');
+type FilterType = 'all' | 'todo' | 'doing' | 'done';
+type SortType = 'date' | 'priority' | 'project';
 
-  // Debug employees
-  console.log('📋 MyTasksView - Employees:', {
-    count: employees.length,
-    loading: employeesLoading,
-    sample: employees.slice(0, 3).map(e => ({ id: e.id, name: e.full_name })),
-  });
+export const MyTasksView: React.FC<MyTasksViewProps> = ({ limit, compact = false }) => {
+  const { tasks, loading, updateTask } = useTasks();
+  const [filter, setFilter] = useState<FilterType>('all');
+  const [sort, setSort] = useState<SortType>('date');
+  const [showCompleted, setShowCompleted] = useState(false);
 
-  React.useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => setUser(data.user));
-  }, []);
-  const [expandedSections, setExpandedSections] = useState({
-    urgent: true,
-    today: true,
-    week: true,
-    completed: false,
-  });
+  // Filtrage et Tri
+  const filteredTasks = useMemo(() => {
+    let result = tasks.filter(t => {
+      if (!showCompleted && t.status === 'done') return false;
+      if (filter === 'all') return true;
+      if (filter === 'done') return t.status === 'done';
+      if (filter === 'doing') return t.status === 'doing' || t.status === 'in_progress';
+      if (filter === 'todo') return t.status === 'todo';
+      return true;
+    });
 
-  // Filtrer les tâches selon le mode ET les filtres
-  const myTasks = useMemo(() => {
-    if (!user) return [];
+    return result.sort((a, b) => {
+      if (sort === 'date') {
+        if (!a.due_date) return 1;
+        if (!b.due_date) return -1;
+        return new Date(a.due_date).getTime() - new Date(b.due_date).getTime();
+      }
+      if (sort === 'priority') {
+        const priorityOrder = { high: 0, medium: 1, low: 2 };
+        return (
+          (priorityOrder[a.priority as keyof typeof priorityOrder] || 2) -
+          (priorityOrder[b.priority as keyof typeof priorityOrder] || 2)
+        );
+      }
+      return 0;
+    });
+  }, [tasks, filter, sort, showCompleted]);
 
-    let filteredTasks = tasks;
+  // Groupement par section (Urgent, Aujourd'hui, etc.)
+  const groupedTasks = useMemo(() => {
+    const groups = {
+      urgent: [] as Task[],
+      today: [] as Task[],
+      week: [] as Task[],
+      upcoming: [] as Task[],
+      completed: [] as Task[],
+    };
 
-    // Filtre de base selon le mode
-    if (showAllTasks) {
-      // Mode "Toutes les tâches" : afficher toutes les tâches visibles
-      filteredTasks = tasks.filter(task => task.status !== 'completed' && task.status !== 'done');
-    } else {
-      // Mode "Mes tâches assignées" : uniquement les tâches assignées à moi
-      filteredTasks = tasks.filter(
-        task =>
-          (task.assigned_to || task.assignee_id) === user.id &&
-          task.status !== 'completed' &&
-          task.status !== 'done'
-      );
-    }
+    filteredTasks.forEach(task => {
+      if (task.status === 'done') {
+        groups.completed.push(task);
+        return;
+      }
 
-    // 🔍 Filtre par projet
-    if (selectedProject !== 'all') {
-      filteredTasks = filteredTasks.filter(task => task.project_id === selectedProject);
-    }
+      if (task.priority === 'high') {
+        groups.urgent.push(task);
+        return; // Les tâches urgentes vont dans "Urgent" peu importe la date
+      }
 
-    // 🔍 Filtre par personne assignée (disponible dans tous les modes)
-    if (selectedAssignee !== 'all') {
-      filteredTasks = filteredTasks.filter(
-        task => (task.assigned_to || task.assignee_id) === selectedAssignee
-      );
-    }
+      if (!task.due_date) {
+        groups.upcoming.push(task);
+        return;
+      }
 
-    return filteredTasks;
-  }, [tasks, user, showAllTasks, selectedProject, selectedAssignee]);
-
-  const completedTasks = useMemo(() => {
-    if (!user) return [];
-    const twoDaysAgo = addDays(new Date(), -2);
-
-    let filteredTasks = tasks;
-
-    if (showAllTasks) {
-      // Mode "Toutes les tâches" : toutes les tâches terminées récemment
-      filteredTasks = tasks.filter(
-        task =>
-          (task.status === 'completed' || task.status === 'done') &&
-          task.updated_at &&
-          parseISO(task.updated_at) > twoDaysAgo
-      );
-    } else {
-      // Mode "Mes tâches assignées" : uniquement mes tâches terminées
-      filteredTasks = tasks.filter(
-        task =>
-          (task.assigned_to || task.assignee_id) === user.id &&
-          (task.status === 'completed' || task.status === 'done') &&
-          task.updated_at &&
-          parseISO(task.updated_at) > twoDaysAgo
-      );
-    }
-
-    // 🔍 Appliquer les mêmes filtres aux tâches terminées
-    if (selectedProject !== 'all') {
-      filteredTasks = filteredTasks.filter(task => task.project_id === selectedProject);
-    }
-
-    if (selectedAssignee !== 'all') {
-      filteredTasks = filteredTasks.filter(
-        task => (task.assigned_to || task.assignee_id) === selectedAssignee
-      );
-    }
-
-    return filteredTasks;
-  }, [tasks, user, showAllTasks, selectedProject, selectedAssignee]);
-
-  // Catégoriser les tâches
-  const categorizedTasks = useMemo(() => {
-    const now = new Date();
-    const tomorrow = addDays(startOfDay(now), 1);
-
-    const urgent: Task[] = [];
-    const today: Task[] = [];
-    const thisWeek: Task[] = [];
-
-    myTasks.forEach(task => {
-      const dueDate = task.due_date ? parseISO(task.due_date) : null;
-      const isHighPriority =
-        task.priority?.toLowerCase() === 'high' || task.priority?.toLowerCase() === 'haute';
-      const isDueSoon = dueDate && isBefore(dueDate, tomorrow);
-
-      if (isHighPriority || isDueSoon) {
-        urgent.push(task);
-      } else if (dueDate && isToday(dueDate)) {
-        today.push(task);
-      } else if (dueDate && isThisWeek(dueDate, { weekStartsOn: 1 })) {
-        thisWeek.push(task);
+      const date = parseISO(task.due_date);
+      if (isPast(date) && !isToday(date)) {
+        groups.urgent.push(task); // En retard -> Urgent
+      } else if (isToday(date)) {
+        groups.today.push(task);
+      } else if (isThisWeek(date)) {
+        groups.week.push(task);
       } else {
-        thisWeek.push(task); // Par défaut dans "cette semaine"
+        groups.upcoming.push(task);
       }
     });
 
-    return { urgent, today, thisWeek };
-  }, [myTasks]);
+    return groups;
+  }, [filteredTasks]);
 
-  const handleComplete = async (taskId: string) => {
+  const handleStatusChange = async (taskId: string, newStatus: string) => {
     try {
-      await updateTask(taskId, { status: 'done' });
+      await updateTask(taskId, { status: newStatus as any });
     } catch (error) {
-      console.error('Erreur lors de la mise à jour:', error);
+      console.error('Erreur lors de la mise à jour du statut:', error);
     }
   };
 
-  const handlePostpone = async (taskId: string) => {
-    // Implémenter la logique de report (ajouter 1 jour par exemple)
-    const task = tasks.find(t => t.id === taskId);
-    if (!task?.due_date) return;
-
-    const newDate = addDays(parseISO(task.due_date), 1);
-    try {
-      await updateTask(taskId, { due_date: newDate.toISOString() });
-    } catch (error) {
-      console.error('Erreur lors du report:', error);
-    }
-  };
-
-  const handleDelegate = async (taskId: string) => {
-    // À implémenter : ouvrir un dialogue pour sélectionner un utilisateur
-    console.log('Déléguer tâche:', taskId);
-  };
-
-  const handleUpdateTask = async (taskId: string, field: string, value: any) => {
-    try {
-      const updateData: any = { [field]: value };
-
-      // Normaliser certains champs
-      if (field === 'assigned_to' || field === 'assignee') {
-        updateData.assigned_to = value;
-        delete updateData.assignee;
-      }
-
-      await updateTask(taskId, updateData);
-
-      // Pas besoin de toast, updateTask gère déjà ça
-    } catch (error) {
-      console.error(`Erreur mise à jour ${field}:`, error);
-      throw error; // Propager l'erreur aux composants inline
-    }
-  };
-
-  const toggleSection = (section: keyof typeof expandedSections) => {
-    setExpandedSections(prev => ({ ...prev, [section]: !prev[section] }));
+  const handleQuickComplete = (taskId: string) => {
+    handleStatusChange(taskId, 'done');
   };
 
   if (loading) {
     return (
       <div className="space-y-4">
-        <Skeleton className="h-32 w-full" />
-        <Skeleton className="h-32 w-full" />
-        <Skeleton className="h-32 w-full" />
+        {[1, 2, 3].map(i => (
+          <div key={i} className="bg-muted/50 h-24 animate-pulse rounded-xl" />
+        ))}
       </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <Alert variant="destructive">
-        <AlertTriangle className="h-4 w-4" />
-        <AlertDescription>
-          Erreur lors du chargement des tâches:{' '}
-          {typeof error === 'string' ? error : error?.message || 'Erreur inconnue'}
-        </AlertDescription>
-      </Alert>
     );
   }
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
+    <div className="animate-in fade-in-50 space-y-8 duration-700">
+      {/* Header & Filtres Futuristes */}
+      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
-          <h2 className="text-2xl font-bold">
-            {showAllTasks ? 'Toutes les Tâches' : 'Mes Tâches Assignées'}
+          <h2 className="bg-gradient-to-r from-violet-600 to-fuchsia-600 bg-clip-text text-3xl font-bold text-transparent dark:from-violet-400 dark:to-fuchsia-400">
+            Mes Tâches
           </h2>
-          <p className="text-muted-foreground">
-            {myTasks.length} tâche{myTasks.length > 1 ? 's' : ''} en cours
-            {showAllTasks && ' (selon vos permissions)'}
+          <p className="text-muted-foreground mt-1">
+            {filteredTasks.length} tâche{filteredTasks.length > 1 ? 's' : ''} à traiter
           </p>
         </div>
-        <Button variant="outline" size="sm" onClick={refresh}>
-          <RefreshCw className="mr-2 h-4 w-4" />
-          Actualiser
-        </Button>
-      </div>
 
-      {/* 🔍 Filtres */}
-      <Card>
-        <CardContent className="pt-6">
-          <div className="flex flex-wrap items-center gap-4">
-            <div className="flex items-center gap-2">
-              <Filter className="text-muted-foreground h-4 w-4" />
-              <span className="text-sm font-medium">Filtres :</span>
-            </div>
-
-            {/* Filtre par projet */}
-            <div className="flex items-center gap-2">
-              <label className="text-muted-foreground text-sm">Projet :</label>
-              <Select value={selectedProject} onValueChange={setSelectedProject}>
-                <SelectTrigger className="w-[200px]">
-                  <SelectValue placeholder="Tous les projets" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Tous les projets</SelectItem>
-                  {projects.map(project => (
-                    <SelectItem key={project.id} value={project.id}>
-                      {project.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* Filtre par personne assignée (disponible dans tous les modes) */}
-            <div className="flex items-center gap-2">
-              <label className="text-muted-foreground text-sm">Assigné à :</label>
-              <Select
-                value={selectedAssignee}
-                onValueChange={setSelectedAssignee}
-                disabled={employeesLoading}
+        <div className="flex flex-wrap items-center gap-2">
+          {/* Filtres Pills */}
+          <div className="bg-muted/30 flex rounded-full border border-white/10 p-1 backdrop-blur-sm">
+            {(['all', 'todo', 'doing', 'done'] as const).map(f => (
+              <button
+                key={f}
+                onClick={() => setFilter(f)}
+                className={`rounded-full px-4 py-1.5 text-sm font-medium transition-all duration-300 ${
+                  filter === f
+                    ? 'bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white shadow-lg shadow-violet-500/25'
+                    : 'text-muted-foreground hover:text-foreground hover:bg-white/10'
+                }`}
               >
-                <SelectTrigger className="w-[200px]">
-                  <SelectValue
-                    placeholder={employeesLoading ? 'Chargement...' : 'Toutes les personnes'}
-                  />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Toutes les personnes</SelectItem>
-                  {employeesLoading ? (
-                    <SelectItem value="loading" disabled>
-                      Chargement...
-                    </SelectItem>
-                  ) : employees.length === 0 ? (
-                    <SelectItem value="empty" disabled>
-                      Aucun employé trouvé
-                    </SelectItem>
-                  ) : (
-                    employees.map(employee => (
-                      <SelectItem key={employee.id} value={employee.id}>
-                        {employee.full_name}
-                      </SelectItem>
-                    ))
-                  )}
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* Compteur de filtres actifs */}
-            {(selectedProject !== 'all' || selectedAssignee !== 'all') && (
-              <Badge variant="secondary" className="ml-auto">
-                {[selectedProject !== 'all', selectedAssignee !== 'all'].filter(Boolean).length}{' '}
-                filtre(s) actif(s)
-              </Badge>
-            )}
+                {f === 'all'
+                  ? 'Tout'
+                  : f === 'todo'
+                    ? 'À faire'
+                    : f === 'doing'
+                      ? 'En cours'
+                      : 'Fait'}
+              </button>
+            ))}
           </div>
-        </CardContent>
-      </Card>
 
-      {/* Statistiques rapides */}
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-muted-foreground text-sm">Urgentes</p>
-                <p className="text-2xl font-bold">{categorizedTasks.urgent.length}</p>
-              </div>
-              <Flame className="h-8 w-8 text-red-500" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-muted-foreground text-sm">Aujourd'hui</p>
-                <p className="text-2xl font-bold">{categorizedTasks.today.length}</p>
-              </div>
-              <Calendar className="h-8 w-8 text-blue-500" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-muted-foreground text-sm">Cette semaine</p>
-                <p className="text-2xl font-bold">{categorizedTasks.thisWeek.length}</p>
-              </div>
-              <CalendarDays className="h-8 w-8 text-yellow-500" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-muted-foreground text-sm">Terminées</p>
-                <p className="text-2xl font-bold">{completedTasks.length}</p>
-              </div>
-              <CheckCircle2 className="h-8 w-8 text-green-500" />
-            </div>
-          </CardContent>
-        </Card>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="outline"
+                size="icon"
+                className="border-primary/50 hover:bg-primary/5 rounded-full border-dashed"
+              >
+                <SortAsc className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-48">
+              <DropdownMenuItem onClick={() => setSort('date')}>
+                <Calendar className="mr-2 h-4 w-4" /> Date d'échéance
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setSort('priority')}>
+                <AlertCircle className="mr-2 h-4 w-4" /> Priorité
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setSort('project')}>
+                <Briefcase className="mr-2 h-4 w-4" /> Projet
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
 
-      {/* Section Urgent */}
-      <Card>
-        <CardHeader
-          className="hover:bg-accent/50 cursor-pointer"
-          onClick={() => toggleSection('urgent')}
-        >
-          <CardTitle className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Flame className="h-5 w-5 text-red-500" />
-              <span>🔥 URGENT</span>
-              <Badge variant="destructive">{categorizedTasks.urgent.length}</Badge>
-            </div>
-            <ChevronRight
-              className={`h-5 w-5 transition-transform ${expandedSections.urgent ? 'rotate-90' : ''}`}
-            />
-          </CardTitle>
-        </CardHeader>
-        {expandedSections.urgent && (
-          <CardContent className="space-y-3">
-            {categorizedTasks.urgent.length === 0 ? (
-              <p className="text-muted-foreground py-4 text-center">Aucune tâche urgente 🎉</p>
-            ) : (
-              categorizedTasks.urgent.map(task => (
-                <TaskItem
-                  key={task.id}
-                  task={task}
-                  onComplete={handleComplete}
-                  onPostpone={handlePostpone}
-                  onDelegate={handleDelegate}
-                  onUpdate={handleUpdateTask}
-                />
-              ))
-            )}
-          </CardContent>
+      {/* Sections de Tâches */}
+      <div className="space-y-8">
+        {/* 🚨 Urgent & En Retard */}
+        {groupedTasks.urgent.length > 0 && (
+          <TaskSection
+            title="Urgent & En Retard"
+            icon={<Zap className="h-5 w-5 text-rose-500" />}
+            tasks={groupedTasks.urgent}
+            onUpdate={updateTask}
+            onComplete={handleQuickComplete}
+            gradient="from-rose-500/10 to-orange-500/10"
+            borderColor="border-rose-500/20"
+          />
         )}
-      </Card>
 
-      {/* Section Aujourd'hui */}
-      <Card>
-        <CardHeader
-          className="hover:bg-accent/50 cursor-pointer"
-          onClick={() => toggleSection('today')}
-        >
-          <CardTitle className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Calendar className="h-5 w-5 text-blue-500" />
-              <span>📅 AUJOURD'HUI</span>
-              <Badge variant="secondary">{categorizedTasks.today.length}</Badge>
-            </div>
-            <ChevronRight
-              className={`h-5 w-5 transition-transform ${expandedSections.today ? 'rotate-90' : ''}`}
-            />
-          </CardTitle>
-        </CardHeader>
-        {expandedSections.today && (
-          <CardContent className="space-y-3">
-            {categorizedTasks.today.length === 0 ? (
-              <p className="text-muted-foreground py-4 text-center">
-                Aucune tâche pour aujourd'hui
-              </p>
-            ) : (
-              categorizedTasks.today.map(task => (
-                <TaskItem
-                  key={task.id}
-                  task={task}
-                  onComplete={handleComplete}
-                  onPostpone={handlePostpone}
-                  onDelegate={handleDelegate}
-                  onUpdate={handleUpdateTask}
-                />
-              ))
-            )}
-          </CardContent>
+        {/* 📅 Aujourd'hui */}
+        {groupedTasks.today.length > 0 && (
+          <TaskSection
+            title="Aujourd'hui"
+            icon={<Target className="h-5 w-5 text-blue-500" />}
+            tasks={groupedTasks.today}
+            onUpdate={updateTask}
+            onComplete={handleQuickComplete}
+            gradient="from-blue-500/10 to-cyan-500/10"
+            borderColor="border-blue-500/20"
+          />
         )}
-      </Card>
 
-      {/* Section Cette Semaine */}
-      <Card>
-        <CardHeader
-          className="hover:bg-accent/50 cursor-pointer"
-          onClick={() => toggleSection('week')}
-        >
-          <CardTitle className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <CalendarDays className="h-5 w-5 text-yellow-500" />
-              <span>📆 CETTE SEMAINE</span>
-              <Badge variant="outline">{categorizedTasks.thisWeek.length}</Badge>
-            </div>
-            <ChevronRight
-              className={`h-5 w-5 transition-transform ${expandedSections.week ? 'rotate-90' : ''}`}
-            />
-          </CardTitle>
-        </CardHeader>
-        {expandedSections.week && (
-          <CardContent className="space-y-3">
-            {categorizedTasks.thisWeek.length === 0 ? (
-              <p className="text-muted-foreground py-4 text-center">Aucune tâche cette semaine</p>
-            ) : (
-              categorizedTasks.thisWeek.map(task => (
-                <TaskItem
-                  key={task.id}
-                  task={task}
-                  onComplete={handleComplete}
-                  onPostpone={handlePostpone}
-                  onDelegate={handleDelegate}
-                  onUpdate={handleUpdateTask}
-                />
-              ))
-            )}
-          </CardContent>
+        {/* 🗓️ Cette Semaine */}
+        {groupedTasks.week.length > 0 && (
+          <TaskSection
+            title="Cette Semaine"
+            icon={<Calendar className="h-5 w-5 text-violet-500" />}
+            tasks={groupedTasks.week}
+            onUpdate={updateTask}
+            onComplete={handleQuickComplete}
+            gradient="from-violet-500/10 to-purple-500/10"
+            borderColor="border-violet-500/20"
+          />
         )}
-      </Card>
 
-      {/* Section Terminées Récemment */}
-      <Card>
-        <CardHeader
-          className="hover:bg-accent/50 cursor-pointer"
-          onClick={() => toggleSection('completed')}
-        >
-          <CardTitle className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <CheckCircle2 className="h-5 w-5 text-green-500" />
-              <span>✅ TERMINÉES RÉCEMMENT</span>
-              <Badge variant="secondary">{completedTasks.length}</Badge>
-            </div>
-            <ChevronRight
-              className={`h-5 w-5 transition-transform ${expandedSections.completed ? 'rotate-90' : ''}`}
-            />
-          </CardTitle>
-        </CardHeader>
-        {expandedSections.completed && (
-          <CardContent className="space-y-3">
-            {completedTasks.length === 0 ? (
-              <p className="text-muted-foreground py-4 text-center">
-                Aucune tâche terminée récemment
-              </p>
-            ) : (
-              completedTasks.slice(0, 10).map(task => (
-                <div key={task.id} className="rounded-lg border p-4 opacity-60">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h4 className="font-medium line-through">{task.title}</h4>
-                      <p className="text-muted-foreground text-xs">
-                        Terminée{' '}
-                        {task.updated_at &&
-                          format(parseISO(task.updated_at), 'PPp', { locale: fr })}
-                      </p>
-                    </div>
-                    <CheckCircle2 className="h-5 w-5 text-green-500" />
-                  </div>
-                </div>
-              ))
-            )}
-          </CardContent>
+        {/* 🔮 À Venir */}
+        {groupedTasks.upcoming.length > 0 && (
+          <TaskSection
+            title="À Venir"
+            icon={<Sparkles className="h-5 w-5 text-emerald-500" />}
+            tasks={groupedTasks.upcoming}
+            onUpdate={updateTask}
+            onComplete={handleQuickComplete}
+            gradient="from-emerald-500/10 to-teal-500/10"
+            borderColor="border-emerald-500/20"
+          />
         )}
-      </Card>
+
+        {/* ✅ Terminées (si affichées ou filtre 'done') */}
+        {(showCompleted || filter === 'done') && groupedTasks.completed.length > 0 && (
+          <TaskSection
+            title="Terminées Récemment"
+            icon={<CheckCircle2 className="h-5 w-5 text-slate-500" />}
+            tasks={groupedTasks.completed}
+            onUpdate={updateTask}
+            onComplete={handleQuickComplete}
+            gradient="from-slate-500/10 to-gray-500/10"
+            borderColor="border-slate-500/20"
+            isCompleted
+          />
+        )}
+
+        {filteredTasks.length === 0 && (
+          <div className="flex flex-col items-center justify-center py-16 text-center">
+            <div className="relative mb-4">
+              <div className="bg-primary/20 absolute inset-0 animate-ping rounded-full opacity-75 duration-1000" />
+              <div className="relative rounded-full bg-gradient-to-br from-violet-100 to-fuchsia-100 p-4 dark:from-violet-900/30 dark:to-fuchsia-900/30">
+                <Sparkles className="text-primary h-8 w-8" />
+              </div>
+            </div>
+            <h3 className="text-xl font-bold">Tout est calme...</h3>
+            <p className="text-muted-foreground mt-2 max-w-sm">
+              Aucune tâche ne correspond à vos filtres. Profitez-en pour prendre une pause ! ☕
+            </p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+// Composant Section de Tâches
+const TaskSection: React.FC<{
+  title: string;
+  icon: React.ReactNode;
+  tasks: Task[];
+  onUpdate: any;
+  onComplete: any;
+  gradient: string;
+  borderColor: string;
+  isCompleted?: boolean;
+}> = ({ title, icon, tasks, onUpdate, onComplete, gradient, borderColor, isCompleted }) => (
+  <div className="space-y-4">
+    <div className="flex items-center gap-2 px-1">
+      {icon}
+      <h3 className="text-lg font-bold tracking-tight">{title}</h3>
+      <Badge variant="secondary" className="bg-muted/50 ml-2 rounded-full px-2.5">
+        {tasks.length}
+      </Badge>
+    </div>
+
+    <div className="grid gap-3">
+      {tasks.map(task => (
+        <TaskItem
+          key={task.id}
+          task={task}
+          onUpdate={onUpdate}
+          onComplete={onComplete}
+          gradient={gradient}
+          borderColor={borderColor}
+          isCompleted={isCompleted}
+        />
+      ))}
+    </div>
+  </div>
+);
+
+// Composant Item de Tâche Futuriste
+const TaskItem: React.FC<{
+  task: Task;
+  onUpdate: any;
+  onComplete: any;
+  gradient: string;
+  borderColor: string;
+  isCompleted?: boolean;
+}> = ({ task, onUpdate, onComplete, gradient, borderColor, isCompleted }) => {
+  const { permissions } = useTaskEditPermissions(task.id);
+  const isOverdue =
+    task.due_date && isPast(parseISO(task.due_date)) && !isToday(parseISO(task.due_date));
+
+  return (
+    <div
+      className={`group bg-card/50 relative overflow-hidden rounded-xl border p-4 backdrop-blur-md transition-all duration-300 hover:scale-[1.01] hover:shadow-lg ${borderColor} ${isCompleted ? 'opacity-60 grayscale' : ''}`}
+    >
+      {/* Fond Dégradé Subtil */}
+      <div
+        className={`absolute inset-0 bg-gradient-to-r ${gradient} opacity-0 transition-opacity duration-500 group-hover:opacity-100`}
+      />
+
+      {/* Glow Effect on Hover */}
+      <div className="bg-primary absolute top-0 bottom-0 -left-1 w-1 opacity-0 transition-all duration-300 group-hover:left-0 group-hover:opacity-100" />
+
+      <div className="relative z-10 flex items-start gap-4">
+        {/* Bouton Check */}
+        <button
+          onClick={() => onComplete(task.id)}
+          className={`mt-1 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 transition-all duration-300 ${
+            isCompleted
+              ? 'border-primary bg-primary text-primary-foreground'
+              : 'border-muted-foreground/30 hover:border-primary hover:bg-primary/10 hover:text-primary'
+          }`}
+        >
+          {isCompleted && <CheckCircle2 className="h-3.5 w-3.5" />}
+        </button>
+
+        <div className="flex-1 space-y-2">
+          <div className="flex items-start justify-between gap-2">
+            <div className="space-y-1">
+              <div className="flex items-center gap-2">
+                <EditableTaskTitle
+                  value={task.title}
+                  onChange={value => onUpdate(task.id, { title: value })}
+                  readOnly={!permissions.canEditTitle || isCompleted}
+                  className={`text-base font-semibold ${isCompleted ? 'text-muted-foreground line-through' : ''}`}
+                />
+                {isOverdue && !isCompleted && (
+                  <Badge
+                    variant="destructive"
+                    className="animate-pulse px-1.5 py-0 text-[10px] tracking-wider uppercase"
+                  >
+                    En retard
+                  </Badge>
+                )}
+              </div>
+              {task.description && (
+                <p className="text-muted-foreground/80 line-clamp-1 text-sm font-light">
+                  {task.description}
+                </p>
+              )}
+            </div>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2 pt-1">
+            {/* Date */}
+            {task.due_date && (
+              <div
+                className={`flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-medium backdrop-blur-sm ${
+                  isOverdue && !isCompleted
+                    ? 'border-red-200 bg-red-50/50 text-red-700 dark:bg-red-900/20 dark:text-red-300'
+                    : 'border-slate-200 bg-slate-50/50 text-slate-600 dark:border-slate-700 dark:bg-slate-800/50 dark:text-slate-300'
+                }`}
+              >
+                <Calendar className="h-3 w-3" />
+                {format(parseISO(task.due_date), 'dd MMM', { locale: fr })}
+              </div>
+            )}
+
+            {/* Priorité */}
+            <EditableTaskPriority
+              value={task.priority}
+              onChange={value => onUpdate(task.id, { priority: value })}
+              readOnly={!permissions.canEditPriority || isCompleted}
+            />
+
+            {/* Statut */}
+            <EditableTaskStatus
+              value={task.status}
+              onChange={value => onUpdate(task.id, { status: value })}
+              readOnly={!permissions.canEditStatus || isCompleted}
+            />
+
+            {/* Projet */}
+            {(task.projects?.name || task.project_id) && (
+              <div className="flex items-center gap-1.5 rounded-full border border-indigo-200/50 bg-indigo-50/50 px-2.5 py-0.5 text-xs font-medium text-indigo-700 backdrop-blur-sm dark:bg-indigo-900/20 dark:text-indigo-300">
+                <Briefcase className="h-3 w-3" />
+                <span className="max-w-[100px] truncate">{task.projects?.name || 'Projet'}</span>
+              </div>
+            )}
+
+            {/* Assigné */}
+            <div className="ml-auto">
+              <EditableTaskAssignee
+                value={task.assigned_to || task.assignee_id || null}
+                onChange={value => onUpdate(task.id, { assigned_to: value })}
+                readOnly={!permissions.canEditAssignee || isCompleted}
+                taskTenantId={task.tenant_id}
+              />
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

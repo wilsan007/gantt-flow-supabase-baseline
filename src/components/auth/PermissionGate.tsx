@@ -19,6 +19,10 @@ interface PermissionGateProps {
 /**
  * Composant pour contrôler l'affichage basé sur les permissions
  * Utilise le système de cache intelligent pour des performances optimales
+ *
+ * @security ⚠️ ATTENTION: Ce composant n'offre qu'une sécurité visuelle (UX).
+ * Les véritables vérifications de sécurité DOIVENT être effectuées côté serveur
+ * (RLS, Edge Functions, API) car tout code client peut être contourné.
  */
 export const PermissionGate: React.FC<PermissionGateProps> = ({
   children,

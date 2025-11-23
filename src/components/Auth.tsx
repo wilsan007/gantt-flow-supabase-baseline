@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -14,7 +15,8 @@ interface AuthProps {
 }
 
 export const Auth = ({ onAuthStateChange }: AuthProps) => {
-  const [email, setEmail] = useState('');
+  const [searchParams] = useSearchParams();
+  const [email, setEmail] = useState(searchParams.get('email') || '');
   const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState(''); // Ajout du state pour le nom complet
   const [showMFAInput, setShowMFAInput] = useState(false);
@@ -36,6 +38,19 @@ export const Auth = ({ onAuthStateChange }: AuthProps) => {
   const [loading, setLoading] = useState(false);
   const [isSignUp, setIsSignUp] = useState(false);
   const { toast } = useToast();
+
+  // Gérer les erreurs d'URL (ex: retour de callback échoué)
+  useEffect(() => {
+    const error = searchParams.get('error');
+    if (error === 'invitation_failed') {
+      toast({
+        title: '⚠️ Lien expiré ou invalide',
+        description:
+          "Le lien d'invitation n'a pas pu être validé. Veuillez vous connecter avec votre email et le mot de passe temporaire reçu.",
+        variant: 'destructive',
+      });
+    }
+  }, [searchParams, toast]);
 
   // Pas besoin d'écouter les changements ici, c'est géré par useSessionManager
   // Le composant Auth se contente d'afficher le formulaire de connexion
@@ -75,44 +90,10 @@ export const Auth = ({ onAuthStateChange }: AuthProps) => {
   };
 
   const signUp = async (email: string, password: string, fullName: string) => {
-    // Générer le nom de l'entreprise basé sur le nom complet
-    const companyName = `Entreprise ${fullName}`;
+    // Inscription standard avec Supabase Auth
+    // La création du tenant se fait désormais via le flux d'invitation sécurisé (Edge Function)
+    // ou via un processus d'onboarding séparé après l'inscription.
 
-    // Étape 1: Créer le tenant et l'invitation
-    const { data: tenantData, error: tenantError } = await (supabase as any)
-      .from('tenants')
-      .insert({
-        name: companyName,
-        slug: companyName.toLowerCase().replace(/\s+/g, '-'),
-        status: 'active',
-      })
-      .select()
-      .single();
-
-    if (tenantError || !tenantData) {
-      console.error('Erreur lors de la création du tenant:', tenantError);
-      return { error: tenantError || new Error('Impossible de créer le tenant.') };
-    }
-
-    const newTenantId = tenantData.id;
-
-    // Étape 2: Créer l'invitation avec l'ID du tenant
-    const { error: invitationError } = await (supabase as any).from('invitations').insert({
-      email,
-      full_name: fullName,
-      status: 'pending',
-      invitation_type: 'tenant_owner',
-      tenant_id: newTenantId,
-    });
-
-    if (invitationError) {
-      console.error("Erreur lors de la création de l'invitation:", invitationError);
-      // En cas d'erreur, supprimer le tenant qui vient d'être créé pour nettoyer
-      await (supabase as any).from('tenants').delete().eq('id', newTenantId);
-      return { error: invitationError };
-    }
-
-    // Étape 2: Inscrire l'utilisateur avec Supabase Auth
     const redirectUrl = `${window.location.origin}/auth/callback`;
     const { error } = await supabase.auth.signUp({
       email,

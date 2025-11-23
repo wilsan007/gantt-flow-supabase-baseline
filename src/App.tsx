@@ -44,6 +44,7 @@ const AuthCallback = lazy(() => import('./pages/AuthCallback'));
 const SetupAccount = lazy(() => import('./pages/SetupAccount'));
 const InvitePage = lazy(() => import('./pages/InvitePage'));
 const NotFound = lazy(() => import('./pages/NotFound'));
+const AcceptInvitation = lazy(() => import('@/pages/AcceptInvitation'));
 // Pages nouvellement routées
 const Analytics = lazy(() => import('./pages/Analytics'));
 const Settings = lazy(() => import('./pages/Settings'));
@@ -61,6 +62,7 @@ import { useRoleBasedAccess } from './hooks/useRoleBasedAccess';
 import { cacheManager } from '@/lib/cacheManager';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { RoleIndicator } from '@/components/auth/RoleIndicator';
+import { InvitationHandler } from '@/components/auth/InvitationHandler';
 
 const queryClient = new QueryClient();
 
@@ -398,8 +400,10 @@ function App() {
           <Toaster />
           <Sonner />
           <BrowserRouter>
+            <InvitationHandler />
             <Routes>
               <Route path="/" element={<LandingPage />} />
+              <Route path="/invite/accept" element={<AcceptInvitation />} />
               <Route path="/login" element={<Auth onAuthStateChange={handleAuthStateChange} />} />
               <Route path="/signup/tenant-owner" element={<TenantOwnerSignup />} />
               <Route path="/auth/callback" element={<AuthCallback />} />
@@ -424,6 +428,7 @@ function App() {
                   <ViewModeProvider>
                     <Sonner />
                     <BrowserRouter>
+                      <InvitationHandler />
                       <AppLayoutWithSidebar {...headerProps}>
                         <MemoizedRoutes />
                       </AppLayoutWithSidebar>

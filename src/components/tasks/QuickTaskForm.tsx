@@ -1,20 +1,13 @@
 /**
- * QuickTaskForm - Formulaire optimisé pour création rapide de tâches
+ * QuickTaskForm - Création rapide de tâches (Futuristic Edition 🚀)
  *
- * Fonctionnalités :
- * - Formulaire simplifié avec champs essentiels
- * - Auto-complétion et suggestions
- * - Templates pré-remplis
- * - Historique des créations récentes
+ * Design : Glassmorphism, Inputs Glow, Templates Vibrants
  */
-
-// @ts-nocheck
 
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import {
   Select,
@@ -23,417 +16,274 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Badge } from '@/components/ui/badge';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Plus, Sparkles, CheckCircle2, AlertCircle, Clock, FileText, Bug, Zap } from '@/lib/icons';
+import { Label } from '@/components/ui/label';
+import {
+  Plus,
+  Sparkles,
+  Zap,
+  Calendar,
+  Flag,
+  Briefcase,
+  ArrowRight,
+  CheckCircle2,
+} from 'lucide-react';
 import { useTasks } from '@/hooks/optimized';
 import { useProjects } from '@/hooks/optimized';
-import { useHRMinimal } from '@/hooks/useHRMinimal';
-import { format } from 'date-fns';
+import { useToast } from '@/hooks/use-toast';
+import { format, addDays } from 'date-fns';
+import { fr } from 'date-fns/locale';
 
-interface TaskFormData {
-  title: string;
-  description: string;
-  project_id: string;
-  assigned_to: string;
-  priority: 'high' | 'medium' | 'low';
-  due_date: string;
-  status: string;
-}
-
-interface Template {
-  name: string;
-  icon: React.ReactNode;
-  color: string;
-  data: Partial<TaskFormData>;
-}
-
-const templates: Template[] = [
+const TASK_TEMPLATES = [
   {
-    name: 'Bug',
-    icon: <Bug className="h-4 w-4" />,
-    color: 'bg-red-100 text-red-800 dark:bg-red-900/30',
-    data: {
-      title: '🐛 Bug: ',
-      priority: 'high',
-      status: 'todo',
-    },
+    id: 'bug',
+    title: 'Signaler un Bug',
+    icon: <Zap className="h-5 w-5 text-rose-500" />,
+    description: 'Rapport de bug urgent',
+    priority: 'high',
+    gradient: 'from-rose-500/20 to-orange-500/20',
+    border: 'border-rose-500/30',
+    hover: 'hover:shadow-rose-500/20',
   },
   {
-    name: 'Feature',
-    icon: <Sparkles className="h-4 w-4" />,
-    color: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30',
-    data: {
-      title: '✨ Feature: ',
-      priority: 'medium',
-      status: 'todo',
-    },
+    id: 'feature',
+    title: 'Nouvelle Feature',
+    icon: <Sparkles className="h-5 w-5 text-violet-500" />,
+    description: 'Idée ou fonctionnalité',
+    priority: 'medium',
+    gradient: 'from-violet-500/20 to-fuchsia-500/20',
+    border: 'border-violet-500/30',
+    hover: 'hover:shadow-violet-500/20',
   },
   {
-    name: 'Documentation',
-    icon: <FileText className="h-4 w-4" />,
-    color: 'bg-green-100 text-green-800 dark:bg-green-900/30',
-    data: {
-      title: '📝 Doc: ',
-      priority: 'low',
-      status: 'todo',
-    },
-  },
-  {
-    name: 'Urgent',
-    icon: <Zap className="h-4 w-4" />,
-    color: 'bg-orange-100 text-orange-800 dark:bg-orange-900/30',
-    data: {
-      title: '⚡ Urgent: ',
-      priority: 'high',
-      status: 'todo',
-      due_date: new Date().toISOString().split('T')[0],
-    },
+    id: 'meeting',
+    title: 'Réunion',
+    icon: <Calendar className="h-5 w-5 text-blue-500" />,
+    description: 'Préparation de réunion',
+    priority: 'medium',
+    gradient: 'from-blue-500/20 to-cyan-500/20',
+    border: 'border-blue-500/30',
+    hover: 'hover:shadow-blue-500/20',
   },
 ];
 
 export const QuickTaskForm: React.FC = () => {
-  const { createTask, tasks, loading } = useTasks();
+  const { createTask, loading } = useTasks();
   const { projects } = useProjects();
-  const { employees } = useHRMinimal();
+  const { toast } = useToast();
 
-  const [formData, setFormData] = useState<TaskFormData>({
-    title: '',
-    description: '',
-    project_id: '',
-    assigned_to: '',
-    priority: 'medium',
-    due_date: '',
-    status: 'todo',
-  });
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [priority, setPriority] = useState('medium');
+  const [projectId, setProjectId] = useState<string>('');
+  const [dueDate, setDueDate] = useState<string>('');
+  const [isExpanded, setIsExpanded] = useState(false);
 
-  const [success, setSuccess] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  // Historique des 5 dernières tâches créées
-  const recentTasks = React.useMemo(() => {
-    return [...tasks]
-      .sort((a, b) => {
-        const dateA = a.created_at ? new Date(a.created_at).getTime() : 0;
-        const dateB = b.created_at ? new Date(b.created_at).getTime() : 0;
-        return dateB - dateA;
-      })
-      .slice(0, 5);
-  }, [tasks]);
-
-  const handleChange = (field: keyof TaskFormData, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-    setError(null);
-    setSuccess(false);
-  };
-
-  const applyTemplate = (template: Template) => {
-    setFormData(prev => ({
-      ...prev,
-      ...template.data,
-    }));
-  };
-
-  const validateForm = (): boolean => {
-    if (!formData.title.trim()) {
-      setError('Le titre est obligatoire');
-      return false;
-    }
-    if (!formData.project_id) {
-      setError('Veuillez sélectionner un projet');
-      return false;
-    }
-    if (!formData.due_date) {
-      setError("La date d'échéance est obligatoire");
-      return false;
-    }
-    return true;
-  };
-
-  const handleSubmit = async (e: React.FormEvent, continueCreating: boolean = false) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (!validateForm()) return;
-
-    setIsSubmitting(true);
-    setError(null);
+    if (!title.trim()) return;
 
     try {
       await createTask({
-        ...formData,
-        start_date: new Date().toISOString(),
+        title,
+        description,
+        priority: priority as any,
+        project_id: projectId || undefined,
+        due_date: dueDate || undefined,
+        status: 'todo',
       });
 
-      setSuccess(true);
+      toast({
+        title: 'Tâche créée ! 🚀',
+        description: 'Votre tâche a été ajoutée avec succès.',
+      });
 
-      if (!continueCreating) {
-        // Reset form
-        setFormData({
-          title: '',
-          description: '',
-          project_id: formData.project_id, // Garder le projet
-          assigned_to: '',
-          priority: 'medium',
-          due_date: '',
-          status: 'todo',
-        });
-      } else {
-        // Reset seulement titre et description
-        setFormData(prev => ({
-          ...prev,
-          title: '',
-          description: '',
-        }));
-      }
-
-      // Auto-hide success message
-      setTimeout(() => setSuccess(false), 3000);
-    } catch (err: any) {
-      setError(err.message || 'Erreur lors de la création de la tâche');
-    } finally {
-      setIsSubmitting(false);
+      // Reset form
+      setTitle('');
+      setDescription('');
+      setPriority('medium');
+      setProjectId('');
+      setDueDate('');
+      setIsExpanded(false);
+    } catch (error) {
+      console.error('Erreur création tâche:', error);
+      toast({
+        title: 'Erreur',
+        description: 'Impossible de créer la tâche.',
+        variant: 'destructive',
+      });
     }
   };
 
+  const applyTemplate = (template: (typeof TASK_TEMPLATES)[0]) => {
+    setTitle(template.title + ': ');
+    setPriority(template.priority);
+    setIsExpanded(true);
+  };
+
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div>
-        <h2 className="text-2xl font-bold">Création Rapide</h2>
-        <p className="text-muted-foreground">Créez une nouvelle tâche rapidement</p>
-      </div>
-
-      {/* Templates */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-base">
-            <Sparkles className="h-4 w-4" />
-            Templates
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-wrap gap-2">
-            {templates.map(template => (
-              <Button
-                key={template.name}
-                variant="outline"
-                size="sm"
-                onClick={() => applyTemplate(template)}
-                className={template.color}
-              >
-                {template.icon}
-                <span className="ml-2">{template.name}</span>
-              </Button>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-
+    <div className="animate-in fade-in-50 grid gap-8 duration-700 lg:grid-cols-3">
       {/* Formulaire Principal */}
-      <Card>
+      <Card className="relative overflow-hidden border-none bg-gradient-to-br from-white/50 to-white/30 shadow-2xl backdrop-blur-xl lg:col-span-2 dark:from-slate-900/50 dark:to-slate-900/30">
+        <div className="absolute inset-0 bg-gradient-to-r from-violet-500/5 via-fuchsia-500/5 to-cyan-500/5" />
+
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-base">
-            <Plus className="h-4 w-4" />
+          <CardTitle className="flex items-center gap-2 bg-gradient-to-r from-violet-600 to-fuchsia-600 bg-clip-text text-2xl text-transparent">
+            <Plus className="h-6 w-6 text-violet-500" />
             Nouvelle Tâche
           </CardTitle>
         </CardHeader>
+
         <CardContent>
-          <form onSubmit={e => handleSubmit(e, false)} className="space-y-4">
-            {/* Titre */}
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Titre avec effet Glow */}
             <div className="space-y-2">
-              <Label htmlFor="title">
-                Titre <span className="text-destructive">*</span>
+              <Label htmlFor="title" className="text-base font-semibold">
+                Titre de la tâche
               </Label>
-              <Input
-                id="title"
-                value={formData.title}
-                onChange={e => handleChange('title', e.target.value)}
-                placeholder="Ex: Corriger le bug de connexion"
-                required
-              />
-            </div>
-
-            {/* Description */}
-            <div className="space-y-2">
-              <Label htmlFor="description">Description</Label>
-              <Textarea
-                id="description"
-                value={formData.description}
-                onChange={e => handleChange('description', e.target.value)}
-                placeholder="Décrivez la tâche en détails..."
-                rows={3}
-              />
-            </div>
-
-            {/* Ligne 1 : Projet et Assigné à */}
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <div className="space-y-2">
-                <Label htmlFor="project">
-                  Projet <span className="text-destructive">*</span>
-                </Label>
-                <Select
-                  value={formData.project_id}
-                  onValueChange={value => handleChange('project_id', value)}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Sélectionner un projet" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {projects.map(project => (
-                      <SelectItem key={project.id} value={project.id}>
-                        {project.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="assigned_to">Assigné à</Label>
-                <Select
-                  value={formData.assigned_to}
-                  onValueChange={value => handleChange('assigned_to', value)}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Sélectionner une personne" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {employees.map(employee => (
-                      <SelectItem key={employee.id} value={employee.id}>
-                        {employee.first_name} {employee.last_name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-
-            {/* Ligne 2 : Priorité et Échéance */}
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <div className="space-y-2">
-                <Label htmlFor="priority">Priorité</Label>
-                <Select
-                  value={formData.priority}
-                  onValueChange={(value: any) => handleChange('priority', value)}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="high">
-                      <div className="flex items-center gap-2">
-                        <div className="h-2 w-2 rounded-full bg-red-500" />
-                        Haute
-                      </div>
-                    </SelectItem>
-                    <SelectItem value="medium">
-                      <div className="flex items-center gap-2">
-                        <div className="h-2 w-2 rounded-full bg-yellow-500" />
-                        Moyenne
-                      </div>
-                    </SelectItem>
-                    <SelectItem value="low">
-                      <div className="flex items-center gap-2">
-                        <div className="h-2 w-2 rounded-full bg-green-500" />
-                        Basse
-                      </div>
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="due_date">
-                  Échéance <span className="text-destructive">*</span>
-                </Label>
+              <div className="group relative">
+                <div className="absolute -inset-0.5 rounded-lg bg-gradient-to-r from-violet-500 to-fuchsia-500 opacity-20 blur transition duration-500 group-hover:opacity-50" />
                 <Input
-                  id="due_date"
-                  type="date"
-                  value={formData.due_date}
-                  onChange={e => handleChange('due_date', e.target.value)}
-                  required
+                  id="title"
+                  placeholder="Ex: Réviser la maquette..."
+                  value={title}
+                  onChange={e => setTitle(e.target.value)}
+                  onFocus={() => setIsExpanded(true)}
+                  className="bg-background/80 relative h-12 border-transparent text-lg shadow-sm focus:border-violet-500"
                 />
               </div>
             </div>
 
-            {/* Messages */}
-            {success && (
-              <Alert className="border-green-200 bg-green-50 text-green-900">
-                <CheckCircle2 className="h-4 w-4" />
-                <AlertDescription>Tâche créée avec succès ! ✅</AlertDescription>
-              </Alert>
-            )}
+            {/* Champs Étendus */}
+            <div
+              className={`space-y-6 overflow-hidden transition-all duration-500 ease-in-out ${isExpanded ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'}`}
+            >
+              <div className="grid gap-6 md:grid-cols-2">
+                {/* Projet */}
+                <div className="space-y-2">
+                  <Label className="flex items-center gap-2">
+                    <Briefcase className="text-muted-foreground h-4 w-4" />
+                    Projet
+                  </Label>
+                  <Select value={projectId} onValueChange={setProjectId}>
+                    <SelectTrigger className="bg-background/50 backdrop-blur-sm">
+                      <SelectValue placeholder="Sélectionner un projet" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {projects.map(p => (
+                        <SelectItem key={p.id} value={p.id}>
+                          {p.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
 
-            {error && (
-              <Alert variant="destructive">
-                <AlertCircle className="h-4 w-4" />
-                <AlertDescription>{error}</AlertDescription>
-              </Alert>
-            )}
+                {/* Priorité */}
+                <div className="space-y-2">
+                  <Label className="flex items-center gap-2">
+                    <Flag className="text-muted-foreground h-4 w-4" />
+                    Priorité
+                  </Label>
+                  <Select value={priority} onValueChange={setPriority}>
+                    <SelectTrigger className="bg-background/50 backdrop-blur-sm">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="low">Basse</SelectItem>
+                      <SelectItem value="medium">Moyenne</SelectItem>
+                      <SelectItem value="high">Haute</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
 
-            {/* Boutons */}
-            <div className="flex gap-2">
-              <Button type="submit" disabled={isSubmitting || loading} className="flex-1">
-                {isSubmitting ? (
-                  <>
-                    <Clock className="mr-2 h-4 w-4 animate-spin" />
-                    Création...
-                  </>
-                ) : (
-                  <>
-                    <Plus className="mr-2 h-4 w-4" />
-                    Créer
-                  </>
-                )}
-              </Button>
+                {/* Date d'échéance */}
+                <div className="space-y-2">
+                  <Label className="flex items-center gap-2">
+                    <Calendar className="text-muted-foreground h-4 w-4" />
+                    Échéance
+                  </Label>
+                  <Input
+                    type="date"
+                    value={dueDate}
+                    onChange={e => setDueDate(e.target.value)}
+                    className="bg-background/50 backdrop-blur-sm"
+                  />
+                </div>
+              </div>
 
-              <Button
-                type="button"
-                variant="secondary"
-                disabled={isSubmitting || loading}
-                onClick={e => handleSubmit(e, true)}
-              >
-                Créer et Continuer
-              </Button>
+              {/* Description */}
+              <div className="space-y-2">
+                <Label>Description</Label>
+                <Textarea
+                  placeholder="Détails supplémentaires..."
+                  value={description}
+                  onChange={e => setDescription(e.target.value)}
+                  className="bg-background/50 min-h-[100px] resize-none backdrop-blur-sm"
+                />
+              </div>
+
+              {/* Actions */}
+              <div className="flex justify-end gap-3 pt-2">
+                <Button type="button" variant="ghost" onClick={() => setIsExpanded(false)}>
+                  Annuler
+                </Button>
+                <Button
+                  type="submit"
+                  disabled={loading || !title.trim()}
+                  className="bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white shadow-lg shadow-violet-500/25 transition-all hover:scale-105 hover:from-violet-700 hover:to-fuchsia-700"
+                >
+                  {loading ? 'Création...' : 'Créer la tâche'}
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+              </div>
             </div>
           </form>
         </CardContent>
       </Card>
 
-      {/* Historique des créations récentes */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-base">
-            <Clock className="h-4 w-4" />
-            Créations Récentes ({recentTasks.length})
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          {recentTasks.length === 0 ? (
-            <p className="text-muted-foreground py-4 text-center">Aucune tâche récente</p>
-          ) : (
-            <div className="space-y-2">
-              {recentTasks.map(task => (
-                <div
-                  key={task.id}
-                  className="hover:bg-accent/50 flex items-center justify-between rounded-lg border p-3 transition-colors"
-                >
-                  <div className="flex-1">
-                    <p className="text-sm font-medium">{task.title}</p>
-                    <p className="text-muted-foreground text-xs">
-                      {task.created_at && format(new Date(task.created_at), 'dd/MM/yyyy HH:mm')}
-                    </p>
-                  </div>
-                  <Badge variant="outline" className="text-xs">
-                    {task.priority}
-                  </Badge>
+      {/* Templates Rapides */}
+      <div className="space-y-4">
+        <h3 className="text-muted-foreground px-1 text-lg font-semibold">Modèles Rapides</h3>
+        <div className="grid gap-4">
+          {TASK_TEMPLATES.map(template => (
+            <button
+              key={template.id}
+              onClick={() => applyTemplate(template)}
+              className={`group relative flex items-center gap-4 rounded-xl border p-4 text-left transition-all duration-300 hover:-translate-y-1 ${template.border} bg-gradient-to-r ${template.gradient} ${template.hover}`}
+            >
+              <div className="bg-background/80 rounded-full p-2.5 shadow-sm backdrop-blur-sm transition-transform group-hover:scale-110">
+                {template.icon}
+              </div>
+              <div>
+                <div className="font-semibold">{template.title}</div>
+                <div className="text-muted-foreground/80 text-xs font-medium">
+                  {template.description}
                 </div>
-              ))}
+              </div>
+              <div className="absolute right-4 opacity-0 transition-opacity group-hover:opacity-100">
+                <Plus className="text-muted-foreground h-5 w-5" />
+              </div>
+            </button>
+          ))}
+        </div>
+
+        {/* Astuce */}
+        <Card className="mt-6 border-indigo-500/20 bg-gradient-to-br from-indigo-500/10 to-purple-500/10">
+          <CardContent className="flex gap-3 p-4">
+            <div className="h-fit rounded-full bg-indigo-500/20 p-2">
+              <Sparkles className="h-4 w-4 text-indigo-500" />
             </div>
-          )}
-        </CardContent>
-      </Card>
+            <div className="space-y-1">
+              <p className="text-sm font-medium text-indigo-700 dark:text-indigo-300">Astuce Pro</p>
+              <p className="text-muted-foreground text-xs">
+                Utilisez <kbd className="bg-muted rounded border px-1 py-0.5 text-[10px]">Ctrl</kbd>{' '}
+                + <kbd className="bg-muted rounded border px-1 py-0.5 text-[10px]">Enter</kbd> pour
+                créer rapidement une tâche.
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 };

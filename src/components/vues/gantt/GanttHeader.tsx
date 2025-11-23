@@ -14,9 +14,9 @@ export const GanttHeader = ({ viewMode, onViewModeChange }: GanttHeaderProps) =>
   const isMobile = useIsMobile();
 
   // Masquer complètement le header sur mobile
-  if (isMobile) {
-    return null;
-  }
+  // if (isMobile) {
+  //   return null;
+  // }
 
   return (
     <CardHeader className="from-primary/10 to-accent/10 rounded-t-xl bg-gradient-to-r p-6 pb-3">

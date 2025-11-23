@@ -1,14 +1,15 @@
 // @ts-nocheck
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@/components/ui/resizable';
 // Hooks optimisés avec cache intelligent et métriques
 import { useTasks, type Task } from '@/hooks/optimized';
 import { useProjects } from '@/hooks/optimized';
 import { useEmployees } from '@/hooks/useEmployees';
 import { useViewMode } from '@/contexts/ViewModeContext';
-import { useIsMobile } from '@/hooks/use-mobile';
-import { MobileDynamicTable } from '../responsive/MobileDynamicTable';
+import { useIsMobile, useIsMobileLayout } from '@/hooks/use-mobile';
+// import { MobileDynamicTable } from '../responsive/MobileDynamicTable';
 import { TaskTableHeader } from './TaskTableHeader';
 import { TaskFixedColumns } from './TaskFixedColumns';
 import { TaskActionColumns } from './TaskActionColumns';
@@ -46,7 +47,8 @@ const DynamicTable = ({ demoTasks, isDemoMode = false }: DynamicTableProps = {})
 
   // Utiliser demoTasks si en mode démo, sinon utiliser les vraies tâches
   const tasks = isDemoMode && demoTasks ? demoTasks : realTasks;
-  const isMobile = useIsMobile();
+  const isMobile = useIsMobile(); // Pour les modales (< 768px)
+  const isMobileLayout = useIsMobileLayout(); // Pour l'UI (< 1024px)
   const { projects, loading: projectsLoading, error: projectsError } = useProjects();
   const { employees } = useEmployees();
 
@@ -75,7 +77,7 @@ const DynamicTable = ({ demoTasks, isDemoMode = false }: DynamicTableProps = {})
   const { defaultDisplayMode } = useViewMode();
 
   const [newActionTitle, setNewActionTitle] = useState('');
-  const [selectedTaskId, setSelectedTaskId] = useState<string>('');
+  const [selectedTaskId, setSelectedTaskId] = useState<string | undefined>();
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [taskToEdit, setTaskToEdit] = useState<Task | null>(null);
   const [createTaskDialogOpen, setCreateTaskDialogOpen] = useState(false);
@@ -127,12 +129,12 @@ const DynamicTable = ({ demoTasks, isDemoMode = false }: DynamicTableProps = {})
   }, []);
 
   const handleAddActionColumn = async () => {
-    if (newActionTitle.trim() && selectedTaskId) {
+    if (newActionTitle.trim() && selectedTaskId && addActionColumn) {
       try {
         await addActionColumn(newActionTitle.trim(), selectedTaskId);
         setNewActionTitle('');
         setSelectedTaskId(undefined);
-        await refetch(); // Rafraîchir les données après l'ajout
+        if (refetch) await refetch(); // Rafraîchir les données après l'ajout
       } catch (error) {
         console.error('Error adding action column:', error);
       }
@@ -145,17 +147,18 @@ const DynamicTable = ({ demoTasks, isDemoMode = false }: DynamicTableProps = {})
     due_date?: string;
     notes?: string;
   }) => {
-    if (!selectedTaskId) return;
+    if (!selectedTaskId || !addDetailedAction) return;
 
     try {
       await addDetailedAction(selectedTaskId, actionData);
-      await refetch(); // Rafraîchir les données après l'ajout
+      if (refetch) await refetch(); // Rafraîchir les données après l'ajout
     } catch (error) {
       console.error('Error creating detailed action:', error);
     }
   };
 
   const handleToggleAction = async (taskId: string, actionId: string) => {
+    if (!toggleAction) return;
     try {
       // Mise à jour optimiste : on met à jour l'interface immédiatement
       const updatedTasks = optimisticTasks.map(task => {
@@ -204,7 +207,7 @@ const DynamicTable = ({ demoTasks, isDemoMode = false }: DynamicTableProps = {})
     } catch (error) {
       console.error('Error in handleToggleAction:', error);
       // En cas d'erreur, on refetch pour revenir à l'état correct
-      await refetch();
+      if (refetch) await refetch();
     }
   };
 
@@ -218,7 +221,7 @@ const DynamicTable = ({ demoTasks, isDemoMode = false }: DynamicTableProps = {})
       });
       return;
     }
-    duplicateTask(taskId);
+    if (duplicateTask) duplicateTask(taskId);
   };
 
   const handleDeleteTask = async (taskId: string) => {
@@ -231,8 +234,10 @@ const DynamicTable = ({ demoTasks, isDemoMode = false }: DynamicTableProps = {})
       });
       return;
     }
-    await deleteTask(taskId);
-    await refetch();
+    if (deleteTask) {
+      await deleteTask(taskId);
+      if (refetch) await refetch();
+    }
   };
 
   const handleEditTask = (taskId: string) => {
@@ -254,7 +259,7 @@ const DynamicTable = ({ demoTasks, isDemoMode = false }: DynamicTableProps = {})
   }) => {
     try {
       await createMainTask(taskData);
-      await refetch(); // Recharger les données
+      if (refetch) await refetch(); // Recharger les données
     } catch (error) {
       console.error('Erreur lors de la création:', error);
       throw error;
@@ -271,11 +276,12 @@ const DynamicTable = ({ demoTasks, isDemoMode = false }: DynamicTableProps = {})
       effort_estimate_h: number;
     }
   ) => {
+    if (!createSubTask) return;
     try {
-      const newSubtask = await createSubTask(parentId, linkedActionId, customData);
+      await createSubTask(parentId, linkedActionId, customData);
 
       // Rafraîchir les données immédiatement après la création
-      await refetch();
+      if (refetch) await refetch();
     } catch (error) {
       console.error('Error creating subtask:', error);
     }
@@ -297,20 +303,22 @@ const DynamicTable = ({ demoTasks, isDemoMode = false }: DynamicTableProps = {})
       notes?: string;
     }>
   ) => {
+    if (!createSubTaskWithActions) return;
     try {
-      const newSubtask = await createSubTaskWithActions(parentId, customData, actions);
+      await createSubTaskWithActions(parentId, customData, actions);
 
       // Rafraîchir les données immédiatement après la création
-      await refetch();
+      if (refetch) await refetch();
     } catch (error) {
       console.error('Error creating subtask with actions:', error);
     }
   };
 
   const handleUpdateAssignee = async (taskId: string, assignee: string) => {
+    if (!updateTaskAssignee) return;
     try {
       await updateTaskAssignee(taskId, assignee);
-      await refetch();
+      if (refetch) await refetch();
     } catch (error) {
       console.error('Error updating assignee:', error);
     }
@@ -328,10 +336,10 @@ const DynamicTable = ({ demoTasks, isDemoMode = false }: DynamicTableProps = {})
       );
 
       // Mise à jour réelle
-      await updateTask(taskId, updates);
+      if (updateTask) await updateTask(taskId, updates);
     } catch (error) {
       console.error('Error updating task:', error);
-      await refetch(); // Recharger en cas d'erreur
+      if (refetch) await refetch(); // Recharger en cas d'erreur
     }
   };
 
@@ -340,32 +348,6 @@ const DynamicTable = ({ demoTasks, isDemoMode = false }: DynamicTableProps = {})
   };
 
   const isActionButtonEnabled = !!(selectedTaskId && newActionTitle.trim());
-
-  if (loading || (viewMode === 'projects' && projectsLoading)) {
-    return <LoadingState />;
-  }
-
-  if (error || (viewMode === 'projects' && projectsError)) {
-    return <ErrorState error={error || projectsError} />;
-  }
-
-  // Use mobile version on small screens
-  if (isMobile) {
-    return (
-      <MobileDynamicTable
-        tasks={filteredTasks}
-        loading={loading}
-        error={error}
-        duplicateTask={duplicateTask}
-        deleteTask={handleDeleteTask}
-        toggleAction={handleToggleAction}
-        addActionColumn={addActionColumn}
-        createSubTask={handleCreateSubtask}
-        updateTaskAssignee={handleUpdateAssignee}
-        refetch={refetch}
-      />
-    );
-  }
 
   return (
     <Card className="modern-card glow-accent transition-smooth w-full">
@@ -381,28 +363,30 @@ const DynamicTable = ({ demoTasks, isDemoMode = false }: DynamicTableProps = {})
         filters={filters}
       />
 
-      {/* Boutons de basculement Projet/Tâches */}
-      <div className={`${isMobile ? 'px-2 pt-2 pb-2' : 'px-6 pb-4'}`}>
-        <ToggleGroup
-          type="single"
-          value={viewMode}
-          onValueChange={value => value && setViewMode(value as 'tasks' | 'projects')}
-          className="justify-start"
-        >
-          <ToggleGroupItem
-            value="tasks"
-            className="data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
+      {/* Boutons de basculement Projet/Tâches - Masqué sur mobile */}
+      {!isMobileLayout && (
+        <div className="px-6 pb-4">
+          <ToggleGroup
+            type="single"
+            value={viewMode}
+            onValueChange={value => value && setViewMode(value as 'tasks' | 'projects')}
+            className="justify-start"
           >
-            📝 Tâches
-          </ToggleGroupItem>
-          <ToggleGroupItem
-            value="projects"
-            className="data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
-          >
-            📁 Projets
-          </ToggleGroupItem>
-        </ToggleGroup>
-      </div>
+            <ToggleGroupItem
+              value="tasks"
+              className="data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
+            >
+              📝 Tâches
+            </ToggleGroupItem>
+            <ToggleGroupItem
+              value="projects"
+              className="data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
+            >
+              📁 Projets
+            </ToggleGroupItem>
+          </ToggleGroup>
+        </div>
+      )}
 
       {/* Filtres avancés - uniquement en mode Tâches */}
       {viewMode === 'tasks' && (

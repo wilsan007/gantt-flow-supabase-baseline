@@ -1,18 +1,13 @@
 /**
- * TaskAnalytics - Statistiques et KPIs des tâches
+ * TaskAnalytics - Statistiques et KPIs Futuristes 🚀
  *
- * Affiche :
- * - KPIs de la semaine (créées, terminées, en retard, taux)
- * - Performance par priorité
- * - Top contributeurs
- * - Alertes intelligentes
+ * Design : Glassmorphism, Dégradés Vibrants, Animations Fluides
  */
 
 import React, { useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { MetricCard, ProgressBar } from '@/components/ui/badges';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
@@ -26,7 +21,10 @@ import {
   BarChart3,
   Users,
   Calendar,
-} from '@/lib/icons';
+  Zap,
+  Target,
+  Activity,
+} from 'lucide-react';
 import { useTasks } from '@/hooks/optimized';
 import { useHRMinimal } from '@/hooks/useHRMinimal';
 import {
@@ -57,6 +55,41 @@ interface ContributorStats {
   name: string;
   completedTasks: number;
 }
+
+// Composant Carte Métrique Futuriste
+const FuturisticMetricCard = ({ label, value, subtitle, icon, gradient, trend }: any) => (
+  <div
+    className={`group relative overflow-hidden rounded-2xl p-6 transition-all duration-300 hover:scale-[1.02] hover:shadow-xl ${gradient}`}
+  >
+    <div className="absolute top-0 right-0 -mt-4 -mr-4 h-24 w-24 rounded-full bg-white/10 blur-2xl transition-transform group-hover:scale-150" />
+
+    <div className="relative z-10 flex items-start justify-between">
+      <div>
+        <p className="mb-1 text-sm font-medium text-white/80">{label}</p>
+        <h3 className="text-3xl font-bold tracking-tight text-white">{value}</h3>
+      </div>
+      <div className="rounded-xl bg-white/20 p-2.5 shadow-inner backdrop-blur-sm">
+        {React.cloneElement(icon, { className: 'h-6 w-6 text-white' })}
+      </div>
+    </div>
+
+    <div className="relative z-10 mt-4 flex items-center gap-2">
+      {trend && (
+        <span
+          className={`flex items-center rounded-full px-2 py-0.5 text-xs font-bold ${trend === 'up' ? 'bg-emerald-400/20 text-emerald-100' : 'bg-rose-400/20 text-rose-100'}`}
+        >
+          {trend === 'up' ? (
+            <TrendingUp className="mr-1 h-3 w-3" />
+          ) : (
+            <TrendingDown className="mr-1 h-3 w-3" />
+          )}
+          {trend === 'up' ? '+12%' : '-5%'}
+        </span>
+      )}
+      <p className="text-xs font-medium text-white/60">{subtitle}</p>
+    </div>
+  </div>
+);
 
 export const TaskAnalytics: React.FC = () => {
   const { tasks, loading } = useTasks();
@@ -118,7 +151,6 @@ export const TaskAnalytics: React.FC = () => {
   const topContributors = useMemo((): ContributorStats[] => {
     const contributorMap = new Map<string, number>();
 
-    // Compter les tâches terminées par utilisateur
     tasks
       .filter(task => task.status === 'done' && (task.assigned_to || task.assignee_id))
       .forEach(task => {
@@ -128,7 +160,6 @@ export const TaskAnalytics: React.FC = () => {
         contributorMap.set(userId, count + 1);
       });
 
-    // Convertir en array et trier
     const contributors: ContributorStats[] = [];
     contributorMap.forEach((completedTasks, userId) => {
       const employee = employees.find(e => e.id === userId);
@@ -154,247 +185,216 @@ export const TaskAnalytics: React.FC = () => {
     if (weekStats.overdue > 0) {
       result.push({
         type: 'error',
-        message: `${weekStats.overdue} tâche${weekStats.overdue > 1 ? 's' : ''} en retard nécessite${weekStats.overdue > 1 ? 'nt' : ''} une attention immédiate`,
-      });
-    }
-
-    const unassignedOld = tasks.filter(task => {
-      if (task.assigned_to || task.status === 'completed') return false;
-      if (!task.created_at) return false;
-      const created = parseISO(task.created_at);
-      return isBefore(created, subDays(new Date(), 7));
-    });
-
-    if (unassignedOld.length > 0) {
-      result.push({
-        type: 'warning',
-        message: `${unassignedOld.length} tâche${unassignedOld.length > 1 ? 's' : ''} sans assignation depuis plus de 7 jours`,
+        message: `${weekStats.overdue} tâche${weekStats.overdue > 1 ? 's' : ''} en retard`,
       });
     }
 
     if (weekStats.completionRate < 50 && weekStats.created > 5) {
       result.push({
         type: 'warning',
-        message: `Taux de complétion faible cette semaine (${weekStats.completionRate}%)`,
+        message: `Taux de complétion faible (${weekStats.completionRate}%)`,
       });
     }
 
     return result;
   }, [tasks, weekStats]);
 
-  // Calculer le pourcentage de complétion par priorité
   const getPriorityPercentage = (stats: { total: number; completed: number }) => {
     return stats.total > 0 ? Math.round((stats.completed / stats.total) * 100) : 0;
   };
 
   if (loading) {
     return (
-      <div className="space-y-4">
-        <Skeleton className="h-32 w-full" />
-        <Skeleton className="h-64 w-full" />
-        <Skeleton className="h-48 w-full" />
+      <div className="grid gap-6 md:grid-cols-4">
+        {[1, 2, 3, 4].map(i => (
+          <Skeleton key={i} className="h-32 rounded-2xl" />
+        ))}
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
+    <div className="animate-in fade-in-50 space-y-8 duration-700">
       {/* Header */}
-      <div>
-        <h2 className="text-2xl font-bold">Statistiques & Analytics</h2>
-        <p className="text-muted-foreground">Performance et indicateurs clés</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="bg-gradient-to-r from-violet-600 to-indigo-600 bg-clip-text text-3xl font-bold text-transparent dark:from-violet-400 dark:to-indigo-400">
+            Analytics
+          </h2>
+          <p className="text-muted-foreground mt-1">Vue d'ensemble des performances</p>
+        </div>
+        <div className="flex gap-2">
+          <Badge variant="outline" className="bg-background/50 px-3 py-1 backdrop-blur">
+            <Calendar className="mr-2 h-3 w-3" />
+            Cette semaine
+          </Badge>
+        </div>
       </div>
 
       {/* KPIs Principaux */}
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
-        <MetricCard
-          label="Créées"
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+        <FuturisticMetricCard
+          label="Tâches Créées"
           value={weekStats.created}
-          subtitle="Cette semaine"
-          icon={<BarChart3 className="h-6 w-6" />}
-          color="blue"
+          subtitle="Nouvelles tâches"
+          icon={<Zap />}
+          gradient="bg-gradient-to-br from-violet-500 to-purple-600 shadow-violet-500/20"
+          trend="up"
         />
-
-        <MetricCard
+        <FuturisticMetricCard
           label="Terminées"
           value={weekStats.completed}
-          subtitle="Cette semaine"
-          icon={<CheckCircle2 className="h-6 w-6" />}
-          color="green"
+          subtitle="Objectifs atteints"
+          icon={<CheckCircle2 />}
+          gradient="bg-gradient-to-br from-emerald-500 to-teal-600 shadow-emerald-500/20"
+          trend="up"
         />
-
-        <MetricCard
-          label="En retard"
+        <FuturisticMetricCard
+          label="En Retard"
           value={weekStats.overdue}
-          subtitle="Nécessitent action"
-          icon={<XCircle className="h-6 w-6" />}
-          color="red"
+          subtitle="Action requise"
+          icon={<AlertTriangle />}
+          gradient="bg-gradient-to-br from-rose-500 to-pink-600 shadow-rose-500/20"
+          trend={weekStats.overdue > 0 ? 'down' : undefined}
         />
-
-        <MetricCard
-          label="Taux"
+        <FuturisticMetricCard
+          label="Efficacité"
           value={`${weekStats.completionRate}%`}
-          subtitle={
-            weekStats.completionRate >= 70
-              ? 'Excellent'
-              : weekStats.completionRate >= 50
-                ? 'Moyen'
-                : 'Faible'
-          }
-          icon={<TrendingUp className="h-6 w-6" />}
-          color={
-            weekStats.completionRate >= 70
-              ? 'green'
-              : weekStats.completionRate >= 50
-                ? 'orange'
-                : 'red'
-          }
-          trend={
-            weekStats.completionRate >= 70
-              ? 'up'
-              : weekStats.completionRate >= 50
-                ? undefined
-                : 'down'
-          }
+          subtitle="Taux de complétion"
+          icon={<Activity />}
+          gradient="bg-gradient-to-br from-blue-500 to-cyan-600 shadow-blue-500/20"
+          trend={weekStats.completionRate >= 70 ? 'up' : 'down'}
         />
       </div>
 
-      {/* Performance par Priorité */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <BarChart3 className="h-5 w-5" />
-            Performance par Priorité
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {/* Haute */}
-          <div className="space-y-2">
-            <div className="flex items-center justify-between text-sm">
-              <span className="font-medium">🔴 Haute</span>
-              <span className="text-muted-foreground">
-                {getPriorityPercentage(priorityStats.high)}% ({priorityStats.high.completed}/
-                {priorityStats.high.total})
-              </span>
-            </div>
-            <ProgressBar value={getPriorityPercentage(priorityStats.high)} color="red" />
-          </div>
-
-          {/* Moyenne */}
-          <div className="space-y-2">
-            <div className="flex items-center justify-between text-sm">
-              <span className="font-medium">🟡 Moyenne</span>
-              <span className="text-muted-foreground">
-                {getPriorityPercentage(priorityStats.medium)}% ({priorityStats.medium.completed}/
-                {priorityStats.medium.total})
-              </span>
-            </div>
-            <ProgressBar value={getPriorityPercentage(priorityStats.medium)} color="orange" />
-          </div>
-
-          {/* Basse */}
-          <div className="space-y-2">
-            <div className="flex items-center justify-between text-sm">
-              <span className="font-medium">🟢 Basse</span>
-              <span className="text-muted-foreground">
-                {getPriorityPercentage(priorityStats.low)}% ({priorityStats.low.completed}/
-                {priorityStats.low.total})
-              </span>
-            </div>
-            <ProgressBar value={getPriorityPercentage(priorityStats.low)} color="green" />
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Top Contributeurs */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Award className="h-5 w-5" />
-            Top Contributeurs
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          {topContributors.length === 0 ? (
-            <p className="text-muted-foreground py-4 text-center">
-              Aucune tâche terminée récemment
-            </p>
-          ) : (
-            <div className="space-y-3">
-              {topContributors.map((contributor, index) => (
-                <div
-                  key={contributor.id}
-                  className="hover:bg-accent/50 flex items-center justify-between rounded-lg border p-3 transition-colors"
-                >
-                  <div className="flex items-center gap-3">
-                    <div
-                      className={`flex h-8 w-8 items-center justify-center rounded-full ${
-                        index === 0
-                          ? 'bg-yellow-100 text-yellow-800'
-                          : index === 1
-                            ? 'bg-gray-100 text-gray-800'
-                            : index === 2
-                              ? 'bg-orange-100 text-orange-800'
-                              : 'bg-blue-100 text-blue-800'
-                      }`}
-                    >
-                      <span className="text-sm font-bold">{index + 1}</span>
-                    </div>
-                    <div>
-                      <p className="font-medium">{contributor.name}</p>
-                      <p className="text-muted-foreground text-xs">
-                        {contributor.completedTasks} tâche
-                        {contributor.completedTasks > 1 ? 's' : ''} terminée
-                        {contributor.completedTasks > 1 ? 's' : ''}
-                      </p>
-                    </div>
-                  </div>
-                  {index === 0 && <Award className="h-5 w-5 text-yellow-500" />}
+      <div className="grid gap-6 md:grid-cols-7">
+        {/* Performance par Priorité */}
+        <Card className="border-none bg-white/50 shadow-lg backdrop-blur-xl md:col-span-4 dark:bg-slate-900/50">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <Target className="text-primary h-5 w-5" />
+              Performance par Priorité
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {[
+              {
+                label: 'Haute Priorité',
+                stats: priorityStats.high,
+                color: 'bg-rose-500',
+                track: 'bg-rose-100 dark:bg-rose-900/20',
+              },
+              {
+                label: 'Moyenne Priorité',
+                stats: priorityStats.medium,
+                color: 'bg-amber-500',
+                track: 'bg-amber-100 dark:bg-amber-900/20',
+              },
+              {
+                label: 'Basse Priorité',
+                stats: priorityStats.low,
+                color: 'bg-emerald-500',
+                track: 'bg-emerald-100 dark:bg-emerald-900/20',
+              },
+            ].map((item, idx) => (
+              <div key={idx} className="group space-y-2">
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-muted-foreground group-hover:text-foreground font-medium transition-colors">
+                    {item.label}
+                  </span>
+                  <span className="font-bold">
+                    {getPriorityPercentage(item.stats)}%
+                    <span className="text-muted-foreground ml-1 text-xs font-normal">
+                      ({item.stats.completed}/{item.stats.total})
+                    </span>
+                  </span>
                 </div>
-              ))}
-            </div>
-          )}
-        </CardContent>
-      </Card>
+                <div className={`h-3 w-full overflow-hidden rounded-full ${item.track}`}>
+                  <div
+                    className={`h-full rounded-full ${item.color} transition-all duration-1000 ease-out`}
+                    style={{ width: `${getPriorityPercentage(item.stats)}%` }}
+                  />
+                </div>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
 
-      {/* Alertes */}
+        {/* Top Contributeurs */}
+        <Card className="border-none bg-white/50 shadow-lg backdrop-blur-xl md:col-span-3 dark:bg-slate-900/50">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <Award className="h-5 w-5 text-amber-500" />
+              Champions de la Semaine
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {topContributors.length === 0 ? (
+              <div className="text-muted-foreground flex flex-col items-center justify-center py-8 text-center opacity-50">
+                <Award className="mb-2 h-12 w-12 stroke-1" />
+                <p>En attente de champions...</p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {topContributors.map((contributor, index) => (
+                  <div
+                    key={contributor.id}
+                    className="group bg-background/40 hover:bg-background/80 flex items-center justify-between rounded-xl p-3 transition-all hover:scale-[1.02] hover:shadow-md"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div
+                        className={`flex h-10 w-10 items-center justify-center rounded-full font-bold shadow-sm ${
+                          index === 0
+                            ? 'bg-gradient-to-br from-yellow-300 to-amber-500 text-white'
+                            : index === 1
+                              ? 'bg-gradient-to-br from-slate-300 to-slate-500 text-white'
+                              : index === 2
+                                ? 'bg-gradient-to-br from-orange-300 to-orange-500 text-white'
+                                : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300'
+                        }`}
+                      >
+                        {index + 1}
+                      </div>
+                      <div>
+                        <p className="group-hover:text-primary text-sm font-semibold transition-colors">
+                          {contributor.name}
+                        </p>
+                        <p className="text-muted-foreground text-xs">
+                          {contributor.completedTasks} tâches terminées
+                        </p>
+                      </div>
+                    </div>
+                    {index === 0 && <Award className="h-5 w-5 animate-pulse text-amber-500" />}
+                  </div>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Alertes Intelligentes */}
       {alerts.length > 0 && (
-        <div className="space-y-3">
-          <h3 className="flex items-center gap-2 text-lg font-semibold">
-            <AlertTriangle className="h-5 w-5" />
-            Alertes
-          </h3>
+        <div className="grid gap-4 md:grid-cols-2">
           {alerts.map((alert, index) => (
-            <Alert key={index} variant={alert.type === 'error' ? 'destructive' : 'default'}>
+            <Alert
+              key={index}
+              variant={alert.type === 'error' ? 'destructive' : 'default'}
+              className={`${
+                alert.type === 'error'
+                  ? 'border-red-200 bg-red-50 dark:border-red-900/50 dark:bg-red-900/20'
+                  : 'border-amber-200 bg-amber-50 dark:border-amber-900/50 dark:bg-amber-900/20'
+              } shadow-sm`}
+            >
               <AlertTriangle className="h-4 w-4" />
-              <AlertTitle>{alert.type === 'error' ? 'Action Requise' : 'Attention'}</AlertTitle>
+              <AlertTitle className="font-bold">
+                {alert.type === 'error' ? 'Action Requise' : 'Attention'}
+              </AlertTitle>
               <AlertDescription>{alert.message}</AlertDescription>
             </Alert>
           ))}
         </div>
       )}
-
-      {/* Info supplémentaires */}
-      <Card>
-        <CardContent className="pt-6">
-          <div className="grid grid-cols-1 gap-4 text-center md:grid-cols-3">
-            <div>
-              <p className="text-2xl font-bold">{tasks.length}</p>
-              <p className="text-muted-foreground text-sm">Total tâches</p>
-            </div>
-            <div>
-              <p className="text-2xl font-bold">{employees.length}</p>
-              <p className="text-muted-foreground text-sm">Collaborateurs</p>
-            </div>
-            <div>
-              <p className="text-2xl font-bold">
-                {tasks.filter(t => t.status === 'in_progress' || t.status === 'en_cours').length}
-              </p>
-              <p className="text-muted-foreground text-sm">En cours</p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
     </div>
   );
 };

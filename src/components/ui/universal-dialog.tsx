@@ -111,14 +111,9 @@ function MobileDialogWrapper({
 
   return (
     <Drawer open={isOpen} onOpenChange={handleOpenChange}>
-      <DrawerContent
-        className={cn('max-h-[90vh]', theme.bodyBg, theme.border, theme.transition, className)}
-      >
-        {/* Barre de glisse (drag indicator) */}
-        <div className="bg-muted mx-auto mt-2 h-1.5 w-16 rounded-full" />
-
-        {/* Contenu avec thème */}
-        <div className={cn('flex flex-1 flex-col overflow-hidden', theme.bodyBg)}>
+      <DrawerContent className={cn('p-0', className)}>
+        {/* Contenu avec thème - SIMPLIFIÉ pour mobile */}
+        <div className="flex h-full max-h-[90vh] flex-col overflow-hidden">
           <MobileDialogContent theme={theme}>{dialogContent}</MobileDialogContent>
         </div>
       </DrawerContent>
@@ -127,7 +122,7 @@ function MobileDialogWrapper({
 }
 
 /**
- * Transforme DialogContent → Contenu Drawer stylisé
+ * Transforme DialogContent → Contenu Drawer stylisé pour mobile
  */
 function MobileDialogContent({
   theme,
@@ -138,12 +133,11 @@ function MobileDialogContent({
 }) {
   // Extrait DialogContent
   const contentChild = React.Children.toArray(children).find(
-    child =>
-      React.isValidElement(child) && (child.type as any)?.displayName?.includes('DialogContent')
+    child => React.isValidElement(child) && (child.type as any)?.displayName === 'DialogContent'
   ) as React.ReactElement | undefined;
 
   if (!contentChild) {
-    return <div className="p-4">{children}</div>;
+    return <div className="text-foreground p-6">{children}</div>;
   }
 
   const contentChildren = contentChild.props.children;
@@ -151,13 +145,11 @@ function MobileDialogContent({
 
   // Extrait Header, Body, Footer
   const header = childrenArray.find(
-    child =>
-      React.isValidElement(child) && (child.type as any)?.displayName?.includes('DialogHeader')
+    child => React.isValidElement(child) && (child.type as any)?.displayName === 'DialogHeader'
   ) as React.ReactElement | undefined;
 
   const footer = childrenArray.find(
-    child =>
-      React.isValidElement(child) && (child.type as any)?.displayName?.includes('DialogFooter')
+    child => React.isValidElement(child) && (child.type as any)?.displayName === 'DialogFooter'
   ) as React.ReactElement | undefined;
 
   const body = childrenArray.filter(child => child !== header && child !== footer);
@@ -170,29 +162,27 @@ function MobileDialogContent({
     const headerChildren = React.Children.toArray((header as React.ReactElement).props.children);
 
     title = headerChildren.find(
-      child =>
-        React.isValidElement(child) && (child.type as any)?.displayName?.includes('DialogTitle')
+      child => React.isValidElement(child) && (child.type as any)?.displayName === 'DialogTitle'
     );
 
     description = headerChildren.find(
       child =>
-        React.isValidElement(child) &&
-        (child.type as any)?.displayName?.includes('DialogDescription')
+        React.isValidElement(child) && (child.type as any)?.displayName === 'DialogDescription'
     );
   }
 
   return (
     <>
-      {/* Header Mobile */}
+      {/* Header Mobile - Fixe en haut */}
       {header && (
-        <div className={cn('border-b px-4 py-4', theme.border, theme.headerBg)}>
+        <div className="bg-background flex-shrink-0 border-b px-4 py-4">
           {title && (
-            <div className={cn('text-xl font-bold', theme.iconColor, theme.transition)}>
+            <div className="text-foreground text-lg font-bold">
               {(title as React.ReactElement).props.children}
             </div>
           )}
           {description && (
-            <div className="text-muted-foreground mt-1 text-sm">
+            <div className="text-muted-foreground mt-1.5 text-sm">
               {(description as React.ReactElement).props.children}
             </div>
           )}
@@ -200,11 +190,13 @@ function MobileDialogContent({
       )}
 
       {/* Body Mobile - Scrollable */}
-      <div className="flex-1 overflow-y-auto px-4 py-4">{body}</div>
+      <div className="bg-background text-foreground flex-1 overflow-y-auto px-4 py-4">{body}</div>
 
-      {/* Footer Mobile */}
+      {/* Footer Mobile - Fixe en bas */}
       {footer && (
-        <div className="border-t px-4 py-4">{(footer as React.ReactElement).props.children}</div>
+        <div className="bg-background flex-shrink-0 border-t px-4 py-4">
+          {(footer as React.ReactElement).props.children}
+        </div>
       )}
     </>
   );

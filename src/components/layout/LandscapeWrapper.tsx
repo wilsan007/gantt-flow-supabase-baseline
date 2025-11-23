@@ -50,14 +50,14 @@ export const LandscapeWrapper: React.FC<LandscapeWrapperProps> = ({
   const { shouldForceOrientation, dismissView } = useOrientationPreference();
 
   // Sur desktop, toujours afficher le contenu
-  if (deviceType === 'desktop') {
-    return <>{children}</>;
-  }
+  // if (deviceType === 'desktop') {
+  return <>{children}</>;
+  // }
 
   // Vérifier les préférences utilisateur
-  if (viewType && !shouldForceOrientation(viewType)) {
-    return <>{children}</>;
-  }
+  // if (viewType && !shouldForceOrientation(viewType)) {
+  //   return <>{children}</>;
+  // }
 
   // Sur tablette, vérifier si on force la rotation
   if (deviceType === 'tablet' && !forceOnTablet) {

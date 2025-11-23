@@ -9,7 +9,7 @@
  * - Transitions fluides
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 // 🚀 OPTIMISATION BUNDLE - Import depuis barrel export optimisé
 import { Menu, X, Building2 } from '@/lib/icons';
@@ -24,6 +24,8 @@ import { SimpleUserMenu } from '@/components/user/SimpleUserMenu';
 import { supabase } from '@/integrations/supabase/client';
 import { useUserRoles } from '@/hooks/useUserRoles';
 import { useTenant } from '@/contexts/TenantContext';
+import { useScrollDirection } from '@/hooks/use-scroll-direction';
+import { useIsMobileLayout } from '@/hooks/use-mobile';
 
 interface AppLayoutWithSidebarProps {
   children: React.ReactNode;
@@ -52,6 +54,13 @@ export const AppLayoutWithSidebar: React.FC<AppLayoutWithSidebarProps> = ({
   const tenantName = currentTenant?.name;
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
+
+  // Ref vers le conteneur scrollable principal
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+  // Détection du scroll et du layout mobile pour cacher les éléments UI
+  const { isScrollingDown } = useScrollDirection(scrollContainerRef);
+  const isMobile = useIsMobileLayout(); // < 1024px pour layout (portrait + paysage)
 
   // Fermer le menu lors du changement de route
   useEffect(() => {
@@ -122,36 +131,17 @@ export const AppLayoutWithSidebar: React.FC<AppLayoutWithSidebarProps> = ({
       )}
 
       {/* Main Content Area */}
-      <div className="flex flex-1 flex-col overflow-y-auto">
-        {/* Header Mobile/Tablet - SIMPLIFIÉ SANS AVATAR */}
-        <header className="bg-background/95 sticky top-0 z-[70] border-b backdrop-blur-sm lg:hidden">
-          <div className="flex items-center gap-3 px-3 py-2.5">
-            {/* Menu Hamburger */}
-            <Button
-              variant="ghost"
-              size="icon"
-              className="hover:bg-accent h-9 w-9 shrink-0"
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              aria-label={isMobileMenuOpen ? 'Fermer le menu' : 'Ouvrir le menu'}
-            >
-              {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-            </Button>
-
-            {/* Logo/Nom du tenant */}
-            <div className="flex flex-1 items-center gap-2">
-              {currentTenant?.logo_url ? (
-                <img
-                  src={currentTenant.logo_url}
-                  alt={tenantName || ''}
-                  className="h-7 w-7 rounded object-contain"
-                />
-              ) : (
-                <Building2 className="text-primary h-5 w-5" />
-              )}
-              <span className="truncate text-sm font-semibold">{tenantName || 'Wadashaqayn'}</span>
-            </div>
-          </div>
-        </header>
+      <div ref={scrollContainerRef} className="flex flex-1 flex-col overflow-y-auto">
+        {/* Menu Hamburger Floating - TOUJOURS VISIBLE en mode mobile */}
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          className={`bg-background/95 border-border border-border hover:bg-accent fixed top-4 left-4 z-[80] h-10 w-10 rounded-full border border-2 shadow-lg backdrop-blur-sm transition-all duration-200 hover:scale-110 lg:hidden`}
+          aria-label={isMobileMenuOpen ? 'Fermer le menu' : 'Ouvrir le menu'}
+        >
+          {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+        </Button>
 
         {/* Header Desktop (optionnel - pour actions supplémentaires) */}
         <header className="bg-background/95 supports-[backdrop-filter]:bg-background/60 sticky top-0 z-30 hidden border-b backdrop-blur lg:block">

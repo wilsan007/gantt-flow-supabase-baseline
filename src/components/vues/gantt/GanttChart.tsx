@@ -7,7 +7,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { GanttHeader } from '../gantt/GanttHeader';
 import { GanttTimeline } from '../gantt/GanttTimeline';
 import { GanttLoadingState, GanttErrorState } from '../gantt/GanttStates';
-import { MobileGanttChart } from '../responsive/MobileGanttChart';
+// import { MobileGanttChart } from '../responsive/MobileGanttChart';
 import { ProjectProgressBar } from '../gantt/ProjectProgressBar';
 import { useGanttDrag } from '@/hooks/useGanttDrag';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
@@ -32,6 +32,7 @@ import { assignProjectColors, getTaskColor, ProjectColorMap } from '@/lib/ganttC
 const GanttChart = () => {
   const { toast } = useToast();
   const [viewMode, setViewMode] = useState<ViewMode>('week');
+
   const [displayMode, setDisplayMode] = useState<'tasks' | 'projects'>('tasks');
   const [filters, setFilters] = useState<TaskFilters>({
     search: '',
@@ -408,26 +409,6 @@ const GanttChart = () => {
       };
     }
   }, [draggedTask, resizeTask, handleMouseMove, handleMouseUp]);
-
-  if (loading || (displayMode === 'projects' && projectsLoading)) {
-    return <GanttLoadingState />;
-  }
-
-  if (error || (displayMode === 'projects' && projectsError)) {
-    return <GanttErrorState error={error || projectsError} />;
-  }
-
-  // Use mobile version on small screens
-  if (isMobile) {
-    return (
-      <MobileGanttChart
-        tasks={ganttTasks}
-        loading={loading}
-        error={error}
-        updateTaskDates={handleUpdateTaskDates}
-      />
-    );
-  }
 
   return (
     <>

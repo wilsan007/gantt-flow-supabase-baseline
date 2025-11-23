@@ -364,7 +364,90 @@ export default function AuthCallback() {
                 await handleTenantOwnerOnboarding(session, email);
                 return;
               } else if (invitation === 'true') {
-                console.log('⚠️ Ancien format invitation détecté');
+                console.log('');
+                console.log('🔍 ════════════════════════════════════════');
+                console.log('🔍 ANCIEN FORMAT: invitation=true');
+                console.log('🔍 ════════════════════════════════════════');
+                console.log("🔄 Vérification du type d'invitation en base...");
+                console.log('');
+
+                // Vérifier le type d'invitation en base de données
+                const { data: invitationRecord, error: invitationError } = await supabase
+                  .from('invitations')
+                  .select('invitation_type')
+                  .eq('email', email || session.user.email)
+                  .eq('status', 'pending')
+                  .order('created_at', { ascending: false })
+                  .limit(1)
+                  .single();
+
+                if (!invitationError && invitationRecord) {
+                  console.log('✅ Type détecté en base:', invitationRecord.invitation_type);
+
+                  if (invitationRecord.invitation_type === 'tenant_owner') {
+                    console.log('');
+                    console.log('👑 ════════════════════════════════════════');
+                    console.log('👑 DÉTECTÉ: TENANT OWNER (ancien format)');
+                    console.log('👑 ════════════════════════════════════════');
+                    console.log('🔄 Appel de la fonction onboard-tenant-owner');
+                    console.log('');
+
+                    setStatus('Création de votre organisation...');
+                    await handleTenantOwnerOnboarding(session, email);
+                    return;
+                  } else if (invitationRecord.invitation_type === 'collaborator') {
+                    console.log('');
+                    console.log('👥 ════════════════════════════════════════');
+                    console.log('👥 DÉTECTÉ: COLLABORATEUR (ancien format)');
+                    console.log('👥 ════════════════════════════════════════');
+                    console.log('');
+
+                    setStatus('Bienvenue ! Configuration de votre compte collaborateur...');
+
+                    try {
+                      const resp = await fetch(
+                        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/handle-collaborator-confirmation`,
+                        {
+                          method: 'POST',
+                          headers: {
+                            Authorization: `Bearer ${session.access_token}`,
+                            'Content-Type': 'application/json',
+                          },
+                          body: JSON.stringify({
+                            user_id: session.user.id,
+                            email: session.user.email,
+                          }),
+                        }
+                      );
+
+                      if (!resp.ok) {
+                        const errorText = await resp.text();
+                        console.error('❌ Erreur Edge Function:', errorText);
+                        throw new Error(errorText);
+                      }
+
+                      const data = await resp.json();
+                      console.log('✅ PROFIL COLLABORATEUR CRÉÉ !');
+                      setStatus('✅ Configuration terminée ! Redirection...');
+
+                      setTimeout(() => {
+                        console.log('→ Redirection vers /dashboard');
+                        navigate('/dashboard');
+                      }, 1500);
+
+                      return;
+                    } catch (error: any) {
+                      console.error('❌ ERREUR CRÉATION PROFIL COLLABORATEUR:', error.message);
+                      setStatus('❌ Erreur lors de la configuration. Veuillez réessayer.');
+                      setTimeout(() => {
+                        navigate('/');
+                      }, 3000);
+                      return;
+                    }
+                  }
+                }
+
+                console.log('⚠️ Type invitation non détecté, flux standard...');
                 setStatus('✅ Invitation traitée ! Configuration en cours...');
                 await processUserSession(session);
                 return;
@@ -382,9 +465,14 @@ export default function AuthCallback() {
           // Si erreur de confirmation mais c'est une invitation, rediriger vers connexion
           if (error_code === 'unexpected_failure') {
             console.log('⚠️ Erreur confirmation, redirection connexion avec email...');
-            setStatus('Redirection vers la connexion...');
+            if (error_description) {
+              console.error('❌ Description erreur Supabase:', error_description);
+            }
+            setStatus('Lien invalide ou expiré. Redirection vers la connexion...');
             setTimeout(() => {
-              navigate(`/?email=${encodeURIComponent(email || '')}&invitation=true`);
+              // Rediriger vers /login pour que l'utilisateur puisse se connecter manuellement
+              // avec le mot de passe temporaire reçu par email
+              navigate(`/login?email=${encodeURIComponent(email || '')}&error=invitation_failed`);
             }, 2000);
             return;
           }

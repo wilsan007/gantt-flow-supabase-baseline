@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import {
   ArrowRight,
@@ -16,7 +16,7 @@ import {
   MessageCircle,
   TrendingUp,
 } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 
 // Module Card Component
 interface ModuleCardProps {
@@ -56,6 +56,18 @@ function ModuleCard({ icon, title, description, status, color }: ModuleCardProps
 export default function LandingPage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'quarterly' | 'yearly'>('monthly');
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  // Redirection automatique si on détecte une invitation sur la page d'accueil
+  // (Cas où Supabase redirige vers la Site URL au lieu de /auth/callback)
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    if (params.get('invitation') === 'true') {
+      console.log('🔄 Redirection invitation détectée vers /auth/callback');
+      navigate(`/auth/callback${location.search}${location.hash}`);
+    }
+  }, [location, navigate]);
 
   const pricingMultiplier = {
     monthly: 1,

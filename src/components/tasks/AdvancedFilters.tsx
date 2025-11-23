@@ -36,6 +36,8 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
+import { useScrollDirection } from '@/hooks/use-scroll-direction';
+import { useIsMobileLayout } from '@/hooks/use-mobile';
 
 export interface TaskFilters {
   search: string;
@@ -88,6 +90,10 @@ export const AdvancedFilters = ({
 }: AdvancedFiltersProps) => {
   const [filters, setFilters] = useState<TaskFilters>(defaultFilters);
   const [isOpen, setIsOpen] = useState(false);
+
+  // Détection du scroll et du layout mobile pour cacher les filtres
+  const { isScrollingDown } = useScrollDirection();
+  const isMobile = useIsMobileLayout(); // < 1024px pour layout
 
   // Charger les filtres depuis localStorage au montage
   useEffect(() => {
@@ -142,7 +148,9 @@ export const AdvancedFilters = ({
   const hasActiveFilters = activeFiltersCount > 0 || filters.search.length > 0;
 
   return (
-    <div className="space-y-3">
+    <div
+      className={`space-y-3 transition-all duration-300 ease-in-out ${isMobile && isScrollingDown ? 'h-0 overflow-hidden opacity-0' : 'h-auto opacity-100'} `}
+    >
       {/* Barre de recherche + Bouton filtres */}
       <div className="flex flex-col gap-3 sm:flex-row">
         {/* Recherche textuelle */}

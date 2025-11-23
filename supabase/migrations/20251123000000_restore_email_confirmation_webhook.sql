@@ -57,9 +57,12 @@ BEGIN
         -- Récupérer la clé service_role depuis les paramètres
         service_role_key := current_setting('app.settings.service_role_key', true);
         
-        -- Si pas de clé, utiliser celle par défaut (ATTENTION: à remplacer en production)
+        -- Clé par défaut pour le développement local
+        -- ATTENTION : Ne jamais commiter de vraies clés ici.
+        -- En local, assurez-vous que app.settings.service_role_key est défini dans postgresql.conf ou via ALTER SYSTEM
+        -- Sinon, le header Authorization sera vide ou incorrect, ce qui est préférable à une fuite de secret.
         IF service_role_key IS NULL THEN
-          service_role_key := 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU';
+          service_role_key := 'SERVICE_ROLE_KEY_NOT_SET'; 
         END IF;
         
         SELECT * INTO http_result

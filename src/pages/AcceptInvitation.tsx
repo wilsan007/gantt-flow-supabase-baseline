@@ -67,6 +67,15 @@ export default function AcceptInvitation() {
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email: invitation.email,
         password: password,
+        options: {
+          data: {
+            invitation_type: invitation.invitation_type,
+            invitation_id: invitation.id, // CRITICAL: Required for collaborator lookup
+            tenant_id: invitation.tenant_id,
+            full_name: invitation.full_name,
+            company_name: invitation.tenant_name,
+          },
+        },
       });
 
       if (authError) throw authError;

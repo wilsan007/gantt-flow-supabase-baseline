@@ -54,11 +54,44 @@ serve(async req => {
 
     console.log(`✅ Email confirmation detected for user: ${newUser.id} (${newUser.email})`);
 
-    // 4. Check if it's a Tenant Owner invitation
+    // 4. Check Invitation Type & Dispatch
     const metadata = newUser.raw_user_meta_data || {};
+
+    // A. Dispatch to Collaborator Handler
+    if (metadata.invitation_type === 'collaborator') {
+      console.log('🔀 Dispatching to handle-collaborator-confirmation...');
+
+      // Construct URL for the other function
+      // We assume they are in the same project, so we can use the same base URL logic or env vars
+      const projectUrl = Deno.env.get('SUPABASE_URL');
+      // Extract project ref from URL (e.g. https://xyz.supabase.co -> xyz)
+      // Or just append /functions/v1/handle-collaborator-confirmation if it's the standard structure
+
+      // Robust way: Use the same host as the current request if possible, or build from SUPABASE_URL
+      const targetUrl = `${projectUrl}/functions/v1/handle-collaborator-confirmation`;
+
+      const response = await fetch(targetUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: req.headers.get('Authorization') || '', // Pass through the key
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const result = await response.json();
+      console.log('✅ Collaborator handler response:', response.status, result);
+
+      return new Response(JSON.stringify(result), {
+        status: response.status,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    // B. Handle Tenant Owner (Default Logic)
     if (metadata.invitation_type !== 'tenant_owner') {
-      console.log('⏭️ Not a tenant_owner invitation');
-      return new Response(JSON.stringify({ message: 'Ignored: Not a tenant_owner' }), {
+      console.log('⏭️ Unknown invitation type:', metadata.invitation_type);
+      return new Response(JSON.stringify({ message: 'Ignored: Unknown type' }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }

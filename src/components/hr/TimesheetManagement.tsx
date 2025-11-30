@@ -13,12 +13,12 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
+  ResponsiveModal,
+  ResponsiveModalContent,
+  ResponsiveModalHeader,
+  ResponsiveModalTitle,
+  ResponsiveModalTrigger,
+} from '@/components/ui/responsive-modal';
 import { Label } from '@/components/ui/label';
 import { Plus, Clock, Check, X, Calendar } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -30,15 +30,19 @@ import { useEffect } from 'react';
 interface Timesheet {
   id: string;
   employee_id: string;
-  date: string;
-  hours: number;
-  description?: string;
-  project_id?: string;
-  task_id?: string;
-  billable: boolean;
-  approved: boolean;
-  approved_by?: string;
+  week_start_date: string; // Real DB schema
+  week_end_date: string;
+  total_hours: number;
+  regular_hours: number;
+  overtime_hours: number;
+  status: 'draft' | 'submitted' | 'approved' | 'rejected';
+  notes?: string | null;
+  submitted_at?: string | null;
+  approved_by?: string | null;
+  approved_at?: string | null;
+  rejection_reason?: string | null;
   created_at: string;
+  updated_at: string;
 }
 
 interface Employee {
@@ -68,15 +72,15 @@ export const TimesheetManagement = () => {
       setLoading(true);
 
       const [timesheetsRes, employeesRes] = await Promise.all([
-        supabase.from('timesheets').select('*').order('date', { ascending: false }),
+        supabase.from('timesheets').select('*').order('week_start_date', { ascending: false }),
         supabase.from('profiles').select('id, full_name'),
       ]);
 
       if (timesheetsRes.error) throw timesheetsRes.error;
       if (employeesRes.error) throw employeesRes.error;
 
-      setTimesheets(timesheetsRes.data || []);
-      setEmployees(employeesRes.data || []);
+      setTimesheets((timesheetsRes.data as unknown as Timesheet[]) || []);
+      setEmployees((employeesRes.data as unknown as Employee[]) || []);
     } catch (error: any) {
       console.error('Error fetching data:', error);
       toast({
@@ -97,13 +101,15 @@ export const TimesheetManagement = () => {
     try {
       const timesheetData = {
         employee_id: data.employee_id,
-        date: data.date,
-        hours: parseFloat(data.hours),
-        description: data.description || null,
-        billable: data.billable || false,
-        approved: false,
+        week_start_date: data.week_start_date, // Changed from 'date' to 'week_start_date'
+        total_hours: parseFloat(data.total_hours), // Changed from 'hours' to 'total_hours'
+        regular_hours: parseFloat(data.regular_hours),
+        overtime_hours: parseFloat(data.overtime_hours),
+        notes: data.notes || null, // Changed from 'description' to 'notes'
+        status: 'draft', // Assuming new timesheets start as draft
       };
 
+      // @ts-expect-error - Supabase types are outdated, using real DB schema
       const { error } = await supabase.from('timesheets').insert(timesheetData);
 
       if (error) throw error;
@@ -128,9 +134,10 @@ export const TimesheetManagement = () => {
 
   const approveTimesheet = async (timesheetId: string) => {
     try {
+      // @ts-expect-error - Supabase types are outdated, using real DB schema
       const { error } = await supabase
         .from('timesheets')
-        .update({ approved: true })
+        .update({ status: 'approved', approved_at: new Date().toISOString() }) // Changed from 'approved' to 'status'
         .eq('id', timesheetId);
 
       if (error) throw error;
@@ -153,9 +160,10 @@ export const TimesheetManagement = () => {
 
   const rejectTimesheet = async (timesheetId: string) => {
     try {
+      // @ts-expect-error - Supabase types are outdated, using real DB schema
       const { error } = await supabase
         .from('timesheets')
-        .update({ approved: false })
+        .update({ status: 'rejected', rejection_reason: 'Rejected by manager' }) // Changed from 'approved' to 'status'
         .eq('id', timesheetId);
 
       if (error) throw error;
@@ -177,7 +185,7 @@ export const TimesheetManagement = () => {
   };
 
   const filteredTimesheets = timesheets.filter(timesheet => {
-    const timesheetDate = new Date(timesheet.date);
+    const timesheetDate = new Date(timesheet.week_start_date);
     const weekStart = new Date(selectedWeek);
     const weekEnd = new Date(weekStart);
     weekEnd.setDate(weekStart.getDate() + 6);
@@ -196,73 +204,99 @@ export const TimesheetManagement = () => {
           Feuilles de Temps
         </h2>
 
-        <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-          <DialogTrigger asChild>
+        <ResponsiveModal open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+          <ResponsiveModalTrigger asChild>
             <Button className="hover-glow">
               <Plus className="mr-2 h-4 w-4" />
-              Nouvelle feuille
+              Nouvelle Feuille
             </Button>
-          </DialogTrigger>
-          <DialogContent className="max-w-md">
-            <DialogHeader>
-              <DialogTitle>Créer une feuille de temps</DialogTitle>
-            </DialogHeader>
+          </ResponsiveModalTrigger>
+          <ResponsiveModalContent className="max-w-2xl">
+            <ResponsiveModalHeader>
+              <ResponsiveModalTitle>Créer une feuille de temps</ResponsiveModalTitle>
+            </ResponsiveModalHeader>
+            {/* Form implementation would go here - currently simplified */}
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-              <div>
-                <Label htmlFor="employee_id">Employé</Label>
-                <Select onValueChange={value => setValue('employee_id', value)}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Sélectionner un employé" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {employees.map(employee => (
-                      <SelectItem key={employee.id} value={employee.id}>
-                        {employee.full_name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="employee_id">Employé</Label>
+                  <Select onValueChange={value => setValue('employee_id', value)} required>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Sélectionner un employé" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {employees.map(emp => (
+                        <SelectItem key={emp.id} value={emp.id}>
+                          {emp.full_name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="week_start_date">Début de semaine</Label>
+                  <Input
+                    id="week_start_date"
+                    type="date"
+                    {...register('week_start_date', { required: true })}
+                  />
+                </div>
               </div>
 
-              <div>
-                <Label htmlFor="date">Date</Label>
-                <Input
-                  id="date"
-                  type="date"
-                  defaultValue={new Date().toISOString().split('T')[0]}
-                  {...register('date', { required: true })}
-                />
+              <div className="grid grid-cols-3 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="regular_hours">Heures Normales</Label>
+                  <Input
+                    id="regular_hours"
+                    type="number"
+                    step="0.5"
+                    {...register('regular_hours', { required: true, min: 0 })}
+                    onChange={e => {
+                      const regular = parseFloat(e.target.value) || 0;
+                      // @ts-ignore
+                      const overtime =
+                        parseFloat(document.getElementById('overtime_hours')?.value) || 0;
+                      setValue('total_hours', regular + overtime);
+                    }}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="overtime_hours">Heures Supp.</Label>
+                  <Input
+                    id="overtime_hours"
+                    type="number"
+                    step="0.5"
+                    {...register('overtime_hours', { required: true, min: 0 })}
+                    onChange={e => {
+                      const overtime = parseFloat(e.target.value) || 0;
+                      // @ts-ignore
+                      const regular =
+                        parseFloat(document.getElementById('regular_hours')?.value) || 0;
+                      setValue('total_hours', regular + overtime);
+                    }}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="total_hours">Total</Label>
+                  <Input
+                    id="total_hours"
+                    type="number"
+                    readOnly
+                    className="bg-muted"
+                    {...register('total_hours')}
+                  />
+                </div>
               </div>
 
-              <div>
-                <Label htmlFor="hours">Heures travaillées</Label>
-                <Input
-                  id="hours"
-                  type="number"
-                  step="0.25"
-                  placeholder="8"
-                  {...register('hours', { required: true, min: 0 })}
-                />
+              <div className="space-y-2">
+                <Label htmlFor="notes">Notes</Label>
+                <Textarea id="notes" placeholder="Activités réalisées..." {...register('notes')} />
               </div>
 
-              <div>
-                <Label htmlFor="description">Description (optionnel)</Label>
-                <Textarea
-                  id="description"
-                  placeholder="Description du travail effectué..."
-                  {...register('description')}
-                />
-              </div>
-
-              <div className="flex items-center justify-between">
-                <Label htmlFor="billable">Facturable</Label>
-                <Switch id="billable" onCheckedChange={checked => setValue('billable', checked)} />
-              </div>
-
-              <div className="flex gap-2">
-                <Button type="submit" className="flex-1">
-                  Créer
-                </Button>
+              <div className="flex justify-end gap-2 pt-4">
                 <Button
                   type="button"
                   variant="outline"
@@ -270,17 +304,21 @@ export const TimesheetManagement = () => {
                 >
                   Annuler
                 </Button>
+                <Button type="submit">Créer la feuille</Button>
               </div>
             </form>
-          </DialogContent>
-        </Dialog>
+          </ResponsiveModalContent>
+        </ResponsiveModal>
       </div>
 
-      {/* Week Filter */}
+      {/* Week Selector */}
       <div className="flex items-center gap-4">
-        <Label>Semaine du :</Label>
+        <Label htmlFor="week-select" className="text-sm font-medium">
+          Semaine:
+        </Label>
         <Input
-          type="date"
+          id="week-select"
+          type="week"
           value={selectedWeek}
           onChange={e => setSelectedWeek(e.target.value)}
           className="w-48"
@@ -293,7 +331,7 @@ export const TimesheetManagement = () => {
           <CardContent className="p-4">
             <div className="text-center">
               <div className="text-primary text-2xl font-bold">
-                {filteredTimesheets.reduce((sum, ts) => sum + ts.hours, 0).toFixed(1)}h
+                {filteredTimesheets.reduce((sum, ts) => sum + (ts.total_hours || 0), 0).toFixed(1)}h
               </div>
               <div className="text-muted-foreground text-sm">Heures totales</div>
             </div>
@@ -305,12 +343,11 @@ export const TimesheetManagement = () => {
             <div className="text-center">
               <div className="text-success text-2xl font-bold">
                 {filteredTimesheets
-                  .filter(ts => ts.billable)
-                  .reduce((sum, ts) => sum + ts.hours, 0)
+                  .reduce((sum, ts) => sum + (ts.regular_hours || 0), 0)
                   .toFixed(1)}
                 h
               </div>
-              <div className="text-muted-foreground text-sm">Facturables</div>
+              <div className="text-muted-foreground text-sm">Heures normales</div>
             </div>
           </CardContent>
         </Card>
@@ -319,7 +356,7 @@ export const TimesheetManagement = () => {
           <CardContent className="p-4">
             <div className="text-center">
               <div className="text-warning text-2xl font-bold">
-                {filteredTimesheets.filter(ts => !ts.approved).length}
+                {filteredTimesheets.filter(ts => ts.status !== 'approved').length}
               </div>
               <div className="text-muted-foreground text-sm">En attente</div>
             </div>
@@ -330,7 +367,7 @@ export const TimesheetManagement = () => {
           <CardContent className="p-4">
             <div className="text-center">
               <div className="text-accent text-2xl font-bold">
-                {filteredTimesheets.filter(ts => ts.approved).length}
+                {filteredTimesheets.filter(ts => ts.status === 'approved').length}
               </div>
               <div className="text-muted-foreground text-sm">Approuvées</div>
             </div>
@@ -349,7 +386,7 @@ export const TimesheetManagement = () => {
           </Card>
         ) : (
           filteredTimesheets.map(timesheet => {
-            const employee = employees.find(emp => emp.user_id === timesheet.employee_id);
+            const employee = employees.find(emp => emp.id === timesheet.employee_id);
 
             return (
               <Card key={timesheet.id} className="modern-card hover-glow">
@@ -362,28 +399,36 @@ export const TimesheetManagement = () => {
                         <h3 className="text-lg font-semibold">
                           {employee?.full_name || 'Employé inconnu'}
                         </h3>
-                        <Badge variant={timesheet.approved ? 'default' : 'secondary'}>
-                          {timesheet.approved ? 'Approuvée' : 'En attente'}
+                        <Badge variant={timesheet.status === 'approved' ? 'default' : 'secondary'}>
+                          {timesheet.status === 'approved'
+                            ? 'Approuvée'
+                            : timesheet.status === 'submitted'
+                              ? 'Soumise'
+                              : timesheet.status === 'rejected'
+                                ? 'Rejetée'
+                                : 'Brouillon'}
                         </Badge>
-                        {timesheet.billable && <Badge variant="outline">Facturable</Badge>}
                       </div>
 
                       <div className="text-muted-foreground space-y-1 text-sm">
                         <p>
-                          <strong>Date:</strong> {new Date(timesheet.date).toLocaleDateString()}
+                          <strong>Semaine du:</strong>{' '}
+                          {new Date(timesheet.week_start_date).toLocaleDateString()} au{' '}
+                          {new Date(timesheet.week_end_date).toLocaleDateString()}
                         </p>
                         <p>
-                          <strong>Heures:</strong> {timesheet.hours}h
+                          <strong>Total:</strong> {timesheet.total_hours}h (Normal:{' '}
+                          {timesheet.regular_hours}h, Supp: {timesheet.overtime_hours}h)
                         </p>
-                        {timesheet.description && (
+                        {timesheet.notes && (
                           <p>
-                            <strong>Description:</strong> {timesheet.description}
+                            <strong>Notes:</strong> {timesheet.notes}
                           </p>
                         )}
                       </div>
                     </div>
 
-                    {!timesheet.approved && (
+                    {timesheet.status !== 'approved' && (
                       <div className={`flex gap-2 ${isMobile ? 'w-full' : ''}`}>
                         <Button
                           size="sm"

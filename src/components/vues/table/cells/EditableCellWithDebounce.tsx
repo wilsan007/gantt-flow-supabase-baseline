@@ -172,7 +172,7 @@ export const EditableCellWithDebounce = ({
         ) : (
           <div
             className={cn(
-              'flex-1 rounded px-2 py-1 transition-colors hover:bg-gray-100 dark:hover:bg-gray-800',
+              'hover:bg-primary/5 dark:hover:bg-primary/10 flex-1 rounded px-2 py-1 transition-colors',
               isSubtask && 'text-xs',
               !value && 'text-muted-foreground italic'
             )}

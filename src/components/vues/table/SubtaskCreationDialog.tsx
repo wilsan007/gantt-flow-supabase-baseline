@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { withUniversalDialog } from '@/components/ui/universal-dialog';
+import {
+  ResponsiveModal,
+  ResponsiveModalContent,
+  ResponsiveModalHeader,
+  ResponsiveModalTitle,
+} from '@/components/ui/responsive-modal';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -56,7 +60,7 @@ interface SubtaskCreationDialogProps {
   linkedActionId?: string;
 }
 
-const SubtaskCreationDialogBase = ({
+export const SubtaskCreationDialog = ({
   open,
   onOpenChange,
   parentTask,
@@ -215,10 +219,10 @@ const SubtaskCreationDialogBase = ({
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-[700px]">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
+    <ResponsiveModal open={open} onOpenChange={onOpenChange}>
+      <ResponsiveModalContent className="max-h-[90vh] overflow-y-auto sm:max-w-[700px]">
+        <ResponsiveModalHeader>
+          <ResponsiveModalTitle className="flex items-center gap-2">
             <Target className="h-5 w-5" />
             Créer une Sous-tâche
             {linkedActionId && (
@@ -226,8 +230,8 @@ const SubtaskCreationDialogBase = ({
                 Liée à une action spécifique
               </span>
             )}
-          </DialogTitle>
-        </DialogHeader>
+          </ResponsiveModalTitle>
+        </ResponsiveModalHeader>
         <div className="grid gap-4 py-4">
           {/* Titre */}
           <div className="grid gap-2">
@@ -577,9 +581,7 @@ const SubtaskCreationDialogBase = ({
             Créer la Sous-tâche
           </Button>
         </div>
-      </DialogContent>
-    </Dialog>
+      </ResponsiveModalContent>
+    </ResponsiveModal>
   );
 };
-// 🎨 Export avec support mobile automatique + thème Tasks
-export const SubtaskCreationDialog = withUniversalDialog('tasks', SubtaskCreationDialogBase);

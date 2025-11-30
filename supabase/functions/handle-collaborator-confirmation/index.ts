@@ -139,21 +139,59 @@ serve(async req => {
     if (seqError || !employeeId)
       throw new Error(`RPC_ID_ERROR: ${seqError?.message || 'ID non généré.'}`);
 
-    // 7. CRÉATION DU PROFIL ET RÔLE (tables jointes)
+    // 7. CRÉATION DU PROFIL (matching production schema exactly)
     const profileData = {
       user_id: user.id,
-      full_name: pendingInvitation.full_name,
       tenant_id: pendingInvitation.tenant_id,
-      employee_id: employeeId,
-      role_id: role.id,
-      department: pendingInvitation.department || null,
-      job_position: pendingInvitation.job_position || null,
+      full_name: pendingInvitation.full_name,
+      email: user.email,
+      role: role.name, // Use the role name fetched earlier
+      contract_type: 'CDI',
+      weekly_hours: 35,
     };
 
     const { error: profileError } = await supabaseAdmin.from('profiles').insert(profileData);
     if (profileError) throw new Error(`DB_PROFILE_ERROR: ${profileError.message}`);
 
-    // 8. FINALISATION (Marquer comme traité)
+    // [NEW] Create Employee Record
+    console.log('👷 Creating Employee record:', employeeId);
+    const { error: employeeError } = await supabaseAdmin.from('employees').insert({
+      user_id: user.id,
+      employee_id: employeeId,
+      full_name: pendingInvitation.full_name,
+      email: user.email,
+      job_title: pendingInvitation.job_position || 'Collaborateur',
+      department_id: pendingInvitation.department || null,
+      hire_date: new Date().toISOString().split('T')[0],
+      contract_type: 'CDI',
+      weekly_hours: 35,
+      status: 'active',
+      tenant_id: pendingInvitation.tenant_id,
+    });
+
+    if (employeeError) {
+      console.error('❌ Error creating employee:', employeeError);
+      // Non-blocking error
+    } else {
+      console.log('✅ Employee created');
+    }
+
+    // 8. ASSIGNATION DU RÔLE via user_roles
+    const { error: userRoleError } = await supabaseAdmin.from('user_roles').insert({
+      user_id: user.id,
+      role_id: role.id,
+      context_type: 'global',
+      context_id: pendingInvitation.tenant_id,
+      assigned_at: new Date().toISOString(),
+      is_active: true,
+      tenant_id: pendingInvitation.tenant_id,
+    });
+
+    if (userRoleError) {
+      console.error('⚠️ Error assigning role:', userRoleError);
+    }
+
+    // 9. FINALISATION (Marquer comme traité)
     const { error: finalUpdateError } = await supabaseAdmin.auth.admin.updateUserById(user.id, {
       user_metadata: {
         ...meta,

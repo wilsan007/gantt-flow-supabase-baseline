@@ -1,10 +1,15 @@
 import { toast } from 'sonner';
-import { withUniversalDialog } from '@/components/ui/universal-dialog';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import {
+  ResponsiveModal,
+  ResponsiveModalContent,
+  ResponsiveModalHeader,
+  ResponsiveModalTitle,
+} from '@/components/ui/responsive-modal';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Calendar, Users, Target, DollarSign, Activity, Clock } from 'lucide-react';
+import { formatCurrency } from '@/components/common/CurrencySelect';
 
 interface Project {
   id: string;
@@ -19,6 +24,7 @@ interface Project {
   team_members?: string[];
   skills_required?: string[];
   budget?: number;
+  currency?: string;
   priority?: string; // Peut être n'importe quelle valeur
   created_at?: string;
   updated_at?: string;
@@ -30,7 +36,7 @@ interface ProjectDetailsDialogProps {
   project: Project | null;
 }
 
-const ProjectDetailsDialogBase: React.FC<ProjectDetailsDialogProps> = ({
+export const ProjectDetailsDialog: React.FC<ProjectDetailsDialogProps> = ({
   open,
   onOpenChange,
   project,
@@ -74,14 +80,14 @@ const ProjectDetailsDialogBase: React.FC<ProjectDetailsDialogProps> = ({
   const priorityBadge = getPriorityBadge(project.priority);
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[90vh] w-[95vw] max-w-4xl overflow-y-auto p-4 sm:p-6">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2 text-base sm:text-lg">
+    <ResponsiveModal open={open} onOpenChange={onOpenChange}>
+      <ResponsiveModalContent className="max-h-[90vh] w-[95vw] max-w-4xl overflow-y-auto p-4 sm:p-6">
+        <ResponsiveModalHeader>
+          <ResponsiveModalTitle className="flex items-center gap-2 text-base sm:text-lg">
             <Target className="h-4 w-4 sm:h-5 sm:w-5" />
             <span className="truncate">Détails du Projet: {project.name}</span>
-          </DialogTitle>
-        </DialogHeader>
+          </ResponsiveModalTitle>
+        </ResponsiveModalHeader>
 
         <div className="space-y-4 sm:space-y-6">
           {/* Informations générales */}
@@ -122,7 +128,9 @@ const ProjectDetailsDialogBase: React.FC<ProjectDetailsDialogProps> = ({
                 {project.budget && (
                   <div className="flex items-center gap-2">
                     <DollarSign className="text-muted-foreground h-4 w-4" />
-                    <span className="text-sm">Budget: {project.budget.toLocaleString()} €</span>
+                    <span className="text-sm">
+                      Budget: {formatCurrency(project.budget, project.currency || 'DJF')}
+                    </span>
                   </div>
                 )}
 
@@ -204,10 +212,7 @@ const ProjectDetailsDialogBase: React.FC<ProjectDetailsDialogProps> = ({
             </CardContent>
           </Card>
         </div>
-      </DialogContent>
-    </Dialog>
+      </ResponsiveModalContent>
+    </ResponsiveModal>
   );
 };
-
-// 🎨 Export avec support mobile automatique + thème Projets
-export const ProjectDetailsDialog = withUniversalDialog('projects', ProjectDetailsDialogBase);

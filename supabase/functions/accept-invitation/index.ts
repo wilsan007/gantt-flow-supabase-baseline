@@ -38,7 +38,7 @@ serve(async req => {
 
       const { data: invitation, error } = await supabaseAdmin
         .from('invitations')
-        .select('email, full_name, tenant_name, status, expires_at')
+        .select('id, email, full_name, tenant_id, tenant_name, invitation_type, status, expires_at')
         .eq('token', token)
         .single();
 

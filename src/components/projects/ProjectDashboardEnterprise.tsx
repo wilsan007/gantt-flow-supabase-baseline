@@ -51,6 +51,7 @@ import { ProjectDetailsDialog } from '@/components/projects/ProjectDetailsDialog
 import { ProjectTableInline } from '@/components/projects/ProjectTableInline';
 import { LayoutGrid, LayoutList } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { formatCurrency } from '@/components/common/CurrencySelect';
 
 interface ProjectDashboardEnterpriseProps {
   showMetrics?: boolean;
@@ -196,14 +197,6 @@ export const ProjectDashboardEnterprise: React.FC<ProjectDashboardEnterpriseProp
       default:
         return 'outline';
     }
-  };
-
-  const formatCurrency = (amount?: number) => {
-    if (!amount) return '-';
-    return new Intl.NumberFormat('fr-FR', {
-      style: 'currency',
-      currency: 'EUR',
-    }).format(amount);
   };
 
   const formatDate = (dateString?: string) => {
@@ -534,7 +527,7 @@ export const ProjectDashboardEnterprise: React.FC<ProjectDashboardEnterpriseProp
                                 <span className="truncate">Budget</span>
                               </div>
                               <div className="truncate font-medium">
-                                {formatCurrency(project.budget)}
+                                {formatCurrency(project.budget, project.currency || 'DJF')}
                               </div>
                             </div>
                           )}

@@ -85,7 +85,21 @@ export const ActionTemplateForm: React.FC<ActionTemplateFormProps> = ({
   rrule = null,
 }) => {
   const { toast } = useToast();
-  const { employees, loading: loadingEmployees, refresh: refetchEmployees } = useHRMinimal();
+  const {
+    employees,
+    loading: loadingEmployees,
+    refresh: refetchEmployees,
+  } = useHRMinimal({
+    enabled: {
+      employees: true,
+      leaveRequests: false,
+      attendances: false,
+      leaveBalances: false,
+      departments: false,
+      absenceTypes: false,
+    },
+    limits: { employees: 15 },
+  });
   const [showQuickInvite, setShowQuickInvite] = useState(false);
 
   const [formData, setFormData] = useState<ActionTemplateData>({

@@ -57,10 +57,10 @@ export const TaskActionColumns = ({
           for (const action of task.task_actions) {
             try {
               const { count } = await supabase
-                .from('operational_action_attachments')
+                .from('task_action_attachments')
                 .select('*', { count: 'exact', head: true })
                 .eq('tenant_id', currentTenant.id)
-                .eq('action_template_id', action.id)
+                .eq('task_action_id', action.id)
                 .eq('task_id', task.id);
 
               if (count !== null) {
@@ -142,6 +142,30 @@ export const TaskActionColumns = ({
     return 0;
   });
 
+  // Générer les lignes fantômes (identique à TaskTableBody)
+  const ghostTasks: Task[] = Array.from({ length: 5 }).map(
+    (_, index) =>
+      ({
+        id: `ghost-task-${index}`,
+        title: '',
+        status: 'todo',
+        priority: 'medium',
+        assignee: '',
+        project_id: '',
+        start_date: new Date().toISOString().split('T')[0],
+        due_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+        effort_estimate_h: 0,
+        progress: 0,
+        tags: [],
+        subtasks: [],
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        is_ghost: true,
+      }) as any
+  );
+
+  const allTasks = [...sortedTasks, ...ghostTasks];
+
   // Si aucune action, afficher un message
   if (orderedActions.length === 0) {
     return (
@@ -206,16 +230,17 @@ export const TaskActionColumns = ({
           </TableRow>
         </TableHeader>
         <TableBody>
-          {sortedTasks.map(task => {
+          {allTasks.map(task => {
             const isSubtask = (task.task_level || 0) > 0;
             const isSelectedTask = selectedTaskId === task.id;
+            const isGhost = task.id.startsWith('ghost-task-');
 
             return (
               <TableRow
                 key={task.id}
                 className={`border-b transition-colors ${
                   isSelectedTask ? 'border-primary/30 bg-primary/10' : ''
-                }`}
+                } ${isGhost ? 'border-dashed opacity-60' : ''}`}
                 style={{
                   height: isSubtask ? '51px' : '64px',
                   minHeight: isSubtask ? '51px' : '64px',
@@ -325,6 +350,7 @@ export const TaskActionColumns = ({
           actionTemplateId={selectedAction.actionId}
           actionTitle={selectedAction.actionTitle}
           taskId={selectedAction.taskId}
+          actionType="task_action"
           onUploadSuccess={handleUploadSuccess}
         />
       )}

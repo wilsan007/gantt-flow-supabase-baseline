@@ -6,12 +6,12 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
+  ResponsiveModal,
+  ResponsiveModalContent,
+  ResponsiveModalHeader,
+  ResponsiveModalTitle,
+  ResponsiveModalTrigger,
+} from '@/components/ui/responsive-modal';
 import { Label } from '@/components/ui/label';
 import { Plus, Edit, Trash2, Calendar } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -114,7 +114,7 @@ export const AbsenceTypeManagement = () => {
           Types d'Absence
         </h2>
 
-        <Dialog
+        <ResponsiveModal
           open={isCreateDialogOpen}
           onOpenChange={open => {
             setIsCreateDialogOpen(open);
@@ -124,18 +124,18 @@ export const AbsenceTypeManagement = () => {
             }
           }}
         >
-          <DialogTrigger asChild>
+          <ResponsiveModalTrigger asChild>
             <Button className="hover-glow">
               <Plus className="mr-2 h-4 w-4" />
               Nouveau type
             </Button>
-          </DialogTrigger>
-          <DialogContent className="max-w-md">
-            <DialogHeader>
-              <DialogTitle>
+          </ResponsiveModalTrigger>
+          <ResponsiveModalContent className="max-w-md">
+            <ResponsiveModalHeader>
+              <ResponsiveModalTitle>
                 {editingType ? 'Modifier le type' : "Créer un type d'absence"}
-              </DialogTitle>
-            </DialogHeader>
+              </ResponsiveModalTitle>
+            </ResponsiveModalHeader>
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
               <div>
                 <Label htmlFor="name">Nom</Label>
@@ -203,8 +203,8 @@ export const AbsenceTypeManagement = () => {
                 </Button>
               </div>
             </form>
-          </DialogContent>
-        </Dialog>
+          </ResponsiveModalContent>
+        </ResponsiveModal>
       </div>
 
       {/* Types List */}

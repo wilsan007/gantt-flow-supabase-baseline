@@ -93,7 +93,19 @@ const FuturisticMetricCard = ({ label, value, subtitle, icon, gradient, trend }:
 
 export const TaskAnalytics: React.FC = () => {
   const { tasks, loading } = useTasks();
-  const { employees } = useHRMinimal();
+  const { employees } = useHRMinimal({
+    enabled: {
+      employees: true,
+      leaveRequests: false,
+      attendances: false,
+      leaveBalances: false,
+      departments: false,
+      absenceTypes: false,
+    },
+    limits: {
+      employees: 20,
+    },
+  });
 
   // Stats de la semaine en cours
   const weekStats = useMemo((): TaskStats => {

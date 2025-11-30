@@ -1,44 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { Dialog, DialogContent } from '@/components/ui/dialog';
-import { withUniversalDialog } from '@/components/ui/universal-dialog';
+import { ResponsiveModal, ResponsiveModalContent } from '@/components/ui/responsive-modal';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { Calendar } from '@/components/ui/calendar';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import {
-  Calendar as CalendarIcon,
-  Clock,
-  User,
-  Flag,
-  Tag,
-  Link2,
-  Plus,
-  X,
-  Target,
-  FileText,
-  Trash2,
-  Building2,
-  FolderKanban,
-  UserPlus,
-} from '@/lib/icons';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
-import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
 import { useTenant } from '@/contexts/TenantContext';
 import { toast } from 'sonner';
 import { QuickInviteDialog } from './QuickInviteDialog';
+
+// Sub-components
+import { TaskBasicInfo } from './creation/TaskBasicInfo';
+import { TaskProperties } from './creation/TaskProperties';
+import { TaskActions } from './creation/TaskActions';
+import { TaskDescription } from './creation/TaskDescription';
 
 interface TaskAction {
   id: string;
@@ -55,22 +30,44 @@ interface ModernTaskCreationDialogProps {
     due_date?: Date;
     title?: string;
   };
+  initialValues?: {
+    title?: string;
+    description?: string;
+    priority?: 'low' | 'medium' | 'high' | 'urgent';
+  };
 }
 
-const ModernTaskCreationDialogBase: React.FC<ModernTaskCreationDialogProps> = ({
+export const ModernTaskCreationDialog: React.FC<ModernTaskCreationDialogProps> = ({
   open,
   onOpenChange,
   onCreateTask,
   parentTask,
+  initialValues,
 }) => {
   // États de base
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
+  const [title, setTitle] = useState(initialValues?.title || '');
+  const [description, setDescription] = useState(initialValues?.description || '');
   const [status, setStatus] = useState<'todo' | 'doing' | 'blocked' | 'done'>('todo');
   const [startDate, setStartDate] = useState<Date | undefined>(parentTask?.start_date);
   const [dueDate, setDueDate] = useState<Date | undefined>(parentTask?.due_date);
   const [assignee, setAssignee] = useState('');
-  const [priority, setPriority] = useState<'low' | 'medium' | 'high' | 'urgent'>('medium');
+  const [priority, setPriority] = useState<'low' | 'medium' | 'high' | 'urgent'>(
+    initialValues?.priority || 'medium'
+  );
+
+  // Mettre à jour les états quand initialValues change ou quand le dialog s'ouvre
+  useEffect(() => {
+    if (open) {
+      if (initialValues) {
+        setTitle(initialValues.title || '');
+        setDescription(initialValues.description || '');
+        setPriority(initialValues.priority || 'medium');
+      } else {
+        // Reset si pas d'initialValues (ou garder les valeurs par défaut)
+        // setTitle(''); // On ne reset pas ici pour éviter d'effacer si on ferme/rouvre sans changer initialValues
+      }
+    }
+  }, [open, initialValues]);
   const [tags, setTags] = useState<string[]>([]);
   const [newTag, setNewTag] = useState('');
   const [effortEstimate, setEffortEstimate] = useState<number>(0);
@@ -128,15 +125,18 @@ const ModernTaskCreationDialogBase: React.FC<ModernTaskCreationDialogProps> = ({
           );
         }
 
-        // 2. Charger les départements uniques depuis les employés
-        const { data: depts } = await supabase
-          .from('employees')
-          .select('department')
+        // 2. Charger les départements du tenant
+        const { data: depts, error: deptError } = await supabase
+          .from('departments')
+          .select('name')
           .eq('tenant_id', currentTenant.id)
-          .not('department', 'is', null);
+          .order('name');
 
-        const uniqueDepts = [...new Set((depts || []).map(d => d.department).filter(Boolean))];
-        setAvailableDepartments(uniqueDepts.sort());
+        if (deptError) {
+          console.error('Erreur chargement départements:', deptError);
+        } else {
+          setAvailableDepartments((depts || []).map(d => d.name));
+        }
 
         // 3. Charger les VRAIS projets du tenant
         const { data: projects, error: projError } = await supabase
@@ -289,20 +289,6 @@ const ModernTaskCreationDialogBase: React.FC<ModernTaskCreationDialogProps> = ({
     setShowActions(false);
   };
 
-  const statusIcons = {
-    todo: '📝',
-    doing: '⚡',
-    blocked: '🚫',
-    done: '✅',
-  };
-
-  const priorityIcons = {
-    low: '🟢',
-    medium: '🟡',
-    high: '🟠',
-    urgent: '🔴',
-  };
-
   // Callback après invitation réussie
   const handleInviteSuccess = async () => {
     toast.success("✅ Invitation envoyée! L'employé sera disponible une fois qu'il aura accepté.");
@@ -334,462 +320,85 @@ const ModernTaskCreationDialogBase: React.FC<ModernTaskCreationDialogProps> = ({
         onInviteSuccess={handleInviteSuccess}
       />
 
-      <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="max-h-[90vh] max-w-4xl overflow-y-auto p-0">
-          <div className="space-y-4 p-6">
-            {/* Titre de la tâche - Style Notion */}
-            <div className="space-y-2">
-              <Input
-                value={title}
-                onChange={e => setTitle(e.target.value)}
-                placeholder="Nom de la tâche"
-                className="h-auto border-none px-0 text-3xl font-bold shadow-none focus-visible:ring-0"
-                autoFocus
+      <ResponsiveModal open={open} onOpenChange={onOpenChange}>
+        <ResponsiveModalContent className="flex max-h-[95vh] flex-col p-0">
+          {/* Scrollable content area */}
+          <div className="flex-1 overflow-y-auto">
+            <div className="space-y-4 p-6">
+              <TaskBasicInfo title={title} setTitle={setTitle} parentTask={parentTask} />
+
+              <TaskProperties
+                status={status}
+                setStatus={setStatus}
+                startDate={startDate}
+                setStartDate={setStartDate}
+                dueDate={dueDate}
+                setDueDate={setDueDate}
+                effortEstimate={effortEstimate}
+                setEffortEstimate={setEffortEstimate}
+                assignee={assignee}
+                setAssignee={setAssignee}
+                priority={priority}
+                setPriority={setPriority}
+                department={department}
+                setDepartment={setDepartment}
+                project={project}
+                setProject={setProject}
+                tags={tags}
+                newTag={newTag}
+                setNewTag={setNewTag}
+                addTag={addTag}
+                removeTag={removeTag}
+                availableAssignees={availableAssignees}
+                availableDepartments={availableDepartments}
+                availableProjects={availableProjects}
+                loadingData={loadingData}
+                onInviteClick={() => setShowInviteDialog(true)}
+                parentTask={parentTask}
               />
-              {parentTask?.title && (
-                <p className="text-muted-foreground flex items-center gap-2 text-sm">
-                  <Link2 className="h-4 w-4" />
-                  Sous-tâche de: {parentTask.title}
-                </p>
-              )}
-            </div>
 
-            {/* Propriétés principales - Layout côte à côte */}
-            <div className="grid grid-cols-2 gap-4">
-              {/* Colonne gauche */}
-              <div className="space-y-3">
-                {/* Statut */}
-                <div className="flex items-center gap-3">
-                  <Label className="text-muted-foreground flex w-32 items-center gap-2 text-sm">
-                    <FileText className="h-4 w-4" />
-                    Statut
-                  </Label>
-                  <Select value={status} onValueChange={(value: any) => setStatus(value)}>
-                    <SelectTrigger className="flex-1">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="todo">{statusIcons.todo} À faire</SelectItem>
-                      <SelectItem value="doing">{statusIcons.doing} En cours</SelectItem>
-                      <SelectItem value="blocked">{statusIcons.blocked} Bloqué</SelectItem>
-                      <SelectItem value="done">{statusIcons.done} Terminé</SelectItem>
-                    </SelectContent>
-                  </Select>
+              <Separator />
+
+              <TaskDescription
+                description={description}
+                setDescription={setDescription}
+                showDescription={showDescription}
+                setShowDescription={setShowDescription}
+              />
+
+              <TaskActions
+                actions={actions}
+                setActions={setActions}
+                newActionName={newActionName}
+                setNewActionName={setNewActionName}
+                newActionDescription={newActionDescription}
+                setNewActionDescription={setNewActionDescription}
+                addAction={addAction}
+                removeAction={removeAction}
+                showActions={showActions}
+                setShowActions={setShowActions}
+              />
+
+              <Separator />
+
+              {/* Footer avec boutons */}
+              <div className="flex items-center justify-between pt-2 pb-2">
+                <div className="text-muted-foreground text-sm">
+                  {actions.length > 0 && `${actions.length} action(s)`}
                 </div>
-
-                {/* Date de début */}
-                <div className="flex items-center gap-3">
-                  <Label className="text-muted-foreground flex w-32 items-center gap-2 text-sm">
-                    <CalendarIcon className="h-4 w-4" />
-                    Début
-                  </Label>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        className={cn(
-                          'flex-1 justify-start text-left font-normal',
-                          !startDate && 'text-muted-foreground'
-                        )}
-                      >
-                        <CalendarIcon className="mr-2 h-4 w-4" />
-                        {startDate ? format(startDate, 'PPP', { locale: fr }) : 'Sélectionner'}
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar
-                        mode="single"
-                        selected={startDate}
-                        onSelect={setStartDate}
-                        initialFocus
-                        disabled={date =>
-                          parentTask?.start_date ? date < parentTask.start_date : false
-                        }
-                      />
-                    </PopoverContent>
-                  </Popover>
+                <div className="flex gap-2">
+                  <Button variant="outline" onClick={() => onOpenChange(false)}>
+                    Annuler
+                  </Button>
+                  <Button onClick={handleSubmit} disabled={loading || !title.trim()}>
+                    {loading ? 'Création...' : 'Créer la Tâche'}
+                  </Button>
                 </div>
-
-                {/* Date d'échéance */}
-                <div className="flex items-center gap-3">
-                  <Label className="text-muted-foreground flex w-32 items-center gap-2 text-sm">
-                    <CalendarIcon className="h-4 w-4" />
-                    Échéance
-                  </Label>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        className={cn(
-                          'flex-1 justify-start text-left font-normal',
-                          !dueDate && 'text-muted-foreground'
-                        )}
-                      >
-                        <CalendarIcon className="mr-2 h-4 w-4" />
-                        {dueDate ? format(dueDate, 'PPP', { locale: fr }) : 'Sélectionner'}
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar
-                        mode="single"
-                        selected={dueDate}
-                        onSelect={setDueDate}
-                        initialFocus
-                        disabled={date => {
-                          if (parentTask?.due_date && date > parentTask.due_date) return true;
-                          if (startDate && date < startDate) return true;
-                          return false;
-                        }}
-                      />
-                    </PopoverContent>
-                  </Popover>
-                </div>
-
-                {/* Temps estimé */}
-                <div className="flex items-center gap-3">
-                  <Label className="text-muted-foreground flex w-32 items-center gap-2 text-sm">
-                    <Clock className="h-4 w-4" />
-                    Temps (h)
-                  </Label>
-                  <Input
-                    type="number"
-                    min="0"
-                    step="0.5"
-                    value={effortEstimate || ''}
-                    onChange={e => setEffortEstimate(parseFloat(e.target.value) || 0)}
-                    placeholder="0"
-                    className="flex-1"
-                  />
-                </div>
-              </div>
-
-              {/* Colonne droite */}
-              <div className="space-y-3">
-                {/* Assigné */}
-                <div className="flex items-center gap-3">
-                  <Label className="text-muted-foreground flex w-32 items-center gap-2 text-sm">
-                    <User className="h-4 w-4" />
-                    Assigné
-                  </Label>
-                  <div className="flex flex-1 gap-2">
-                    <Select value={assignee} onValueChange={setAssignee} disabled={loadingData}>
-                      <SelectTrigger className="flex-1">
-                        <SelectValue
-                          placeholder={
-                            loadingData
-                              ? 'Chargement...'
-                              : availableAssignees.length === 0
-                                ? 'Aucun employé'
-                                : 'Vide'
-                          }
-                        />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {availableAssignees.length === 0 ? (
-                          <div className="text-muted-foreground p-2 text-center text-sm">
-                            Aucun employé disponible
-                          </div>
-                        ) : (
-                          availableAssignees.map(person => (
-                            <SelectItem key={person.id} value={person.id}>
-                              <div className="flex flex-col">
-                                <span>{person.name}</span>
-                                <span className="text-muted-foreground text-xs">
-                                  {person.email}
-                                </span>
-                              </div>
-                            </SelectItem>
-                          ))
-                        )}
-                      </SelectContent>
-                    </Select>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="icon"
-                      onClick={() => setShowInviteDialog(true)}
-                      title="Inviter un collaborateur"
-                    >
-                      <UserPlus className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-
-                {/* Priorité */}
-                <div className="flex items-center gap-3">
-                  <Label className="text-muted-foreground flex w-32 items-center gap-2 text-sm">
-                    <Flag className="h-4 w-4" />
-                    Priorité
-                  </Label>
-                  <Select value={priority} onValueChange={(value: any) => setPriority(value)}>
-                    <SelectTrigger className="flex-1">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="low">{priorityIcons.low} Faible</SelectItem>
-                      <SelectItem value="medium">{priorityIcons.medium} Moyenne</SelectItem>
-                      <SelectItem value="high">{priorityIcons.high} Élevée</SelectItem>
-                      <SelectItem value="urgent">{priorityIcons.urgent} Urgente</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                {/* Département */}
-                <div className="flex items-center gap-3">
-                  <Label className="text-muted-foreground flex w-32 items-center gap-2 text-sm">
-                    <Building2 className="h-4 w-4" />
-                    Département
-                  </Label>
-                  <Select value={department} onValueChange={setDepartment} disabled={loadingData}>
-                    <SelectTrigger className="flex-1">
-                      <SelectValue
-                        placeholder={
-                          loadingData
-                            ? 'Chargement...'
-                            : availableDepartments.length === 0
-                              ? 'Aucun département'
-                              : 'Vide'
-                        }
-                      />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {availableDepartments.length === 0 ? (
-                        <div className="text-muted-foreground p-2 text-center text-sm">
-                          Aucun département disponible
-                        </div>
-                      ) : (
-                        availableDepartments.map(dept => (
-                          <SelectItem key={dept} value={dept}>
-                            {dept}
-                          </SelectItem>
-                        ))
-                      )}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                {/* Projet */}
-                <div className="flex items-center gap-3">
-                  <Label className="text-muted-foreground flex w-32 items-center gap-2 text-sm">
-                    <FolderKanban className="h-4 w-4" />
-                    Projet
-                  </Label>
-                  <Select value={project} onValueChange={setProject} disabled={loadingData}>
-                    <SelectTrigger className="flex-1">
-                      <SelectValue
-                        placeholder={
-                          loadingData
-                            ? 'Chargement...'
-                            : availableProjects.length === 0
-                              ? 'Aucun projet'
-                              : 'Vide'
-                        }
-                      />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {availableProjects.length === 0 ? (
-                        <div className="text-muted-foreground p-2 text-center text-sm">
-                          Aucun projet disponible
-                        </div>
-                      ) : (
-                        availableProjects.map(proj => (
-                          <SelectItem key={proj.id} value={proj.id}>
-                            {proj.name}
-                          </SelectItem>
-                        ))
-                      )}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-            </div>
-
-            {/* Étiquettes */}
-            <div className="space-y-2">
-              <div className="flex items-center gap-3">
-                <Label className="text-muted-foreground flex w-32 items-center gap-2 text-sm">
-                  <Tag className="h-4 w-4" />
-                  Étiquettes
-                </Label>
-                <div className="flex flex-1 flex-wrap gap-2">
-                  {tags.map(tag => (
-                    <Badge key={tag} variant="secondary" className="flex items-center gap-1">
-                      {tag}
-                      <X
-                        className="hover:text-destructive h-3 w-3 cursor-pointer"
-                        onClick={() => removeTag(tag)}
-                      />
-                    </Badge>
-                  ))}
-                  <div className="flex items-center gap-2">
-                    <Input
-                      value={newTag}
-                      onChange={e => setNewTag(e.target.value)}
-                      onKeyPress={e => e.key === 'Enter' && (e.preventDefault(), addTag())}
-                      placeholder="Ajouter..."
-                      className="h-7 w-32 text-sm"
-                    />
-                    {newTag && (
-                      <Button size="sm" variant="ghost" onClick={addTag} className="h-7 px-2">
-                        <Plus className="h-3 w-3" />
-                      </Button>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <Separator />
-
-            {/* Section Description */}
-            <div className="space-y-2">
-              {!showDescription ? (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setShowDescription(true)}
-                  className="text-muted-foreground"
-                >
-                  <Plus className="mr-2 h-4 w-4" />
-                  Ajouter une description
-                </Button>
-              ) : (
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <Label className="flex items-center gap-2 text-sm">
-                      <FileText className="h-4 w-4" />
-                      Description
-                    </Label>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => {
-                        setShowDescription(false);
-                        setDescription('');
-                      }}
-                    >
-                      <X className="h-4 w-4" />
-                    </Button>
-                  </div>
-                  <Textarea
-                    value={description}
-                    onChange={e => setDescription(e.target.value)}
-                    placeholder="Décrivez la tâche..."
-                    className="min-h-[100px]"
-                  />
-                </div>
-              )}
-            </div>
-
-            {/* Section Actions */}
-            <div className="space-y-2">
-              {!showActions ? (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setShowActions(true)}
-                  className="text-muted-foreground"
-                >
-                  <Plus className="mr-2 h-4 w-4" />
-                  Ajouter des actions
-                </Button>
-              ) : (
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <Label className="flex items-center gap-2 text-sm">
-                      <Target className="h-4 w-4" />
-                      Actions de la tâche
-                    </Label>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => {
-                        setShowActions(false);
-                        setActions([]);
-                      }}
-                    >
-                      <X className="h-4 w-4" />
-                    </Button>
-                  </div>
-
-                  {/* Liste des actions */}
-                  {actions.length > 0 && (
-                    <div className="space-y-2">
-                      {actions.map(action => (
-                        <div
-                          key={action.id}
-                          className="bg-muted/30 flex items-start gap-2 rounded-lg border p-3"
-                        >
-                          <div className="flex-1">
-                            <p className="text-sm font-medium">{action.name}</p>
-                            {action.description && (
-                              <p className="text-muted-foreground mt-1 text-xs">
-                                {action.description}
-                              </p>
-                            )}
-                          </div>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => removeAction(action.id)}
-                            className="h-8 w-8 p-0"
-                          >
-                            <Trash2 className="text-destructive h-4 w-4" />
-                          </Button>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-
-                  {/* Formulaire d'ajout d'action */}
-                  <div className="bg-muted/10 space-y-2 rounded-lg border p-3">
-                    <Input
-                      value={newActionName}
-                      onChange={e => setNewActionName(e.target.value)}
-                      placeholder="Nom de l'action"
-                      className="font-medium"
-                    />
-                    <Textarea
-                      value={newActionDescription}
-                      onChange={e => setNewActionDescription(e.target.value)}
-                      placeholder="Description (optionnel)"
-                      className="min-h-[60px] text-sm"
-                    />
-                    <Button
-                      size="sm"
-                      onClick={addAction}
-                      disabled={!newActionName.trim()}
-                      className="w-full"
-                    >
-                      <Plus className="mr-2 h-4 w-4" />
-                      Ajouter l'action
-                    </Button>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            <Separator />
-
-            {/* Footer avec boutons */}
-            <div className="flex items-center justify-between pt-2">
-              <div className="text-muted-foreground text-sm">
-                {actions.length > 0 && `${actions.length} action(s)`}
-              </div>
-              <div className="flex gap-2">
-                <Button variant="outline" onClick={() => onOpenChange(false)}>
-                  Annuler
-                </Button>
-                <Button onClick={handleSubmit} disabled={loading || !title.trim()}>
-                  {loading ? 'Création...' : 'Créer la Tâche'}
-                </Button>
               </div>
             </div>
           </div>
-        </DialogContent>
-      </Dialog>
+        </ResponsiveModalContent>
+      </ResponsiveModal>
     </>
   );
 };
-// 🎨 Export avec support mobile automatique + thème Tasks
-export const ModernTaskCreationDialog = withUniversalDialog('tasks', ModernTaskCreationDialogBase);

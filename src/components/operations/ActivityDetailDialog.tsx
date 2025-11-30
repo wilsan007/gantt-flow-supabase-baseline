@@ -6,8 +6,13 @@
 
 import React, { useState, useEffect } from 'react';
 import { X, Edit, Save, Calendar, CheckSquare, BarChart3, List } from 'lucide-react';
+import {
+  ResponsiveModal,
+  ResponsiveModalContent,
+  ResponsiveModalHeader,
+  ResponsiveModalTitle,
+} from '@/components/ui/responsive-modal';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { withUniversalDialog } from '@/components/ui/universal-dialog';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
@@ -31,7 +36,7 @@ interface ActivityDetailDialogProps {
   onOpenChange: (open: boolean) => void;
 }
 
-const ActivityDetailDialogBase: React.FC<ActivityDetailDialogProps> = ({
+export const ActivityDetailDialog: React.FC<ActivityDetailDialogProps> = ({
   activityId,
   open,
   onOpenChange,
@@ -115,9 +120,9 @@ const ActivityDetailDialogBase: React.FC<ActivityDetailDialogProps> = ({
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[90vh] max-w-6xl overflow-y-auto">
-        <DialogHeader>
+    <ResponsiveModal open={open} onOpenChange={onOpenChange}>
+      <ResponsiveModalContent className="max-h-[90vh] max-w-6xl overflow-y-auto">
+        <ResponsiveModalHeader>
           <div className="flex items-start justify-between">
             <div className="flex-1">
               {editMode ? (
@@ -127,7 +132,7 @@ const ActivityDetailDialogBase: React.FC<ActivityDetailDialogProps> = ({
                   className="text-2xl font-bold"
                 />
               ) : (
-                <DialogTitle className="text-2xl">{activity.name}</DialogTitle>
+                <ResponsiveModalTitle className="text-2xl">{activity.name}</ResponsiveModalTitle>
               )}
               <div className="mt-2 flex gap-2">
                 <Badge variant={activity.is_active ? 'default' : 'secondary'}>
@@ -156,7 +161,7 @@ const ActivityDetailDialogBase: React.FC<ActivityDetailDialogProps> = ({
               </Button>
             )}
           </div>
-        </DialogHeader>
+        </ResponsiveModalHeader>
 
         <Separator className="my-4" />
 
@@ -334,9 +339,7 @@ const ActivityDetailDialogBase: React.FC<ActivityDetailDialogProps> = ({
             <ActivityStatisticsCard activityId={activityId} />
           </TabsContent>
         </Tabs>
-      </DialogContent>
-    </Dialog>
+      </ResponsiveModalContent>
+    </ResponsiveModal>
   );
 };
-// 🎨 Export avec support mobile automatique + thème Operations
-export const ActivityDetailDialog = withUniversalDialog('operations', ActivityDetailDialogBase);

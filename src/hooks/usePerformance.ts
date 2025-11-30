@@ -3,7 +3,7 @@
  * Pattern Enterprise pour le module RH
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useTenant } from '@/hooks/useTenant';
@@ -14,9 +14,12 @@ import { applyRoleFilters } from '@/lib/roleBasedFiltering';
 export interface Objective {
   id: string;
   employee_id: string;
+  employee_name?: string; // Added
+  department?: string; // Added
   title: string;
   description?: string;
-  target_date: string;
+  due_date: string; // Renamed from target_date
+  type?: 'individual' | 'team' | 'okr'; // Added
   status: string;
   progress: number;
   created_at?: string;
@@ -26,10 +29,12 @@ export interface Objective {
 export interface Evaluation {
   id: string;
   employee_id: string;
+  employee_name?: string; // Added
   evaluator_id: string;
-  period_start: string;
-  period_end: string;
-  overall_rating: number;
+  evaluator_name?: string; // Added
+  period: string; // Added (was period_start/end, component expects single string or mapped)
+  type?: 'annual' | 'quarterly' | '360'; // Added
+  overall_score: number; // Renamed from overall_rating
   strengths?: string;
   areas_for_improvement?: string;
   comments?: string;
@@ -39,6 +44,8 @@ export interface Evaluation {
 }
 
 export const usePerformance = () => {
+  const [objectiveTemplates, setObjectiveTemplates] = useState<any[]>([]);
+
   const [objectives, setObjectives] = useState<Objective[]>([]);
   const [evaluations, setEvaluations] = useState<Evaluation[]>([]);
   const [loading, setLoading] = useState(true);
@@ -54,8 +61,11 @@ export const usePerformance = () => {
   const tenantIdFromRoles = userRoles[0]?.tenant_id;
   const effectiveTenantId = tenantId || tenantIdFromRoles;
 
-  const fetchData = async () => {
-    if (!userContext) return;
+  const fetchData = useCallback(async () => {
+    if (!userContext) {
+      setLoading(false);
+      return;
+    }
 
     try {
       setLoading(true);
@@ -70,43 +80,83 @@ export const usePerformance = () => {
       // 🔒 Appliquer le filtrage par rôle (performance_goals est l'équivalent)
       objectivesQuery = applyRoleFilters(objectivesQuery, userContext, 'performance_goals');
 
-      const { data: objectivesData, error: objectivesError } = await objectivesQuery;
+      // Fetch templates (Global + Tenant)
+      let templatesQuery = supabase
+        .from('objective_templates' as any)
+        .select('*')
+        .order('category', { ascending: true });
 
+      // Filtrage manuel pour les templates (car pas de RLS helper pour ça encore)
+      if (userContext.tenantId) {
+        templatesQuery = templatesQuery.or(
+          `tenant_id.is.null,tenant_id.eq.${userContext.tenantId}`
+        );
+      } else {
+        templatesQuery = templatesQuery.is('tenant_id', null);
+      }
+
+      const { data: objectivesData, error: objectivesError } = await objectivesQuery;
       if (objectivesError) throw objectivesError;
+
+      const { data: templatesData, error: templatesError } = await templatesQuery;
+      if (templatesError) {
+        console.warn('Templates fetch error (might not exist yet):', templatesError);
+      }
 
       // Fetch evaluations avec filtrage
       let evaluationsQuery = supabase
         .from('evaluations')
         .select('*')
         .order('created_at', { ascending: false });
-
-      // 🔒 Appliquer le filtrage par rôle (performance_reviews est l'équivalent)
       evaluationsQuery = applyRoleFilters(evaluationsQuery, userContext, 'performance_reviews');
-
       const { data: evaluationsData, error: evaluationsError } = await evaluationsQuery;
-
       if (evaluationsError) throw evaluationsError;
 
-      setObjectives((objectivesData as any) || []);
-      setEvaluations((evaluationsData as any) || []);
+      // Map objectives data
+      const mappedObjectives = (objectivesData || []).map((obj: any) => ({
+        ...obj,
+        due_date: obj.due_date || obj.target_date, // Handle both naming conventions
+        employee_name: obj.employee_name || 'Employé', // Fallback
+        department: obj.department || 'Département', // Fallback
+        type: obj.type || 'individual',
+      }));
+
+      // Map evaluations data
+      const mappedEvaluations = (evaluationsData || []).map((ev: any) => ({
+        ...ev,
+        overall_score: ev.overall_rating || 0,
+        period: ev.period || `${ev.period_start} - ${ev.period_end}`,
+        employee_name: ev.employee_name || 'Employé',
+        evaluator_name: ev.evaluator_name || 'Évaluateur',
+        type: ev.type || 'annual',
+      }));
+
+      setObjectives(mappedObjectives);
+      setObjectiveTemplates((templatesData as any) || []);
+      setEvaluations(mappedEvaluations);
     } catch (err: any) {
       console.error('Error fetching performance data:', err);
       setError(err.message);
-      toast({
-        title: 'Erreur',
-        description: 'Impossible de charger les données de performance',
-        variant: 'destructive',
-      });
+      if (!err.message?.includes('relation') && !err.message?.includes('does not exist')) {
+        toast({
+          title: 'Erreur',
+          description: 'Impossible de charger les données de performance',
+          variant: 'destructive',
+        });
+      }
     } finally {
       setLoading(false);
     }
-  };
+  }, [userContext?.userId, userContext?.tenantId]);
 
   useEffect(() => {
-    if (effectiveTenantId) {
+    if (userContext?.userId) {
       fetchData();
+    } else if (effectiveTenantId) {
+      // Si on a un tenantId mais pas de userContext, on charge quand même avec des données vides
+      setLoading(false);
     }
-  }, [effectiveTenantId]);
+  }, [fetchData, effectiveTenantId, userContext?.userId]);
 
   const createObjective = async (data: Omit<Objective, 'id' | 'created_at' | 'updated_at'>) => {
     try {
@@ -180,6 +230,40 @@ export const usePerformance = () => {
     }
   };
 
+  const createObjectiveTemplate = async (data: {
+    title: string;
+    category: string;
+    description?: string;
+  }) => {
+    try {
+      if (!effectiveTenantId) throw new Error('Tenant ID not found');
+
+      const { error } = await supabase.from('objective_templates' as any).insert([
+        {
+          ...data,
+          tenant_id: effectiveTenantId,
+        },
+      ]);
+
+      if (error) throw error;
+
+      toast({
+        title: 'Modèle créé',
+        description: "Le modèle d'objectif a été créé avec succès",
+      });
+
+      await fetchData();
+    } catch (err: any) {
+      console.error('Error creating objective template:', err);
+      toast({
+        title: 'Erreur',
+        description: 'Impossible de créer le modèle',
+        variant: 'destructive',
+      });
+      throw err;
+    }
+  };
+
   const deleteObjective = async (id: string) => {
     try {
       const { error } = await supabase.from('objectives').delete().eq('id', id);
@@ -213,16 +297,39 @@ export const usePerformance = () => {
   };
 
   const getPerformanceStats = () => {
+    const totalObjectives = objectives.length;
+    const completedObjectives = objectives.filter(o => o.status === 'completed').length;
+    const activeObjectives = objectives.filter(o => o.status === 'active').length;
+    const completionRate =
+      totalObjectives > 0 ? Math.round((completedObjectives / totalObjectives) * 100) : 0;
+
+    const totalEvaluations = evaluations.length;
+    const scheduledEvaluations = evaluations.filter(e => e.status === 'scheduled').length;
+    const completedEvaluations = evaluations.filter(e => e.status === 'completed');
+    const averageScore =
+      completedEvaluations.length > 0
+        ? Number(
+            (
+              completedEvaluations.reduce((acc, curr) => acc + curr.overall_score, 0) /
+              completedEvaluations.length
+            ).toFixed(1)
+          )
+        : 0;
+
     return {
-      totalObjectives: objectives.length,
-      completedObjectives: objectives.filter(o => o.status === 'completed').length,
-      totalEvaluations: evaluations.length,
-      averageScore: 0, // TODO: Calculer si nécessaire
+      totalObjectives,
+      completedObjectives,
+      activeObjectives, // Added
+      completionRate, // Added
+      totalEvaluations,
+      scheduledEvaluations, // Added
+      averageScore,
     };
   };
 
   return {
     objectives,
+    objectiveTemplates, // Added
     evaluations,
     keyResults: [], // TODO: Implémenter si nécessaire
     evaluationCategories: [], // TODO: Implémenter si nécessaire
@@ -230,6 +337,7 @@ export const usePerformance = () => {
     error,
     refresh: fetchData,
     createObjective,
+    createObjectiveTemplate, // Added
     createEvaluation,
     updateObjective,
     deleteObjective,

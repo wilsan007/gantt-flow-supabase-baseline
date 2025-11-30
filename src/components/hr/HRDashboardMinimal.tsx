@@ -35,7 +35,21 @@ export const HRDashboardMinimal = () => {
     isSuperAdmin,
     accessInfo,
     refresh,
-  } = useHRMinimal();
+  } = useHRMinimal({
+    enabled: {
+      employees: true,
+      leaveRequests: true,
+      attendances: true,
+      departments: true,
+      absenceTypes: true,
+      leaveBalances: false, // Pas affiché dans le dashboard
+    },
+    limits: {
+      employees: 10, // Seulement 10 pour le dashboard
+      leaveRequests: 5, // Seulement les 5 dernières demandes
+      attendances: 5, // Seulement les 5 dernières présences
+    },
+  });
 
   // Loading state
   if (loading) {

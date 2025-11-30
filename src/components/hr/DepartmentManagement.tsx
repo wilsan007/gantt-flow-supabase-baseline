@@ -1,330 +1,300 @@
-import { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useState } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
-import { Plus, Building, Users, Edit, Trash2 } from 'lucide-react';
-import { useIsMobile } from '@/hooks/use-mobile';
-import { useForm } from 'react-hook-form';
-import { supabase } from '@/integrations/supabase/client';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import {
+  ResponsiveModal,
+  ResponsiveModalContent,
+  ResponsiveModalHeader,
+  ResponsiveModalTitle,
+  ResponsiveModalTrigger,
+  ResponsiveModalDescription,
+} from '@/components/ui/responsive-modal';
+import { Badge } from '@/components/ui/badge';
+import { Building, Plus, Users, Briefcase, MoreHorizontal, Pencil, Trash2 } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
+import { useHRMinimal } from '@/hooks/useHRMinimal';
 
 interface Department {
   id: string;
   name: string;
-  description?: string;
-  manager_id?: string;
-  budget?: number;
+  manager_id: string | null;
+  description: string | null;
   created_at: string;
+  employee_count?: number;
 }
 
-interface Employee {
-  id: string;
-  full_name: string;
-}
-
-export const DepartmentManagement = () => {
-  const [departments, setDepartments] = useState<Department[]>([]);
-  const [employees, setEmployees] = useState<Employee[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
-  const [editingDepartment, setEditingDepartment] = useState<Department | null>(null);
-  const isMobile = useIsMobile();
+export function DepartmentManagement() {
+  const { departments, employees, loading, refreshData } = useHRMinimal();
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [selectedDepartment, setSelectedDepartment] = useState<Department | null>(null);
+  const [newDepartment, setNewDepartment] = useState({
+    name: '',
+    description: '',
+  });
   const { toast } = useToast();
 
-  const { register, handleSubmit, reset, setValue } = useForm();
-
-  const fetchData = async () => {
+  const handleCreateDepartment = async () => {
     try {
-      setLoading(true);
-
-      const [departmentsRes, employeesRes] = await Promise.all([
-        supabase.from('departments').select('*').order('name'),
-        supabase.from('profiles').select('id, full_name'),
-      ]);
-
-      if (departmentsRes.error) throw departmentsRes.error;
-      if (employeesRes.error) throw employeesRes.error;
-
-      setDepartments(departmentsRes.data || []);
-      setEmployees(employeesRes.data || []);
-    } catch (error: any) {
-      console.error('Error fetching data:', error);
-      toast({
-        title: 'Erreur',
-        description: 'Impossible de charger les données',
-        variant: 'destructive',
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  const onSubmit = async (data: any) => {
-    try {
-      const departmentData = {
-        name: data.name,
-        description: data.description || null,
-        manager_id: data.manager_id || null,
-        budget: data.budget ? parseFloat(data.budget) : null,
-      };
-
-      let error;
-      if (editingDepartment) {
-        ({ error } = await supabase
-          .from('departments')
-          .update(departmentData)
-          .eq('id', editingDepartment.id));
-      } else {
-        ({ error } = await supabase.from('departments').insert(departmentData));
-      }
+      const { error } = await supabase.from('departments').insert([newDepartment]).select();
 
       if (error) throw error;
 
       toast({
-        title: 'Succès',
-        description: `Département ${editingDepartment ? 'modifié' : 'créé'} avec succès`,
+        title: 'Département créé',
+        description: 'Le département a été ajouté avec succès.',
       });
-
-      reset();
-      setIsCreateDialogOpen(false);
-      setEditingDepartment(null);
-      fetchData();
-    } catch (error: any) {
-      console.error('Error managing department:', error);
+      setIsAddDialogOpen(false);
+      refreshData();
+      setNewDepartment({ name: '', description: '' });
+    } catch (error) {
+      console.error('Error creating department:', error);
       toast({
         title: 'Erreur',
-        description: `Impossible de ${editingDepartment ? 'modifier' : 'créer'} le département`,
+        description: 'Impossible de créer le département.',
         variant: 'destructive',
       });
     }
   };
 
-  const handleEdit = (department: Department) => {
-    setEditingDepartment(department);
-    setValue('name', department.name);
-    setValue('description', department.description);
-    setValue('manager_id', department.manager_id);
-    setValue('budget', department.budget);
-    setIsCreateDialogOpen(true);
-  };
+  const handleUpdateDepartment = async () => {
+    if (!selectedDepartment) return;
 
-  const handleDelete = async (departmentId: string) => {
     try {
-      const { error } = await supabase.from('departments').delete().eq('id', departmentId);
+      const { error } = await supabase
+        .from('departments')
+        .update({
+          name: selectedDepartment.name,
+          description: selectedDepartment.description,
+        })
+        .eq('id', selectedDepartment.id);
 
       if (error) throw error;
 
       toast({
-        title: 'Succès',
-        description: 'Département supprimé avec succès',
+        title: 'Département mis à jour',
+        description: 'Les modifications ont été enregistrées.',
       });
+      setIsEditDialogOpen(false);
+      refreshData();
+    } catch (error) {
+      console.error('Error updating department:', error);
+      toast({
+        title: 'Erreur',
+        description: 'Impossible de mettre à jour le département.',
+        variant: 'destructive',
+      });
+    }
+  };
 
-      fetchData();
-    } catch (error: any) {
+  const handleDeleteDepartment = async (id: string) => {
+    try {
+      const { error } = await supabase.from('departments').delete().eq('id', id);
+
+      if (error) throw error;
+
+      toast({
+        title: 'Département supprimé',
+        description: 'Le département a été supprimé avec succès.',
+      });
+      refreshData();
+    } catch (error) {
       console.error('Error deleting department:', error);
       toast({
         title: 'Erreur',
-        description: 'Impossible de supprimer le département',
+        description: 'Impossible de supprimer le département.',
         variant: 'destructive',
       });
     }
   };
 
-  // Note: Employee count functionality can be added later when department_id is linked to profiles
-
-  if (loading) {
-    return <div className="p-6 text-center">Chargement des départements...</div>;
-  }
+  // Calculate employee counts per department
+  const departmentsWithCounts = (departments || []).map(dept => ({
+    ...dept,
+    employee_count: employees.filter(e => e.department_id === dept.id).length,
+  }));
 
   return (
-    <div className="space-y-6 p-6">
-      <div className="flex items-center justify-between">
-        <h2 className="from-primary to-accent bg-gradient-to-r bg-clip-text text-3xl font-bold text-transparent">
-          Départements
-        </h2>
-
-        <Dialog
-          open={isCreateDialogOpen}
-          onOpenChange={open => {
-            setIsCreateDialogOpen(open);
-            if (!open) {
-              setEditingDepartment(null);
-              reset();
-            }
-          }}
-        >
-          <DialogTrigger asChild>
-            <Button className="hover-glow">
+    <div className="space-y-6">
+      <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
+        <div>
+          <h2 className="text-2xl font-bold tracking-tight">Départements</h2>
+          <p className="text-muted-foreground">
+            Gérez la structure organisationnelle de votre entreprise
+          </p>
+        </div>
+        <ResponsiveModal open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+          <ResponsiveModalTrigger asChild>
+            <Button>
               <Plus className="mr-2 h-4 w-4" />
-              Nouveau département
+              Ajouter un département
             </Button>
-          </DialogTrigger>
-          <DialogContent className="max-w-md">
-            <DialogHeader>
-              <DialogTitle>
-                {editingDepartment ? 'Modifier le département' : 'Créer un département'}
-              </DialogTitle>
-            </DialogHeader>
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-              <div>
-                <Label htmlFor="name">Nom</Label>
+          </ResponsiveModalTrigger>
+          <ResponsiveModalContent>
+            <ResponsiveModalHeader>
+              <ResponsiveModalTitle>Nouveau département</ResponsiveModalTitle>
+              <ResponsiveModalDescription>
+                Créez un nouveau département pour organiser vos équipes.
+              </ResponsiveModalDescription>
+            </ResponsiveModalHeader>
+            <div className="grid gap-4 py-4">
+              <div className="space-y-2">
+                <Label htmlFor="name">Nom du département</Label>
                 <Input
                   id="name"
-                  placeholder="Ressources Humaines"
-                  {...register('name', { required: true })}
+                  value={newDepartment.name}
+                  onChange={e => setNewDepartment({ ...newDepartment, name: e.target.value })}
+                  placeholder="Ex: Marketing, IT, RH..."
                 />
               </div>
-
-              <div>
+              <div className="space-y-2">
                 <Label htmlFor="description">Description</Label>
-                <Textarea
+                <Input
                   id="description"
-                  placeholder="Description du département..."
-                  {...register('description')}
+                  value={newDepartment.description}
+                  onChange={e =>
+                    setNewDepartment({
+                      ...newDepartment,
+                      description: e.target.value,
+                    })
+                  }
+                  placeholder="Description du département"
                 />
               </div>
-
-              <div>
-                <Label htmlFor="manager_id">Manager</Label>
-                <Select onValueChange={value => setValue('manager_id', value)}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Sélectionner un manager" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="">Aucun manager</SelectItem>
-                    {employees.map(employee => (
-                      <SelectItem key={employee.id} value={employee.id}>
-                        {employee.full_name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div>
-                <Label htmlFor="budget">Budget annuel (€)</Label>
-                <Input id="budget" type="number" placeholder="100000" {...register('budget')} />
-              </div>
-
-              <div className="flex gap-2">
-                <Button type="submit" className="flex-1">
-                  {editingDepartment ? 'Modifier' : 'Créer'}
-                </Button>
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => {
-                    setIsCreateDialogOpen(false);
-                    setEditingDepartment(null);
-                    reset();
-                  }}
-                >
-                  Annuler
-                </Button>
-              </div>
-            </form>
-          </DialogContent>
-        </Dialog>
+              <Button onClick={handleCreateDepartment} className="mt-4 w-full">
+                Créer le département
+              </Button>
+            </div>
+          </ResponsiveModalContent>
+        </ResponsiveModal>
       </div>
 
-      {/* Departments Grid */}
-      <div className="space-y-4">
-        {departments.length === 0 ? (
-          <Card className="modern-card">
-            <CardContent className="p-8 text-center">
-              <Building className="text-muted-foreground mx-auto mb-4 h-12 w-12" />
-              <p className="text-muted-foreground">Aucun département configuré</p>
-            </CardContent>
-          </Card>
-        ) : (
-          <div className={`grid gap-4 ${isMobile ? 'grid-cols-1' : 'grid-cols-2 lg:grid-cols-3'}`}>
-            {departments.map(department => {
-              const manager = employees.find(emp => emp.id === department.manager_id);
+      {departmentsWithCounts.length === 0 ? (
+        <Card className="col-span-full">
+          <CardContent className="flex flex-col items-center justify-center py-16">
+            <div className="relative mb-6">
+              <div className="absolute inset-0 animate-ping rounded-full bg-blue-500/20 opacity-75"></div>
+              <div className="relative rounded-full bg-gradient-to-br from-blue-100 to-indigo-100 p-6 dark:from-blue-900/30 dark:to-indigo-900/30">
+                <Building className="h-12 w-12 text-blue-600 dark:text-blue-400" />
+              </div>
+            </div>
+            <h3 className="mb-2 text-xl font-semibold">Aucun département pour le moment</h3>
+            <p className="text-muted-foreground mb-6 max-w-md text-center">
+              Organisez votre entreprise en créant des départements. Cela vous permet de mieux
+              structurer vos équipes et gérer les ressources.
+            </p>
+            <Button onClick={() => setIsAddDialogOpen(true)} size="lg">
+              <Plus className="mr-2 h-5 w-5" />
+              Créer votre premier département
+            </Button>
+          </CardContent>
+        </Card>
+      ) : (
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {departmentsWithCounts.map(dept => (
+            <Card key={dept.id}>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">{dept.name}</CardTitle>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" className="h-8 w-8 p-0">
+                      <span className="sr-only">Ouvrir menu</span>
+                      <MoreHorizontal className="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem
+                      onClick={() => {
+                        setSelectedDepartment(dept);
+                        setIsEditDialogOpen(true);
+                      }}
+                    >
+                      <Pencil className="mr-2 h-4 w-4" />
+                      Modifier
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      className="text-red-600"
+                      onClick={() => handleDeleteDepartment(dept.id)}
+                    >
+                      <Trash2 className="mr-2 h-4 w-4" />
+                      Supprimer
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{dept.employee_count}</div>
+                <p className="text-muted-foreground text-xs">Employés dans ce département</p>
+                <div className="text-muted-foreground mt-4 flex items-center text-sm">
+                  <Briefcase className="mr-1 h-4 w-4" />
+                  {dept.description || 'Aucune description'}
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
 
-              return (
-                <Card key={department.id} className="modern-card hover-glow">
-                  <CardContent className="p-6">
-                    <div className="space-y-4">
-                      <div className="flex items-start justify-between">
-                        <div className="flex items-center gap-3">
-                          <Building className="text-primary h-6 w-6" />
-                          <div>
-                            <h3 className="text-lg font-semibold">{department.name}</h3>
-                            {department.description && (
-                              <p className="text-muted-foreground line-clamp-2 text-sm">
-                                {department.description}
-                              </p>
-                            )}
-                          </div>
-                        </div>
-
-                        <div className="flex gap-1">
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => handleEdit(department)}
-                          >
-                            <Edit className="h-3 w-3" />
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => handleDelete(department.id)}
-                          >
-                            <Trash2 className="h-3 w-3" />
-                          </Button>
-                        </div>
-                      </div>
-
-                      <div className="space-y-2 text-sm">
-                        {manager && (
-                          <div className="flex items-center gap-2">
-                            <Badge variant="outline" className="text-xs">
-                              Manager: {manager.full_name}
-                            </Badge>
-                          </div>
-                        )}
-
-                        {department.budget && (
-                          <p className="text-muted-foreground">
-                            <strong>Budget:</strong> {department.budget.toLocaleString()} €
-                          </p>
-                        )}
-
-                        <div className="text-muted-foreground flex items-center gap-2">
-                          <Users className="h-4 w-4" />
-                          <span>Employés du département</span>
-                        </div>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              );
-            })}
-          </div>
-        )}
-      </div>
+      <ResponsiveModal open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+        <ResponsiveModalContent>
+          <ResponsiveModalHeader>
+            <ResponsiveModalTitle>Modifier le département</ResponsiveModalTitle>
+            <ResponsiveModalDescription>
+              Modifiez les informations du département existant.
+            </ResponsiveModalDescription>
+          </ResponsiveModalHeader>
+          {selectedDepartment && (
+            <div className="grid gap-4 py-4">
+              <div className="space-y-2">
+                <Label htmlFor="edit-name">Nom du département</Label>
+                <Input
+                  id="edit-name"
+                  value={selectedDepartment.name}
+                  onChange={e =>
+                    setSelectedDepartment({
+                      ...selectedDepartment,
+                      name: e.target.value,
+                    })
+                  }
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="edit-description">Description</Label>
+                <Input
+                  id="edit-description"
+                  value={selectedDepartment.description || ''}
+                  onChange={e =>
+                    setSelectedDepartment({
+                      ...selectedDepartment,
+                      description: e.target.value,
+                    })
+                  }
+                />
+              </div>
+              <Button onClick={handleUpdateDepartment} className="mt-4 w-full">
+                Enregistrer les modifications
+              </Button>
+            </div>
+          )}
+        </ResponsiveModalContent>
+      </ResponsiveModal>
     </div>
   );
-};
+}

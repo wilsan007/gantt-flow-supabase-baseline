@@ -19,6 +19,7 @@ import {
   XCircle,
 } from 'lucide-react';
 import { useHealthSafety } from '@/hooks/useHealthSafety';
+import { CreateIncidentDialog, CreateSafetyDocumentDialog } from './HRActionDialogs';
 
 interface Incident {
   id: string;
@@ -161,14 +162,18 @@ export const HealthSafety = () => {
           <p className="text-muted-foreground">Gestion des incidents, formation et conformité</p>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline">
-            <Plus className="mr-2 h-4 w-4" />
-            Nouveau document
-          </Button>
-          <Button>
-            <AlertTriangle className="mr-2 h-4 w-4" />
-            Déclarer incident
-          </Button>
+          <CreateSafetyDocumentDialog>
+            <Button variant="outline">
+              <FileText className="mr-2 h-4 w-4" />
+              Nouveau document
+            </Button>
+          </CreateSafetyDocumentDialog>
+          <CreateIncidentDialog>
+            <Button className="bg-red-600 hover:bg-red-700">
+              <AlertTriangle className="mr-2 h-4 w-4" />
+              Déclarer incident
+            </Button>
+          </CreateIncidentDialog>
         </div>
       </div>
 

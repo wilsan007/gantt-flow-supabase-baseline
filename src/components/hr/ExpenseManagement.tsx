@@ -14,7 +14,9 @@ import {
   Camera,
   Upload,
 } from 'lucide-react';
+import { formatCurrency } from '@/components/common/CurrencySelect';
 import { useExpenseManagement } from '@/hooks/useExpenseManagement';
+import { CreateExpenseReportDialog } from './HRActionDialogs';
 
 export const ExpenseManagement = () => {
   const [activeView, setActiveView] = useState('reports');
@@ -80,10 +82,12 @@ export const ExpenseManagement = () => {
             <Camera className="mr-2 h-4 w-4" />
             Scanner reçu
           </Button>
-          <Button>
-            <Receipt className="mr-2 h-4 w-4" />
-            Nouvelle note
-          </Button>
+          <CreateExpenseReportDialog>
+            <Button>
+              <Receipt className="mr-2 h-4 w-4" />
+              Nouvelle note
+            </Button>
+          </CreateExpenseReportDialog>
         </div>
       </div>
 
@@ -131,7 +135,10 @@ export const ExpenseManagement = () => {
               <div>
                 <p className="text-muted-foreground text-sm font-medium">Total ce mois</p>
                 <p className="text-2xl font-bold">
-                  {reports.reduce((total, report) => total + report.total_amount, 0).toFixed(2)} €
+                  {formatCurrency(
+                    reports.reduce((total, report) => total + report.total_amount, 0),
+                    'DJF'
+                  )}
                 </p>
               </div>
               <Euro className="h-8 w-8 text-blue-600" />
@@ -191,7 +198,7 @@ export const ExpenseManagement = () => {
                           </Badge>
                           <div className="text-right">
                             <p className="text-xl font-bold">
-                              {report.total_amount.toFixed(2)} {report.currency}
+                              {formatCurrency(report.total_amount, report.currency || 'DJF')}
                             </p>
                           </div>
                         </div>
@@ -242,7 +249,7 @@ export const ExpenseManagement = () => {
                             </div>
                             <div className="flex items-center gap-2">
                               <span className="font-bold">
-                                {expense.amount.toFixed(2)} {expense.currency}
+                                {formatCurrency(expense.amount, expense.currency || 'DJF')}
                               </span>
                               {expense.receipt_url && (
                                 <Button variant="ghost" size="sm">
@@ -335,7 +342,9 @@ export const ExpenseManagement = () => {
                     {category.max_amount && (
                       <div className="text-sm">
                         <p className="text-muted-foreground">Montant maximum</p>
-                        <p className="text-lg font-bold">{category.max_amount} €</p>
+                        <p className="text-lg font-bold">
+                          {formatCurrency(category.max_amount, 'DJF')}
+                        </p>
                       </div>
                     )}
                   </CardContent>

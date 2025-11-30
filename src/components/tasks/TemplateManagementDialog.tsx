@@ -12,14 +12,13 @@
 
 import { useState } from 'react';
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
-import { withUniversalDialog } from '@/components/ui/universal-dialog';
+  ResponsiveModal,
+  ResponsiveModalContent,
+  ResponsiveModalHeader,
+  ResponsiveModalTitle,
+  ResponsiveModalDescription,
+} from '@/components/ui/responsive-modal';
+import { DialogTrigger } from '@/components/ui/dialog'; // Keep DialogTrigger if needed or replace with Button
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -78,7 +77,7 @@ interface TemplateFormData {
   template_data: TaskTemplateData;
 }
 
-const TemplateManagementDialogBase = () => {
+export const TemplateManagementDialog = () => {
   const { templates, loading, createTemplate, updateTemplate, deleteTemplate } = useTaskTemplates();
   const [open, setOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -163,23 +162,23 @@ const TemplateManagementDialogBase = () => {
 
   return (
     <>
-      <Dialog open={open} onOpenChange={setOpen}>
+      <ResponsiveModal open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
           <Button variant="outline" size="sm">
             <BookTemplate className="mr-2 h-4 w-4" />
             Templates
           </Button>
         </DialogTrigger>
-        <DialogContent className="max-h-[85vh] max-w-4xl">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
+        <ResponsiveModalContent className="max-h-[85vh] max-w-4xl">
+          <ResponsiveModalHeader>
+            <ResponsiveModalTitle className="flex items-center gap-2">
               <BookTemplate className="h-5 w-5" />
               Gestion des Templates de Tâches
-            </DialogTitle>
-            <DialogDescription>
+            </ResponsiveModalTitle>
+            <ResponsiveModalDescription>
               Créez des templates réutilisables pour gagner du temps
-            </DialogDescription>
-          </DialogHeader>
+            </ResponsiveModalDescription>
+          </ResponsiveModalHeader>
 
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             {/* Liste des templates */}
@@ -479,8 +478,8 @@ const TemplateManagementDialogBase = () => {
               </div>
             )}
           </div>
-        </DialogContent>
-      </Dialog>
+        </ResponsiveModalContent>
+      </ResponsiveModal>
 
       {/* Dialog de confirmation de suppression */}
       <AlertDialog open={!!deleteConfirmId} onOpenChange={() => setDeleteConfirmId(null)}>
@@ -505,5 +504,3 @@ const TemplateManagementDialogBase = () => {
     </>
   );
 };
-// 🎨 Export avec support mobile automatique + thème Tasks
-export const TemplateManagementDialog = withUniversalDialog('tasks', TemplateManagementDialogBase);

@@ -41,18 +41,27 @@ export function useSkillsTraining() {
   const { toast } = useToast();
 
   const fetchData = useCallback(async () => {
-    if (!userContext) return;
+    if (!userContext) {
+      setLoading(false);
+      return;
+    }
 
     try {
       setLoading(true);
       setError(null);
 
       // 🔒 Construire les queries avec filtrage
+      // NOTE: La table skills contient des compétences globales (tenant_id IS NULL) et spécifiques
       let skillsQuery = supabase
         .from('skills')
         .select('*')
         .order('created_at', { ascending: false });
-      skillsQuery = applyRoleFilters(skillsQuery, userContext, 'skills');
+
+      if (userContext.tenantId) {
+        skillsQuery = skillsQuery.or(`tenant_id.is.null,tenant_id.eq.${userContext.tenantId}`);
+      } else {
+        skillsQuery = skillsQuery.is('tenant_id', null);
+      }
 
       let assessmentsQuery = supabase
         .from('skill_assessments')
@@ -65,20 +74,23 @@ export function useSkillsTraining() {
       if (skillsRes.error) throw skillsRes.error;
       if (assessmentsRes.error) throw assessmentsRes.error;
 
-      setSkills(skillsRes.data || []);
-      setSkillAssessments(assessmentsRes.data || []);
+      setSkills((skillsRes.data as any) || []);
+      setSkillAssessments((assessmentsRes.data as any) || []);
     } catch (err: any) {
       console.error('Error fetching skills data:', err);
       setError(err.message);
-      toast({
-        title: 'Erreur',
-        description: 'Impossible de charger les données de compétences',
-        variant: 'destructive',
-      });
+      // Don't show toast for missing tables
+      if (!err.message?.includes('relation') && !err.message?.includes('does not exist')) {
+        toast({
+          title: 'Erreur',
+          description: 'Impossible de charger les données de compétences',
+          variant: 'destructive',
+        });
+      }
     } finally {
       setLoading(false);
     }
-  }, [userContext, toast]);
+  }, [userContext?.userId, userContext?.tenantId, toast]);
 
   const createSkill = async (skillData: Omit<Skill, 'id' | 'created_at'>) => {
     try {
@@ -185,8 +197,12 @@ export function useSkillsTraining() {
   };
 
   useEffect(() => {
-    fetchData();
-  }, []);
+    if (userContext?.userId) {
+      fetchData();
+    } else {
+      setLoading(false);
+    }
+  }, [userContext?.userId, fetchData]);
 
   return {
     skills,

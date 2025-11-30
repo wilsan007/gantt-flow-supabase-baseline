@@ -13,12 +13,12 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
+  ResponsiveModal,
+  ResponsiveModalContent,
+  ResponsiveModalHeader,
+  ResponsiveModalTitle,
+  ResponsiveModalTrigger,
+} from '@/components/ui/responsive-modal';
 import { Label } from '@/components/ui/label';
 import { Calendar, Plus, Check, X } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -27,7 +27,20 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
 export const LeaveManagement = () => {
-  const { leaveRequests, absenceTypes, employees, loading, refresh } = useHRMinimal();
+  const { leaveRequests, absenceTypes, employees, loading, refresh } = useHRMinimal({
+    enabled: {
+      employees: true,
+      leaveRequests: true,
+      absenceTypes: true,
+      attendances: false,
+      leaveBalances: false,
+      departments: false,
+    },
+    limits: {
+      employees: 20,
+      leaveRequests: 15,
+    },
+  });
   const { toast } = useToast();
   const [selectedStatus, setSelectedStatus] = useState<string>('all');
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
@@ -134,17 +147,17 @@ export const LeaveManagement = () => {
           Gestion des Congés
         </h2>
 
-        <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-          <DialogTrigger asChild>
+        <ResponsiveModal open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+          <ResponsiveModalTrigger asChild>
             <Button className="hover-glow">
               <Plus className="mr-2 h-4 w-4" />
               Nouvelle demande
             </Button>
-          </DialogTrigger>
-          <DialogContent className="max-w-md">
-            <DialogHeader>
-              <DialogTitle>Créer une demande de congé</DialogTitle>
-            </DialogHeader>
+          </ResponsiveModalTrigger>
+          <ResponsiveModalContent className="max-w-md">
+            <ResponsiveModalHeader>
+              <ResponsiveModalTitle>Créer une demande de congé</ResponsiveModalTitle>
+            </ResponsiveModalHeader>
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
               <div>
                 <Label htmlFor="employee_id">Employé</Label>
@@ -215,8 +228,8 @@ export const LeaveManagement = () => {
                 </Button>
               </div>
             </form>
-          </DialogContent>
-        </Dialog>
+          </ResponsiveModalContent>
+        </ResponsiveModal>
       </div>
 
       {/* Filter */}
@@ -312,8 +325,8 @@ export const LeaveManagement = () => {
                           Approuver
                         </Button>
 
-                        <Dialog>
-                          <DialogTrigger asChild>
+                        <ResponsiveModal>
+                          <ResponsiveModalTrigger asChild>
                             <Button
                               size="sm"
                               variant="outline"
@@ -322,11 +335,11 @@ export const LeaveManagement = () => {
                               <X className="mr-1 h-4 w-4" />
                               Rejeter
                             </Button>
-                          </DialogTrigger>
-                          <DialogContent>
-                            <DialogHeader>
-                              <DialogTitle>Rejeter la demande</DialogTitle>
-                            </DialogHeader>
+                          </ResponsiveModalTrigger>
+                          <ResponsiveModalContent>
+                            <ResponsiveModalHeader>
+                              <ResponsiveModalTitle>Rejeter la demande</ResponsiveModalTitle>
+                            </ResponsiveModalHeader>
                             <div className="space-y-4">
                               <Textarea
                                 placeholder="Motif de rejet..."
@@ -343,8 +356,8 @@ export const LeaveManagement = () => {
                                 </Button>
                               </div>
                             </div>
-                          </DialogContent>
-                        </Dialog>
+                          </ResponsiveModalContent>
+                        </ResponsiveModal>
                       </div>
                     )}
                   </div>

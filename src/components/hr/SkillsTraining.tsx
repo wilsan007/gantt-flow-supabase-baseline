@@ -13,6 +13,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useSkillsTraining } from '@/hooks/useSkillsTraining';
+import { CreateSkillDialog, CreateSkillAssessmentDialog } from './HRActionDialogs';
 
 export const SkillsTraining = () => {
   const [activeView, setActiveView] = useState('skills');
@@ -51,14 +52,18 @@ export const SkillsTraining = () => {
           </p>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline">
-            <BookOpen className="mr-2 h-4 w-4" />
-            Nouvelle compétence
-          </Button>
-          <Button>
-            <TrendingUp className="mr-2 h-4 w-4" />
-            Évaluer compétences
-          </Button>
+          <CreateSkillDialog>
+            <Button variant="outline">
+              <BookOpen className="mr-2 h-4 w-4" />
+              Nouvelle compétence
+            </Button>
+          </CreateSkillDialog>
+          <CreateSkillAssessmentDialog>
+            <Button>
+              <TrendingUp className="mr-2 h-4 w-4" />
+              Évaluer compétences
+            </Button>
+          </CreateSkillAssessmentDialog>
         </div>
       </div>
 

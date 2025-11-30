@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import {
+  ResponsiveModal,
+  ResponsiveModalContent,
+  ResponsiveModalHeader,
+  ResponsiveModalTitle,
+} from '@/components/ui/responsive-modal';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { withUniversalDialog } from '@/components/ui/universal-dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -39,7 +44,10 @@ interface RoleManagementDialogProps {
   onOpenChange: (open: boolean) => void;
 }
 
-const RoleManagementDialogBase: React.FC<RoleManagementDialogProps> = ({ open, onOpenChange }) => {
+export const RoleManagementDialog: React.FC<RoleManagementDialogProps> = ({
+  open,
+  onOpenChange,
+}) => {
   const {
     roles,
     permissions,
@@ -135,14 +143,14 @@ const RoleManagementDialogBase: React.FC<RoleManagementDialogProps> = ({ open, o
   const permissionsByResource = getPermissionsByResource();
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="flex max-h-[90vh] max-w-6xl flex-col overflow-hidden">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
+    <ResponsiveModal open={open} onOpenChange={onOpenChange}>
+      <ResponsiveModalContent className="flex max-h-[90vh] max-w-6xl flex-col overflow-hidden">
+        <ResponsiveModalHeader>
+          <ResponsiveModalTitle className="flex items-center gap-2">
             <Shield className="h-5 w-5" />
             Gestion des Rôles et Permissions
-          </DialogTitle>
-        </DialogHeader>
+          </ResponsiveModalTitle>
+        </ResponsiveModalHeader>
 
         <Tabs defaultValue="user-roles" className="flex flex-1 flex-col overflow-hidden">
           <TabsList className="grid w-full grid-cols-3">
@@ -457,9 +465,7 @@ const RoleManagementDialogBase: React.FC<RoleManagementDialogProps> = ({ open, o
             </div>
           </DialogContent>
         </Dialog>
-      </DialogContent>
-    </Dialog>
+      </ResponsiveModalContent>
+    </ResponsiveModal>
   );
 };
-// 🎨 Export avec support mobile automatique + thème Admin
-export const RoleManagementDialog = withUniversalDialog('admin', RoleManagementDialogBase);

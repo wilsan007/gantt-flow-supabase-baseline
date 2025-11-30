@@ -43,6 +43,7 @@ interface SimpleUserMenuProps {
   isTenantAdmin?: boolean;
   tenantName?: string;
   onSignOut?: () => Promise<void>;
+  className?: string;
 }
 
 export const SimpleUserMenu: React.FC<SimpleUserMenuProps> = ({
@@ -50,6 +51,7 @@ export const SimpleUserMenu: React.FC<SimpleUserMenuProps> = ({
   isTenantAdmin = false,
   tenantName,
   onSignOut,
+  className,
 }) => {
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -93,7 +95,7 @@ export const SimpleUserMenu: React.FC<SimpleUserMenuProps> = ({
         <DropdownMenuTrigger asChild>
           <Button
             variant="ghost"
-            className="ring-primary/20 hover:ring-primary/40 relative h-10 w-10 rounded-full ring-2 transition-all duration-300"
+            className={`ring-primary/20 hover:ring-primary/40 relative h-10 w-10 rounded-full ring-2 transition-all duration-300 ${className}`}
           >
             <Avatar className="h-10 w-10">
               <AvatarImage

@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from '@/components/ui/dialog';
-import { withUniversalDialog } from '@/components/ui/universal-dialog';
+  ResponsiveModal,
+  ResponsiveModalContent,
+  ResponsiveModalHeader,
+  ResponsiveModalTitle,
+  ResponsiveModalFooter,
+} from '@/components/ui/responsive-modal';
+
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -36,7 +36,7 @@ interface TaskCreationDialogProps {
   }) => void;
 }
 
-const TaskCreationDialogBase: React.FC<TaskCreationDialogProps> = ({
+export const TaskCreationDialog: React.FC<TaskCreationDialogProps> = ({
   open,
   onOpenChange,
   onCreateTask,
@@ -125,14 +125,14 @@ const TaskCreationDialogBase: React.FC<TaskCreationDialogProps> = ({
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
+    <ResponsiveModal open={open} onOpenChange={onOpenChange}>
+      <ResponsiveModalContent className="max-w-2xl">
+        <ResponsiveModalHeader>
+          <ResponsiveModalTitle className="flex items-center gap-2">
             <Plus className="h-5 w-5" />
             Créer une Nouvelle Tâche
-          </DialogTitle>
-        </DialogHeader>
+          </ResponsiveModalTitle>
+        </ResponsiveModalHeader>
 
         <div className="space-y-4">
           {/* Sélection template */}
@@ -282,7 +282,7 @@ const TaskCreationDialogBase: React.FC<TaskCreationDialogProps> = ({
           </div>
         </div>
 
-        <DialogFooter>
+        <ResponsiveModalFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             <X className="mr-2 h-4 w-4" />
             Annuler
@@ -294,10 +294,8 @@ const TaskCreationDialogBase: React.FC<TaskCreationDialogProps> = ({
             <Save className="mr-2 h-4 w-4" />
             {loading ? 'Création...' : 'Créer la Tâche'}
           </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        </ResponsiveModalFooter>
+      </ResponsiveModalContent>
+    </ResponsiveModal>
   );
 };
-// 🎨 Export avec support mobile automatique + thème Tasks
-export const TaskCreationDialog = withUniversalDialog('tasks', TaskCreationDialogBase);

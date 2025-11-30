@@ -58,6 +58,7 @@ interface TaskRowProps {
   onEdit: (taskId: string) => void;
   onUpdateAssignee: (taskId: string, assignee: string) => void;
   onUpdateTask?: (taskId: string, updates: Partial<Task>) => void;
+  isGhost?: boolean;
 }
 
 export const TaskRow = ({
@@ -72,6 +73,7 @@ export const TaskRow = ({
   onEdit,
   onUpdateAssignee,
   onUpdateTask,
+  isGhost = false,
 }: TaskRowProps) => {
   const isSubtask = (task.task_level || 0) > 0;
   const [subtaskDialogOpen, setSubtaskDialogOpen] = useState(false);
@@ -86,7 +88,7 @@ export const TaskRow = ({
           selectedTaskId === task.id
             ? 'border-primary/40 bg-primary/15'
             : 'hover:bg-gantt-task-bg/50'
-        }`}
+        } ${isGhost ? 'border-dashed opacity-60 hover:opacity-100' : ''}`}
         style={{
           height: isSubtask ? '51px' : '64px',
           minHeight: isSubtask ? '51px' : '64px',
@@ -104,7 +106,9 @@ export const TaskRow = ({
         {/* Titre de la tâche avec actions */}
         <EditableTitleCell
           value={task.title}
-          onChange={async value => onUpdateTask?.(task.id, { title: value })}
+          onChange={title => onUpdateTask && onUpdateTask(task.id, { title })}
+          readOnly={isGhost ? false : !permissions.canEditTitle}
+          placeholder={isGhost ? '+ Ajouter une nouvelle tâche...' : undefined}
           displayOrder={task.display_order || '1'}
           taskLevel={task.task_level || 0}
           isSubtask={isSubtask}
@@ -117,7 +121,6 @@ export const TaskRow = ({
           }}
           actionTitle={isSubtask ? 'Supprimer la sous-tâche' : 'Créer une sous-tâche'}
           debounceMs={800}
-          readOnly={!permissions.canEditTitle}
         />
 
         {/* Projet - Affichage du nom du projet lié avec design futuriste */}

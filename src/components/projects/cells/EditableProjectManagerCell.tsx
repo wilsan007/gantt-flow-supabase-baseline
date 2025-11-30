@@ -24,7 +24,17 @@ export const EditableProjectManagerCell: React.FC<EditableProjectManagerCellProp
   const selectRef = useRef<HTMLDivElement>(null);
 
   // Récupérer la liste des employés
-  const { employees } = useHRMinimal();
+  const { employees } = useHRMinimal({
+    enabled: {
+      employees: true,
+      leaveRequests: false,
+      attendances: false,
+      leaveBalances: false,
+      departments: false,
+      absenceTypes: false,
+    },
+    limits: { employees: 15 },
+  });
 
   // 🔒 FILTRAGE SÉCURITÉ CRITIQUE : Uniquement les employés du même tenant que le projet
   const filteredEmployees = React.useMemo(() => {

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useUserFilterContext } from '@/hooks/useUserAuth';
 import { applyRoleFilters } from '@/lib/roleBasedFiltering';
@@ -60,8 +60,11 @@ export const useHealthSafety = () => {
   // 🔒 Contexte utilisateur pour le filtrage
   const { userContext } = useUserFilterContext();
 
-  const fetchHealthSafetyData = async () => {
-    if (!userContext) return;
+  const fetchHealthSafetyData = useCallback(async () => {
+    if (!userContext) {
+      setLoading(false);
+      return;
+    }
 
     try {
       setLoading(true);
@@ -120,10 +123,11 @@ export const useHealthSafety = () => {
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Une erreur est survenue');
       console.error('Error fetching health safety data:', err);
+      // Don't log error if tables don't exist
     } finally {
       setLoading(false);
     }
-  };
+  }, [userContext?.userId, userContext?.tenantId]);
 
   const createIncident = async (incidentData: Omit<Incident, 'id' | 'actions'>) => {
     try {
@@ -257,8 +261,12 @@ export const useHealthSafety = () => {
   };
 
   useEffect(() => {
-    fetchHealthSafetyData();
-  }, []);
+    if (userContext?.userId) {
+      fetchHealthSafetyData();
+    } else {
+      setLoading(false);
+    }
+  }, [fetchHealthSafetyData, userContext?.userId]);
 
   return {
     incidents,

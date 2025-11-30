@@ -70,6 +70,7 @@ interface UserMenuProps {
   isSuperAdmin?: boolean;
   tenantName?: string;
   onSignOut?: () => Promise<void>;
+  className?: string;
 }
 
 type UserStatus = 'online' | 'away' | 'busy' | 'offline';
@@ -80,6 +81,7 @@ export const UserMenu: React.FC<UserMenuProps> = ({
   isSuperAdmin = false,
   tenantName,
   onSignOut,
+  className,
 }) => {
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -147,7 +149,9 @@ export const UserMenu: React.FC<UserMenuProps> = ({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <button className="hover:bg-accent flex items-center gap-2 rounded-lg px-2 py-1.5 transition-colors">
+        <button
+          className={`hover:bg-accent flex items-center gap-2 rounded-lg px-2 py-1.5 transition-colors ${className}`}
+        >
           <div className="relative">
             <Avatar className="h-8 w-8">
               <AvatarImage

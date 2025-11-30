@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from '@/components/ui/dialog';
+  ResponsiveModal,
+  ResponsiveModalContent,
+  ResponsiveModalHeader,
+  ResponsiveModalTitle,
+  ResponsiveModalDescription,
+  ResponsiveModalFooter,
+} from '@/components/ui/responsive-modal';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -19,7 +20,6 @@ import {
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { Loader2, Mail, User, Briefcase, Building2 } from '@/lib/icons';
-import { withUniversalDialog } from '@/components/ui/universal-dialog';
 
 interface QuickInviteDialogProps {
   open: boolean;
@@ -27,7 +27,7 @@ interface QuickInviteDialogProps {
   onInviteSuccess?: () => void;
 }
 
-const QuickInviteDialogBase: React.FC<QuickInviteDialogProps> = ({
+export const QuickInviteDialog: React.FC<QuickInviteDialogProps> = ({
   open,
   onOpenChange,
   onInviteSuccess,
@@ -56,7 +56,7 @@ const QuickInviteDialogBase: React.FC<QuickInviteDialogProps> = ({
       }
 
       const response = await fetch(
-        `${supabase.supabaseUrl}/functions/v1/send-collaborator-invitation`,
+        `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/send-collaborator-invitation`,
         {
           method: 'POST',
           headers: {
@@ -103,88 +103,94 @@ const QuickInviteDialogBase: React.FC<QuickInviteDialogProps> = ({
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md">
-        <DialogHeader>
-          <DialogTitle>Inviter un collaborateur</DialogTitle>
-        </DialogHeader>
+    <ResponsiveModal open={open} onOpenChange={onOpenChange}>
+      <ResponsiveModalContent className="max-w-md p-0">
+        <ResponsiveModalHeader className="px-6 pt-6">
+          <ResponsiveModalTitle>Inviter un collaborateur</ResponsiveModalTitle>
+          <ResponsiveModalDescription>
+            Envoyez une invitation pour rejoindre votre espace de travail.
+          </ResponsiveModalDescription>
+        </ResponsiveModalHeader>
 
-        <div className="space-y-4 py-4">
-          {/* Email */}
-          <div className="space-y-2">
-            <Label htmlFor="email" className="flex items-center gap-2">
-              <Mail className="h-4 w-4" />
-              Email *
-            </Label>
-            <Input
-              id="email"
-              type="email"
-              value={email}
-              onChange={e => setEmail(e.target.value)}
-              placeholder="collaborateur@example.com"
-              autoFocus
-            />
-          </div>
+        {/* Scrollable content */}
+        <div className="max-h-[60vh] overflow-y-auto px-6">
+          <div className="space-y-4 py-4">
+            {/* Email */}
+            <div className="space-y-2">
+              <Label htmlFor="email" className="flex items-center gap-2">
+                <Mail className="h-4 w-4" />
+                Email *
+              </Label>
+              <Input
+                id="email"
+                type="email"
+                value={email}
+                onChange={e => setEmail(e.target.value)}
+                placeholder="collaborateur@example.com"
+                autoFocus
+              />
+            </div>
 
-          {/* Nom complet */}
-          <div className="space-y-2">
-            <Label htmlFor="fullName" className="flex items-center gap-2">
-              <User className="h-4 w-4" />
-              Nom complet *
-            </Label>
-            <Input
-              id="fullName"
-              value={fullName}
-              onChange={e => setFullName(e.target.value)}
-              placeholder="Jean Dupont"
-            />
-          </div>
+            {/* Nom complet */}
+            <div className="space-y-2">
+              <Label htmlFor="fullName" className="flex items-center gap-2">
+                <User className="h-4 w-4" />
+                Nom complet *
+              </Label>
+              <Input
+                id="fullName"
+                value={fullName}
+                onChange={e => setFullName(e.target.value)}
+                placeholder="Jean Dupont"
+              />
+            </div>
 
-          {/* Rôle */}
-          <div className="space-y-2">
-            <Label htmlFor="role">Rôle</Label>
-            <Select value={roleToAssign} onValueChange={setRoleToAssign}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="employee">Employé</SelectItem>
-                <SelectItem value="manager">Manager</SelectItem>
-                <SelectItem value="hr_manager">Responsable RH</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+            {/* Rôle */}
+            <div className="space-y-2">
+              <Label htmlFor="role">Rôle</Label>
+              <Select value={roleToAssign} onValueChange={setRoleToAssign}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="employee">Employé</SelectItem>
+                  <SelectItem value="manager">Manager</SelectItem>
+                  <SelectItem value="hr_manager">Responsable RH</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
 
-          {/* Département (optionnel) */}
-          <div className="space-y-2">
-            <Label htmlFor="department" className="flex items-center gap-2">
-              <Building2 className="h-4 w-4" />
-              Département
-            </Label>
-            <Input
-              id="department"
-              value={department}
-              onChange={e => setDepartment(e.target.value)}
-              placeholder="Développement"
-            />
-          </div>
+            {/* Département (optionnel) */}
+            <div className="space-y-2">
+              <Label htmlFor="department" className="flex items-center gap-2">
+                <Building2 className="h-4 w-4" />
+                Département
+              </Label>
+              <Input
+                id="department"
+                value={department}
+                onChange={e => setDepartment(e.target.value)}
+                placeholder="Développement"
+              />
+            </div>
 
-          {/* Poste (optionnel) */}
-          <div className="space-y-2">
-            <Label htmlFor="jobPosition" className="flex items-center gap-2">
-              <Briefcase className="h-4 w-4" />
-              Poste
-            </Label>
-            <Input
-              id="jobPosition"
-              value={jobPosition}
-              onChange={e => setJobPosition(e.target.value)}
-              placeholder="Développeur Full Stack"
-            />
+            {/* Poste (optionnel) */}
+            <div className="space-y-2">
+              <Label htmlFor="jobPosition" className="flex items-center gap-2">
+                <Briefcase className="h-4 w-4" />
+                Poste
+              </Label>
+              <Input
+                id="jobPosition"
+                value={jobPosition}
+                onChange={e => setJobPosition(e.target.value)}
+                placeholder="Développeur Full Stack"
+              />
+            </div>
           </div>
         </div>
 
-        <DialogFooter>
+        <ResponsiveModalFooter className="px-6 pb-6">
           <Button variant="outline" onClick={() => onOpenChange(false)} disabled={loading}>
             Annuler
           </Button>
@@ -198,11 +204,8 @@ const QuickInviteDialogBase: React.FC<QuickInviteDialogProps> = ({
               "Envoyer l'invitation"
             )}
           </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        </ResponsiveModalFooter>
+      </ResponsiveModalContent>
+    </ResponsiveModal>
   );
 };
-
-// 🎨 Export avec support mobile automatique + thème RH
-export const QuickInviteDialog = withUniversalDialog('hr', QuickInviteDialogBase);

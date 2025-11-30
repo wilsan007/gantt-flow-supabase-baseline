@@ -1,6 +1,7 @@
 // @ts-nocheck
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
+import { Table } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@/components/ui/resizable';
 // Hooks optimisés avec cache intelligent et métriques
@@ -11,6 +12,7 @@ import { useViewMode } from '@/contexts/ViewModeContext';
 import { useIsMobile, useIsMobileLayout } from '@/hooks/use-mobile';
 // import { MobileDynamicTable } from '../responsive/MobileDynamicTable';
 import { TaskTableHeader } from './TaskTableHeader';
+import { TaskTableBody } from './TaskTableBody';
 import { TaskFixedColumns } from './TaskFixedColumns';
 import { TaskActionColumns } from './TaskActionColumns';
 import { LoadingState } from '@/components/ui/loading-state';
@@ -107,25 +109,22 @@ const DynamicTable = ({ demoTasks, isDemoMode = false }: DynamicTableProps = {})
     // Vérifier si les actions sont chargées
   }, [tasks]);
 
-  // Fonction de synchronisation du scroll
+  // Fonction de synchronisation du scroll robuste
   const syncScroll = useCallback((source: 'fixed' | 'action') => {
-    if (isSyncingScroll.current) return;
+    const fixed = fixedColumnsScrollRef.current;
+    const action = actionColumnsScrollRef.current;
 
-    isSyncingScroll.current = true;
+    if (!fixed || !action) return;
 
-    if (source === 'fixed' && fixedColumnsScrollRef.current && actionColumnsScrollRef.current) {
-      actionColumnsScrollRef.current.scrollTop = fixedColumnsScrollRef.current.scrollTop;
-    } else if (
-      source === 'action' &&
-      actionColumnsScrollRef.current &&
-      fixedColumnsScrollRef.current
-    ) {
-      fixedColumnsScrollRef.current.scrollTop = actionColumnsScrollRef.current.scrollTop;
+    const target = source === 'fixed' ? action : fixed;
+    const sourceEl = source === 'fixed' ? fixed : action;
+
+    // Synchroniser seulement si la différence est significative (> 1px)
+    // Cela évite les boucles infinies car l'événement de scroll déclenché par la mise à jour
+    // aura une différence de 0 (ou très proche)
+    if (Math.abs(target.scrollTop - sourceEl.scrollTop) > 1) {
+      target.scrollTop = sourceEl.scrollTop;
     }
-
-    setTimeout(() => {
-      isSyncingScroll.current = false;
-    }, 0);
   }, []);
 
   const handleAddActionColumn = async () => {
@@ -409,6 +408,8 @@ const DynamicTable = ({ demoTasks, isDemoMode = false }: DynamicTableProps = {})
             <ResizablePanel defaultSize={60} minSize={40} maxSize={80}>
               <TaskFixedColumns
                 tasks={filteredTasks}
+                selectedTaskId={selectedTaskId}
+                onSelectTask={handleSelectTask}
                 onDuplicate={handleDuplicateTask}
                 onDelete={handleDeleteTask}
                 onEdit={handleEditTask}
@@ -416,8 +417,6 @@ const DynamicTable = ({ demoTasks, isDemoMode = false }: DynamicTableProps = {})
                 onCreateSubtaskWithActions={handleCreateSubtaskWithActions}
                 onUpdateAssignee={handleUpdateAssignee}
                 onUpdateTask={handleUpdateTask}
-                selectedTaskId={selectedTaskId}
-                onSelectTask={handleSelectTask}
                 scrollRef={fixedColumnsScrollRef}
                 onScroll={() => syncScroll('fixed')}
               />

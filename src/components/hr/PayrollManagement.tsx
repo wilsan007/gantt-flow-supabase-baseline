@@ -21,6 +21,8 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { usePayrollManagement } from '@/hooks/usePayrollManagement';
+import { CreatePayrollPeriodDialog } from './HRActionDialogs';
+import { formatCurrency } from '@/components/common/CurrencySelect';
 
 interface PayrollPeriod {
   id: string;
@@ -154,10 +156,12 @@ export const PayrollManagement = () => {
             <FileSpreadsheet className="mr-2 h-4 w-4" />
             Importer données
           </Button>
-          <Button>
-            <Lock className="mr-2 h-4 w-4" />
-            Verrouiller période
-          </Button>
+          <CreatePayrollPeriodDialog>
+            <Button>
+              <Calendar className="mr-2 h-4 w-4" />
+              Nouvelle période
+            </Button>
+          </CreatePayrollPeriodDialog>
         </div>
       </div>
 
@@ -205,20 +209,24 @@ export const PayrollManagement = () => {
                   <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
                     <div>
                       <p className="text-muted-foreground text-sm font-medium">Salaire brut</p>
-                      <p className="text-xl font-bold">{period.totalGross.toLocaleString()} €</p>
+                      <p className="text-xl font-bold">
+                        {formatCurrency(period.totalGross, 'DJF')}
+                      </p>
                     </div>
                     <div>
                       <p className="text-muted-foreground text-sm font-medium">Salaire net</p>
-                      <p className="text-xl font-bold">{period.totalNet.toLocaleString()} €</p>
+                      <p className="text-xl font-bold">{formatCurrency(period.totalNet, 'DJF')}</p>
                     </div>
                     <div>
                       <p className="text-muted-foreground text-sm font-medium">Charges sociales</p>
-                      <p className="text-xl font-bold">{period.totalCharges.toLocaleString()} €</p>
+                      <p className="text-xl font-bold">
+                        {formatCurrency(period.totalCharges, 'DJF')}
+                      </p>
                     </div>
                     <div>
                       <p className="text-muted-foreground text-sm font-medium">Coût total</p>
                       <p className="text-xl font-bold">
-                        {(period.totalGross + period.totalCharges).toLocaleString()} €
+                        {formatCurrency(period.totalGross + period.totalCharges, 'DJF')}
                       </p>
                     </div>
                   </div>
@@ -286,7 +294,7 @@ export const PayrollManagement = () => {
                       <p className="text-muted-foreground text-sm">{payroll.position}</p>
                     </div>
                     <div className="text-right">
-                      <p className="text-xl font-bold">{payroll.netTotal.toLocaleString()} €</p>
+                      <p className="text-xl font-bold">{formatCurrency(payroll.netTotal, 'DJF')}</p>
                       <p className="text-muted-foreground text-sm">Net à payer</p>
                     </div>
                   </div>
@@ -295,15 +303,15 @@ export const PayrollManagement = () => {
                   <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
                     <div>
                       <p className="text-muted-foreground text-sm font-medium">Salaire de base</p>
-                      <p className="font-bold">{payroll.baseSalary.toLocaleString()} €</p>
+                      <p className="font-bold">{formatCurrency(payroll.baseSalary, 'DJF')}</p>
                     </div>
                     <div>
                       <p className="text-muted-foreground text-sm font-medium">Total brut</p>
-                      <p className="font-bold">{payroll.grossTotal.toLocaleString()} €</p>
+                      <p className="font-bold">{formatCurrency(payroll.grossTotal, 'DJF')}</p>
                     </div>
                     <div>
                       <p className="text-muted-foreground text-sm font-medium">Charges sociales</p>
-                      <p className="font-bold">{payroll.socialCharges.toLocaleString()} €</p>
+                      <p className="font-bold">{formatCurrency(payroll.socialCharges, 'DJF')}</p>
                     </div>
                     <div>
                       <p className="text-muted-foreground text-sm font-medium">
@@ -329,7 +337,7 @@ export const PayrollManagement = () => {
                         >
                           <span className="text-sm text-green-800">+ {bonus.name}</span>
                           <span className="font-medium text-green-800">
-                            {bonus.amount.toLocaleString()} €
+                            {formatCurrency(bonus.amount, 'DJF')}
                           </span>
                         </div>
                       ))}
@@ -341,7 +349,7 @@ export const PayrollManagement = () => {
                         >
                           <span className="text-sm text-red-800">- {deduction.name}</span>
                           <span className="font-medium text-red-800">
-                            {deduction.amount.toLocaleString()} €
+                            {formatCurrency(deduction.amount, 'DJF')}
                           </span>
                         </div>
                       ))}

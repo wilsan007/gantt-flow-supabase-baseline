@@ -15,18 +15,20 @@ import {
   Search,
   Calendar,
   CheckSquare,
+  LayoutGrid,
 } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
+import KanbanBoard from '@/components/vues/kanban/KanbanBoard';
 
 export default function TaskManagementPage() {
   const [activeTab, setActiveTab] = useState<
-    'my-assigned-tasks' | 'all-tasks' | 'create' | 'analytics' | 'search' | 'calendar'
+    'my-assigned-tasks' | 'all-tasks' | 'create' | 'analytics' | 'search' | 'calendar' | 'kanban'
   >('my-assigned-tasks');
   const navigate = useNavigate();
   const isMobile = useIsMobile();
 
   return (
-    <div className="bg-background/50 h-full">
+    <div className="bg-background/50 min-h-screen w-full overflow-y-auto">
       <div className="container mx-auto space-y-6 p-4 sm:p-6">
         {/* Header Moderne & Coloré */}
         <div className="via-primary relative overflow-hidden rounded-2xl bg-gradient-to-r from-violet-600 to-blue-600 p-6 text-white shadow-lg sm:p-10">
@@ -135,6 +137,18 @@ export default function TaskManagementPage() {
                 </div>
                 <span className="font-medium">Calendrier</span>
               </TabsTrigger>
+
+              {!isMobile && (
+                <TabsTrigger
+                  value="kanban"
+                  className="group flex min-w-fit items-center gap-2 rounded-full border border-transparent px-4 py-2.5 data-[state=active]:border-orange-200 data-[state=active]:bg-orange-50 data-[state=active]:text-orange-700 dark:data-[state=active]:bg-orange-900/30 dark:data-[state=active]:text-orange-300"
+                >
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-orange-100 text-orange-600 transition-colors group-data-[state=active]:bg-orange-600 group-data-[state=active]:text-white">
+                    <LayoutGrid className="h-4 w-4" />
+                  </div>
+                  <span className="font-medium">Kanban</span>
+                </TabsTrigger>
+              )}
             </TabsList>
           </div>
 
@@ -180,6 +194,15 @@ export default function TaskManagementPage() {
             >
               <TaskCalendar />
             </TabsContent>
+
+            {!isMobile && (
+              <TabsContent
+                value="kanban"
+                className="animate-in fade-in-50 slide-in-from-bottom-2 m-0 duration-300"
+              >
+                <KanbanBoard />
+              </TabsContent>
+            )}
           </div>
         </Tabs>
       </div>

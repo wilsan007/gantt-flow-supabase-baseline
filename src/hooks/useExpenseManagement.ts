@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { useUserFilterContext } from '@/hooks/useUserAuth';
+import { useAuthFilterContext } from '@/contexts/AuthContext';
 import { applyRoleFilters } from '@/lib/roleBasedFiltering';
 import { useToast } from '@/hooks/use-toast';
 
@@ -56,15 +56,21 @@ export function useExpenseManagement() {
   const [error, setError] = useState<string | null>(null);
 
   // 🔒 Contexte utilisateur pour le filtrage
-  const { userContext } = useUserFilterContext();
+  const { userContext } = useAuthFilterContext();
   const { toast } = useToast();
 
   const fetchData = useCallback(async () => {
-    if (!userContext) return;
+    console.log('🔄 [useExpenseManagement] fetchData called', { userContext: !!userContext });
+
+    if (!userContext) {
+      console.log('❌ [useExpenseManagement] No userContext, aborting');
+      return;
+    }
 
     try {
       setLoading(true);
       setError(null);
+      console.log('⏳ [useExpenseManagement] Starting Supabase queries...');
 
       // 🔒 Construire les queries avec filtrage
       let reportsQuery = supabase
@@ -92,11 +98,16 @@ export function useExpenseManagement() {
       if (itemsRes.error) throw itemsRes.error;
       if (categoriesRes.error) throw categoriesRes.error;
 
+      console.log('✅ [useExpenseManagement] Data fetched successfully', {
+        reports: reportsRes.data?.length,
+        items: itemsRes.data?.length,
+      });
+
       setExpenseReports((reportsRes.data as ExpenseReport[]) || []);
       setExpenseItems((itemsRes.data as ExpenseItem[]) || []);
       setExpenseCategories((categoriesRes.data as ExpenseCategory[]) || []);
     } catch (err: any) {
-      console.error('Error fetching expense data:', err);
+      console.error('❌ [useExpenseManagement] Error:', err);
       setError(err.message);
     } finally {
       setLoading(false);
@@ -202,8 +213,10 @@ export function useExpenseManagement() {
   };
 
   useEffect(() => {
-    fetchData();
-  }, []);
+    if (userContext) {
+      fetchData();
+    }
+  }, [userContext]); // ✅ Only depend on userContext, not fetchData
 
   return {
     expenseReports,

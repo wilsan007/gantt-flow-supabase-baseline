@@ -61,7 +61,17 @@ export const ActivityFormWithAssignment: React.FC<ActivityFormWithAssignmentProp
   initialData,
   mode = 'create',
 }) => {
-  const { employees, loading: loadingEmployees } = useHRMinimal();
+  const { employees, loading: loadingEmployees } = useHRMinimal({
+    enabled: {
+      employees: true,
+      leaveRequests: false,
+      attendances: false,
+      leaveBalances: false,
+      departments: false,
+      absenceTypes: false,
+    },
+    limits: { employees: 15 },
+  });
 
   const [formData, setFormData] = useState<ActivityData>({
     name: '',

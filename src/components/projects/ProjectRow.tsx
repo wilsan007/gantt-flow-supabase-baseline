@@ -16,8 +16,8 @@ interface Project {
   id: string;
   name: string;
   status: string;
-  progress: number;
-  manager: string | { full_name: string } | null;
+  progress?: number;
+  manager: string | { id: string; full_name: string } | null;
   budget: number | null;
   start_date: string | null;
   end_date: string | null;
@@ -33,6 +33,7 @@ interface ProjectRowProps {
   onProjectClick?: (project: Project) => void;
   isSelected: boolean;
   compactMode?: boolean;
+  currency?: string;
 }
 
 export const ProjectRow: React.FC<ProjectRowProps> = ({
@@ -45,7 +46,7 @@ export const ProjectRow: React.FC<ProjectRowProps> = ({
   // 🔒 Hook de permissions pour ce projet
   const permissions = useProjectEditPermissions({ project });
 
-  const getManagerName = (manager: string | { full_name: string } | null): string => {
+  const getManagerName = (manager: string | { id: string; full_name: string } | null): string => {
     if (!manager) return 'Non assigné';
     if (typeof manager === 'string') return manager;
     return manager.full_name || 'Non assigné';
@@ -96,6 +97,7 @@ export const ProjectRow: React.FC<ProjectRowProps> = ({
         value={project.budget}
         onChange={async value => onUpdateProject?.(project.id, { budget: value })}
         readOnly={!permissions.canEditBudget}
+        currency={project.currency || 'DJF'}
       />
 
       {/* Dates - Éditables avec permissions */}

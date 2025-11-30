@@ -16,13 +16,19 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import {
+  ResponsiveModal,
+  ResponsiveModalContent,
+  ResponsiveModalDescription,
+  ResponsiveModalHeader,
+  ResponsiveModalTitle,
+} from '@/components/ui/responsive-modal';
+import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { withUniversalDialog } from '@/components/ui/universal-dialog';
 import { FileText, Upload } from 'lucide-react';
 
 const REQUEST_TYPES = [
@@ -49,7 +55,7 @@ interface AdministrativeRequestDialogProps {
   onSuccess?: () => void;
 }
 
-function AdministrativeRequestDialogBase({
+export function AdministrativeRequestDialog({
   open,
   onOpenChange,
   onSuccess,
@@ -98,15 +104,17 @@ function AdministrativeRequestDialogBase({
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
+    <ResponsiveModal open={open} onOpenChange={onOpenChange}>
+      <ResponsiveModalContent className="max-w-2xl">
+        <ResponsiveModalHeader>
+          <ResponsiveModalTitle className="flex items-center gap-2">
             <FileText className="h-5 w-5" />
             Demande Administrative
-          </DialogTitle>
-          <DialogDescription>Faites une demande auprès du service RH</DialogDescription>
-        </DialogHeader>
+          </ResponsiveModalTitle>
+          <ResponsiveModalDescription>
+            Faites une demande auprès du service RH
+          </ResponsiveModalDescription>
+        </ResponsiveModalHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Type de demande */}
@@ -230,12 +238,7 @@ function AdministrativeRequestDialogBase({
             </Button>
           </div>
         </form>
-      </DialogContent>
-    </Dialog>
+      </ResponsiveModalContent>
+    </ResponsiveModal>
   );
 }
-// 🎨 Export avec support mobile automatique + thème Hr
-export const AdministrativeRequestDialog = withUniversalDialog(
-  'hr',
-  AdministrativeRequestDialogBase
-);

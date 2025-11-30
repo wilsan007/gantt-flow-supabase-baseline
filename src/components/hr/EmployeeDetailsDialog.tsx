@@ -1,6 +1,11 @@
 import { useState, useEffect } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { withUniversalDialog } from '@/components/ui/universal-dialog';
+import {
+  ResponsiveModal,
+  ResponsiveModalContent,
+  ResponsiveModalHeader,
+  ResponsiveModalTitle,
+} from '@/components/ui/responsive-modal';
+
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -76,7 +81,7 @@ interface Absence {
   reason: string;
 }
 
-const EmployeeDetailsDialogBase = ({
+export const EmployeeDetailsDialog = ({
   employee,
   isOpen,
   onOpenChange,
@@ -304,10 +309,10 @@ const EmployeeDetailsDialogBase = ({
   if (!employee) return null;
 
   return (
-    <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[90vh] max-w-4xl overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-3">
+    <ResponsiveModal open={isOpen} onOpenChange={onOpenChange}>
+      <ResponsiveModalContent className="max-h-[90vh] max-w-4xl overflow-y-auto">
+        <ResponsiveModalHeader>
+          <ResponsiveModalTitle className="flex items-center gap-3">
             <Avatar className="h-12 w-12">
               <AvatarImage src={employee.avatar_url || undefined} />
               <AvatarFallback className="text-lg">
@@ -324,8 +329,8 @@ const EmployeeDetailsDialogBase = ({
                 {employee.job_title || 'Poste non défini'}
               </p>
             </div>
-          </DialogTitle>
-        </DialogHeader>
+          </ResponsiveModalTitle>
+        </ResponsiveModalHeader>
 
         <Tabs defaultValue="personal" className="w-full">
           <TabsList className="grid w-full grid-cols-6">
@@ -665,9 +670,7 @@ const EmployeeDetailsDialogBase = ({
             </div>
           </TabsContent>
         </Tabs>
-      </DialogContent>
-    </Dialog>
+      </ResponsiveModalContent>
+    </ResponsiveModal>
   );
 };
-// 🎨 Export avec support mobile automatique + thème Hr
-export const EmployeeDetailsDialog = withUniversalDialog('hr', EmployeeDetailsDialogBase);

@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { useUserFilterContext } from '@/hooks/useUserAuth';
+import { useAuthFilterContext } from '@/contexts/AuthContext';
 import { applyRoleFilters } from '@/lib/roleBasedFiltering';
 
 interface PayrollPeriod {
@@ -58,13 +58,21 @@ export const usePayrollManagement = () => {
   const [error, setError] = useState<string | null>(null);
 
   // 🔒 Contexte utilisateur pour le filtrage
-  const { userContext } = useUserFilterContext();
+  const { userContext } = useAuthFilterContext();
 
-  const fetchPayrollData = async () => {
-    if (!userContext) return;
+  const fetchPayrollData = useCallback(async () => {
+    console.log('🔄 [usePayrollManagement] fetchPayrollData called', {
+      userContext: !!userContext,
+    });
+
+    if (!userContext) {
+      console.log('❌ [usePayrollManagement] No userContext, aborting');
+      return;
+    }
 
     try {
       setLoading(true);
+      console.log('⏳ [usePayrollManagement] Starting Supabase queries...');
 
       // Fetch payroll periods avec filtrage
       let periodsQuery = supabase
@@ -112,6 +120,11 @@ export const usePayrollManagement = () => {
         .eq('status', 'active');
 
       if (employeesError) throw employeesError;
+
+      console.log('✅ [usePayrollManagement] Data fetched successfully', {
+        periods: periods?.length,
+        payrolls: payrolls?.length,
+      });
 
       // Map database data to component interfaces
       const mappedPeriods: PayrollPeriod[] = (periods || []).map(period => ({
@@ -218,12 +231,12 @@ export const usePayrollManagement = () => {
       setEmployeePayrolls(mappedPayrolls);
       setPayrollChecks(dynamicPayrollChecks);
     } catch (err) {
+      console.error('❌ [usePayrollManagement] Error:', err);
       setError(err instanceof Error ? err.message : 'Une erreur est survenue');
-      console.error('Error fetching payroll data:', err);
     } finally {
       setLoading(false);
     }
-  };
+  }, [userContext]); // ✅ Add userContext dependency
 
   const createPayrollPeriod = async (periodData: Omit<PayrollPeriod, 'id'>) => {
     try {
@@ -325,8 +338,10 @@ export const usePayrollManagement = () => {
   };
 
   useEffect(() => {
-    fetchPayrollData();
-  }, []);
+    if (userContext) {
+      fetchPayrollData();
+    }
+  }, [userContext]); // ✅ Only depend on userContext, not fetchPayrollData
 
   return {
     payrollPeriods,

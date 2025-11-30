@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from '@/components/ui/dialog';
-import { withUniversalDialog } from '@/components/ui/universal-dialog';
+  ResponsiveModal,
+  ResponsiveModalContent,
+  ResponsiveModalHeader,
+  ResponsiveModalTitle,
+  ResponsiveModalFooter,
+} from '@/components/ui/responsive-modal';
+
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -27,7 +27,7 @@ interface TaskEditDialogProps {
   onSave?: () => void;
 }
 
-const TaskEditDialogBase: React.FC<TaskEditDialogProps> = ({
+export const TaskEditDialog: React.FC<TaskEditDialogProps> = ({
   open,
   onOpenChange,
   task,
@@ -51,9 +51,13 @@ const TaskEditDialogBase: React.FC<TaskEditDialogProps> = ({
     if (task && open) {
       setTitle(task.title || '');
       setAssignee(
-        task.assignee && task.assignee !== 'Non assigné' ? task.assignee : 'Ahmed Waleh' // Valeur par défaut si non assigné
+        task.assignee && task.assignee !== 'Non assigné'
+          ? typeof task.assignee === 'string'
+            ? task.assignee
+            : (task.assignee as any).full_name
+          : 'Ahmed Waleh'
       );
-      setPriority(task.priority || 'medium');
+      setPriority((task.priority as any) || 'medium');
       setStatus(task.status || 'todo');
     }
   }, [task, open]);
@@ -79,14 +83,14 @@ const TaskEditDialogBase: React.FC<TaskEditDialogProps> = ({
   if (!task) return null;
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
+    <ResponsiveModal open={open} onOpenChange={onOpenChange}>
+      <ResponsiveModalContent className="max-w-2xl">
+        <ResponsiveModalHeader>
+          <ResponsiveModalTitle className="flex items-center gap-2">
             <Edit className="h-5 w-5" />
             Modifier la tâche
-          </DialogTitle>
-        </DialogHeader>
+          </ResponsiveModalTitle>
+        </ResponsiveModalHeader>
 
         <div className="space-y-4">
           <div className="space-y-2">
@@ -152,7 +156,7 @@ const TaskEditDialogBase: React.FC<TaskEditDialogProps> = ({
           </div>
         </div>
 
-        <DialogFooter>
+        <ResponsiveModalFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             <X className="mr-2 h-4 w-4" />
             Annuler
@@ -164,10 +168,8 @@ const TaskEditDialogBase: React.FC<TaskEditDialogProps> = ({
             <Save className="mr-2 h-4 w-4" />
             {loading ? 'Sauvegarde...' : 'Sauvegarder'}
           </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        </ResponsiveModalFooter>
+      </ResponsiveModalContent>
+    </ResponsiveModal>
   );
 };
-// 🎨 Export avec support mobile automatique + thème Tasks
-export const TaskEditDialog = withUniversalDialog('tasks', TaskEditDialogBase);

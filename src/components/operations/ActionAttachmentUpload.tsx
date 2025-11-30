@@ -26,10 +26,11 @@ import { useTenant } from '@/contexts/TenantContext';
 interface ActionAttachmentUploadProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  actionTemplateId: string;
+  actionTemplateId: string; // ID de l'action (task_action.id OU operational_action_template.id)
   actionTitle: string;
   taskId?: string;
   onUploadSuccess?: () => void;
+  actionType?: 'task_action' | 'operational_template'; // Type d'action
 }
 
 interface FileToUpload {
@@ -57,6 +58,7 @@ export const ActionAttachmentUpload: React.FC<ActionAttachmentUploadProps> = ({
   actionTitle,
   taskId,
   onUploadSuccess,
+  actionType = 'operational_template', // Par défaut: operational template
 }) => {
   const [files, setFiles] = useState<FileToUpload[]>([]);
   const [uploading, setUploading] = useState(false);
@@ -194,23 +196,50 @@ export const ActionAttachmentUpload: React.FC<ActionAttachmentUploadProps> = ({
 
         if (storageError) throw storageError;
 
-        // 2. Insérer dans la table
-        const { error: dbError } = await supabase.from('operational_action_attachments').insert({
-          tenant_id: currentTenant.id,
-          action_template_id: actionTemplateId,
-          task_id: taskId || null,
-          file_name: file.name,
-          file_type: getFileType(file.type),
-          file_size: file.size,
-          file_extension: `.${fileExt}`,
-          mime_type: file.type,
-          storage_path: filePath,
-          storage_bucket: 'action-attachments',
-          uploaded_by: user.id,
-          description: description || null,
-        });
+        // 2. Insérer dans la bonne table selon le type d'action
+        if (actionType === 'task_action') {
+          // Pour les actions de tâches projet
+          if (!taskId) {
+            throw new Error('taskId est requis pour les actions de tâches');
+          }
 
-        if (dbError) throw dbError;
+          // @ts-expect-error - Table task_action_attachments créée mais types pas encore régénérés
+          const { error: dbError } = await supabase.from('task_action_attachments').insert({
+            tenant_id: currentTenant.id,
+            task_action_id: actionTemplateId,
+            task_id: taskId,
+            file_name: file.name,
+            file_type: getFileType(file.type),
+            file_size: file.size,
+            file_extension: `.${fileExt}`,
+            mime_type: file.type,
+            storage_path: filePath,
+            storage_bucket: 'action-attachments',
+            uploaded_by: user.id,
+            description: description || null,
+          });
+
+          if (dbError) throw dbError;
+        } else {
+          // Pour les actions opérationnelles (templates)
+          // @ts-expect-error - Table operational_action_attachments créée mais types pas encore régénérés
+          const { error: dbError } = await supabase.from('operational_action_attachments').insert({
+            tenant_id: currentTenant.id,
+            action_template_id: actionTemplateId,
+            task_id: taskId || null,
+            file_name: file.name,
+            file_type: getFileType(file.type),
+            file_size: file.size,
+            file_extension: `.${fileExt}`,
+            mime_type: file.type,
+            storage_path: filePath,
+            storage_bucket: 'action-attachments',
+            uploaded_by: user.id,
+            description: description || null,
+          });
+
+          if (dbError) throw dbError;
+        }
 
         uploadedFiles.push(file.name);
       }

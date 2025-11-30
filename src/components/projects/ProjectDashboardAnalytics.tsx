@@ -148,7 +148,7 @@ export const ProjectDashboardAnalytics: React.FC = () => {
       'Date début': formatDateForExport(p.start_date),
       'Date fin': formatDateForExport(p.end_date),
       Progression: p.progress || 0,
-      Budget: formatCurrencyForExport(p.budget),
+      Budget: formatCurrencyForExport(p.budget, p.currency || 'DJF'),
       'Créé par': p.profiles?.full_name || '',
     }));
 
@@ -170,7 +170,7 @@ export const ProjectDashboardAnalytics: React.FC = () => {
         debut: formatDateForExport(p.start_date),
         fin: formatDateForExport(p.end_date),
         progression: `${p.progress || 0}%`,
-        budget: formatCurrencyForExport(p.budget),
+        budget: formatCurrencyForExport(p.budget, p.currency || 'DJF'),
       }));
 
       await exportTableToPDF(

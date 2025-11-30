@@ -6,7 +6,7 @@
  * Niveau 3 (permissions) : Granulaire - Actions critiques uniquement
  */
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import type { RoleName, UserContext } from '@/lib/roleBasedFiltering';
 
@@ -19,6 +19,7 @@ export interface UserProfile {
   tenantId: string | null;
   isSuperAdmin: boolean;
   jobTitle?: string;
+  employeeId?: string;
 }
 
 // === NIVEAU 2 : Rôle Actif ===
@@ -116,7 +117,7 @@ export function useUserAuth(options: UseUserAuthOptions = {}): UseUserAuthResult
         // Récupérer depuis employees (fallback) - Ignorer les erreurs silencieusement
         const { data: employeeData } = await supabase
           .from('employees')
-          .select('full_name, job_title, tenant_id') // ✅ Retirer 'role' qui n'existe pas
+          .select('id, full_name, job_title, tenant_id') // ✅ Retirer 'role' qui n'existe pas
           .eq('user_id', user.id)
           .maybeSingle();
 
@@ -140,6 +141,7 @@ export function useUserAuth(options: UseUserAuthOptions = {}): UseUserAuthResult
           tenantId: profileData?.tenant_id || employeeData?.tenant_id || null,
           isSuperAdmin: isSuperAdmin,
           jobTitle: employeeData?.job_title,
+          employeeId: employeeData?.id,
         };
 
         // 🔓 CAS SUPER ADMIN : Rôle spécial
@@ -256,11 +258,13 @@ export function useUserAuth(options: UseUserAuthOptions = {}): UseUserAuthResult
       // Auth event tracking
 
       if (event === 'SIGNED_IN') {
-        // Nouvelle connexion, refetch profil
-        fetchAuth(true); // Force refresh
+        // Nouvelle connexion, refetch profil SEULEMENT si pas déjà chargé
+        if (!profile || !userContext) {
+          fetchAuth(true); // Force refresh
+        }
       } else if (event === 'TOKEN_REFRESHED') {
-        // Token rafraîchi, refetch profil
-        fetchAuth(true);
+        // Token rafraîchi, on peut ignorer si la session est valide
+        // fetchAuth(true); // Désactivé pour éviter boucle
       } else if (event === 'SIGNED_OUT') {
         // Déconnexion, nettoyage des états
         // 🚨 NETTOYAGE IMMÉDIAT de tous les états
@@ -279,14 +283,18 @@ export function useUserAuth(options: UseUserAuthOptions = {}): UseUserAuthResult
   }, [fetchAuth]);
 
   // Créer le contexte unifié pour le filtrage
-  const userContext: UserContext | null = profile
-    ? {
-        userId: profile.userId,
-        role: profile.role,
-        tenantId: profile.tenantId,
-        projectIds: includeProjectIds ? projectIds : undefined,
-      }
-    : null;
+  const userContext: UserContext | null = useMemo(
+    () =>
+      profile
+        ? {
+            userId: profile.userId,
+            role: profile.role,
+            tenantId: profile.tenantId,
+            projectIds: includeProjectIds ? projectIds : undefined,
+          }
+        : null,
+    [profile, includeProjectIds, projectIds]
+  );
 
   // Helper pour vérifier une permission
   const hasPermission = useCallback(

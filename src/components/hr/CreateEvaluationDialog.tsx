@@ -1,12 +1,18 @@
 import { useState } from 'react';
 import {
+  ResponsiveModal,
+  ResponsiveModalContent,
+  ResponsiveModalHeader,
+  ResponsiveModalTitle,
+  ResponsiveModalTrigger,
+} from '@/components/ui/responsive-modal';
+import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { withUniversalDialog } from '@/components/ui/universal-dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -36,7 +42,7 @@ interface EvaluationFormData {
   overall_score: number;
 }
 
-const CreateEvaluationDialogBase = ({
+export const CreateEvaluationDialog = ({
   onCreateEvaluation,
   trigger,
 }: CreateEvaluationDialogProps) => {
@@ -98,143 +104,143 @@ const CreateEvaluationDialogBase = ({
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>
+    <ResponsiveModal open={isOpen} onOpenChange={setIsOpen}>
+      <ResponsiveModalTrigger asChild>
         {trigger || (
           <Button>
             <Star className="mr-2 h-4 w-4" />
             Nouvelle évaluation
           </Button>
         )}
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-[600px]">
-        <DialogHeader>
-          <DialogTitle>Créer une nouvelle évaluation</DialogTitle>
-        </DialogHeader>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="employee_name">Employé évalué *</Label>
-              <Select onValueChange={value => setValue('employee_name', value)}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Sélectionner un employé" />
-                </SelectTrigger>
-                <SelectContent>
-                  {employees.map(employee => (
-                    <SelectItem key={employee.id} value={employee.full_name}>
-                      {employee.full_name} {employee.job_title && `(${employee.job_title})`}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              {errors.employee_name && (
-                <p className="text-sm text-red-500">{errors.employee_name.message}</p>
-              )}
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="evaluator_name">Évaluateur *</Label>
-              <Select onValueChange={value => setValue('evaluator_name', value)}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Sélectionner un évaluateur" />
-                </SelectTrigger>
-                <SelectContent>
-                  {employees.map(employee => (
-                    <SelectItem key={employee.id} value={employee.full_name}>
-                      {employee.full_name} {employee.job_title && `(${employee.job_title})`}
-                    </SelectItem>
-                  ))}
-                  <SelectItem value="Direction RH">Direction RH</SelectItem>
-                  <SelectItem value="Direction Générale">Direction Générale</SelectItem>
-                </SelectContent>
-              </Select>
-              {errors.evaluator_name && (
-                <p className="text-sm text-red-500">{errors.evaluator_name.message}</p>
-              )}
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="type">Type d'évaluation *</Label>
-              <Select onValueChange={handleTypeChange}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Type d'évaluation" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="quarterly">Trimestrielle</SelectItem>
-                  <SelectItem value="annual">Annuelle</SelectItem>
-                  <SelectItem value="360">Évaluation 360°</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="period">Période *</Label>
-              <Input
-                id="period"
-                {...register('period', { required: 'La période est obligatoire' })}
-                placeholder="Ex: Q1 2024"
-                value={watch('period')}
-              />
-              {errors.period && <p className="text-sm text-red-500">{errors.period.message}</p>}
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="status">Statut initial</Label>
-              <Select
-                onValueChange={value => setValue('status', value as 'scheduled' | 'in_progress')}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Statut" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="scheduled">Planifiée</SelectItem>
-                  <SelectItem value="in_progress">En cours</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            {selectedType === '360' && (
+      </ResponsiveModalTrigger>
+      <ResponsiveModalContent className="sm:max-w-[600px]">
+        <ResponsiveModalHeader>
+          <ResponsiveModalTitle>Créer une nouvelle évaluation</ResponsiveModalTitle>
+        </ResponsiveModalHeader>
+        <div className="flex-1 overflow-y-auto px-6 pb-6">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="overall_score">Score initial (optionnel)</Label>
-                <Input
-                  id="overall_score"
-                  type="number"
-                  step="0.1"
-                  min="0"
-                  max="5"
-                  {...register('overall_score', { min: 0, max: 5 })}
-                  placeholder="0.0"
-                />
+                <Label htmlFor="employee_name">Employé évalué *</Label>
+                <Select onValueChange={value => setValue('employee_name', value)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Sélectionner un employé" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {employees.map(employee => (
+                      <SelectItem key={employee.id} value={employee.full_name}>
+                        {employee.full_name} {employee.job_title && `(${employee.job_title})`}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {errors.employee_name && (
+                  <p className="text-sm text-red-500">{errors.employee_name.message}</p>
+                )}
               </div>
-            )}
-          </div>
 
-          <div className="bg-muted rounded-lg p-4">
-            <h4 className="mb-2 font-medium">Information</h4>
-            <p className="text-muted-foreground text-sm">
-              {selectedType === 'annual' &&
-                "L'évaluation annuelle permet un bilan complet des performances sur l'année."}
-              {selectedType === 'quarterly' &&
-                "L'évaluation trimestrielle offre un suivi régulier des objectifs."}
-              {selectedType === '360' &&
-                "L'évaluation 360° implique plusieurs évaluateurs pour une vision complète."}
-            </p>
-          </div>
+              <div className="space-y-2">
+                <Label htmlFor="evaluator_name">Évaluateur *</Label>
+                <Select onValueChange={value => setValue('evaluator_name', value)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Sélectionner un évaluateur" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {employees.map(employee => (
+                      <SelectItem key={employee.id} value={employee.full_name}>
+                        {employee.full_name} {employee.job_title && `(${employee.job_title})`}
+                      </SelectItem>
+                    ))}
+                    <SelectItem value="Direction RH">Direction RH</SelectItem>
+                    <SelectItem value="Direction Générale">Direction Générale</SelectItem>
+                  </SelectContent>
+                </Select>
+                {errors.evaluator_name && (
+                  <p className="text-sm text-red-500">{errors.evaluator_name.message}</p>
+                )}
+              </div>
+            </div>
 
-          <div className="flex justify-end gap-2 pt-4">
-            <Button type="button" variant="outline" onClick={() => setIsOpen(false)}>
-              Annuler
-            </Button>
-            <Button type="submit">Créer l'évaluation</Button>
-          </div>
-        </form>
-      </DialogContent>
-    </Dialog>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="type">Type d'évaluation *</Label>
+                <Select onValueChange={handleTypeChange}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Type d'évaluation" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="quarterly">Trimestrielle</SelectItem>
+                    <SelectItem value="annual">Annuelle</SelectItem>
+                    <SelectItem value="360">Évaluation 360°</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="period">Période *</Label>
+                <Input
+                  id="period"
+                  {...register('period', { required: 'La période est obligatoire' })}
+                  placeholder="Ex: Q1 2024"
+                  value={watch('period')}
+                />
+                {errors.period && <p className="text-sm text-red-500">{errors.period.message}</p>}
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="status">Statut initial</Label>
+                <Select
+                  onValueChange={value => setValue('status', value as 'scheduled' | 'in_progress')}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Statut" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="scheduled">Planifiée</SelectItem>
+                    <SelectItem value="in_progress">En cours</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {selectedType === '360' && (
+                <div className="space-y-2">
+                  <Label htmlFor="overall_score">Score initial (optionnel)</Label>
+                  <Input
+                    id="overall_score"
+                    type="number"
+                    step="0.1"
+                    min="0"
+                    max="5"
+                    {...register('overall_score', { min: 0, max: 5 })}
+                    placeholder="0.0"
+                  />
+                </div>
+              )}
+            </div>
+
+            <div className="bg-muted rounded-lg p-4">
+              <h4 className="mb-2 font-medium">Information</h4>
+              <p className="text-muted-foreground text-sm">
+                {selectedType === 'annual' &&
+                  "L'évaluation annuelle permet un bilan complet des performances sur l'année."}
+                {selectedType === 'quarterly' &&
+                  "L'évaluation trimestrielle offre un suivi régulier des objectifs."}
+                {selectedType === '360' &&
+                  "L'évaluation 360° implique plusieurs évaluateurs pour une vision complète."}
+              </p>
+            </div>
+
+            <div className="flex justify-end gap-2 pt-4">
+              <Button type="button" variant="outline" onClick={() => setIsOpen(false)}>
+                Annuler
+              </Button>
+              <Button type="submit">Créer l'évaluation</Button>
+            </div>
+          </form>
+        </div>
+      </ResponsiveModalContent>
+    </ResponsiveModal>
   );
 };
-// 🎨 Export avec support mobile automatique + thème Hr
-export const CreateEvaluationDialog = withUniversalDialog('hr', CreateEvaluationDialogBase);

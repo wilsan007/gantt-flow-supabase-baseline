@@ -41,6 +41,7 @@ export interface Project {
   progress?: number;
   task_count?: number;
   team_size?: number;
+  manager?: string | null;
 }
 
 export interface ProjectMetrics {

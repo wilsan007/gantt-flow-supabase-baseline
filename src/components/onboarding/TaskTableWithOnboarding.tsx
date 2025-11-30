@@ -18,6 +18,8 @@ import type { Task } from '@/types/tasks';
 
 const ONBOARDING_DISMISSED_KEY = 'wadashaqayn_onboarding_dismissed';
 
+import { ModernTaskCreationDialog } from '@/components/tasks/ModernTaskCreationDialog';
+
 export function TaskTableWithOnboarding() {
   const { tasks, loading, createTask } = useTasks();
   const { toast } = useToast();
@@ -26,6 +28,10 @@ export function TaskTableWithOnboarding() {
   // État de stabilisation pour éviter les flashes
   const [isStabilizing, setIsStabilizing] = useState(true);
   const [dataStable, setDataStable] = useState(false);
+
+  // État pour le modal de création
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [initialValues, setInitialValues] = useState<any>(null);
 
   // Vérifier si l'utilisateur a déjà masqué l'onboarding
   const [onboardingDismissed, setOnboardingDismissed] = useState(() => {
@@ -260,75 +266,15 @@ export function TaskTableWithOnboarding() {
     [tenantId]
   );
 
-  const handleUseTemplate = async (template: TaskTemplate) => {
-    try {
-      // Préparer les actions pour la création
-      const actionsData = template.actions.map(action => ({
-        title: action.title,
-        description: action.description,
-        weight_percentage: action.weight_percentage,
-        position: action.position,
-        is_done: false, // Par défaut non faites
-      }));
-
-      // Créer la tâche avec ses actions
-      const newTask = await createTask({
-        title: template.title,
-        description: template.description,
-        status: template.status,
-        priority: template.priority,
-        start_date: new Date().toISOString(),
-        due_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(), // +7 jours
-      });
-
-      // Si la tâche est créée avec succès et qu'on a son ID,
-      // créer les actions associées
-      if (newTask?.id) {
-        // Créer toutes les actions
-        for (const actionData of actionsData) {
-          try {
-            // Utiliser addActionColumn du hook useTasks
-            // Note: Cette fonction doit accepter taskId et actionData
-            // await addActionColumn(newTask.id, actionData);
-
-            // Alternative: Import direct Supabase si addActionColumn pas disponible
-            const { error } = await supabase.from('task_actions').insert({
-              task_id: newTask.id,
-              title: actionData.title,
-              notes: actionData.description,
-              weight_percentage: actionData.weight_percentage,
-              position: actionData.position,
-              is_done: false,
-              tenant_id: tenantId,
-            });
-
-            if (error) throw error;
-          } catch (actionError) {
-            console.error('Erreur création action:', actionError);
-            // Continue avec les autres actions même si une échoue
-          }
-        }
-      }
-
-      toast({
-        title: '✅ Tâche créée depuis le template!',
-        description: `"${template.title}" avec ${template.actions.length} actions a été ajoutée à votre tableau.`,
-      });
-
-      // Masquer l'onboarding après création réussie
-      localStorage.setItem(`${ONBOARDING_DISMISSED_KEY}_${tenantId}`, 'true');
-      setOnboardingDismissed(true);
-
-      // Refresh pour afficher la nouvelle tâche
-      // (Le hook useTasks devrait gérer ça automatiquement via cache invalidation)
-    } catch (error) {
-      console.error('Erreur lors de la création de la tâche template:', error);
-      toast({
-        title: '❌ Erreur',
-        description: 'Impossible de créer la tâche depuis le template.',
-        variant: 'destructive',
-      });
-    }
+  const handleUseTemplate = (template: TaskTemplate) => {
+    // Ouvrir le modal de création avec les données du template
+    setInitialValues({
+      title: template.title,
+      description: template.description,
+      priority: template.priority,
+      // On pourrait aussi passer les actions si ModernTaskCreationDialog le supporte
+    });
+    setIsDialogOpen(true);
   };
 
   const handleDismissOnboarding = () => {
@@ -386,6 +332,13 @@ export function TaskTableWithOnboarding() {
 
         {/* Tableau avec données mockées */}
         <DynamicTable demoTasks={mockTasks} isDemoMode={true} />
+
+        <ModernTaskCreationDialog
+          open={isDialogOpen}
+          onOpenChange={setIsDialogOpen}
+          onCreateTask={createTask}
+          initialValues={initialValues}
+        />
       </div>
     );
   }
@@ -412,6 +365,13 @@ export function TaskTableWithOnboarding() {
             Afficher à nouveau les templates d'aide
           </button>
         </div>
+
+        <ModernTaskCreationDialog
+          open={isDialogOpen}
+          onOpenChange={setIsDialogOpen}
+          onCreateTask={createTask}
+          initialValues={initialValues}
+        />
       </div>
     );
   }
@@ -419,10 +379,18 @@ export function TaskTableWithOnboarding() {
   // Afficher les templates d'onboarding
   if (shouldShowOnboarding) {
     return (
-      <EmptyStateWithTemplates
-        onUseTemplate={handleUseTemplate}
-        onDismiss={handleDismissOnboarding}
-      />
+      <div className="h-full w-full overflow-y-auto">
+        <EmptyStateWithTemplates
+          onUseTemplate={handleUseTemplate}
+          onDismiss={handleDismissOnboarding}
+        />
+        <ModernTaskCreationDialog
+          open={isDialogOpen}
+          onOpenChange={setIsDialogOpen}
+          onCreateTask={createTask}
+          initialValues={initialValues}
+        />
+      </div>
     );
   }
 
@@ -433,5 +401,15 @@ export function TaskTableWithOnboarding() {
     setShowDemoData(false);
   }
 
-  return <DynamicTable />;
+  return (
+    <>
+      <DynamicTable />
+      <ModernTaskCreationDialog
+        open={isDialogOpen}
+        onOpenChange={setIsDialogOpen}
+        onCreateTask={createTask}
+        initialValues={initialValues}
+      />
+    </>
+  );
 }

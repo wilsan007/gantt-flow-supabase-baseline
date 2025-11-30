@@ -5,13 +5,13 @@
 
 import React, { useState, useRef } from 'react';
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
+  ResponsiveModal,
+  ResponsiveModalContent,
+  ResponsiveModalHeader,
+  ResponsiveModalTitle,
+  ResponsiveModalDescription,
+  ResponsiveModalFooter,
+} from '@/components/ui/responsive-modal';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
@@ -168,12 +168,14 @@ export const ChangeLogoDialog: React.FC<ChangeLogoDialogProps> = ({
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px]">
-        <DialogHeader>
-          <DialogTitle>Modifier le logo de l'entreprise</DialogTitle>
-          <DialogDescription>Téléchargez un nouveau logo (PNG, JPG - Max 2 MB)</DialogDescription>
-        </DialogHeader>
+    <ResponsiveModal open={open} onOpenChange={onOpenChange}>
+      <ResponsiveModalContent className="sm:max-w-[500px]">
+        <ResponsiveModalHeader>
+          <ResponsiveModalTitle>Modifier le logo de l'entreprise</ResponsiveModalTitle>
+          <ResponsiveModalDescription>
+            Téléchargez un nouveau logo (PNG, JPG - Max 2 MB)
+          </ResponsiveModalDescription>
+        </ResponsiveModalHeader>
 
         <div className="grid gap-4 py-4">
           {/* Zone de prévisualisation */}
@@ -231,7 +233,7 @@ export const ChangeLogoDialog: React.FC<ChangeLogoDialogProps> = ({
           </div>
         </div>
 
-        <DialogFooter>
+        <ResponsiveModalFooter>
           <Button
             type="button"
             variant="outline"
@@ -244,8 +246,8 @@ export const ChangeLogoDialog: React.FC<ChangeLogoDialogProps> = ({
             {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Enregistrer
           </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        </ResponsiveModalFooter>
+      </ResponsiveModalContent>
+    </ResponsiveModal>
   );
 };

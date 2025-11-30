@@ -7,14 +7,13 @@
 import React, { useState } from 'react';
 import { CalendarDays, Plus } from 'lucide-react';
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-} from '@/components/ui/dialog';
-import { withUniversalDialog } from '@/components/ui/universal-dialog';
+  ResponsiveModal,
+  ResponsiveModalContent,
+  ResponsiveModalHeader,
+  ResponsiveModalTitle,
+  ResponsiveModalDescription,
+  ResponsiveModalFooter,
+} from '@/components/ui/responsive-modal';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -34,6 +33,7 @@ import { fr } from 'date-fns/locale';
 import { ActionTemplateList, type ActionTemplate } from './ActionTemplateList';
 import { useOperationalActivities } from '@/hooks/useOperationalActivities';
 import { supabase } from '@/integrations/supabase/client';
+import { useTenant } from '@/hooks/useTenant';
 
 interface OneOffActivityDialogProps {
   open: boolean;
@@ -41,12 +41,13 @@ interface OneOffActivityDialogProps {
   onSuccess?: () => void;
 }
 
-const OneOffActivityDialogBase: React.FC<OneOffActivityDialogProps> = ({
+export const OneOffActivityDialog: React.FC<OneOffActivityDialogProps> = ({
   open,
   onOpenChange,
   onSuccess,
 }) => {
   const { createActivity } = useOperationalActivities({ autoFetch: false });
+  const { tenantId } = useTenant();
 
   // États du formulaire
   const [name, setName] = useState('');
@@ -92,6 +93,7 @@ const OneOffActivityDialogBase: React.FC<OneOffActivityDialogProps> = ({
             title: template.title,
             description: template.description || null,
             position: template.position,
+            tenant_id: tenantId,
           });
         }
       }
@@ -100,7 +102,7 @@ const OneOffActivityDialogBase: React.FC<OneOffActivityDialogProps> = ({
       const { error: rpcError } = await supabase.rpc('instantiate_one_off_activity', {
         p_activity_id: activityData.id,
         p_due_date: format(dueDate, 'yyyy-MM-dd'),
-        p_title_override: null, // Utiliser le template
+        p_title: null, // Utiliser le template
       });
 
       if (rpcError) {
@@ -134,18 +136,18 @@ const OneOffActivityDialogBase: React.FC<OneOffActivityDialogProps> = ({
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[90vh] max-w-3xl overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
+    <ResponsiveModal open={open} onOpenChange={onOpenChange}>
+      <ResponsiveModalContent className="max-h-[90vh] max-w-3xl overflow-y-auto">
+        <ResponsiveModalHeader>
+          <ResponsiveModalTitle className="flex items-center gap-2">
             <CalendarDays className="h-5 w-5 text-purple-600" />
             Nouvelle Activité Ponctuelle
-          </DialogTitle>
-          <DialogDescription>
+          </ResponsiveModalTitle>
+          <ResponsiveModalDescription>
             Créez une activité unique à réaliser à une date précise. La tâche sera générée
             immédiatement.
-          </DialogDescription>
-        </DialogHeader>
+          </ResponsiveModalDescription>
+        </ResponsiveModalHeader>
 
         <div className="space-y-6 py-4">
           {/* Nom */}
@@ -242,7 +244,7 @@ const OneOffActivityDialogBase: React.FC<OneOffActivityDialogProps> = ({
           </div>
         </div>
 
-        <DialogFooter>
+        <ResponsiveModalFooter>
           <Button variant="outline" onClick={handleCancel} disabled={loading}>
             Annuler
           </Button>
@@ -259,10 +261,8 @@ const OneOffActivityDialogBase: React.FC<OneOffActivityDialogProps> = ({
               </>
             )}
           </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        </ResponsiveModalFooter>
+      </ResponsiveModalContent>
+    </ResponsiveModal>
   );
 };
-// 🎨 Export avec support mobile automatique + thème Operations
-export const OneOffActivityDialog = withUniversalDialog('operations', OneOffActivityDialogBase);

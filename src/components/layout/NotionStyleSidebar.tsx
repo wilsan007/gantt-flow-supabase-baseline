@@ -178,9 +178,21 @@ export const NotionStyleSidebar: React.FC<NotionStyleSidebarProps> = ({
         <Button
           variant="ghost"
           size="sm"
-          onClick={() => setIsCollapsed(!isCollapsed)}
+          onClick={() => {
+            if (onLinkClick) {
+              onLinkClick(); // Sur mobile, on ferme complètement le menu
+            } else {
+              setIsCollapsed(!isCollapsed); // Sur desktop, on réduit/agrandit
+            }
+          }}
           className="h-8 w-8 flex-shrink-0 p-0 text-zinc-400 hover:bg-zinc-800 hover:text-white"
-          title={isCollapsed ? 'Développer la sidebar' : 'Réduire la sidebar'}
+          title={
+            onLinkClick
+              ? 'Fermer le menu'
+              : isCollapsed
+                ? 'Développer la sidebar'
+                : 'Réduire la sidebar'
+          }
         >
           {isCollapsed ? (
             <ChevronsRight className="h-4 w-4" />

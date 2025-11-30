@@ -41,8 +41,8 @@ export const CommentCellColumn = ({ task, isSubtask }: CommentCellProps) => {
   const { toast } = useToast();
 
   const loadComments = async () => {
-    // Ne pas charger pour les tâches de démonstration (UUIDs fictifs)
-    if (task.id.startsWith('00000000-0000-0000-0000')) {
+    // Ne pas charger pour les tâches de démonstration (UUIDs fictifs) ou les tâches fantômes
+    if (task.id.startsWith('00000000-0000-0000-0000') || task.id.startsWith('ghost-task-')) {
       setComments([]);
       return;
     }

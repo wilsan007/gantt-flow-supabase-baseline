@@ -17,13 +17,19 @@ import {
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import {
+  ResponsiveModal,
+  ResponsiveModalContent,
+  ResponsiveModalDescription,
+  ResponsiveModalHeader,
+  ResponsiveModalTitle,
+} from '@/components/ui/responsive-modal';
+import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { withUniversalDialog } from '@/components/ui/universal-dialog';
 import { Home, CalendarIcon, Info } from 'lucide-react';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
@@ -43,7 +49,7 @@ interface RemoteWorkRequestDialogProps {
   onSuccess?: () => void;
 }
 
-function RemoteWorkRequestDialogBase({
+export function RemoteWorkRequestDialog({
   open,
   onOpenChange,
   onSuccess,
@@ -80,15 +86,17 @@ function RemoteWorkRequestDialogBase({
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
+    <ResponsiveModal open={open} onOpenChange={onOpenChange}>
+      <ResponsiveModalContent className="max-w-2xl">
+        <ResponsiveModalHeader>
+          <ResponsiveModalTitle className="flex items-center gap-2">
             <Home className="h-5 w-5" />
             Demande de Télétravail
-          </DialogTitle>
-          <DialogDescription>Demandez l'autorisation de travailler à distance</DialogDescription>
-        </DialogHeader>
+          </ResponsiveModalTitle>
+          <ResponsiveModalDescription>
+            Demandez l'autorisation de travailler à distance
+          </ResponsiveModalDescription>
+        </ResponsiveModalHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <Alert>
@@ -223,9 +231,7 @@ function RemoteWorkRequestDialogBase({
             </Button>
           </div>
         </form>
-      </DialogContent>
-    </Dialog>
+      </ResponsiveModalContent>
+    </ResponsiveModal>
   );
 }
-// 🎨 Export avec support mobile automatique + thème Hr
-export const RemoteWorkRequestDialog = withUniversalDialog('hr', RemoteWorkRequestDialogBase);

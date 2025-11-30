@@ -12,6 +12,7 @@ interface EditableDateCellProps {
   onChange: (value: string) => void;
   className?: string;
   isSubtask?: boolean;
+  readOnly?: boolean;
 }
 
 export const EditableDateCell = ({
@@ -19,6 +20,7 @@ export const EditableDateCell = ({
   onChange,
   className = '',
   isSubtask = false,
+  readOnly = false,
 }: EditableDateCellProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(
@@ -44,16 +46,18 @@ export const EditableDateCell = ({
           <div
             onClick={e => {
               e.stopPropagation();
-              setIsOpen(true);
+              if (!readOnly) setIsOpen(true);
             }}
             className={cn(
-              'flex cursor-pointer items-center gap-2 rounded px-2 py-1 transition-colors hover:bg-gray-100 dark:hover:bg-gray-800',
+              'flex items-center gap-2 rounded px-2 py-1 transition-colors',
+              !readOnly && 'cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800',
+              readOnly && 'cursor-not-allowed opacity-60',
               isOpen && 'bg-blue-50 ring-2 ring-blue-500 dark:bg-blue-950'
             )}
           >
             <Calendar className={`${isSubtask ? 'h-3 w-3' : 'h-4 w-4'} text-foreground/60`} />
             <span className={cn(isSubtask && 'text-xs', 'text-foreground')}>
-              {value ? formatDate(value) : 'Sélectionner date'}
+              {value ? formatDate(value) : readOnly ? '-' : 'Sélectionner date'}
             </span>
           </div>
         </PopoverTrigger>

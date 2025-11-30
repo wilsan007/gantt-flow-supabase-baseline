@@ -37,22 +37,70 @@ serve(async req => {
 
     console.log(`📝 Processing invitation for: ${email}`);
 
-    // 1. Generate Secure Token (Custom)
-    // This token is for the invitation link, NOT a Supabase Auth token.
-    const tokenArray = new Uint8Array(32);
-    crypto.getRandomValues(tokenArray);
-    const token = Array.from(tokenArray)
-      .map(b => b.toString(16).padStart(2, '0'))
-      .join('');
-
-    // 2. Prepare Data
+    // 1. Prepare Data
     const tenantId = crypto.randomUUID();
     const companyName = `${fullName.split(' ')[0]}'s Company`;
-    const expiresAt = new Date();
-    expiresAt.setDate(expiresAt.getDate() + 7); // Expires in 7 days
+    const tempPassword = Math.random().toString(36).slice(-8) + 'Aa1!';
 
-    // 3. Insert into 'invitations' table
-    console.log('💾 Saving invitation to database...');
+    // 2. Create or Update User
+    console.log('👤 Creating/Updating Auth User...');
+    let userId;
+
+    // Check if user exists
+    const { data: existingUsers } = await supabaseAdmin.auth.admin.listUsers();
+    const existingUser = existingUsers.users.find(u => u.email === email.toLowerCase());
+
+    const userMetadata = {
+      full_name: fullName,
+      company_name: companyName,
+      tenant_id: tenantId,
+      invitation_type: 'tenant_owner',
+      role: 'tenant_admin',
+    };
+
+    if (existingUser) {
+      console.log('ℹ️ User already exists, updating metadata...');
+      const { error: updateError } = await supabaseAdmin.auth.admin.updateUserById(
+        existingUser.id,
+        { user_metadata: { ...existingUser.user_metadata, ...userMetadata } }
+      );
+      if (updateError) throw updateError;
+      userId = existingUser.id;
+    } else {
+      console.log('🆕 Creating new user...');
+      const { data: newUser, error: createError } = await supabaseAdmin.auth.admin.createUser({
+        email,
+        password: tempPassword,
+        email_confirm: false, // We will confirm via the magic link
+        user_metadata: userMetadata,
+      });
+      if (createError) throw createError;
+      userId = newUser.user.id;
+    }
+
+    // 3. Generate Magic Link
+    console.log('🔗 Generating Magic Link...');
+    const siteUrl =
+      Deno.env.get('SITE_URL') || req.headers.get('origin') || 'https://wadashaqayn.org';
+    const baseUrl = siteUrl.replace(/\/$/, '');
+
+    const { data: linkData, error: linkError } = await supabaseAdmin.auth.admin.generateLink({
+      type: 'invite',
+      email: email,
+      options: {
+        redirectTo: `${baseUrl}/auth/callback?email=${encodeURIComponent(email)}&type=invite&invitation=tenant_owner`,
+        data: userMetadata,
+      },
+    });
+
+    if (linkError) throw linkError;
+
+    const actionLink = linkData.properties.action_link;
+    // Extract token from link for database record (optional but good for tracking)
+    const token = actionLink.match(/token=([^&]+)/)?.[1] || 'MAGIC_LINK';
+
+    // 4. Insert into 'invitations' table (for tracking purposes)
+    console.log('💾 Saving invitation record...');
     const { data: invitation, error: insertError } = await supabaseAdmin
       .from('invitations')
       .insert({
@@ -62,53 +110,36 @@ serve(async req => {
         tenant_id: tenantId,
         tenant_name: companyName,
         invitation_type: 'tenant_owner',
-        invited_by: invitedBy || null, // ID of the admin sending the invite
+        invited_by: invitedBy || null,
         status: 'pending',
-        expires_at: expiresAt.toISOString(),
+        expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
         metadata: {
           company_name: companyName,
-          security_level: 'standard',
-          invitation_source: 'admin_panel',
+          confirmation_url: actionLink,
+          supabase_user_id: userId,
         },
       })
       .select()
       .single();
 
-    if (insertError) {
-      console.error('❌ Error inserting invitation:', insertError);
-      throw insertError;
-    }
+    if (insertError) throw insertError;
 
-    console.log('✅ Invitation saved:', invitation.id);
-
-    // 4. Send Email via Resend
+    // 5. Send Email via Resend
+    console.log(`📧 Sending email to ${email}`);
     const resendApiKey = Deno.env.get('RESEND_API_KEY');
     const resendFromEmail = Deno.env.get('RESEND_FROM_EMAIL');
-    const siteUrl =
-      Deno.env.get('SITE_URL') || req.headers.get('origin') || 'https://wadashaqayn.org';
-
-    // Clean trailing slash
-    const baseUrl = siteUrl.replace(/\/$/, '');
-    const acceptUrl = `${baseUrl}/invite/accept?token=${token}`;
-
-    console.log(`📧 Sending email to ${email} with link: ${acceptUrl}`);
 
     const emailHtml = `
       <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
         <h2>Bonjour ${fullName},</h2>
-        <p>Vous avez été invité à créer votre espace sur <strong>Wadashaqayn</strong>.</p>
-        <p>Pour accepter cette invitation et configurer votre compte, cliquez sur le bouton ci-dessous :</p>
+        <p>Votre espace <strong>${companyName}</strong> est prêt sur Wadashaqayn.</p>
+        <p>Cliquez ci-dessous pour y accéder directement (pas de mot de passe requis pour l'instant) :</p>
         <div style="text-align: center; margin: 30px 0;">
-          <a href="${acceptUrl}" style="background-color: #007bff; color: white; padding: 12px 24px; text-decoration: none; border-radius: 4px; font-weight: bold;">
-            Accepter l'invitation
+          <a href="${actionLink}" style="background-color: #007bff; color: white; padding: 12px 24px; text-decoration: none; border-radius: 4px; font-weight: bold;">
+            Accéder à mon espace
           </a>
         </div>
         <p>Ce lien est valide pendant 7 jours.</p>
-        <hr />
-        <p style="color: #666; font-size: 12px;">
-          Si vous ne pouvez pas cliquer sur le bouton, copiez ce lien :<br/>
-          <a href="${acceptUrl}">${acceptUrl}</a>
-        </p>
       </div>
     `;
 
@@ -121,12 +152,12 @@ serve(async req => {
       body: JSON.stringify({
         from: resendFromEmail,
         to: [email],
-        subject: 'Invitation à rejoindre Wadashaqayn',
+        subject: 'Bienvenue sur Wadashaqayn !',
         html: emailHtml,
       }),
     });
 
-    console.log('✅ Email sent successfully');
+    console.log('✅ Invitation process completed successfully');
 
     return new Response(JSON.stringify({ success: true, invitationId: invitation.id }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },

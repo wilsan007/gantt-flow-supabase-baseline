@@ -88,7 +88,7 @@ export const EditableCell = ({
       ) : (
         <div
           className={cn(
-            'rounded px-2 py-1 transition-colors hover:bg-gray-100 dark:hover:bg-gray-800',
+            'hover:bg-primary/5 dark:hover:bg-primary/10 rounded px-2 py-1 transition-colors',
             isSubtask && 'text-xs',
             !value && 'text-muted-foreground italic'
           )}

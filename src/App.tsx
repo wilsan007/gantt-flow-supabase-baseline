@@ -53,6 +53,8 @@ const OperationsPage = lazy(() =>
   import('./components/operations').then(m => ({ default: m.OperationsPage }))
 );
 const PerformanceMonitor = lazy(() => import('./components/dev/PerformanceMonitor'));
+const PrivacyPolicy = lazy(() => import('./pages/PrivacyPolicy'));
+const TermsOfUse = lazy(() => import('./pages/TermsOfUse'));
 
 import { useInactivityTimer } from '@/hooks/useInactivityTimer';
 import { useSessionManager } from './hooks/useSessionManager';
@@ -251,6 +253,8 @@ const MemoizedRoutes = memo(() => (
       <Route path="/auth/callback" element={<AuthCallback />} />
       <Route path="/setup" element={<SetupAccount />} />
       <Route path="/invite/:inviteId" element={<InvitePage />} />
+      <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+      <Route path="/terms-of-use" element={<TermsOfUse />} />
 
       {/* Catch-all route */}
       <Route path="*" element={<NotFound />} />
@@ -389,7 +393,11 @@ function App() {
     }
   }
 
-  if (loading || accessLoading) {
+  // SEO FIX: Allow Landing Page to render immediately for bots/visitors
+  // We bypass the loading screen ONLY for the root path
+  const isLandingPage = window.location.pathname === '/';
+
+  if ((loading || accessLoading) && !isLandingPage) {
     return <BrandedLoadingScreen appName="Wadashaqayn" logoSrc="/logo-w.svg" />;
   }
 

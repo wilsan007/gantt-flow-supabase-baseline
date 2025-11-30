@@ -5,13 +5,13 @@
 
 import React, { useState, useEffect } from 'react';
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
+  ResponsiveModal,
+  ResponsiveModalContent,
+  ResponsiveModalHeader,
+  ResponsiveModalTitle,
+  ResponsiveModalDescription,
+  ResponsiveModalFooter,
+} from '@/components/ui/responsive-modal';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -105,12 +105,14 @@ export const ChangeCompanyNameDialog: React.FC<ChangeCompanyNameDialogProps> = (
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>Modifier le nom de l'entreprise</DialogTitle>
-          <DialogDescription>Entrez le nouveau nom de votre entreprise</DialogDescription>
-        </DialogHeader>
+    <ResponsiveModal open={open} onOpenChange={onOpenChange}>
+      <ResponsiveModalContent className="sm:max-w-[425px]">
+        <ResponsiveModalHeader>
+          <ResponsiveModalTitle>Modifier le nom de l'entreprise</ResponsiveModalTitle>
+          <ResponsiveModalDescription>
+            Entrez le nouveau nom de votre entreprise
+          </ResponsiveModalDescription>
+        </ResponsiveModalHeader>
 
         <form onSubmit={handleSubmit}>
           <div className="grid gap-4 py-4">
@@ -134,7 +136,7 @@ export const ChangeCompanyNameDialog: React.FC<ChangeCompanyNameDialogProps> = (
             )}
           </div>
 
-          <DialogFooter>
+          <ResponsiveModalFooter>
             <Button
               type="button"
               variant="outline"
@@ -147,9 +149,9 @@ export const ChangeCompanyNameDialog: React.FC<ChangeCompanyNameDialogProps> = (
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Modifier
             </Button>
-          </DialogFooter>
+          </ResponsiveModalFooter>
         </form>
-      </DialogContent>
-    </Dialog>
+      </ResponsiveModalContent>
+    </ResponsiveModal>
   );
 };

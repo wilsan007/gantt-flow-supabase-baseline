@@ -98,10 +98,15 @@ export function formatDateForExport(date: string | Date | null | undefined): str
 /**
  * Formate un montant pour l'export
  */
-export function formatCurrencyForExport(amount: number | null | undefined): string {
+export function formatCurrencyForExport(
+  amount: number | null | undefined,
+  currency: string = 'EUR'
+): string {
   if (amount === null || amount === undefined) return '';
-  return amount.toLocaleString('fr-FR', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  });
+  return new Intl.NumberFormat('fr-FR', {
+    style: 'currency',
+    currency: currency,
+    minimumFractionDigits: currency === 'DJF' ? 0 : 2,
+    maximumFractionDigits: currency === 'DJF' ? 0 : 2,
+  }).format(amount);
 }

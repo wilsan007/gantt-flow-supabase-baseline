@@ -38,13 +38,13 @@ const DrawerContent = React.forwardRef<
     <DrawerPrimitive.Content
       ref={ref}
       className={cn(
-        'bg-background fixed inset-x-0 bottom-0 z-[100] flex max-h-[95vh] min-h-[50vh] flex-col rounded-t-[20px] border-t border-white/20 shadow-[0_-10px_40px_-15px_rgba(0,0,0,0.3)] backdrop-blur-xl',
+        'bg-background fixed inset-x-0 bottom-0 z-[100] flex max-h-[96vh] min-h-[85vh] flex-col rounded-t-[20px] border-t border-white/20 shadow-[0_-10px_40px_-15px_rgba(0,0,0,0.3)] backdrop-blur-xl',
         className
       )}
       {...props}
     >
-      <div className="mx-auto mt-4 h-1.5 w-[100px] rounded-full bg-gradient-to-r from-violet-500/50 to-fuchsia-500/50" />
-      {children}
+      <div className="mx-auto mt-4 h-1.5 w-[100px] shrink-0 rounded-full bg-gradient-to-r from-violet-500/50 to-fuchsia-500/50" />
+      <div className="flex-1 overflow-y-auto">{children}</div>
     </DrawerPrimitive.Content>
   </DrawerPortal>
 ));

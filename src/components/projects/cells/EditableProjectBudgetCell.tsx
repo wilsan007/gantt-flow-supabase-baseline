@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { TableCell } from '@/components/ui/table';
 import { cn } from '@/lib/utils';
 import { DollarSign, Check, Loader2, AlertCircle } from 'lucide-react';
+import { formatCurrency } from '@/components/common/CurrencySelect';
 
 interface EditableProjectBudgetCellProps {
   value: number | null;
@@ -108,14 +109,7 @@ export const EditableProjectBudgetCell: React.FC<EditableProjectBudgetCellProps>
 
   const formatBudget = (budget: number | null) => {
     if (budget === null || budget === undefined) return '-';
-    return (
-      new Intl.NumberFormat('fr-FR', {
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 2,
-      }).format(budget) +
-      ' ' +
-      currency
-    );
+    return formatCurrency(budget, currency);
   };
 
   const StatusIndicator = () => {

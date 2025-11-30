@@ -25,6 +25,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useOnboardingOffboarding } from '@/hooks/useOnboardingOffboarding';
+import { CreateOnboardingDialog } from './HRActionDialogs';
 
 // Interfaces are now imported from the hook
 
@@ -97,10 +98,12 @@ export const OnboardingOffboarding = () => {
           <p className="text-muted-foreground">Processus d'intégration et de départ des employés</p>
         </div>
         <div className="flex gap-2">
-          <Button>
-            <UserPlus className="mr-2 h-4 w-4" />
-            Nouveau processus
-          </Button>
+          <CreateOnboardingDialog>
+            <Button>
+              <UserPlus className="mr-2 h-4 w-4" />
+              Nouveau processus
+            </Button>
+          </CreateOnboardingDialog>
         </div>
       </div>
 

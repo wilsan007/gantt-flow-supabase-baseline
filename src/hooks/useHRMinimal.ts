@@ -15,105 +15,63 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useTenant } from '@/hooks/useTenant';
 import { useRolesCompat as useUserRoles } from '@/contexts/RolesContext';
-import { cacheManager, createCacheKey } from '@/lib/cacheManager';
+import { cacheManager } from '@/lib/cacheManager';
 import { useRenderTracker } from '@/hooks/usePerformanceMonitor';
+import type {
+  Employee,
+  LeaveRequest,
+  Attendance,
+  AbsenceType,
+  LeaveBalance,
+  HRData,
+  HRMetrics,
+  PaginationConfig,
+} from '@/types/hr';
 
-// Types optimisés pour l'enterprise
-export interface Employee {
-  id: string;
-  user_id: string; // UUID référence auth.users - clé utilisée dans les relations
-  full_name: string;
-  avatar_url?: string;
-  job_title?: string;
-  employee_id: string; // Code employé (ex: EMP001)
-  tenant_id?: string;
-  tenants?: { name: string };
-}
-
-export interface LeaveRequest {
-  id: string;
-  employee_id: string;
-  start_date: string;
-  end_date: string;
-  total_days: number;
-  reason?: string;
-  status: string; // 'pending' | 'approved' | 'rejected' mais flexible
-  tenant_id?: string;
-  absence_type_id?: string;
-  approved_at?: string;
-  approved_by?: string;
-  rejection_reason?: string;
-  created_at?: string;
-  updated_at?: string;
-  profiles?: { full_name: string; tenant_id?: string };
-}
-
-export interface Attendance {
-  id: string;
-  employee_id: string;
-  date: string;
-  check_in?: string;
-  check_out?: string;
-  tenant_id?: string;
-  profiles?: { full_name: string; tenant_id?: string };
-}
-
-export interface AbsenceType {
-  id: string;
-  name: string;
-  description?: string;
-  code?: string;
-  color?: string;
-  deducts_from_balance?: boolean;
-  max_days_per_year?: number;
-  requires_approval?: boolean;
-  tenant_id?: string;
-  created_at?: string;
-  updated_at?: string;
-}
-
-export interface LeaveBalance {
-  id: string;
-  employee_id: string;
-  absence_type_id: string;
-  year: number;
-  total_days: number;
-  used_days: number;
-  remaining_days: number;
-  tenant_id?: string;
-  created_at?: string;
-  updated_at?: string;
-}
-
-export interface HRData {
-  leaveRequests: LeaveRequest[];
-  absenceTypes: AbsenceType[];
-  attendances: Attendance[];
-  employees: Employee[];
-  leaveBalances: LeaveBalance[];
-}
-
-export interface HRMetrics {
-  fetchTime: number;
-  cacheHit: boolean;
-  dataSize: number;
-  lastUpdate: Date;
-}
-
-export interface PaginationConfig {
-  page: number;
-  limit: number;
-  total: number;
-  hasMore: boolean;
+// Configuration options for the hook
+export interface UseHRMinimalOptions {
+  enabled?: {
+    employees?: boolean;
+    leaveRequests?: boolean;
+    attendances?: boolean;
+    leaveBalances?: boolean;
+    departments?: boolean;
+    absenceTypes?: boolean;
+  };
+  limits?: {
+    employees?: number;
+    leaveRequests?: number;
+    attendances?: number;
+    leaveBalances?: number;
+  };
+  enablePagination?: boolean;
 }
 
 /**
  * Hook HR Minimal - ZERO boucle infinie garantie
  * Optimisé avec cache enterprise et monitoring
  */
-export const useHRMinimal = () => {
-  // Performance monitoring
-  const performanceMonitor = useRenderTracker('useHRMinimal');
+export const useHRMinimal = (options: UseHRMinimalOptions = {}) => {
+  // Default options
+  const {
+    enabled = {
+      employees: true,
+      leaveRequests: true,
+      attendances: true,
+      leaveBalances: true,
+      departments: true,
+      absenceTypes: true,
+    },
+    limits = {
+      employees: 20, // Réduit de 50-100
+      leaveRequests: 10, // Réduit de 50-100
+      attendances: 10, // Réduit de 30-100
+      leaveBalances: 20, // Nouveau
+    },
+    enablePagination = true,
+  } = options;
+  // Performance monitoring - DISABLED temporairement car trop de bruit
+  // const performanceMonitor = useRenderTracker('useHRMinimal');
   // États optimisés avec métriques
   const [data, setData] = useState<HRData>({
     leaveRequests: [],
@@ -121,6 +79,7 @@ export const useHRMinimal = () => {
     attendances: [],
     employees: [],
     leaveBalances: [],
+    departments: [],
   });
 
   const [loading, setLoading] = useState(true);
@@ -198,7 +157,7 @@ export const useHRMinimal = () => {
 
     // ARRÊT COMPLET si mêmes paramètres et déjà fetché
     if (fetchedRef.current && currentTenantHash === lastTenantHash) {
-      return; // Pas de logs répétitifs
+      return;
     }
 
     // Vérifier le cache avant tout fetch
@@ -206,7 +165,10 @@ export const useHRMinimal = () => {
     const cachedData = getCachedData(cacheKey);
 
     if (cachedData && currentTenantHash === lastTenantHash) {
-      return; // Utiliser le cache sans refetch
+      // Si on a du cache et que rien n'a changé, ne pas refetch
+      setData(cachedData);
+      setLoading(false);
+      return;
     }
 
     // Marquer comme en cours de fetch AVANT le fetch pour éviter les races
@@ -234,78 +196,88 @@ export const useHRMinimal = () => {
         const cachedData = getCachedData(cacheKey);
         if (cachedData) {
           setData(cachedData);
-          setMetrics(prev => ({
-            ...prev,
-            cacheHit: true,
-            fetchTime: performance.now() - startTime,
-            lastUpdate: new Date(),
-          }));
           setLoading(false);
-          return;
+          return; // Pas de mise à jour des métriques si c'est du cache pour éviter re-renders
         }
 
         // // console.log('🔄 Fetching HR data for tenant:', tenantId || 'ALL_TENANTS (Super Admin)');
         // // console.log('👑 Is Super Admin:', isSuper);
-        // // console.log('�� Cache key:', cacheKey);
+        // // console.log(' Cache key:', cacheKey);
 
-        const [leaveRequestsRes, absenceTypesRes, attendancesRes, employeesRes, leaveBalancesRes] =
-          await Promise.all([
-            // Leave Requests - Super Admin voit tout, autres voient leur tenant
-            isSuper
+        const [
+          leaveRequestsRes,
+          absenceTypesRes,
+          attendancesRes,
+          employeesRes,
+          leaveBalancesRes,
+          departmentsRes,
+        ] = await Promise.all([
+          // Leave Requests - Super Admin voit tout, autres voient leur tenant
+          enabled.leaveRequests
+            ? isSuper
               ? supabase
                   .from('leave_requests')
                   .select('*, profiles:employee_id(full_name, tenant_id)')
                   .order('created_at', { ascending: false })
-                  .limit(100) // Plus de données pour Super Admin
+                  .limit(limits.leaveRequests || 10)
               : tenantId
                 ? supabase
                     .from('leave_requests')
                     .select('*')
                     .eq('tenant_id', tenantId)
                     .order('created_at', { ascending: false })
-                    .limit(50)
-                : supabase.from('leave_requests').select('*').limit(0), // Pas de données si pas de tenant et pas Super Admin
+                    .limit(limits.leaveRequests || 10)
+                : supabase.from('leave_requests').select('*').limit(0)
+            : Promise.resolve({ data: [], error: null }),
 
-            // Absence Types - Toujours globaux
-            supabase.from('absence_types').select('*').order('name'),
+          // Absence Types - Toujours globaux
+          enabled.absenceTypes
+            ? supabase.from('absence_types').select('*').order('name')
+            : Promise.resolve({ data: [], error: null }),
 
-            // Attendances - Super Admin voit tout, autres voient leur tenant
-            isSuper
+          // Attendances - Super Admin voit tout, autres voient leur tenant
+          enabled.attendances
+            ? isSuper
               ? supabase
                   .from('attendances')
                   .select('*, profiles:employee_id(full_name, tenant_id)')
                   .order('date', { ascending: false })
-                  .limit(100) // Plus de données pour Super Admin
+                  .limit(limits.attendances || 10)
               : tenantId
                 ? supabase
                     .from('attendances')
                     .select('*')
                     .eq('tenant_id', tenantId)
                     .order('date', { ascending: false })
-                    .limit(30)
-                : supabase.from('attendances').select('*').limit(0), // Pas de données si pas de tenant et pas Super Admin
+                    .limit(limits.attendances || 10)
+                : supabase.from('attendances').select('*').limit(0)
+            : Promise.resolve({ data: [], error: null }),
 
-            // Employees - Super Admin voit TOUS les employés, autres voient leur tenant
-            isSuper
+          // Employees - Super Admin voit max, autres voient leur tenant
+          enabled.employees
+            ? isSuper
               ? supabase
-                  .from('profiles')
-                  .select(
-                    'id, user_id, full_name, avatar_url, job_title, employee_id, tenant_id, tenants:tenant_id(name)'
-                  )
+                  .from('employees')
+                  .select('*')
                   .order('full_name')
+                  .limit(limits.employees || 20)
               : tenantId
                 ? supabase
-                    .from('profiles')
-                    .select('id, user_id, full_name, avatar_url, job_title, employee_id')
+                    .from('employees')
+                    .select('*')
                     .eq('tenant_id', tenantId)
-                : supabase.from('profiles').select('*').limit(0), // Pas de données si pas de tenant et pas Super Admin
+                    .limit(limits.employees || 20)
+                : supabase.from('employees').select('*').limit(0)
+            : Promise.resolve({ data: [], error: null }),
 
-            // Leave Balances - Super Admin voit tout, autres voient leur tenant
-            isSuper
+          // Leave Balances - Super Admin voit tout, autres voient leur tenant
+          enabled.leaveBalances
+            ? isSuper
               ? supabase
                   .from('leave_balances')
                   .select('*, profiles:employee_id(full_name), absence_types:absence_type_id(name)')
                   .order('year', { ascending: false })
+                  .limit(limits.leaveBalances || 20)
               : tenantId
                 ? supabase
                     .from('leave_balances')
@@ -314,8 +286,19 @@ export const useHRMinimal = () => {
                     )
                     .eq('tenant_id', tenantId)
                     .order('year', { ascending: false })
-                : supabase.from('leave_balances').select('*').limit(0),
-          ]);
+                    .limit(limits.leaveBalances || 20)
+                : supabase.from('leave_balances').select('*').limit(0)
+            : Promise.resolve({ data: [], error: null }),
+
+          // Departments - Super Admin voit tout, autres voient leur tenant
+          enabled.departments
+            ? isSuper
+              ? supabase.from('departments').select('*').order('name')
+              : tenantId
+                ? supabase.from('departments').select('*').eq('tenant_id', tenantId).order('name')
+                : supabase.from('departments').select('*').limit(0)
+            : Promise.resolve({ data: [], error: null }),
+        ]);
 
         // Vérifier les erreurs
         if (leaveRequestsRes.error) {
@@ -341,6 +324,7 @@ export const useHRMinimal = () => {
           attendances: attendancesRes.data || [],
           employees: employeesRes.data || [],
           leaveBalances: leaveBalancesRes.data || [],
+          departments: departmentsRes.data || [],
         };
 
         // Calculer les métriques de performance
@@ -360,14 +344,6 @@ export const useHRMinimal = () => {
           lastUpdate: new Date(),
         });
 
-        // Mettre à jour la pagination
-        setPagination(prev => ({
-          ...prev,
-          total:
-            newData.employees.length + newData.leaveRequests.length + newData.attendances.length,
-          hasMore: false, // Pour l'instant, pas de pagination infinie
-        }));
-
         // // console.log('✅ HR data loaded:', {
         //   leaveRequests: newData.leaveRequests.length,
         //   absenceTypes: newData.absenceTypes.length,
@@ -382,19 +358,14 @@ export const useHRMinimal = () => {
       } catch (error: any) {
         console.error('❌ Error fetching HR data:', error);
         setError(error.message || 'Erreur de chargement');
-
-        toast({
-          title: 'Erreur',
-          description: 'Impossible de charger les données RH',
-          variant: 'destructive',
-        });
+        // Toast removed to prevent render loop - error state is sufficient
       } finally {
         setLoading(false);
       }
     };
 
     fetchData();
-  }, [tenantId, rolesLoading, isSuperAdminValue, getCacheKey, getCachedData]); // ✅ Toutes dépendances stables
+  }, [tenantId, rolesLoading, isSuperAdminValue]); // ✅ Callbacks are stable, no need to include them
 
   // Fonction de refresh optimisée avec invalidation cache global
   const refresh = useCallback(() => {
@@ -403,13 +374,36 @@ export const useHRMinimal = () => {
     fetchedRef.current = false;
     tenantIdRef.current = null;
     setLoading(true);
-    // console.log('🔄 Cache invalidated and refresh triggered:', cacheKey);
   }, [tenantId, isSuperAdminValue, getCacheKey]);
+
+  // Fonction pour charger plus de données (pagination)
+  const loadMore = useCallback(
+    async (resource: keyof HRData) => {
+      if (!enablePagination) return;
+
+      setLoading(true);
+      try {
+        const currentData = data[resource];
+        const currentLimit = limits[resource as keyof typeof limits] || 20;
+        const newLimit = currentLimit + 20; // Charger 20 de plus
+
+        // Mettre à jour les limites et invalider le cache pour re-fetch
+        const cacheKey = getCacheKey(tenantId, isSuperAdminValue);
+        cacheManager.invalidate(cacheKey);
+        fetchedRef.current = false;
+
+        // Le prochain useEffect fera un fetch avec la nouvelle limite
+        setLoading(true);
+      } catch (error) {
+        console.error('Error loading more:', error);
+      }
+    },
+    [enablePagination, data, limits, tenantId, isSuperAdminValue, getCacheKey]
+  );
 
   // Fonction pour vider tout le cache HR (utilise le cache global)
   const clearCache = useCallback(() => {
     cacheManager.invalidatePattern('hr:*');
-    // console.log('🗑️ All HR cache cleared');
   }, []);
 
   // Fonction pour obtenir les statistiques de cache global
@@ -473,6 +467,7 @@ export const useHRMinimal = () => {
 
     // Actions optimisées
     refresh,
+    refreshData: refresh, // Alias pour compatibilité
     clearCache,
     getCacheStats,
 

@@ -18,13 +18,19 @@ import {
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import {
+  ResponsiveModal,
+  ResponsiveModalContent,
+  ResponsiveModalDescription,
+  ResponsiveModalHeader,
+  ResponsiveModalTitle,
+} from '@/components/ui/responsive-modal';
+import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { withUniversalDialog } from '@/components/ui/universal-dialog';
 import { FileUp, CalendarIcon, AlertCircle } from 'lucide-react';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
@@ -45,7 +51,7 @@ interface AbsenceJustificationDialogProps {
   onSuccess?: () => void;
 }
 
-function AbsenceJustificationDialogBase({
+export function AbsenceJustificationDialog({
   open,
   onOpenChange,
   onSuccess,
@@ -82,17 +88,17 @@ function AbsenceJustificationDialogBase({
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
+    <ResponsiveModal open={open} onOpenChange={onOpenChange}>
+      <ResponsiveModalContent className="max-w-2xl">
+        <ResponsiveModalHeader>
+          <ResponsiveModalTitle className="flex items-center gap-2">
             <AlertCircle className="h-5 w-5" />
             Justifier une Absence
-          </DialogTitle>
-          <DialogDescription>
+          </ResponsiveModalTitle>
+          <ResponsiveModalDescription>
             Soumettez un justificatif pour votre absence (certificat médical, etc.)
-          </DialogDescription>
-        </DialogHeader>
+          </ResponsiveModalDescription>
+        </ResponsiveModalHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <Alert>
@@ -205,9 +211,7 @@ function AbsenceJustificationDialogBase({
             </Button>
           </div>
         </form>
-      </DialogContent>
-    </Dialog>
+      </ResponsiveModalContent>
+    </ResponsiveModal>
   );
 }
-// 🎨 Export avec support mobile automatique + thème Hr
-export const AbsenceJustificationDialog = withUniversalDialog('hr', AbsenceJustificationDialogBase);

@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from '@/components/ui/dialog';
+  ResponsiveModal,
+  ResponsiveModalContent,
+  ResponsiveModalHeader,
+  ResponsiveModalTitle,
+  ResponsiveModalFooter,
+} from '@/components/ui/responsive-modal';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -20,9 +20,9 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Plus, Save, X } from '@/lib/icons';
 import { useEmployees } from '@/hooks/useEmployees';
-import { withUniversalDialog } from '@/components/ui/universal-dialog';
 import { QuickInviteCollaborator } from '@/components/tasks/QuickInviteCollaborator';
 import { useToast } from '@/hooks/use-toast';
+import { CurrencySelect } from '@/components/common/CurrencySelect';
 
 interface ProjectCreationDialogProps {
   open: boolean;
@@ -35,10 +35,11 @@ interface ProjectCreationDialogProps {
     priority: 'low' | 'medium' | 'high' | 'urgent';
     skills_required: string[];
     budget?: number;
+    currency?: string;
   }) => void;
 }
 
-const ProjectCreationDialogBase: React.FC<ProjectCreationDialogProps> = ({
+export const ProjectCreationDialog: React.FC<ProjectCreationDialogProps> = ({
   open,
   onOpenChange,
   onCreateProject,
@@ -51,6 +52,7 @@ const ProjectCreationDialogBase: React.FC<ProjectCreationDialogProps> = ({
   const [status, setStatus] = useState<'en_cours' | 'a_venir' | 'termine'>('a_venir');
   const [priority, setPriority] = useState<'low' | 'medium' | 'high' | 'urgent'>('medium');
   const [budget, setBudget] = useState<number | undefined>();
+  const [currency, setCurrency] = useState('DJF');
   const [skills, setSkills] = useState<string[]>([]);
   const [newSkill, setNewSkill] = useState('');
   const [loading, setLoading] = useState(false);
@@ -93,6 +95,7 @@ const ProjectCreationDialogBase: React.FC<ProjectCreationDialogProps> = ({
         priority,
         skills_required: skills,
         budget,
+        currency,
       });
 
       // Reset form
@@ -113,14 +116,14 @@ const ProjectCreationDialogBase: React.FC<ProjectCreationDialogProps> = ({
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[90vh] w-[95vw] max-w-2xl overflow-y-auto p-4 sm:p-6">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2 text-base sm:text-lg">
+    <ResponsiveModal open={open} onOpenChange={onOpenChange}>
+      <ResponsiveModalContent className="max-h-[90vh] w-[95vw] max-w-2xl overflow-y-auto p-4 sm:p-6">
+        <ResponsiveModalHeader>
+          <ResponsiveModalTitle className="flex items-center gap-2 text-base sm:text-lg">
             <Plus className="h-4 w-4 sm:h-5 sm:w-5" />
             <span className="truncate">Créer un Nouveau Projet</span>
-          </DialogTitle>
-        </DialogHeader>
+          </ResponsiveModalTitle>
+        </ResponsiveModalHeader>
 
         <div className="space-y-3 sm:space-y-4">
           <div className="space-y-2">
@@ -202,13 +205,21 @@ const ProjectCreationDialogBase: React.FC<ProjectCreationDialogProps> = ({
             </div>
 
             <div className="space-y-2">
-              <Label>Budget (€)</Label>
-              <Input
-                type="number"
-                value={budget || ''}
-                onChange={e => setBudget(e.target.value ? Number(e.target.value) : undefined)}
-                placeholder="Budget estimé..."
-              />
+              <Label>Budget</Label>
+              <div className="flex gap-2">
+                <Input
+                  type="number"
+                  value={budget || ''}
+                  onChange={e => setBudget(e.target.value ? Number(e.target.value) : undefined)}
+                  placeholder="Budget estimé..."
+                  className="flex-1"
+                />
+                <CurrencySelect
+                  value={currency}
+                  onValueChange={setCurrency}
+                  className="w-[100px]"
+                />
+              </div>
             </div>
           </div>
 
@@ -257,7 +268,7 @@ const ProjectCreationDialogBase: React.FC<ProjectCreationDialogProps> = ({
           </div>
         </div>
 
-        <DialogFooter>
+        <ResponsiveModalFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             <X className="mr-2 h-4 w-4" />
             Annuler
@@ -266,8 +277,8 @@ const ProjectCreationDialogBase: React.FC<ProjectCreationDialogProps> = ({
             <Save className="mr-2 h-4 w-4" />
             {loading ? 'Création...' : 'Créer le Projet'}
           </Button>
-        </DialogFooter>
-      </DialogContent>
+        </ResponsiveModalFooter>
+      </ResponsiveModalContent>
 
       <QuickInviteCollaborator
         open={showQuickInvite}
@@ -285,9 +296,6 @@ const ProjectCreationDialogBase: React.FC<ProjectCreationDialogProps> = ({
           });
         }}
       />
-    </Dialog>
+    </ResponsiveModal>
   );
 };
-
-// 🎨 Export avec support mobile automatique + thème Projets
-export const ProjectCreationDialog = withUniversalDialog('projects', ProjectCreationDialogBase);

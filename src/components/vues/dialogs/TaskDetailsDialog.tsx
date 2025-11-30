@@ -1,6 +1,11 @@
 import React from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { withUniversalDialog } from '@/components/ui/universal-dialog';
+import {
+  ResponsiveModal,
+  ResponsiveModalContent,
+  ResponsiveModalHeader,
+  ResponsiveModalTitle,
+} from '@/components/ui/responsive-modal';
+
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
@@ -32,7 +37,7 @@ interface TaskDetailsDialogProps {
   task: Task | null;
 }
 
-const TaskDetailsDialogBase = ({ open, onOpenChange, task }: TaskDetailsDialogProps) => {
+export const TaskDetailsDialog = ({ open, onOpenChange, task }: TaskDetailsDialogProps) => {
   // TODO: Réactiver quand useTaskDetails sera créé
   // const {
   //   taskDetails,
@@ -62,10 +67,10 @@ const TaskDetailsDialogBase = ({ open, onOpenChange, task }: TaskDetailsDialogPr
   const isSubtask = (task.task_level || 0) > 0;
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[90vh] max-w-4xl overflow-hidden">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-3">
+    <ResponsiveModal open={open} onOpenChange={onOpenChange}>
+      <ResponsiveModalContent className="max-h-[90vh] max-w-4xl overflow-hidden">
+        <ResponsiveModalHeader>
+          <ResponsiveModalTitle className="flex items-center gap-3">
             <span className="text-muted-foreground text-sm">#{task.display_order}</span>
             <span>{task.title}</span>
             <Badge className={priorityColors[task.priority]} variant="outline">
@@ -74,8 +79,8 @@ const TaskDetailsDialogBase = ({ open, onOpenChange, task }: TaskDetailsDialogPr
             <Badge className={statusColors[task.status]} variant="outline">
               {task.status}
             </Badge>
-          </DialogTitle>
-        </DialogHeader>
+          </ResponsiveModalTitle>
+        </ResponsiveModalHeader>
 
         <ScrollArea className="max-h-[80vh] pr-4">
           <div className="space-y-6">
@@ -92,7 +97,11 @@ const TaskDetailsDialogBase = ({ open, onOpenChange, task }: TaskDetailsDialogPr
                   <div className="flex items-center gap-3">
                     <Users className="text-muted-foreground h-4 w-4" />
                     <span className="font-medium">Responsable:</span>
-                    <span>{task.assignee}</span>
+                    <span>
+                      {typeof task.assignee === 'string'
+                        ? task.assignee
+                        : (task.assignee as any)?.full_name || 'Non assigné'}
+                    </span>
                   </div>
                   <div className="flex items-center gap-3">
                     <Calendar className="text-muted-foreground h-4 w-4" />
@@ -384,9 +393,7 @@ const TaskDetailsDialogBase = ({ open, onOpenChange, task }: TaskDetailsDialogPr
             <TaskHistorySection taskId={task.id} />
           </div>
         </ScrollArea>
-      </DialogContent>
-    </Dialog>
+      </ResponsiveModalContent>
+    </ResponsiveModal>
   );
 };
-// 🎨 Export avec support mobile automatique + thème Tasks
-export const TaskDetailsDialog = withUniversalDialog('tasks', TaskDetailsDialogBase);

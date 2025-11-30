@@ -37,17 +37,24 @@ import { EditableTaskTitle } from './inline/EditableTaskTitle';
 import { EditableTaskStatus } from './inline/EditableTaskStatus';
 import { EditableTaskPriority } from './inline/EditableTaskPriority';
 import { EditableTaskAssignee } from './inline/EditableTaskAssignee';
+import { useUserProfile } from '@/hooks/useUserAuth';
 
 interface MyTasksViewProps {
   limit?: number;
   compact?: boolean;
+  showAllTasks?: boolean;
 }
 
 type FilterType = 'all' | 'todo' | 'doing' | 'done';
 type SortType = 'date' | 'priority' | 'project';
 
-export const MyTasksView: React.FC<MyTasksViewProps> = ({ limit, compact = false }) => {
+export const MyTasksView: React.FC<MyTasksViewProps> = ({
+  limit,
+  compact = false,
+  showAllTasks = false,
+}) => {
   const { tasks, loading, updateTask } = useTasks();
+  const { profile } = useUserProfile();
   const [filter, setFilter] = useState<FilterType>('all');
   const [sort, setSort] = useState<SortType>('date');
   const [showCompleted, setShowCompleted] = useState(false);
@@ -55,6 +62,13 @@ export const MyTasksView: React.FC<MyTasksViewProps> = ({ limit, compact = false
   // Filtrage et Tri
   const filteredTasks = useMemo(() => {
     let result = tasks.filter(t => {
+      // Filtrer par utilisateur courant si showAllTasks est faux
+      if (!showAllTasks && profile?.userId) {
+        // Vérifier assignee_id ou assigned_to (selon le modèle)
+        const isAssigned = t.assignee_id === profile.userId || t.assigned_to === profile.userId;
+        if (!isAssigned) return false;
+      }
+
       if (!showCompleted && t.status === 'done') return false;
       if (filter === 'all') return true;
       if (filter === 'done') return t.status === 'done';
@@ -78,7 +92,7 @@ export const MyTasksView: React.FC<MyTasksViewProps> = ({ limit, compact = false
       }
       return 0;
     });
-  }, [tasks, filter, sort, showCompleted]);
+  }, [tasks, filter, sort, showCompleted, showAllTasks, profile]);
 
   // Groupement par section (Urgent, Aujourd'hui, etc.)
   const groupedTasks = useMemo(() => {
@@ -337,7 +351,7 @@ const TaskItem: React.FC<{
   borderColor: string;
   isCompleted?: boolean;
 }> = ({ task, onUpdate, onComplete, gradient, borderColor, isCompleted }) => {
-  const { permissions } = useTaskEditPermissions(task.id);
+  const permissions = useTaskEditPermissions({ task });
   const isOverdue =
     task.due_date && isPast(parseISO(task.due_date)) && !isToday(parseISO(task.due_date));
 

@@ -13,18 +13,20 @@ import { Progress } from '@/components/ui/progress';
 import { Users, Calendar, DollarSign, User } from 'lucide-react';
 import { ProjectRow } from './ProjectRow';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { formatCurrency } from '@/components/common/CurrencySelect';
 
 interface Project {
   id: string;
   name: string;
   status: string;
-  progress: number;
-  manager: string | { full_name: string } | null;
+  progress?: number;
+  manager: string | { id: string; full_name: string } | null;
   budget: number | null;
   start_date: string | null;
   end_date: string | null;
   created_by?: string;
   manager_id?: string;
+  currency?: string;
   [key: string]: any;
 }
 
@@ -60,14 +62,6 @@ export const ProjectTableInline: React.FC<ProjectTableInlineProps> = ({
     }
   };
 
-  const formatCurrency = (amount: number | null) => {
-    if (!amount) return '-';
-    return new Intl.NumberFormat('fr-FR', {
-      style: 'currency',
-      currency: 'EUR',
-    }).format(amount);
-  };
-
   const formatDate = (dateString: string | null) => {
     if (!dateString) return '-';
     return new Date(dateString).toLocaleDateString('fr-FR', {
@@ -77,7 +71,7 @@ export const ProjectTableInline: React.FC<ProjectTableInlineProps> = ({
     });
   };
 
-  const getManagerName = (manager: string | { full_name: string } | null) => {
+  const getManagerName = (manager: string | { id: string; full_name: string } | null) => {
     if (!manager) return 'Non assigné';
     if (typeof manager === 'string') return manager;
     return manager.full_name || 'Non assigné';
@@ -134,7 +128,7 @@ export const ProjectTableInline: React.FC<ProjectTableInlineProps> = ({
                   {project.budget && (
                     <div className="flex items-center justify-end gap-1.5">
                       <DollarSign className="h-3.5 w-3.5" />
-                      <span>{formatCurrency(project.budget)}</span>
+                      <span>{formatCurrency(project.budget, project.currency || 'DJF')}</span>
                     </div>
                   )}
                 </div>
@@ -184,6 +178,7 @@ export const ProjectTableInline: React.FC<ProjectTableInlineProps> = ({
                 onProjectClick={onProjectClick}
                 isSelected={selectedProjectId === project.id}
                 compactMode={compactMode}
+                currency={project.currency || 'DJF'}
               />
             ))
           )}

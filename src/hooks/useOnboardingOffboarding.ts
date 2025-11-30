@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { useUserFilterContext } from '@/hooks/useUserAuth';
+import { useAuthFilterContext } from '@/contexts/AuthContext';
 import { applyRoleFilters } from '@/lib/roleBasedFiltering';
 import { useToast } from '@/hooks/use-toast';
 
@@ -69,15 +69,21 @@ export function useOnboardingOffboarding() {
   const [error, setError] = useState<string | null>(null);
 
   // 🔒 Contexte utilisateur pour le filtrage
-  const { userContext } = useUserFilterContext();
+  const { userContext } = useAuthFilterContext();
   const { toast } = useToast();
 
   const fetchData = useCallback(async () => {
-    if (!userContext) return;
+    console.log('🔄 [useOnboardingOffboarding] fetchData called', { userContext: !!userContext });
+
+    if (!userContext) {
+      console.log('❌ [useOnboardingOffboarding] No userContext, aborting');
+      return;
+    }
 
     try {
       setLoading(true);
       setError(null);
+      console.log('⏳ [useOnboardingOffboarding] Starting Supabase queries...');
 
       // 🔒 Construire les queries avec filtrage
       let onboardingQuery = supabase
@@ -119,12 +125,17 @@ export function useOnboardingOffboarding() {
       if (onboardingTasksRes.error) throw onboardingTasksRes.error;
       if (offboardingTasksRes.error) throw offboardingTasksRes.error;
 
+      console.log('✅ [useOnboardingOffboarding] Data fetched successfully', {
+        onboarding: onboardingRes.data?.length,
+        offboarding: offboardingRes.data?.length,
+      });
+
       setOnboardingProcesses((onboardingRes.data as OnboardingProcess[]) || []);
       setOffboardingProcesses((offboardingRes.data as OffboardingProcess[]) || []);
       setOnboardingTasks((onboardingTasksRes.data as OnboardingTask[]) || []);
       setOffboardingTasks((offboardingTasksRes.data as OffboardingTask[]) || []);
     } catch (err: any) {
-      console.error('Error fetching onboarding/offboarding data:', err);
+      console.error('❌ [useOnboardingOffboarding] Error:', err);
       setError(err.message);
     } finally {
       setLoading(false);
@@ -207,8 +218,10 @@ export function useOnboardingOffboarding() {
   };
 
   useEffect(() => {
-    fetchData();
-  }, []);
+    if (userContext) {
+      fetchData();
+    }
+  }, [userContext]); // ✅ Only depend on userContext, not fetchData
 
   return {
     onboardingProcesses,

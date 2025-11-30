@@ -33,7 +33,9 @@ export const PerformanceManagement = () => {
   const [activeView, setActiveView] = useState('objectives');
   const {
     objectives,
+    objectiveTemplates,
     evaluations,
+    createObjectiveTemplate,
     keyResults,
     evaluationCategories,
     loading,
@@ -110,7 +112,11 @@ export const PerformanceManagement = () => {
           <p className="text-muted-foreground">Gestion de la performance et des objectifs</p>
         </div>
         <div className="flex gap-2">
-          <CreateObjectiveDialog onCreateObjective={createObjective} />
+          <CreateObjectiveDialog
+            onCreateObjective={createObjective}
+            objectiveTemplates={objectiveTemplates}
+            onCreateTemplate={createObjectiveTemplate}
+          />
           <CreateEvaluationDialog onCreateEvaluation={createEvaluation} />
         </div>
       </div>
@@ -141,7 +147,11 @@ export const PerformanceManagement = () => {
                   <p className="text-muted-foreground mb-4">
                     Commencez par créer votre premier objectif
                   </p>
-                  <CreateObjectiveDialog onCreateObjective={createObjective} />
+                  <CreateObjectiveDialog
+                    onCreateObjective={createObjective}
+                    objectiveTemplates={objectiveTemplates}
+                    onCreateTemplate={createObjectiveTemplate}
+                  />
                 </div>
               </CardContent>
             </Card>

@@ -10,6 +10,7 @@ import { useTasks, type Task } from '@/hooks/optimized';
 import { GanttHeader } from '../gantt/GanttHeader';
 import { GanttLoadingState, GanttErrorState } from '../gantt/GanttStates';
 import { ViewMode, statusColors } from '@/lib/ganttHelpers';
+import { MobileTaskCard } from './MobileTaskCard';
 
 interface MobileGanttChartProps {
   tasks?: Task[];
@@ -28,13 +29,49 @@ export function MobileGanttChart({
   updateTaskDates: propUpdateTaskDates,
   onSwitchToDesktop,
 }: MobileGanttChartProps) {
-  // ... (keep existing hooks and state)
+  const [viewMode, setViewMode] = useState<ViewMode>('Month' as ViewMode);
 
-  // ... (keep existing render logic)
+  const statusLabels = {
+    todo: 'À faire',
+    doing: 'En cours',
+    blocked: 'Bloqué',
+    done: 'Terminé',
+  };
+
+  // Grouper les tâches par statut
+  const tasksByStatus = React.useMemo(() => {
+    const grouped: Record<string, Task[]> = {
+      todo: [],
+      doing: [],
+      blocked: [],
+      done: [],
+    };
+
+    if (propTasks) {
+      propTasks.forEach(task => {
+        const status = task.status || 'todo';
+        if (grouped[status]) {
+          grouped[status].push(task);
+        } else {
+          grouped['todo'].push(task);
+        }
+      });
+    }
+
+    return grouped;
+  }, [propTasks]);
+
+  if (propLoading) {
+    return <GanttLoadingState />;
+  }
+
+  if (propError) {
+    return <GanttErrorState error={propError} />;
+  }
 
   return (
-    <Card className="modern-card glow-primary transition-smooth w-full">
-      <div className="flex items-center justify-between border-b p-4">
+    <Card className="modern-card glow-primary transition-smooth flex h-[calc(100vh-120px)] w-full flex-col">
+      <div className="flex shrink-0 items-center justify-between border-b p-4">
         <h2 className="text-lg font-semibold">Vue Gantt Mobile</h2>
         {onSwitchToDesktop && (
           <Button variant="outline" size="sm" onClick={onSwitchToDesktop} className="h-8 text-xs">
@@ -42,10 +79,12 @@ export function MobileGanttChart({
           </Button>
         )}
       </div>
-      <GanttHeader viewMode={viewMode} onViewModeChange={setViewMode} />
-      <CardContent className="bg-gantt-header/50 p-4 backdrop-blur-sm">
-        <ScrollArea className="h-[calc(100vh-250px)]">
-          <div className="space-y-6">
+      <div className="shrink-0">
+        <GanttHeader viewMode={viewMode} onViewModeChange={setViewMode} />
+      </div>
+      <CardContent className="bg-gantt-header/50 flex-1 overflow-hidden p-0 backdrop-blur-sm">
+        <ScrollArea className="h-full w-full">
+          <div className="space-y-6 p-4 pb-20">
             {Object.entries(tasksByStatus).map(
               ([status, statusTasks]) =>
                 statusTasks.length > 0 && (

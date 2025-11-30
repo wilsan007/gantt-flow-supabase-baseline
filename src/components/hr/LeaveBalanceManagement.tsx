@@ -11,12 +11,12 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
+  ResponsiveModal,
+  ResponsiveModalContent,
+  ResponsiveModalHeader,
+  ResponsiveModalTitle,
+  ResponsiveModalTrigger,
+} from '@/components/ui/responsive-modal';
 import { Label } from '@/components/ui/label';
 import { Progress } from '@/components/ui/progress';
 import { Plus, Calendar, Wallet } from 'lucide-react';
@@ -116,17 +116,17 @@ export const LeaveBalanceManagement = () => {
           Soldes de Congés
         </h2>
 
-        <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-          <DialogTrigger asChild>
+        <ResponsiveModal open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+          <ResponsiveModalTrigger asChild>
             <Button className="hover-glow">
               <Plus className="mr-2 h-4 w-4" />
               Nouveau solde
             </Button>
-          </DialogTrigger>
-          <DialogContent className="max-w-md">
-            <DialogHeader>
-              <DialogTitle>Créer un solde de congés</DialogTitle>
-            </DialogHeader>
+          </ResponsiveModalTrigger>
+          <ResponsiveModalContent className="max-w-md">
+            <ResponsiveModalHeader>
+              <ResponsiveModalTitle>Créer un solde de congés</ResponsiveModalTitle>
+            </ResponsiveModalHeader>
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
               <div>
                 <Label htmlFor="employee_id">Employé</Label>
@@ -200,8 +200,8 @@ export const LeaveBalanceManagement = () => {
                 </Button>
               </div>
             </form>
-          </DialogContent>
-        </Dialog>
+          </ResponsiveModalContent>
+        </ResponsiveModal>
       </div>
 
       {/* Year Filter */}

@@ -125,15 +125,15 @@ serve(async req => {
       console.log('✅ Tenant created');
     }
 
-    // Create Profile
+    // Create Profile (matching production schema exactly)
     const { error: profileError } = await supabaseAdmin.from('profiles').insert({
-      id: newUser.id,
-      first_name: fullName.split(' ')[0],
-      last_name: fullName.split(' ').slice(1).join(' ') || '',
-      email: newUser.email,
+      user_id: newUser.id,
       tenant_id: tenantId,
-      role: 'tenant_admin', // Assign role directly
-      status: 'active',
+      full_name: fullName,
+      email: newUser.email,
+      role: 'tenant_admin',
+      contract_type: 'CDI',
+      weekly_hours: 35,
     });
 
     if (profileError) {
@@ -144,6 +144,60 @@ serve(async req => {
       console.log('⚠️ Profile might already exist');
     } else {
       console.log('✅ Profile created');
+    }
+
+    // [NEW] Create Employee Record
+    const employeeId =
+      'EMP-' +
+      Math.floor(Math.random() * 10000)
+        .toString()
+        .padStart(4, '0');
+    console.log('👷 Creating Employee record:', employeeId);
+
+    const { error: employeeError } = await supabaseAdmin.from('employees').insert({
+      user_id: newUser.id,
+      employee_id: employeeId,
+      full_name: fullName,
+      email: newUser.email,
+      job_title: 'Tenant Administrateur',
+      hire_date: new Date().toISOString().split('T')[0],
+      contract_type: 'CDI',
+      weekly_hours: 35,
+      status: 'active',
+      tenant_id: tenantId,
+    });
+
+    if (employeeError) {
+      console.error('❌ Error creating employee:', employeeError);
+      // Don't throw here to avoid blocking the whole process if just this fails
+    } else {
+      console.log('✅ Employee created');
+    }
+
+    // Assign tenant_admin role via user_roles table
+    // First, get the tenant_admin role_id
+    const { data: roleData } = await supabaseAdmin
+      .from('roles')
+      .select('id')
+      .eq('name', 'tenant_admin')
+      .single();
+
+    if (roleData) {
+      const { error: roleError } = await supabaseAdmin.from('user_roles').insert({
+        user_id: newUser.id,
+        role_id: roleData.id,
+        context_type: 'global',
+        context_id: tenantId,
+        assigned_at: new Date().toISOString(),
+        is_active: true,
+        tenant_id: tenantId,
+      });
+
+      if (roleError) {
+        console.error('⚠️ Error assigning role:', roleError);
+      } else {
+        console.log('✅ Role assigned');
+      }
     }
 
     // 6. Assign Role in user_roles (if you have a separate roles table)

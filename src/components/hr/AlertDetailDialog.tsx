@@ -1,12 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import {
+  ResponsiveModal,
+  ResponsiveModalContent,
+  ResponsiveModalHeader,
+  ResponsiveModalTitle,
+  ResponsiveModalDescription,
+} from '@/components/ui/responsive-modal';
+import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogDescription,
 } from '@/components/ui/dialog';
-import { withUniversalDialog } from '@/components/ui/universal-dialog';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -36,7 +42,11 @@ interface AlertDetailDialogProps {
   onOpenChange: (open: boolean) => void;
 }
 
-const AlertDetailDialogBase: React.FC<AlertDetailDialogProps> = ({ alert, open, onOpenChange }) => {
+export const AlertDetailDialog: React.FC<AlertDetailDialogProps> = ({
+  alert,
+  open,
+  onOpenChange,
+}) => {
   const [solutions, setSolutions] = useState<AlertSolution[]>([]);
   const [loadingSolutions, setLoadingSolutions] = useState(false);
   const { getSolutionsForAlertType } = useAlertSolutions();
@@ -123,10 +133,10 @@ const AlertDetailDialogBase: React.FC<AlertDetailDialogProps> = ({ alert, open, 
   if (!alert) return null;
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[90vh] max-w-4xl overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-3">
+    <ResponsiveModal open={open} onOpenChange={onOpenChange}>
+      <ResponsiveModalContent className="max-h-[90vh] max-w-4xl overflow-y-auto">
+        <ResponsiveModalHeader>
+          <ResponsiveModalTitle className="flex items-center gap-3">
             <AlertTriangle className={`h-6 w-6 ${getSeverityColor(alert.severity)}`} />
             <div className="flex-1">
               <div className="flex items-center gap-2">
@@ -136,11 +146,11 @@ const AlertDetailDialogBase: React.FC<AlertDetailDialogProps> = ({ alert, open, 
                 </Badge>
               </div>
             </div>
-          </DialogTitle>
-          <DialogDescription>
+          </ResponsiveModalTitle>
+          <ResponsiveModalDescription>
             Analyse détaillée et recommandations pour résoudre cette alerte
-          </DialogDescription>
-        </DialogHeader>
+          </ResponsiveModalDescription>
+        </ResponsiveModalHeader>
 
         <div className="space-y-6">
           {/* Informations principales */}
@@ -392,9 +402,7 @@ const AlertDetailDialogBase: React.FC<AlertDetailDialogProps> = ({ alert, open, 
             </Button>
           </div>
         </div>
-      </DialogContent>
-    </Dialog>
+      </ResponsiveModalContent>
+    </ResponsiveModal>
   );
 };
-// 🎨 Export avec support mobile automatique + thème Hr
-export const AlertDetailDialog = withUniversalDialog('hr', AlertDetailDialogBase);

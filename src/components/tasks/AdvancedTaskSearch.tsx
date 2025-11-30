@@ -68,7 +68,19 @@ const DEFAULT_FILTERS: SearchFilters = {
 export const AdvancedTaskSearch: React.FC = () => {
   const { tasks, loading, updateTask, deleteTask } = useTasks();
   const { projects } = useProjects();
-  const { employees } = useHRMinimal();
+  const { employees } = useHRMinimal({
+    enabled: {
+      employees: true,
+      leaveRequests: false,
+      attendances: false,
+      leaveBalances: false,
+      departments: false,
+      absenceTypes: false,
+    },
+    limits: {
+      employees: 20,
+    },
+  });
 
   const [filters, setFilters] = useState<SearchFilters>(DEFAULT_FILTERS);
   const [selectedTasks, setSelectedTasks] = useState<Set<string>>(new Set());

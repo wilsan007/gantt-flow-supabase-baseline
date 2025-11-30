@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
-import { withUniversalDialog } from '@/components/ui/universal-dialog';
+  ResponsiveModal,
+  ResponsiveModalContent,
+  ResponsiveModalHeader,
+  ResponsiveModalTitle,
+  ResponsiveModalTrigger,
+} from '@/components/ui/responsive-modal';
+
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -28,7 +28,7 @@ interface ActionCreationDialogProps {
   selectedTaskId?: string;
 }
 
-const ActionCreationDialogBase = ({
+export const ActionCreationDialog = ({
   onCreateAction,
   selectedTaskId,
 }: ActionCreationDialogProps) => {
@@ -57,8 +57,8 @@ const ActionCreationDialogBase = ({
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
+    <ResponsiveModal open={open} onOpenChange={setOpen}>
+      <ResponsiveModalTrigger asChild>
         <Button
           size="sm"
           disabled={!selectedTaskId}
@@ -67,11 +67,11 @@ const ActionCreationDialogBase = ({
           <Plus className="mr-2 h-4 w-4" />
           Action Détaillée
         </Button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-[500px]">
-        <DialogHeader>
-          <DialogTitle>Créer une Nouvelle Action</DialogTitle>
-        </DialogHeader>
+      </ResponsiveModalTrigger>
+      <ResponsiveModalContent className="sm:max-w-[500px]">
+        <ResponsiveModalHeader>
+          <ResponsiveModalTitle>Créer une Nouvelle Action</ResponsiveModalTitle>
+        </ResponsiveModalHeader>
         <div className="grid gap-4 py-4">
           {/* Titre */}
           <div className="grid gap-2">
@@ -143,9 +143,7 @@ const ActionCreationDialogBase = ({
             Créer l'Action
           </Button>
         </div>
-      </DialogContent>
-    </Dialog>
+      </ResponsiveModalContent>
+    </ResponsiveModal>
   );
 };
-// 🎨 Export avec support mobile automatique + thème Tasks
-export const ActionCreationDialog = withUniversalDialog('tasks', ActionCreationDialogBase);

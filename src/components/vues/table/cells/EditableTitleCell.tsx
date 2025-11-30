@@ -14,6 +14,7 @@ interface EditableTitleCellProps {
   actionTitle: string;
   debounceMs?: number;
   readOnly?: boolean; // 🔒 Désactiver l'édition si pas de permission
+  placeholder?: string;
 }
 
 type SaveStatus = 'idle' | 'editing' | 'saving' | 'saved' | 'error';
@@ -28,6 +29,7 @@ export const EditableTitleCell = ({
   actionTitle,
   debounceMs = 800,
   readOnly = false,
+  placeholder,
 }: EditableTitleCellProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [localValue, setLocalValue] = useState(value || '');
@@ -164,23 +166,25 @@ export const EditableTitleCell = ({
           {isEditing && !readOnly ? (
             <input
               ref={inputRef}
-              type="text"
               value={localValue}
               onChange={e => handleLocalChange(e.target.value)}
               onBlur={handleBlur}
               onKeyDown={handleKeyDown}
+              disabled={readOnly}
+              placeholder={placeholder}
               className={cn(
-                'w-full rounded border-none bg-transparent px-2 py-1 ring-2 ring-blue-500 outline-none',
-                isSubtask ? 'text-foreground/70 text-xs italic' : 'text-foreground'
+                'w-full rounded bg-transparent px-0.5 py-1 text-sm transition-colors outline-none',
+                readOnly ? 'cursor-default' : 'hover:bg-muted/50 focus:bg-muted cursor-text',
+                saveStatus === 'error' && 'text-destructive',
+                isSubtask ? 'text-muted-foreground font-normal' : 'font-medium'
               )}
-              placeholder="Nom de la tâche..."
             />
           ) : (
             <div
               onClick={() => !readOnly && setIsEditing(true)}
               className={cn(
                 'w-full truncate rounded px-2 py-1 transition-colors',
-                !readOnly && 'cursor-text hover:bg-gray-100 dark:hover:bg-gray-800',
+                !readOnly && 'hover:bg-primary/5 dark:hover:bg-primary/10 cursor-text',
                 readOnly && 'cursor-not-allowed opacity-60',
                 isSubtask ? 'text-foreground/70 text-xs italic' : 'text-foreground',
                 !value && 'text-muted-foreground'

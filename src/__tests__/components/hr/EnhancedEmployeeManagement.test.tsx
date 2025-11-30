@@ -36,6 +36,22 @@ vi.mock('@/integrations/supabase/client', () => ({
   supabase: createSupabaseMock(),
 }));
 
+vi.mock('@/contexts/AuthContext', () => ({
+  useAuth: () => ({
+    profile: { id: 'test-user', tenantId: 'tenant-1', role: 'admin' },
+    isAuthenticated: true,
+    loading: false,
+    userContext: { tenantId: 'tenant-1' },
+    hasPermission: () => true,
+  }),
+  useAuthFilterContext: () => ({
+    profile: { id: 'test-user', tenantId: 'tenant-1', role: 'admin' },
+    userContext: { tenantId: 'tenant-1' },
+    loading: false,
+    error: null,
+  }),
+}));
+
 // Import real component
 import { EnhancedEmployeeManagement } from '@/components/hr/EnhancedEmployeeManagement';
 

@@ -18,6 +18,7 @@ export const createSupabaseMock = () => {
   const mockUpsert = vi.fn().mockReturnThis();
   const mockEq = vi.fn().mockReturnThis();
   const mockNeq = vi.fn().mockReturnThis();
+  const mockNot = vi.fn().mockReturnThis();
   const mockGt = vi.fn().mockReturnThis();
   const mockGte = vi.fn().mockReturnThis();
   const mockLt = vi.fn().mockReturnThis();
@@ -42,6 +43,7 @@ export const createSupabaseMock = () => {
     upsert: mockUpsert,
     eq: mockEq,
     neq: mockNeq,
+    not: mockNot,
     gt: mockGt,
     gte: mockGte,
     lt: mockLt,
@@ -156,6 +158,7 @@ export const createSupabaseMock = () => {
       mockUpsert,
       mockEq,
       mockNeq,
+      mockNot,
       mockGt,
       mockGte,
       mockLt,
